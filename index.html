@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watchlist — Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <svg class="logo" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="Watchlist Logo">
+        <rect x="2" y="2" width="24" height="24" rx="4" stroke="#3b82f6" stroke-width="2"/>
+        <path d="M7 18L11 10L15 14L21 7" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="21" cy="7" r="2" fill="#3b82f6"/>
+      </svg>
+      <span class="logo-text">Watchlist</span>
+    </div>
+    <div class="header-right">
+      <div class="header-meta">
+        <span class="total-mcap" id="total-mcap">Total MCap: —</span>
+        <span class="last-updated" id="last-updated">Updated: —</span>
+        <span class="refresh-timer" id="refresh-timer">↻ 60s</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Table -->
+  <main class="main-content">
+    <section class="public-section">
+      <div class="section-header-bar">
+        <h2>Public Companies</h2>
+        <div class="add-ticker-group">
+          <div class="search-wrapper">
+            <input type="text" id="ticker-input" placeholder="Search company or ticker..." autocomplete="off" spellcheck="false">
+            <div class="search-dropdown" id="search-dropdown"></div>
+          </div>
+          <button id="add-ticker-btn" class="btn-sm">+ Add Company</button>
+        </div>
+      </div>
+    </section>
+    <div class="table-wrapper" id="table-wrapper">
+      <table class="watchlist-table" id="watchlist-table">
+        <thead>
+          <tr>
+            <th class="col-ticker sortable" data-col="ticker">Ticker</th>
+            <th class="col-name sortable" data-col="name">Company</th>
+            <th class="col-subsector sortable" data-col="subsector">Subsector</th>
+            <th class="col-price sortable num" data-col="price">Price</th>
+            <th class="col-mcap sortable num" data-col="marketCap">Mkt Cap</th>
+            <th class="col-ev sortable num" data-col="ev">EV</th>
+            <th class="col-ev-sales sortable num" data-col="evSales">FY1 EV/Sales</th>
+            <th class="col-ev-fcf sortable num" data-col="evFcf">FY1 EV/FCF</th>
+            <th class="col-perf sortable num" data-col="ytd">YTD%</th>
+            <th class="col-perf sortable num" data-col="d1">1D%</th>
+            <th class="col-perf sortable num" data-col="w1">1W%</th>
+            <th class="col-perf sortable num" data-col="m1">1M%</th>
+            <th class="col-perf sortable num" data-col="m3">3M%</th>
+            <th class="col-perf sortable num" data-col="y1">1Y%</th>
+            <th class="col-perf sortable num" data-col="y3">3Y%</th>
+            <th class="col-remove"></th>
+          </tr>
+        </thead>
+        <tbody id="watchlist-body">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="loading-skeleton">
+        <div class="skeleton-row" style="--i:0"></div>
+        <div class="skeleton-row" style="--i:1"></div>
+        <div class="skeleton-row" style="--i:2"></div>
+        <div class="skeleton-row" style="--i:3"></div>
+        <div class="skeleton-row" style="--i:4"></div>
+        <div class="skeleton-row" style="--i:5"></div>
+        <div class="skeleton-row" style="--i:6"></div>
+        <div class="skeleton-row" style="--i:7"></div>
+        <div class="skeleton-row" style="--i:8"></div>
+        <div class="skeleton-row" style="--i:9"></div>
+      </div>
+    </div>
+
+    <!-- Private Companies Section -->
+    <section class="private-section">
+      <div class="section-header-bar">
+        <h2>Private Companies</h2>
+        <div class="add-private-group">
+          <input type="text" id="private-input" placeholder="Search private company..." autocomplete="off" spellcheck="false">
+          <button id="add-private-btn" class="btn-sm">+ Add Private Company</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table class="watchlist-table private-table" id="private-table">
+          <thead>
+            <tr>
+              <th>Company Name</th>
+              <th>Subsector</th>
+              <th class="num">Last Valuation</th>
+              <th>Last Funding Round</th>
+              <th class="num">Est. Revenue</th>
+              <th>Key Metrics</th>
+              <th class="col-remove"></th>
+            </tr>
+          </thead>
+          <tbody id="private-body">
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Earnings Section -->
+    <section class="earnings-section" id="earnings-section">
+      <div class="section-header-bar">
+        <h2>Earnings</h2>
+        <div class="earnings-header-controls">
+          <span class="earnings-status" id="earnings-status"></span>
+          <button class="btn-sm btn-ghost" id="earnings-archive-btn">Archive</button>
+        </div>
+      </div>
+      <div class="earnings-panels">
+        <!-- Recent Earnings (post-earnings) -->
+        <div class="earnings-panel" id="recent-earnings-panel">
+          <h3 class="earnings-panel-title">Recent Reports</h3>
+          <div class="earnings-cards" id="recent-earnings-cards">
+            <div class="earnings-empty">No recent earnings</div>
+          </div>
+        </div>
+        <!-- Upcoming Earnings (pre-earnings) -->
+        <div class="earnings-panel" id="upcoming-earnings-panel">
+          <h3 class="earnings-panel-title">Upcoming Earnings</h3>
+          <div class="earnings-cards" id="upcoming-earnings-cards">
+            <div class="earnings-empty">No upcoming earnings in the next 14 days</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Earnings Note Modal -->
+    <div class="popup-overlay" id="earnings-note-overlay">
+      <div class="popup-modal earnings-note-modal" id="earnings-note-modal">
+        <button class="popup-close" id="earnings-note-close">&times;</button>
+        <div class="earnings-note-content" id="earnings-note-content">
+          Loading...
+        </div>
+      </div>
+    </div>
+
+    <!-- Earnings Archive Modal -->
+    <div class="popup-overlay" id="earnings-archive-overlay">
+      <div class="popup-modal earnings-archive-modal">
+        <button class="popup-close" id="earnings-archive-close">&times;</button>
+        <h2 style="margin-bottom:16px;color:#e5e7eb;">Earnings Archive</h2>
+        <div class="earnings-archive-content" id="earnings-archive-content">
+          Loading archive...
+        </div>
+      </div>
+    </div>
+
+    <!-- News Feed -->
+    <section class="news-section" id="news-section">
+      <div class="section-header-bar">
+        <h2>Market News</h2>
+        <span class="news-status" id="news-status"></span>
+      </div>
+      <div class="news-feed" id="news-feed">
+        <div class="news-loading">Loading news...</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Ticker Detail Popup -->
+  <div class="popup-overlay" id="popup-overlay">
+    <div class="popup-modal" id="popup-modal">
+      <button class="popup-close" id="popup-close">&times;</button>
+      <div class="popup-content" id="popup-content">
+        <!-- Filled by popup.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Private Company Modal -->
+  <div class="popup-overlay" id="private-modal-overlay">
+    <div class="popup-modal private-modal">
+      <button class="popup-close" id="private-modal-close">&times;</button>
+      <h2 style="margin-bottom:16px;color:#e5e7eb;">Add Private Company</h2>
+      <form id="private-form" class="private-form">
+        <label>Company Name
+          <input type="text" name="name" required placeholder="e.g. Databricks, Stripe, SpaceX" autocomplete="off" spellcheck="false">
+        </label>
+        <div class="private-form-hint">We'll look up subsector, valuation, funding, revenue, and key metrics automatically.</div>
+        <button type="submit" class="btn-primary" id="private-submit-btn">
+          <span id="private-submit-text">Look Up &amp; Add</span>
+          <span id="private-submit-spinner" class="btn-spinner" style="display:none;"></span>
+        </button>
+      </form>
+      <div id="private-lookup-status" class="lookup-status" style="display:none;"></div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+  </footer>
+
+  <script src="utils.js"></script>
+  <script src="api.js"></script>
+  <script src="popup-chart.js"></script>
+  <script src="popup-deep-dive.js"></script>
+  <script src="popup.js"></script>
+  <script src="earnings.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
