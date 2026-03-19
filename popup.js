@@ -43,11 +43,39 @@ async function openPopup(ticker) {
     if (currentPopupTicker !== ticker) return; // User closed/switched
 
     // Merge backend info into quote-like object
-    const quote = backendData?.info || {};
+    let quote = backendData?.info || {};
+    let calendarData = backendData?.calendar || null;
+    let earningsHistoryData = backendData?.earningsHistory || [];
+
+    // If backend unavailable, fall back to snapshot analyst data
+    if (!backendData && typeof loadSnapshot === 'function') {
+      const snap = await loadSnapshot();
+      const analystSnap = snap?.analyst_summary?.[ticker];
+      if (analystSnap) {
+        // Merge analyst snapshot fields into quote object
+        quote = { ...quote };
+        const analystFields = [
+          'targetMeanPrice', 'targetHighPrice', 'targetLowPrice', 'targetMedianPrice',
+          'numberOfAnalystOpinions', 'recommendationKey', 'recommendationMean',
+          'forwardEps', 'trailingEps', 'forwardPE', 'trailingPE',
+          'beta', 'averageVolume', 'averageVolume10days', 'volume',
+          'fiftyTwoWeekHigh', 'fiftyTwoWeekLow', 'sharesOutstanding',
+        ];
+        for (const field of analystFields) {
+          if (analystSnap[field] != null && !quote[field]) {
+            quote[field] = analystSnap[field];
+          }
+        }
+        calendarData = analystSnap.calendar || null;
+        earningsHistoryData = analystSnap.earningsHistory || [];
+        console.log(`Popup ${ticker}: loaded analyst data from snapshot`);
+      }
+    }
+
     const data = parseTickerData(ticker, chart, quote);
-    // Add calendar and earnings data from backend
-    data.calendarEvents = backendData?.calendar || null;
-    data.earningsHistory = backendData?.earningsHistory || [];
+    // Add calendar and earnings data
+    data.calendarEvents = calendarData;
+    data.earningsHistory = earningsHistoryData;
     const summary = null; // We use backend data instead
     renderPopupContent(ticker, data, summary, chart);
   } catch (e) {
