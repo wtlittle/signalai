@@ -39,9 +39,15 @@ A buy-side equity research terminal for tracking public and private technology c
 
 ## Quick Start
 
-### Option 1: Static Demo (no backend)
+### Option 1: Live Demo
 
-Simply open `index.html` in a browser or serve it with any static file server. Stock data will be fetched client-side via Yahoo Finance public APIs through a CORS proxy.
+Try it now at **[wtlittle.github.io/signalai](https://wtlittle.github.io/signalai/)**
+
+The demo loads with a cached data snapshot so the terminal populates instantly. If a CORS proxy is available, it will attempt to fetch live prices on top of the snapshot data.
+
+### Option 2: Static Local (no backend)
+
+Serve the files with any static file server:
 
 ```bash
 # Using Python
@@ -53,9 +59,9 @@ npx serve . -l 5000
 
 Then open [http://localhost:5000](http://localhost:5000).
 
-> **Note:** The static demo provides core functionality (prices, charts, performance, search). Advanced features like quantitative factor analysis, short interest data, cross-sector comps, and news require the Python backend.
+> **Note:** The static version provides core functionality (prices, charts, performance). Advanced features like quantitative factor analysis, short interest data, cross-sector comps, and news require the Python backend.
 
-### Option 2: Full Setup (with backend)
+### Option 3: Full Setup (with backend)
 
 The Python backend provides richer data, faster batch fetching, and advanced analytics.
 
@@ -81,8 +87,9 @@ Open [http://localhost:5000](http://localhost:5000). The frontend will automatic
 ├── index.html          # Main HTML shell
 ├── styles.css          # Full terminal theme
 ├── utils.js            # Constants, formatters, storage, company data
-├── api-client.js       # Client-side Yahoo Finance fallback (CORS proxy)
+├── api-client.js       # Client-side fallback (CORS proxy + snapshot)
 ├── api.js              # Data fetching layer (backend-first, client fallback)
+├── data-snapshot.json  # Cached market data for instant demo loading
 ├── app.js              # Main app logic, rendering, state management
 ├── popup.js            # Ticker detail popup
 ├── popup-chart.js      # Interactive price charts (Chart.js)
@@ -98,9 +105,10 @@ Open [http://localhost:5000](http://localhost:5000). The frontend will automatic
 ### Data Flow
 
 1. **With backend:** Frontend → Python backend (port 5001) → yfinance → Yahoo Finance APIs
-2. **Without backend:** Frontend → `api-client.js` → CORS proxy → Yahoo Finance APIs
+2. **Without backend (CORS proxy available):** Frontend → `api-client.js` → CORS proxy → Yahoo Finance APIs
+3. **Without backend (no proxy):** Frontend → `api-client.js` → `data-snapshot.json` (cached data)
 
-The frontend automatically detects whether the backend is running and falls back to client-side fetching if not.
+The frontend automatically detects the best available data source. When running as a static demo, it loads a pre-cached snapshot instantly while optionally attempting live price updates through CORS proxies.
 
 ## Tech Stack
 

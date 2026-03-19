@@ -724,11 +724,35 @@ function updateTotalMcap() {
 }
 
 // --- Refresh ---
-function updateTimestamp() {
-  $lastUpdated.textContent = `Updated: ${formatDateShort(new Date())}`;
+function updateTimestamp(snapshotDate) {
+  if (snapshotDate) {
+    const d = new Date(snapshotDate);
+    $lastUpdated.textContent = `Snapshot: ${formatDateShort(d)}`;
+    $lastUpdated.title = 'Data from cached snapshot — connect backend for live data';
+  } else {
+    $lastUpdated.textContent = `Updated: ${formatDateShort(new Date())}`;
+    $lastUpdated.title = '';
+  }
+}
+
+function showDemoBanner() {
+  // Show subtle indicator that we're in demo/snapshot mode
+  const existing = document.getElementById('demo-banner');
+  if (existing) return;
+  const banner = document.createElement('div');
+  banner.id = 'demo-banner';
+  banner.style.cssText = 'background:rgba(0,200,150,0.08);color:rgba(0,200,150,0.7);text-align:center;padding:4px 12px;font-size:11px;letter-spacing:0.5px;font-family:var(--font-mono);border-bottom:1px solid rgba(0,200,150,0.1);';
+  banner.textContent = 'DEMO MODE — Showing cached market data · Run locally with Python backend for live prices';
+  document.body.prepend(banner);
 }
 
 function startRefreshCycle() {
+  // In demo/snapshot mode, don't auto-refresh (data is static)
+  if (_snapshotData && !_proxyWorking) {
+    $refreshTimer.textContent = 'Static';
+    $refreshTimer.title = 'Snapshot data — no auto-refresh';
+    return;
+  }
   refreshCountdown = 60;
   if (refreshInterval) clearInterval(refreshInterval);
   refreshInterval = setInterval(() => {
@@ -753,7 +777,16 @@ async function loadAllData() {
     tickerData = results;
     renderTable();
     updateTotalMcap();
-    updateTimestamp();
+
+    // Detect if data came from snapshot
+    const usingSnapshot = typeof _snapshotData !== 'undefined' && _snapshotData &&
+      typeof backendAvailable !== 'undefined' && backendAvailable === false;
+    if (usingSnapshot) {
+      updateTimestamp(_snapshotData.generated);
+      showDemoBanner();
+    } else {
+      updateTimestamp();
+    }
   } catch (e) {
     console.error('Failed to load data:', e);
   } finally {
