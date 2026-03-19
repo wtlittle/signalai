@@ -91,17 +91,22 @@ async function fetchQuantFactors(ticker) {
 }
 
 async function fetchShortInterest(ticker) {
-  if (!(await checkBackend())) return null;
-  try {
-    const resp = await fetch(`${BACKEND_URL}/short-interest?symbol=${ticker}`, { signal: AbortSignal.timeout(30000) });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    if (data.error) return null;
-    return data;
-  } catch (e) {
-    console.warn('Short interest fetch failed:', e);
-    return null;
+  if (await checkBackend()) {
+    try {
+      const resp = await fetch(`${BACKEND_URL}/short-interest?symbol=${ticker}`, { signal: AbortSignal.timeout(30000) });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      if (!data.error) return data;
+    } catch (e) {
+      console.warn('Short interest backend failed:', e);
+    }
   }
+  // Client-side fallback: load from snapshot
+  if (typeof loadSnapshot === 'function') {
+    const snap = await loadSnapshot();
+    if (snap?.short_interest?.[ticker]) return snap.short_interest[ticker];
+  }
+  return null;
 }
 
 async function fetchOutperformance(ticker) {
@@ -116,7 +121,12 @@ async function fetchOutperformance(ticker) {
       console.warn('Outperformance backend failed:', e);
     }
   }
-  // Always try client-side fallback
+  // Try snapshot data first (faster and more reliable)
+  if (typeof loadSnapshot === 'function') {
+    const snap = await loadSnapshot();
+    if (snap?.outperformance?.[ticker]) return snap.outperformance[ticker];
+  }
+  // Fallback to client-side calculation
   return computeClientSideOutperformance(ticker);
 }
 
@@ -688,17 +698,22 @@ function initOutperformanceChart(outperf) {
 // --- Section D: Cross-Sector Fundamental Comps ---
 
 async function fetchCrossSectorComps(ticker) {
-  if (!(await checkBackend())) return null;
-  try {
-    const resp = await fetch(`${BACKEND_URL}/cross-sector-comps?symbol=${ticker}`, { signal: AbortSignal.timeout(120000) });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    if (data.error) return null;
-    return data;
-  } catch (e) {
-    console.warn('Cross-sector comps fetch failed:', e);
-    return null;
+  if (await checkBackend()) {
+    try {
+      const resp = await fetch(`${BACKEND_URL}/cross-sector-comps?symbol=${ticker}`, { signal: AbortSignal.timeout(120000) });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      if (!data.error) return data;
+    } catch (e) {
+      console.warn('Cross-sector comps backend failed:', e);
+    }
   }
+  // Client-side fallback: load from snapshot
+  if (typeof loadSnapshot === 'function') {
+    const snap = await loadSnapshot();
+    if (snap?.cross_sector_comps?.[ticker]) return snap.cross_sector_comps[ticker];
+  }
+  return null;
 }
 
 function renderCrossSectorComps(ticker, comps) {
