@@ -768,7 +768,20 @@ function showDemoBanner() {
     banner.style.cssText = 'background:rgba(0,200,150,0.08);color:rgba(0,200,150,0.7);text-align:center;padding:4px 12px;font-size:11px;letter-spacing:0.5px;font-family:var(--font-mono);border-bottom:1px solid rgba(0,200,150,0.1);';
     banner.textContent = 'DEMO MODE — Showing cached market data · Run locally with Python backend for live prices';
   }
-  document.body.prepend(banner);
+  // Insert after the header (not before body) to avoid breaking sticky offsets
+  const header = document.querySelector('.app-header');
+  if (header && header.nextSibling) {
+    header.parentNode.insertBefore(banner, header.nextSibling);
+  } else {
+    document.body.prepend(banner);
+  }
+  // Adjust sticky thead offset to account for the banner height
+  requestAnimationFrame(() => {
+    const bannerHeight = banner.offsetHeight;
+    const headerHeight = header ? header.offsetHeight : 45;
+    const totalOffset = headerHeight + bannerHeight;
+    document.documentElement.style.setProperty('--sticky-thead-top', totalOffset + 'px');
+  });
 }
 
 function startRefreshCycle() {
@@ -811,7 +824,7 @@ async function loadAllData() {
       typeof backendAvailable !== 'undefined' && backendAvailable === false;
     if (dsInfo.source === 'supabase') {
       updateTimestamp();
-      showDemoBanner();
+      // No banner needed for Supabase — source info shown in header timestamp
     } else if (usingSnapshot) {
       updateTimestamp(_snapshotData?.generated);
       showDemoBanner();
