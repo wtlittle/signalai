@@ -105,6 +105,18 @@ let refreshCountdown = 60;
   Storage.set(MIGRATION_KEY, true);
 })();
 
+// --- Migration v5: Remove delisted AYX ---
+(function migrate_v5() {
+  const MIGRATION_KEY = 'migration_v5_done';
+  if (Storage.get(MIGRATION_KEY)) return;
+  const idx = tickerList.indexOf('AYX');
+  if (idx !== -1) {
+    tickerList.splice(idx, 1);
+    Storage.set('ticker_list', tickerList);
+  }
+  Storage.set(MIGRATION_KEY, true);
+})();
+
 // --- DOM refs ---
 const $body = document.getElementById('watchlist-body');
 const $privateBody = document.getElementById('private-body');

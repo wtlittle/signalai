@@ -49,7 +49,7 @@ const SUBSECTOR_MAP = {
   'S': 'Cybersecurity', 'FTNT': 'Cybersecurity', 'OKTA': 'Cybersecurity',
   'VRNS': 'Cybersecurity',
   'SNOW': 'Data & Analytics', 'MDB': 'Data & Analytics', 'DDOG': 'Data & Analytics',
-  'ESTC': 'Data & Analytics', 'PLTR': 'Data & Analytics', 'AYX': 'Data & Analytics',
+  'ESTC': 'Data & Analytics', 'PLTR': 'Data & Analytics',
   'CFLT': 'Data & Analytics',
   'NET': 'Cloud Infrastructure', 'FSLY': 'Cloud Infrastructure', 'DOCN': 'Cloud Infrastructure',
   'CRM': 'Enterprise Software', 'NOW': 'Enterprise Software', 'HUBS': 'Enterprise Software',
@@ -93,7 +93,7 @@ const COMMON_NAMES = {
   'CRWD': 'CrowdStrike', 'ZS': 'Zscaler', 'PANW': 'Palo Alto Networks',
   'S': 'SentinelOne', 'FTNT': 'Fortinet', 'OKTA': 'Okta',
   'SNOW': 'Snowflake', 'MDB': 'MongoDB', 'DDOG': 'Datadog',
-  'ESTC': 'Elastic', 'PLTR': 'Palantir', 'AYX': 'Alteryx',
+  'ESTC': 'Elastic', 'PLTR': 'Palantir',
   'CFLT': 'Confluent', 'NET': 'Cloudflare', 'FSLY': 'Fastly',
   'DOCN': 'DigitalOcean', 'RBRK': 'Rubrik',
   'VRNS': 'Varonis', 'MNDY': 'monday.com', 'ASAN': 'Asana',
@@ -145,7 +145,7 @@ const COMPANY_HQ = {
   'CRM': 'San Francisco, CA', 'NOW': 'Santa Clara, CA', 'S': 'Mountain View, CA',
   'FTNT': 'Sunnyvale, CA', 'DDOG': 'New York, NY', 'HUBS': 'Cambridge, MA',
   'TEAM': 'Sydney, Australia', 'WDAY': 'Pleasanton, CA', 'CFLT': 'Mountain View, CA',
-  'DOCN': 'New York, NY', 'ESTC': 'Mountain View, CA', 'AYX': 'Irvine, CA',
+  'DOCN': 'New York, NY', 'ESTC': 'Mountain View, CA',
   'INTU': 'Mountain View, CA', 'FSLY': 'San Francisco, CA', 'OKTA': 'San Francisco, CA',
   'AVGO': 'Palo Alto, CA', 'MRVL': 'Wilmington, DE', 'ARM': 'Cambridge, UK',
   'NVDA': 'Santa Clara, CA', 'TSM': 'Hsinchu, Taiwan', 'MNDY': 'Tel Aviv, Israel',
@@ -159,7 +159,7 @@ const COMPANY_HQ = {
 const DEFAULT_TICKERS = [
   'RBRK','ZS','NET','PLTR','AMZN','GOOG','META','MSFT','CRWD','MDB',
   'SNOW','PANW','CRM','NOW','S','FTNT','DDOG','HUBS','TEAM','WDAY',
-  'CFLT','DOCN','ESTC','AYX','INTU','FSLY','OKTA',
+  'CFLT','DOCN','ESTC','INTU','FSLY','OKTA',
   // --- Added: Semiconductors / AI infrastructure ---
   'AVGO','MRVL','ARM','NVDA','TSM',
   // --- Added: Enterprise Software / Productivity ---
