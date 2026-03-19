@@ -436,8 +436,15 @@ async function doSearch(query) {
   $searchDropdown.innerHTML = '<div class="search-dropdown-loading">Searching...</div>';
   $searchDropdown.classList.add('active');
   try {
-    const resp = await fetch(`${BACKEND_URL}/search?q=${encodeURIComponent(query)}`, { signal: AbortSignal.timeout(5000) });
-    const data = await resp.json();
+    let data;
+    if (await checkBackend()) {
+      const resp = await fetch(`${BACKEND_URL}/search?q=${encodeURIComponent(query)}`, { signal: AbortSignal.timeout(5000) });
+      data = await resp.json();
+    } else if (typeof searchTickerClient === 'function') {
+      data = await searchTickerClient(query);
+    } else {
+      data = [];
+    }
     // Only render if input still matches (avoid stale results)
     if ($tickerInput.value.trim().toLowerCase() === query.toLowerCase()) {
       renderDropdown(data, query);
@@ -1177,18 +1184,27 @@ function renderNews(items) {
 }
 
 async function fetchNews() {
-  if (!(await checkBackend())) return;
-  // Pick a representative sample of tickers to fetch news for
-  // Prioritize the user's higher-conviction names (first ~15-20)
   const newsTickers = tickerList.slice(0, 20);
   if (newsTickers.length === 0) return;
   try {
     $newsStatus.textContent = 'updating...';
-    const url = `${BACKEND_URL}/news?symbols=${encodeURIComponent(newsTickers.join(','))}`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(60000) });
-    const data = await resp.json();
-    renderNews(data);
-    $newsStatus.textContent = `${data.length} articles`;
+    let data;
+    if (await checkBackend()) {
+      const url = `${BACKEND_URL}/news?symbols=${encodeURIComponent(newsTickers.join(','))}`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(60000) });
+      data = await resp.json();
+    } else if (typeof fetchNewsClient === 'function') {
+      data = await fetchNewsClient(newsTickers);
+    } else {
+      data = [];
+    }
+    if (data && data.length > 0) {
+      renderNews(data);
+      $newsStatus.textContent = `${data.length} articles`;
+    } else {
+      $newsFeed.innerHTML = '<div class="news-empty">News requires the backend server</div>';
+      $newsStatus.textContent = '';
+    }
   } catch (e) {
     console.warn('News fetch failed:', e);
     $newsFeed.innerHTML = '<div class="news-empty">Could not load news</div>';

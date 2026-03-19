@@ -12,23 +12,25 @@ const BACKEND_URL = (() => {
 })();
 let backendAvailable = null; // null = untested, true/false after first check
 
-// Fetch chart data (historical prices) via backend proxy
+// Fetch chart data (historical prices) — backend first, client fallback
 async function fetchChartData(ticker, range = '5y', interval = '1d') {
-  if (!(await checkBackend())) {
-    console.warn(`Chart fetch skipped for ${ticker}: backend not available`);
-    return null;
+  if (await checkBackend()) {
+    try {
+      const url = `${BACKEND_URL}/chart?symbol=${encodeURIComponent(ticker)}&range=${encodeURIComponent(range)}&interval=${encodeURIComponent(interval)}`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(30000) });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error);
+      return data;
+    } catch (e) {
+      console.error(`Backend chart fetch failed for ${ticker}:`, e);
+    }
   }
-  try {
-    const url = `${BACKEND_URL}/chart?symbol=${encodeURIComponent(ticker)}&range=${encodeURIComponent(range)}&interval=${encodeURIComponent(interval)}`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(30000) });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    if (data.error) throw new Error(data.error);
-    return data;
-  } catch (e) {
-    console.error(`Chart fetch failed for ${ticker}:`, e);
-    return null;
+  // Client-side fallback
+  if (typeof fetchChartDataClient === 'function') {
+    return fetchChartDataClient(ticker, range, interval);
   }
+  return null;
 }
 
 // Check if backend is available
@@ -44,19 +46,24 @@ async function checkBackend() {
   return backendAvailable;
 }
 
-// Fetch fundamentals from local backend (batch)
+// Fetch fundamentals — backend first, client fallback
 async function fetchQuotesBatch(tickers) {
-  if (!(await checkBackend())) return {};
-  try {
-    const url = `${BACKEND_URL}/quote?symbols=${tickers.join(',')}`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(90000) });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    return await resp.json();
-  } catch (e) {
-    console.error('Backend quote fetch failed:', e);
-    backendAvailable = false;
-    return {};
+  if (await checkBackend()) {
+    try {
+      const url = `${BACKEND_URL}/quote?symbols=${tickers.join(',')}`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(90000) });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      return await resp.json();
+    } catch (e) {
+      console.error('Backend quote fetch failed:', e);
+      backendAvailable = false;
+    }
   }
+  // Client-side fallback
+  if (typeof fetchQuotesBatchClient === 'function') {
+    return fetchQuotesBatchClient(tickers);
+  }
+  return {};
 }
 
 // Fetch detailed summary from local backend (single ticker)
