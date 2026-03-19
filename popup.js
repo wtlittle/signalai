@@ -47,12 +47,11 @@ async function openPopup(ticker) {
     let calendarData = backendData?.calendar || null;
     let earningsHistoryData = backendData?.earningsHistory || [];
 
-    // If backend unavailable, fall back to snapshot analyst data
-    if (!backendData && typeof loadSnapshot === 'function') {
-      const snap = await loadSnapshot();
-      const analystSnap = snap?.analyst_summary?.[ticker];
+    // If backend unavailable, fall back to Supabase/snapshot analyst data
+    if (!backendData && typeof fetchAnalystSummaryClient === 'function') {
+      const analystSnap = await fetchAnalystSummaryClient(ticker);
       if (analystSnap) {
-        // Merge analyst snapshot fields into quote object
+        // Merge analyst data fields into quote object
         quote = { ...quote };
         const analystFields = [
           'targetMeanPrice', 'targetHighPrice', 'targetLowPrice', 'targetMedianPrice',
@@ -68,7 +67,7 @@ async function openPopup(ticker) {
         }
         calendarData = analystSnap.calendar || null;
         earningsHistoryData = analystSnap.earningsHistory || [];
-        console.log(`Popup ${ticker}: loaded analyst data from snapshot`);
+        console.log(`Popup ${ticker}: loaded analyst data from Supabase/snapshot`);
       }
     }
 

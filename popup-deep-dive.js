@@ -101,10 +101,9 @@ async function fetchShortInterest(ticker) {
       console.warn('Short interest backend failed:', e);
     }
   }
-  // Client-side fallback: load from snapshot
-  if (typeof loadSnapshot === 'function') {
-    const snap = await loadSnapshot();
-    if (snap?.short_interest?.[ticker]) return snap.short_interest[ticker];
+  // Client-side fallback: Supabase → snapshot
+  if (typeof fetchShortInterestClient === 'function') {
+    return fetchShortInterestClient(ticker);
   }
   return null;
 }
@@ -121,12 +120,12 @@ async function fetchOutperformance(ticker) {
       console.warn('Outperformance backend failed:', e);
     }
   }
-  // Try snapshot data first (faster and more reliable)
-  if (typeof loadSnapshot === 'function') {
-    const snap = await loadSnapshot();
-    if (snap?.outperformance?.[ticker]) return snap.outperformance[ticker];
+  // Client-side fallback: Supabase → snapshot
+  if (typeof fetchOutperformanceClient === 'function') {
+    const result = await fetchOutperformanceClient(ticker);
+    if (result) return result;
   }
-  // Fallback to client-side calculation
+  // Last resort: client-side calculation
   return computeClientSideOutperformance(ticker);
 }
 
@@ -708,10 +707,9 @@ async function fetchCrossSectorComps(ticker) {
       console.warn('Cross-sector comps backend failed:', e);
     }
   }
-  // Client-side fallback: load from snapshot
-  if (typeof loadSnapshot === 'function') {
-    const snap = await loadSnapshot();
-    if (snap?.cross_sector_comps?.[ticker]) return snap.cross_sector_comps[ticker];
+  // Client-side fallback: Supabase → snapshot
+  if (typeof fetchCrossSectorCompsClient === 'function') {
+    return fetchCrossSectorCompsClient(ticker);
   }
   return null;
 }

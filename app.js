@@ -737,7 +737,13 @@ function updateTotalMcap() {
 
 // --- Refresh ---
 function updateTimestamp(snapshotDate) {
-  if (snapshotDate) {
+  // Check data source priority: backend > Supabase > snapshot
+  const dsInfo = typeof getDataSourceInfo === 'function' ? getDataSourceInfo() : { source: 'none' };
+  if (dsInfo.source === 'supabase') {
+    const genDate = dsInfo.generated ? new Date(dsInfo.generated) : null;
+    $lastUpdated.textContent = genDate ? `Supabase: ${formatDateShort(genDate)}` : 'Supabase: connected';
+    $lastUpdated.title = 'Data from Supabase database — refreshed daily by cron';
+  } else if (snapshotDate) {
     const d = new Date(snapshotDate);
     $lastUpdated.textContent = `Snapshot: ${formatDateShort(d)}`;
     $lastUpdated.title = 'Data from cached snapshot — connect backend for live data';
@@ -748,19 +754,28 @@ function updateTimestamp(snapshotDate) {
 }
 
 function showDemoBanner() {
-  // Show subtle indicator that we're in demo/snapshot mode
+  // Show subtle indicator about data source
   const existing = document.getElementById('demo-banner');
-  if (existing) return;
+  if (existing) existing.remove();
+  const dsInfo = typeof getDataSourceInfo === 'function' ? getDataSourceInfo() : { source: 'none' };
   const banner = document.createElement('div');
   banner.id = 'demo-banner';
-  banner.style.cssText = 'background:rgba(0,200,150,0.08);color:rgba(0,200,150,0.7);text-align:center;padding:4px 12px;font-size:11px;letter-spacing:0.5px;font-family:var(--font-mono);border-bottom:1px solid rgba(0,200,150,0.1);';
-  banner.textContent = 'DEMO MODE — Showing cached market data · Run locally with Python backend for live prices';
+  if (dsInfo.source === 'supabase') {
+    banner.style.cssText = 'background:rgba(59,130,246,0.08);color:rgba(59,130,246,0.7);text-align:center;padding:4px 12px;font-size:11px;letter-spacing:0.5px;font-family:var(--font-mono);border-bottom:1px solid rgba(59,130,246,0.1);';
+    const genStr = dsInfo.generated ? ` · Data as of ${new Date(dsInfo.generated).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` : '';
+    banner.textContent = `SUPABASE — Live database connected${genStr}`;
+  } else {
+    banner.style.cssText = 'background:rgba(0,200,150,0.08);color:rgba(0,200,150,0.7);text-align:center;padding:4px 12px;font-size:11px;letter-spacing:0.5px;font-family:var(--font-mono);border-bottom:1px solid rgba(0,200,150,0.1);';
+    banner.textContent = 'DEMO MODE — Showing cached market data · Run locally with Python backend for live prices';
+  }
   document.body.prepend(banner);
 }
 
 function startRefreshCycle() {
-  // In demo/snapshot mode, don't auto-refresh (data is static)
-  if (_snapshotData && !_proxyWorking) {
+  // In demo/snapshot-only mode, don't auto-refresh (data is static)
+  // Supabase mode allows refresh since data may be updated by cron
+  const dsInfo = typeof getDataSourceInfo === 'function' ? getDataSourceInfo() : { source: 'none' };
+  if (dsInfo.source === 'snapshot' && !_proxyWorking) {
     $refreshTimer.textContent = 'Static';
     $refreshTimer.title = 'Snapshot data — no auto-refresh';
     return;
@@ -790,11 +805,15 @@ async function loadAllData() {
     renderTable();
     updateTotalMcap();
 
-    // Detect if data came from snapshot
-    const usingSnapshot = typeof _snapshotData !== 'undefined' && _snapshotData &&
+    // Detect data source and update UI accordingly
+    const dsInfo = typeof getDataSourceInfo === 'function' ? getDataSourceInfo() : { source: 'none' };
+    const usingSnapshot = dsInfo.source === 'snapshot' &&
       typeof backendAvailable !== 'undefined' && backendAvailable === false;
-    if (usingSnapshot) {
-      updateTimestamp(_snapshotData.generated);
+    if (dsInfo.source === 'supabase') {
+      updateTimestamp();
+      showDemoBanner();
+    } else if (usingSnapshot) {
+      updateTimestamp(_snapshotData?.generated);
       showDemoBanner();
     } else {
       updateTimestamp();
