@@ -43,6 +43,41 @@ let refreshCountdown = 60;
   Storage.set(MIGRATION_KEY, true);
 })();
 
+// --- Migration v3: Consolidate private company subsectors ---
+(function migrate_v3() {
+  const MIGRATION_KEY = 'migration_v3_done';
+  if (Storage.get(MIGRATION_KEY)) return;
+
+  const SUBSECTOR_REMAP = {
+    'AI Foundation Models': 'AI Models & Agents',
+    'AI Agents': 'AI Models & Agents',
+    'AI / Data Platform': 'AI Infrastructure',
+    'AI Data Infrastructure': 'AI Infrastructure',
+    'AI Chips': 'AI Infrastructure',
+    'AI Developer Tools': 'AI Software',
+    'Enterprise AI Search': 'AI Software',
+    'Fintech / Payments': 'Fintech',
+    'HR Tech / Fintech': 'Fintech',
+  };
+
+  let changed = false;
+  privateCompanies.forEach((c, i) => {
+    if (c.subsector && SUBSECTOR_REMAP[c.subsector]) {
+      privateCompanies[i] = { ...c, subsector: SUBSECTOR_REMAP[c.subsector] };
+      changed = true;
+    }
+  });
+
+  // Also refresh data from defaults
+  privateCompanies.forEach((c, i) => {
+    const updated = DEFAULT_PRIVATE_COMPANIES.find(d => d.name.toLowerCase() === c.name.toLowerCase());
+    if (updated) privateCompanies[i] = { ...c, ...updated };
+  });
+
+  if (changed) Storage.set('private_companies', privateCompanies);
+  Storage.set(MIGRATION_KEY, true);
+})();
+
 // --- DOM refs ---
 const $body = document.getElementById('watchlist-body');
 const $privateBody = document.getElementById('private-body');
@@ -435,14 +470,14 @@ async function addPrivateFromInline() {
 
   try {
     const co = await lookupPrivateCompany(name);
-    co.name = co.name || name;
+    co.name = capitalizeCompanyName(co.name || name);
     privateCompanies.push(co);
     savePrivate();
     renderPrivateTable();
     $privateInput.value = '';
   } catch (err) {
     console.error('Inline private lookup error:', err);
-    const co = { name, subsector: 'Unknown', valuation: 'N/A', funding: 'N/A', revenue: 'N/A', metrics: '' };
+    const co = { name: capitalizeCompanyName(name), subsector: 'Unknown', valuation: 'N/A', funding: 'N/A', revenue: 'N/A', metrics: '' };
     privateCompanies.push(co);
     savePrivate();
     renderPrivateTable();
@@ -552,13 +587,16 @@ function parseCompanyFromText(name, text) {
 
   // Subsector keywords
   const sectorMap = {
-    'AI Foundation Models': ['language model', 'llm', 'generative ai', 'foundation model'],
-    'AI / Data Platform': ['data platform', 'data lakehouse', 'data analytics'],
-    'AI Infrastructure': ['gpu cloud', 'ai infrastructure', 'ai compute'],
-    'Cybersecurity': ['cybersecurity', 'security platform'],
-    'Fintech': ['fintech', 'payments', 'financial technology'],
+    'AI Models & Agents': ['language model', 'llm', 'generative ai', 'foundation model', 'ai agent', 'chatbot', 'conversational ai'],
+    'AI Infrastructure': ['gpu cloud', 'ai infrastructure', 'ai compute', 'data platform', 'data lakehouse', 'data analytics', 'data labeling', 'ai chip', 'ai hardware'],
+    'AI Software': ['ai-powered', 'ai code', 'ai search', 'ai assistant', 'developer tool', 'code editor', 'copilot'],
+    'Cybersecurity': ['cybersecurity', 'security platform', 'threat detection'],
+    'Fintech': ['fintech', 'payments', 'financial technology', 'neobank', 'payroll', 'hr tech'],
+    'Design & Creative': ['design tool', 'creative platform', 'collaboration tool', 'design software'],
     'Space Technology': ['rocket', 'satellite', 'space'],
-    'Enterprise Software': ['enterprise software', 'saas'],
+    'Enterprise Software': ['enterprise software', 'saas', 'crm', 'erp'],
+    'Healthcare': ['healthcare', 'biotech', 'pharmaceutical', 'medical'],
+    'E-Commerce': ['e-commerce', 'marketplace', 'retail tech'],
   };
   for (const [sector, keywords] of Object.entries(sectorMap)) {
     if (keywords.some(kw => textLower.includes(kw))) {
@@ -586,7 +624,7 @@ $privateForm.addEventListener('submit', async (e) => {
 
   try {
     const co = await lookupPrivateCompany(name);
-    co.name = co.name || name;
+    co.name = capitalizeCompanyName(co.name || name);
     privateCompanies.push(co);
     savePrivate();
     renderPrivateTable();
@@ -602,12 +640,13 @@ $privateForm.addEventListener('submit', async (e) => {
   } catch (err) {
     console.error('Lookup error:', err);
     // Still add with just the name
-    const co = { name, subsector: 'Unknown', valuation: 'N/A', funding: 'N/A', revenue: 'N/A', metrics: '' };
+    const properName = capitalizeCompanyName(name);
+    const co = { name: properName, subsector: 'Unknown', valuation: 'N/A', funding: 'N/A', revenue: 'N/A', metrics: '' };
     privateCompanies.push(co);
     savePrivate();
     renderPrivateTable();
     $privateForm.reset();
-    showLookupStatus(`Added ${name} (lookup failed, details can be edited later)`, 'error');
+    showLookupStatus(`Added ${properName} (lookup failed, details can be edited later)`, 'error');
     setTimeout(() => {
       $privateModalOverlay.classList.remove('active');
     }, 2000);

@@ -78,6 +78,11 @@ const SUBSECTOR_ORDER = [
   'Digital Commerce',
   'Digital Advertising',
   'IoT & Edge',
+  // Private company subsectors
+  'AI Models & Agents',
+  'AI Infrastructure',
+  'AI Software',
+  'Design & Creative',
 ];
 
 // --- Common company names (human-friendly, not legal names) ---
@@ -152,29 +157,81 @@ const DEFAULT_TICKERS = [
 
 // --- Default private companies ---
 const DEFAULT_PRIVATE_COMPANIES = [
-  // --- AI Foundation Models ---
-  { name: 'OpenAI', subsector: 'AI Foundation Models', valuation: '$500B', funding: '$40B round (Mar 2025)', revenue: '~$10B ARR', metrics: '500M weekly users, GPT-5' },
-  { name: 'Anthropic', subsector: 'AI Foundation Models', valuation: '$183B', funding: 'Series F ($13B, Sep 2025)', revenue: '~$4B ARR', metrics: '140%+ NRR, 80% enterprise' },
-  { name: 'xAI', subsector: 'AI Foundation Models', valuation: '$200B', funding: '$20B (Jan 2026)', revenue: 'N/A', metrics: 'Grok model, Elon Musk venture' },
-  // --- AI / Data Platforms ---
-  { name: 'Databricks', subsector: 'AI / Data Platform', valuation: '$134B', funding: 'Series I (Dec 2024)', revenue: '~$4.8B ARR', metrics: '60% YoY growth, 10K+ customers' },
-  { name: 'Glean', subsector: 'Enterprise AI Search', valuation: '$7.2B', funding: 'Series F ($150M, Jun 2025)', revenue: '~$200M ARR', metrics: '2x ARR in 9 months, enterprise knowledge AI' },
-  // --- AI Developer Tools ---
-  { name: 'Anysphere (Cursor)', subsector: 'AI Developer Tools', valuation: '$29.3B', funding: 'Series D ($2.3B, Nov 2025)', revenue: '~$1B ARR', metrics: '1,000% YoY growth, AI-native code editor' },
-  { name: 'Cognition AI', subsector: 'AI Developer Tools', valuation: '$10.2B', funding: 'Series C ($400M, Sep 2025)', revenue: 'N/A', metrics: 'Devin AI agent, autonomous coding' },
+  // --- AI Models & Agents ---
+  { name: 'OpenAI', subsector: 'AI Models & Agents', valuation: '$500B', funding: '$40B round (Mar 2025)', revenue: '~$10B ARR', metrics: '500M weekly users, GPT-5' },
+  { name: 'Anthropic', subsector: 'AI Models & Agents', valuation: '$183B', funding: 'Series F ($13B, Sep 2025)', revenue: '~$4B ARR', metrics: '140%+ NRR, 80% enterprise' },
+  { name: 'xAI', subsector: 'AI Models & Agents', valuation: '$200B', funding: '$20B (Jan 2026)', revenue: 'N/A', metrics: 'Grok model, Elon Musk venture' },
+  { name: 'Sierra', subsector: 'AI Models & Agents', valuation: '$10B', funding: '$350M (Sep 2025)', revenue: 'N/A', metrics: 'Enterprise CX agents, Bret Taylor CEO' },
   // --- AI Infrastructure ---
+  { name: 'Databricks', subsector: 'AI Infrastructure', valuation: '$134B', funding: 'Series I (Dec 2024)', revenue: '~$4.8B ARR', metrics: '60% YoY growth, 10K+ customers' },
   { name: 'CoreWeave', subsector: 'AI Infrastructure', valuation: '$19B', funding: 'Series C ($1.1B)', revenue: 'N/A', metrics: 'GPU cloud, enterprise AI/HPC' },
-  { name: 'Scale AI', subsector: 'AI Data Infrastructure', valuation: '$14B', funding: 'Series F ($1B, May 2024)', revenue: 'N/A', metrics: 'Data labeling for AI training' },
-  { name: 'Cerebras', subsector: 'AI Chips', valuation: '$8.1B', funding: 'Series G ($1.1B, Sep 2025)', revenue: 'N/A', metrics: 'Wafer-scale AI chips, frontier training' },
+  { name: 'Scale AI', subsector: 'AI Infrastructure', valuation: '$14B', funding: 'Series F ($1B, May 2024)', revenue: 'N/A', metrics: 'Data labeling for AI training' },
+  { name: 'Cerebras', subsector: 'AI Infrastructure', valuation: '$8.1B', funding: 'Series G ($1.1B, Sep 2025)', revenue: 'N/A', metrics: 'Wafer-scale AI chips, frontier training' },
+  // --- AI Software ---
+  { name: 'Anysphere (Cursor)', subsector: 'AI Software', valuation: '$29.3B', funding: 'Series D ($2.3B, Nov 2025)', revenue: '~$1B ARR', metrics: '1,000% YoY growth, AI-native code editor' },
+  { name: 'Cognition AI', subsector: 'AI Software', valuation: '$10.2B', funding: 'Series C ($400M, Sep 2025)', revenue: 'N/A', metrics: 'Devin AI agent, autonomous coding' },
+  { name: 'Glean', subsector: 'AI Software', valuation: '$7.2B', funding: 'Series F ($150M, Jun 2025)', revenue: '~$200M ARR', metrics: '2x ARR in 9 months, enterprise knowledge AI' },
   // --- Fintech ---
-  { name: 'Stripe', subsector: 'Fintech / Payments', valuation: '$159B', funding: 'Tender offer (Feb 2026)', revenue: 'N/A', metrics: '$1.9T total volume, 34% YoY growth' },
-  { name: 'Rippling', subsector: 'HR Tech / Fintech', valuation: '$16.8B', funding: 'Series F ($450M, 2025)', revenue: '~$500M ARR', metrics: 'Compound startup, HR + IT + Finance' },
-  // --- Enterprise AI Agents ---
-  { name: 'Sierra', subsector: 'AI Agents', valuation: '$10B', funding: '$350M (Sep 2025)', revenue: 'N/A', metrics: 'Enterprise CX agents, Bret Taylor CEO' },
-  // --- Design & Collaboration ---
+  { name: 'Stripe', subsector: 'Fintech', valuation: '$159B', funding: 'Tender offer (Feb 2026)', revenue: 'N/A', metrics: '$1.9T total volume, 34% YoY growth' },
+  { name: 'Rippling', subsector: 'Fintech', valuation: '$16.8B', funding: 'Series F ($450M, 2025)', revenue: '~$500M ARR', metrics: 'Compound startup, HR + IT + Finance' },
+  // --- Design & Creative ---
   { name: 'Canva', subsector: 'Design & Creative', valuation: '$42B', funding: 'Secondary (2025)', revenue: '~$2.5B ARR', metrics: '200M+ monthly users, enterprise push' },
   { name: 'Figma', subsector: 'Design & Creative', valuation: '$12.5B', funding: 'Secondary (2024)', revenue: '~$700M ARR', metrics: 'Design-to-dev platform, AI features' },
 ];
+
+// --- Proper capitalization for company names ---
+const CAPITALIZE_EXCEPTIONS = new Set(['ai', 'of', 'the', 'and', 'in', 'for', 'by', 'on', 'at', 'to', 'a', 'an', 'or', 'is']);
+const CAPITALIZE_ALWAYS_UPPER = new Set(['AI', 'ML', 'API', 'CEO', 'CTO', 'HR', 'IT', 'UI', 'UX', 'XR', 'AR', 'VR', 'EV', 'IoT', 'SaaS', 'PaaS', 'IaaS', 'DeFi', 'NFT', 'DAO', 'LLM', 'GPU', 'HPC']);
+// Known proper names for companies (lowercase key → correct casing)
+const KNOWN_COMPANY_NAMES = {
+  'openai': 'OpenAI', 'xai': 'xAI', 'coreweave': 'CoreWeave', 'scaleai': 'Scale AI',
+  'scale ai': 'Scale AI', 'deepmind': 'DeepMind', 'youtube': 'YouTube',
+  'linkedin': 'LinkedIn', 'github': 'GitHub', 'gitlab': 'GitLab', 'hubspot': 'HubSpot',
+  'coinbase': 'Coinbase', 'mongodb': 'MongoDB', 'snowflake': 'Snowflake',
+  'datadog': 'Datadog', 'crowdstrike': 'CrowdStrike', 'sentinelone': 'SentinelOne',
+  'pagerduty': 'PagerDuty', 'hashicorp': 'HashiCorp', 'cockroachdb': 'CockroachDB',
+  'airbnb': 'Airbnb', 'doordash': 'DoorDash', 'instacart': 'Instacart',
+  'spacex': 'SpaceX', 'palantir': 'Palantir', 'uipath': 'UiPath',
+  'monday.com': 'monday.com', 'clickup': 'ClickUp', 'webflow': 'Webflow',
+  'mistral ai': 'Mistral AI', 'mistralai': 'Mistral AI', 'midjourney': 'Midjourney',
+  'perplexity': 'Perplexity', 'hugging face': 'Hugging Face', 'huggingface': 'Hugging Face',
+  'anyscale': 'Anyscale', 'langchain': 'LangChain', 'pinecone': 'Pinecone',
+  'supabase': 'Supabase', 'vercel': 'Vercel', 'netlify': 'Netlify',
+  'plaid': 'Plaid', 'brex': 'Brex', 'ramp': 'Ramp', 'klarna': 'Klarna',
+  'revolut': 'Revolut', 'nubank': 'Nubank', 'chime': 'Chime',
+};
+function capitalizeCompanyName(name) {
+  if (!name || typeof name !== 'string') return name;
+  const trimmed = name.trim();
+  if (!trimmed) return trimmed;
+  // Check known names first (case-insensitive)
+  const knownKey = trimmed.toLowerCase().replace(/\s+/g, ' ');
+  if (KNOWN_COMPANY_NAMES[knownKey]) return KNOWN_COMPANY_NAMES[knownKey];
+  // Also try without spaces
+  const noSpaceKey = knownKey.replace(/\s/g, '');
+  if (KNOWN_COMPANY_NAMES[noSpaceKey]) return KNOWN_COMPANY_NAMES[noSpaceKey];
+  // If name is already properly mixed-case (has upper beyond first char), keep it
+  // This preserves intentional casing like "xAI", "CoreWeave", "monday.com"
+  const hasIntentionalCase = /[a-z][A-Z]/.test(trimmed) || /\.[a-z]/.test(trimmed);
+  if (hasIntentionalCase) return trimmed;
+  // If name is all-lowercase or ALL-CAPS, apply title case
+  const isAllLower = trimmed === trimmed.toLowerCase();
+  const isAllUpper = trimmed === trimmed.toUpperCase() && trimmed.length > 2;
+  if (!isAllLower && !isAllUpper) return trimmed;
+  return trimmed.split(/\s+/).map((word, i) => {
+    const upper = word.toUpperCase();
+    // Check if it's a known abbreviation
+    for (const abbr of CAPITALIZE_ALWAYS_UPPER) {
+      if (upper === abbr.toUpperCase()) return abbr;
+    }
+    // First word always capitalized; small words lowercase in middle
+    if (i > 0 && CAPITALIZE_EXCEPTIONS.has(word.toLowerCase())) {
+      return word.toLowerCase();
+    }
+    // Standard title case
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
 
 // --- Number formatting ---
 function formatLargeNumber(val) {
