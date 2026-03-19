@@ -78,6 +78,33 @@ let refreshCountdown = 60;
   Storage.set(MIGRATION_KEY, true);
 })();
 
+// --- Migration v4: PitchBook data refresh (Mar 2026) ---
+// Adds headquarters, lead_investors, updated valuations/funding/revenue from PitchBook
+// Also flags CoreWeave and Figma as now-public
+(function migrate_v4() {
+  const MIGRATION_KEY = 'migration_v4_done';
+  if (Storage.get(MIGRATION_KEY)) return;
+
+  // Refresh all existing private companies from updated defaults
+  privateCompanies.forEach((c, i) => {
+    const updated = DEFAULT_PRIVATE_COMPANIES.find(d => d.name.toLowerCase() === c.name.toLowerCase());
+    if (updated) {
+      privateCompanies[i] = { ...c, ...updated };
+    }
+  });
+
+  // Add any new companies from defaults that user doesn't have
+  const existingNames = new Set(privateCompanies.map(c => c.name.toLowerCase()));
+  DEFAULT_PRIVATE_COMPANIES.forEach(d => {
+    if (!existingNames.has(d.name.toLowerCase())) {
+      privateCompanies.push(d);
+    }
+  });
+
+  Storage.set('private_companies', privateCompanies);
+  Storage.set(MIGRATION_KEY, true);
+})();
+
 // --- DOM refs ---
 const $body = document.getElementById('watchlist-body');
 const $privateBody = document.getElementById('private-body');
@@ -241,7 +268,7 @@ function renderPrivateTable() {
     const headerRow = document.createElement('tr');
     headerRow.className = 'subsector-header';
     headerRow.innerHTML = `
-      <td colspan="7">
+      <td colspan="8">
         <button class="subsector-toggle" data-subsector="${subsector}">
           <span class="chevron ${isCollapsed ? 'collapsed' : ''}">▼</span>
           ${subsector}
@@ -262,11 +289,29 @@ function renderPrivateTable() {
       const tr = document.createElement('tr');
       if (isCollapsed) tr.className = 'row-hidden';
 
+      // Status badge for public/IPO companies
+      let statusBadge = '';
+      if (co.status === 'public') {
+        statusBadge = `<span class="private-status-badge status-public" title="Now publicly traded as ${co.ticker || ''}">${co.ticker || 'PUBLIC'}</span>`;
+      } else if (co.status === 'ipo_pending') {
+        statusBadge = `<span class="private-status-badge status-ipo">IPO FILING</span>`;
+      }
+
+      // HQ as subtle line under company name
+      const hqLine = co.headquarters ? `<span class="private-hq">${co.headquarters}</span>` : '';
+
       tr.innerHTML = `
-        <td style="color:var(--text-primary);font-weight:500;">${co.name}</td>
+        <td class="private-name-cell">
+          <div class="private-name-wrapper">
+            <span style="color:var(--text-primary);font-weight:500;">${co.name}</span>
+            ${statusBadge}
+          </div>
+          ${hqLine}
+        </td>
         <td><span class="subsector-badge" data-private-idx="${idx}">${co.subsector}</span></td>
         <td class="num" style="font-family:var(--font-mono);">${co.valuation}</td>
         <td style="color:var(--text-secondary);font-size:11px;">${co.funding}</td>
+        <td class="private-investors">${co.lead_investors || '—'}</td>
         <td class="num" style="font-family:var(--font-mono);">${co.revenue}</td>
         <td style="color:var(--text-secondary);font-size:11px;">${co.metrics}</td>
         <td><button class="remove-btn remove-private" data-idx="${idx}" title="Remove">&times;</button></td>

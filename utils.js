@@ -158,25 +158,25 @@ const DEFAULT_TICKERS = [
 // --- Default private companies ---
 const DEFAULT_PRIVATE_COMPANIES = [
   // --- AI Models & Agents ---
-  { name: 'OpenAI', subsector: 'AI Models & Agents', valuation: '$500B', funding: '$40B round (Mar 2025)', revenue: '~$10B ARR', metrics: '500M weekly users, GPT-5' },
-  { name: 'Anthropic', subsector: 'AI Models & Agents', valuation: '$183B', funding: 'Series F ($13B, Sep 2025)', revenue: '~$4B ARR', metrics: '140%+ NRR, 80% enterprise' },
-  { name: 'xAI', subsector: 'AI Models & Agents', valuation: '$200B', funding: '$20B (Jan 2026)', revenue: 'N/A', metrics: 'Grok model, Elon Musk venture' },
-  { name: 'Sierra', subsector: 'AI Models & Agents', valuation: '$10B', funding: '$350M (Sep 2025)', revenue: 'N/A', metrics: 'Enterprise CX agents, Bret Taylor CEO' },
+  { name: 'OpenAI', subsector: 'AI Models & Agents', valuation: '$840B', funding: '$110B Later Stage VC (Feb 2026)', revenue: '~$25B TTM', metrics: '4,000 employees, profitable', headquarters: 'San Francisco, CA', lead_investors: 'Amazon, SoftBank, Microsoft' },
+  { name: 'Anthropic', subsector: 'AI Models & Agents', valuation: '$380B', funding: '$30.6B Later Stage VC (Feb 2026)', revenue: '~$20B TTM', metrics: '2,500 employees, Claude models', headquarters: 'San Francisco, CA', lead_investors: 'Amazon, Alphabet, Spark Capital' },
+  { name: 'xAI', subsector: 'AI Models & Agents', valuation: '$250B', funding: 'Merged with X Corp (Feb 2026)', revenue: '~$2B TTM', metrics: '4,900 employees, Grok model', headquarters: 'Palo Alto, CA', lead_investors: 'X Corp (merger)' },
+  { name: 'Sierra', subsector: 'AI Models & Agents', valuation: '$10B', funding: '$350M Later Stage VC (Sep 2025)', revenue: '~$20M TTM', metrics: '359 employees, enterprise CX agents', headquarters: 'San Francisco, CA', lead_investors: 'SoftBank, Sequoia, Benchmark' },
   // --- AI Infrastructure ---
-  { name: 'Databricks', subsector: 'AI Infrastructure', valuation: '$134B', funding: 'Series I (Dec 2024)', revenue: '~$4.8B ARR', metrics: '60% YoY growth, 10K+ customers' },
-  { name: 'CoreWeave', subsector: 'AI Infrastructure', valuation: '$19B', funding: 'Series C ($1.1B)', revenue: 'N/A', metrics: 'GPU cloud, enterprise AI/HPC' },
-  { name: 'Scale AI', subsector: 'AI Infrastructure', valuation: '$14B', funding: 'Series F ($1B, May 2024)', revenue: 'N/A', metrics: 'Data labeling for AI training' },
-  { name: 'Cerebras', subsector: 'AI Infrastructure', valuation: '$8.1B', funding: 'Series G ($1.1B, Sep 2025)', revenue: 'N/A', metrics: 'Wafer-scale AI chips, frontier training' },
+  { name: 'Databricks', subsector: 'AI Infrastructure', valuation: '$134B', funding: '$7B Later Stage VC (Feb 2026)', revenue: '~$5.4B TTM', metrics: '8,000 employees, data + AI platform', headquarters: 'San Francisco, CA', lead_investors: 'a16z, Lightspeed, Sands Capital' },
+  { name: 'CoreWeave', subsector: 'AI Infrastructure', valuation: '$18.6B (IPO)', funding: 'IPO Mar 2025 · $2B PIPE (Jan 2026)', revenue: '~$5.1B TTM', metrics: '2,189 employees · NOW PUBLIC (CRWV)', headquarters: 'Livingston, NJ', lead_investors: 'Nvidia, Magnetar, OpenAI', status: 'public', ticker: 'CRWV' },
+  { name: 'Scale AI', subsector: 'AI Infrastructure', valuation: '$74.1B', funding: '$14.3B Later Stage VC (Jun 2025)', revenue: '~$2B TTM', metrics: '1,000 employees, AI data platform', headquarters: 'San Francisco, CA', lead_investors: 'Accel, AWS, Founders Fund' },
+  { name: 'Cerebras', subsector: 'AI Infrastructure', valuation: '$23B', funding: '$1.1B VC (Feb 2026) · IPO filing (Mar 2026)', revenue: '~$273M TTM', metrics: '784 employees · IN IPO REGISTRATION', headquarters: 'Sunnyvale, CA', lead_investors: 'Fidelity, Alpha Wave Global', status: 'ipo_pending' },
   // --- AI Software ---
-  { name: 'Anysphere (Cursor)', subsector: 'AI Software', valuation: '$29.3B', funding: 'Series D ($2.3B, Nov 2025)', revenue: '~$1B ARR', metrics: '1,000% YoY growth, AI-native code editor' },
-  { name: 'Cognition AI', subsector: 'AI Software', valuation: '$10.2B', funding: 'Series C ($400M, Sep 2025)', revenue: 'N/A', metrics: 'Devin AI agent, autonomous coding' },
-  { name: 'Glean', subsector: 'AI Software', valuation: '$7.2B', funding: 'Series F ($150M, Jun 2025)', revenue: '~$200M ARR', metrics: '2x ARR in 9 months, enterprise knowledge AI' },
+  { name: 'Anysphere (Cursor)', subsector: 'AI Software', valuation: '$29.3B', funding: '$2.3B Later Stage VC (Nov 2025)', revenue: '~$2B TTM', metrics: '300 employees, AI-native code editor', headquarters: 'San Francisco, CA', lead_investors: 'a16z, Alphabet, Nvidia, Thrive' },
+  { name: 'Cognition AI', subsector: 'AI Software', valuation: '$10.2B', funding: '$400M Later Stage VC (Sep 2025)', revenue: 'N/A', metrics: 'Devin AI agent, autonomous coding', headquarters: 'New York, NY', lead_investors: 'Khosla, Lux Capital, Bain Capital' },
+  { name: 'Glean', subsector: 'AI Software', valuation: '$7.2B', funding: '$150M Later Stage VC (Jun 2025)', revenue: '~$250M TTM', metrics: '1,000 employees, enterprise knowledge AI', headquarters: 'Palo Alto, CA', lead_investors: 'Sequoia, Lightspeed, Kleiner Perkins' },
   // --- Fintech ---
-  { name: 'Stripe', subsector: 'Fintech', valuation: '$159B', funding: 'Tender offer (Feb 2026)', revenue: 'N/A', metrics: '$1.9T total volume, 34% YoY growth' },
-  { name: 'Rippling', subsector: 'Fintech', valuation: '$16.8B', funding: 'Series F ($450M, 2025)', revenue: '~$500M ARR', metrics: 'Compound startup, HR + IT + Finance' },
+  { name: 'Stripe', subsector: 'Fintech', valuation: '$159B', funding: 'Secondary (Feb 2026)', revenue: '~$1B net rev TTM', metrics: '8,500 employees, payments infrastructure', headquarters: 'South San Francisco, CA', lead_investors: 'Sequoia, a16z, Founders Fund' },
+  { name: 'Rippling', subsector: 'Fintech', valuation: '$16.8B', funding: 'Later Stage VC (Dec 2025)', revenue: 'N/A', metrics: '6,473 employees, HR + IT + Finance', headquarters: 'San Francisco, CA', lead_investors: 'Bain Capital, GIC, Goldman Sachs' },
   // --- Design & Creative ---
-  { name: 'Canva', subsector: 'Design & Creative', valuation: '$42B', funding: 'Secondary (2025)', revenue: '~$2.5B ARR', metrics: '200M+ monthly users, enterprise push' },
-  { name: 'Figma', subsector: 'Design & Creative', valuation: '$12.5B', funding: 'Secondary (2024)', revenue: '~$700M ARR', metrics: 'Design-to-dev platform, AI features' },
+  { name: 'Canva', subsector: 'Design & Creative', valuation: '$42B', funding: 'Secondary (Sep 2025)', revenue: '~$4B TTM', metrics: '11,813 employees, 200M+ monthly users', headquarters: 'Surry Hills, Australia', lead_investors: 'Sequoia, Blackbird, CapitalG' },
+  { name: 'Figma', subsector: 'Design & Creative', valuation: '$16.1B (IPO)', funding: 'IPO Jul 2025 (NYSE: FIG)', revenue: '~$1.1B TTM', metrics: '1,886 employees · NOW PUBLIC (FIG)', headquarters: 'San Francisco, CA', lead_investors: 'a16z, Greylock, Index Ventures', status: 'public', ticker: 'FIG' },
 ];
 
 // --- Proper capitalization for company names ---

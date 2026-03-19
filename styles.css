@@ -573,8 +573,57 @@ tr.long-pressing {
   color: var(--text-secondary);
   letter-spacing: 0.3px;
 }
-.private-table { min-width: 900px; }
+.private-table { min-width: 1050px; }
 .private-table thead th { top: 0; position: relative; }
+
+/* Private company name cell with HQ */
+.private-name-cell { vertical-align: middle; }
+.private-name-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.private-hq {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 1px;
+  letter-spacing: 0.2px;
+}
+
+/* Status badges for public/IPO companies */
+.private-status-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+.status-public {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+.status-ipo {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+/* Lead investors column */
+.private-investors {
+  color: var(--text-secondary);
+  font-size: 11px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* === POPUP / MODAL === */
 .popup-overlay {
