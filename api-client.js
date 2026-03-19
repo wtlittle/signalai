@@ -8,6 +8,7 @@ const CORS_PROXIES = [
   'https://corsproxy.io/?url=',
 ];
 let activeProxyIndex = 0;
+let _proxyTestDone = false;
 
 function getProxy() {
   return CORS_PROXIES[activeProxyIndex] || CORS_PROXIES[0];
@@ -17,7 +18,21 @@ function rotateProxy() {
   activeProxyIndex = (activeProxyIndex + 1) % CORS_PROXIES.length;
 }
 
+// Test which proxy works best at startup
+async function ensureBestProxy() {
+  if (_proxyTestDone) return;
+  _proxyTestDone = true;
+  const testUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1d&interval=1d';
+  for (let i = 0; i < CORS_PROXIES.length; i++) {
+    try {
+      const resp = await fetch(CORS_PROXIES[i] + encodeURIComponent(testUrl), { signal: AbortSignal.timeout(5000) });
+      if (resp.ok) { activeProxyIndex = i; return; }
+    } catch (e) {}
+  }
+}
+
 async function fetchWithProxy(url, timeout = 15000) {
+  await ensureBestProxy();
   const proxyUrl = getProxy() + encodeURIComponent(url);
   try {
     const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(timeout) });
@@ -125,10 +140,11 @@ async function fetchQuoteDataClient(ticker) {
   }
 }
 
-// --- Client-side batch quote fetch (sequential with small delay to avoid rate limits) ---
+// --- Client-side batch quote fetch (parallel with concurrency limit) ---
 async function fetchQuotesBatchClient(tickers) {
   const results = {};
-  const batchSize = 3;
+  // Higher concurrency since each request is small
+  const batchSize = 5;
   for (let i = 0; i < tickers.length; i += batchSize) {
     const batch = tickers.slice(i, i + batchSize);
     const batchResults = await Promise.allSettled(
@@ -141,7 +157,7 @@ async function fetchQuotesBatchClient(tickers) {
     });
     // Small delay between batches to avoid rate limiting
     if (i + batchSize < tickers.length) {
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 200));
     }
   }
   return results;
@@ -166,7 +182,7 @@ async function searchTickerClient(query) {
 // --- Client-side news fetch ---
 async function fetchNewsClient(tickers) {
   try {
-    // Use Yahoo Finance RSS or search news for top tickers
+    // Use Yahoo Finance search API for news
     const topTickers = tickers.slice(0, 5).join(',');
     const url = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(topTickers)}&quotesCount=0&newsCount=20`;
     const data = await fetchWithProxy(url, 10000);
