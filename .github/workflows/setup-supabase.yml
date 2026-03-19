@@ -8,41 +8,25 @@ jobs:
     env:
       PGPASSWORD: "-v#aDYS,@w5vT?j"
     steps:
-      - name: Install PostgreSQL client
+      - name: Install deps
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      - name: Find working connection
-        id: connect
+      - name: Debug connectivity
         run: |
-          # Try pooler connections first (IPv4), then direct
-          HOSTS=(
-            "aws-0-us-east-1.pooler.supabase.com:5432:postgres.wcyirdvvuetzodiedzss"
-            "aws-0-us-east-1.pooler.supabase.com:6543:postgres.wcyirdvvuetzodiedzss"
-            "aws-0-us-west-2.pooler.supabase.com:5432:postgres.wcyirdvvuetzodiedzss"
-            "aws-0-us-west-2.pooler.supabase.com:6543:postgres.wcyirdvvuetzodiedzss"
-            "aws-0-us-east-2.pooler.supabase.com:5432:postgres.wcyirdvvuetzodiedzss"
-            "aws-0-us-east-2.pooler.supabase.com:6543:postgres.wcyirdvvuetzodiedzss"
-            "db.wcyirdvvuetzodiedzss.supabase.co:5432:postgres"
-          )
-          
-          for entry in "${HOSTS[@]}"; do
-            IFS=':' read -r host port user <<< "$entry"
-            echo "Trying $user@$host:$port..."
-            if timeout 10 psql "postgresql://$user@$host:$port/postgres?sslmode=require" -c "SELECT 1" 2>&1; then
-              echo "SUCCESS: $user@$host:$port"
-              echo "CONN_STRING=postgresql://$user@$host:$port/postgres?sslmode=require" >> $GITHUB_OUTPUT
-              exit 0
-            else
-              echo "Failed: $user@$host:$port"
-            fi
-          done
-          
-          echo "All connections failed!"
-          exit 1
+          echo "=== DNS ==="
+          host -t A db.wcyirdvvuetzodiedzss.supabase.co || true
+          host -t AAAA db.wcyirdvvuetzodiedzss.supabase.co || true
+          echo "=== IPv6 stack ==="
+          ip -6 addr show | head -20
+          ip -6 route show default || echo "No default IPv6 route"
+          echo "=== IPv6 ping ==="
+          ping6 -c 2 -W 5 2600:1f18:2e13:9d2e:effd:b591:d601:3499 2>&1 || echo "IPv6 ping failed"
+          echo "=== Direct psql ==="
+          timeout 15 psql "postgresql://postgres@db.wcyirdvvuetzodiedzss.supabase.co:5432/postgres?sslmode=require" -c "SELECT 1" 2>&1 || echo "Direct psql failed"
 
       - name: Create tables
         run: |
-          psql "${{ steps.connect.outputs.CONN_STRING }}" << 'EOSQL'
+          psql "postgresql://postgres@db.wcyirdvvuetzodiedzss.supabase.co:5432/postgres?sslmode=require" << 'EOSQL'
           CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT NOW());
           CREATE TABLE IF NOT EXISTS quotes (ticker TEXT PRIMARY KEY, long_name TEXT, price DOUBLE PRECISION, previous_close DOUBLE PRECISION, fifty_two_week_high DOUBLE PRECISION, fifty_two_week_low DOUBLE PRECISION, currency TEXT DEFAULT 'USD', change_1d DOUBLE PRECISION, change_1w DOUBLE PRECISION, change_1m DOUBLE PRECISION, change_3m DOUBLE PRECISION, change_1y DOUBLE PRECISION, change_3y DOUBLE PRECISION, change_ytd DOUBLE PRECISION, market_cap BIGINT, enterprise_value BIGINT, total_revenue BIGINT, total_cash BIGINT, total_debt BIGINT, free_cashflow BIGINT, operating_cashflow BIGINT, target_mean_price DOUBLE PRECISION, target_high_price DOUBLE PRECISION, target_low_price DOUBLE PRECISION, recommendation_key TEXT, number_of_analyst_opinions INTEGER, average_volume BIGINT, volume BIGINT, beta DOUBLE PRECISION, forward_pe DOUBLE PRECISION, trailing_pe DOUBLE PRECISION, shares_outstanding BIGINT, revenue_growth DOUBLE PRECISION, earnings_growth DOUBLE PRECISION, forward_eps DOUBLE PRECISION, trailing_eps DOUBLE PRECISION, enterprise_to_revenue DOUBLE PRECISION, enterprise_to_ebitda DOUBLE PRECISION, operating_margins DOUBLE PRECISION, sector TEXT, industry TEXT, city TEXT, state TEXT, country TEXT, updated_at TIMESTAMPTZ DEFAULT NOW());
           CREATE TABLE IF NOT EXISTS short_interest (ticker TEXT PRIMARY KEY, current_shares_short BIGINT, current_short_pct_float DOUBLE PRECISION, current_short_ratio DOUBLE PRECISION, current_date_val TEXT, prior_shares_short BIGINT, prior_date TEXT, shares_outstanding BIGINT, float_shares BIGINT, change_pct DOUBLE PRECISION, updated_at TIMESTAMPTZ DEFAULT NOW());
@@ -64,14 +48,14 @@ jobs:
           ALTER TABLE analyst_summary ENABLE ROW LEVEL SECURITY;
           ALTER TABLE chart_data ENABLE ROW LEVEL SECURITY;
           ALTER TABLE chart_meta ENABLE ROW LEVEL SECURITY;
-          CREATE POLICY "anon_read_metadata" ON metadata FOR SELECT TO anon USING (true);
-          CREATE POLICY "anon_read_quotes" ON quotes FOR SELECT TO anon USING (true);
-          CREATE POLICY "anon_read_short_interest" ON short_interest FOR SELECT TO anon USING (true);
-          CREATE POLICY "anon_read_outperformance" ON outperformance FOR SELECT TO anon USING (true);
-          CREATE POLICY "anon_read_cross_sector_targets" ON cross_sector_targets FOR SELECT TO anon USING (true);
-          CREATE POLICY "anon_read_cross_sector_comps" ON cross_sector_comps FOR SELECT TO anon USING (true);
-          CREATE POLICY "anon_read_analyst_summary" ON analyst_summary FOR SELECT TO anon USING (true);
-          CREATE POLICY "anon_read_chart_data" ON chart_data FOR SELECT TO anon USING (true);
-          CREATE POLICY "anon_read_chart_meta" ON chart_meta FOR SELECT TO anon USING (true);
+          DO $$ BEGIN CREATE POLICY "anon_read_metadata" ON metadata FOR SELECT TO anon USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+          DO $$ BEGIN CREATE POLICY "anon_read_quotes" ON quotes FOR SELECT TO anon USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+          DO $$ BEGIN CREATE POLICY "anon_read_short_interest" ON short_interest FOR SELECT TO anon USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+          DO $$ BEGIN CREATE POLICY "anon_read_outperformance" ON outperformance FOR SELECT TO anon USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+          DO $$ BEGIN CREATE POLICY "anon_read_cross_sector_targets" ON cross_sector_targets FOR SELECT TO anon USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+          DO $$ BEGIN CREATE POLICY "anon_read_cross_sector_comps" ON cross_sector_comps FOR SELECT TO anon USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+          DO $$ BEGIN CREATE POLICY "anon_read_analyst_summary" ON analyst_summary FOR SELECT TO anon USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+          DO $$ BEGIN CREATE POLICY "anon_read_chart_data" ON chart_data FOR SELECT TO anon USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+          DO $$ BEGIN CREATE POLICY "anon_read_chart_meta" ON chart_meta FOR SELECT TO anon USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
           EOSQL
-          echo "Tables created successfully!"
+          echo "All tables created successfully!"
