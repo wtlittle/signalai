@@ -136,6 +136,25 @@ function getCommonName(ticker, fallback) {
   return ticker;
 }
 
+// --- Company headquarters (static map for known tickers, fallback for fast rendering) ---
+const COMPANY_HQ = {
+  'RBRK': 'Palo Alto, CA', 'ZS': 'San Jose, CA', 'NET': 'San Francisco, CA',
+  'PLTR': 'Denver, CO', 'AMZN': 'Seattle, WA', 'GOOG': 'Mountain View, CA',
+  'META': 'Menlo Park, CA', 'MSFT': 'Redmond, WA', 'CRWD': 'Austin, TX',
+  'MDB': 'New York, NY', 'SNOW': 'Bozeman, MT', 'PANW': 'Santa Clara, CA',
+  'CRM': 'San Francisco, CA', 'NOW': 'Santa Clara, CA', 'S': 'Mountain View, CA',
+  'FTNT': 'Sunnyvale, CA', 'DDOG': 'New York, NY', 'HUBS': 'Cambridge, MA',
+  'TEAM': 'Sydney, Australia', 'WDAY': 'Pleasanton, CA', 'CFLT': 'Mountain View, CA',
+  'DOCN': 'New York, NY', 'ESTC': 'Mountain View, CA', 'AYX': 'Irvine, CA',
+  'INTU': 'Mountain View, CA', 'FSLY': 'San Francisco, CA', 'OKTA': 'San Francisco, CA',
+  'AVGO': 'Palo Alto, CA', 'MRVL': 'Wilmington, DE', 'ARM': 'Cambridge, UK',
+  'NVDA': 'Santa Clara, CA', 'TSM': 'Hsinchu, Taiwan', 'MNDY': 'Tel Aviv, Israel',
+  'ADBE': 'San Jose, CA', 'ASAN': 'San Francisco, CA', 'GTLB': 'San Francisco, CA',
+  'PATH': 'New York, NY', 'VRNS': 'New York, NY', 'BILL': 'San Jose, CA',
+  'FOUR': 'Allentown, PA', 'COIN': 'New York, NY', 'SHOP': 'Ottawa, Canada',
+  'TTD': 'Ventura, CA', 'AI': 'Redwood City, CA', 'IOT': 'San Francisco, CA',
+};
+
 // --- Initial tickers ---
 const DEFAULT_TICKERS = [
   'RBRK','ZS','NET','PLTR','AMZN','GOOG','META','MSFT','CRWD','MDB',

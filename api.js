@@ -119,6 +119,18 @@ function parseTickerData(ticker, chart, quote) {
     row.enterpriseToEbitda = quote.enterpriseToEbitda ?? null;
     row.sector = quote.sector ?? null;
     row.industry = quote.industry ?? null;
+    // Build headquarters string from city/state/country
+    if (quote.city) {
+      const parts = [quote.city];
+      if (quote.state) parts.push(quote.state);
+      else if (quote.country && quote.country !== 'United States') parts.push(quote.country);
+      row.headquarters = parts.join(', ');
+    }
+  }
+
+  // Fallback to static HQ map if backend didn't provide location
+  if (!row.headquarters && typeof COMPANY_HQ !== 'undefined' && COMPANY_HQ[ticker]) {
+    row.headquarters = COMPANY_HQ[ticker];
   }
 
   // EV

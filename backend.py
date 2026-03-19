@@ -1030,6 +1030,9 @@ class QuoteHandler(BaseHTTPRequestHandler):
                         'operatingMargins': info.get('operatingMargins'),
                         'sector': info.get('sector'),
                         'industry': info.get('industry'),
+                        'city': info.get('city'),
+                        'state': info.get('state'),
+                        'country': info.get('country'),
                     }
                 except Exception as e:
                     results[sym] = {'symbol': sym, 'error': str(e)}

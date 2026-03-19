@@ -197,9 +197,15 @@ function renderTable() {
       const tr = document.createElement('tr');
       if (isCollapsed) tr.className = 'row-hidden';
 
+      const hq = d.headquarters || COMPANY_HQ[ticker] || '';
+      const hqHtml = hq ? `<span class="public-hq">${hq}</span>` : '';
+
       tr.innerHTML = `
         <td class="cell-ticker" data-ticker="${ticker}">${ticker}</td>
-        <td class="cell-name" title="${getCommonName(ticker, d.name)}">${getCommonName(ticker, d.name)}</td>
+        <td class="cell-name" title="${getCommonName(ticker, d.name)}">
+          <span class="cell-name-text">${getCommonName(ticker, d.name)}</span>
+          ${hqHtml}
+        </td>
         <td><span class="subsector-badge" data-ticker="${ticker}">${d.subsector || getSubsector(ticker)}</span></td>
         <td class="num">${formatPrice(d.price)}</td>
         <td class="num">${formatLargeNumber(d.marketCap)}</td>
