@@ -1,0 +1,124 @@
+name: Setup Supabase Tables
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Create tables
+        env:
+          PGPASSWORD: "-v#aDYS,@w5vT?j"
+        run: |
+          psql "postgresql://postgres@db.wcyirdvvuetzodiedzss.supabase.co:5432/postgres?sslmode=require" << 'SQL'
+          
+          CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT NOW());
+          
+          CREATE TABLE IF NOT EXISTS quotes (
+            ticker TEXT PRIMARY KEY, long_name TEXT, price DOUBLE PRECISION,
+            previous_close DOUBLE PRECISION, fifty_two_week_high DOUBLE PRECISION,
+            fifty_two_week_low DOUBLE PRECISION, currency TEXT DEFAULT 'USD',
+            change_1d DOUBLE PRECISION, change_1w DOUBLE PRECISION,
+            change_1m DOUBLE PRECISION, change_3m DOUBLE PRECISION,
+            change_1y DOUBLE PRECISION, change_3y DOUBLE PRECISION, change_ytd DOUBLE PRECISION,
+            market_cap BIGINT, enterprise_value BIGINT, total_revenue BIGINT,
+            total_cash BIGINT, total_debt BIGINT, free_cashflow BIGINT, operating_cashflow BIGINT,
+            target_mean_price DOUBLE PRECISION, target_high_price DOUBLE PRECISION,
+            target_low_price DOUBLE PRECISION, recommendation_key TEXT,
+            number_of_analyst_opinions INTEGER, average_volume BIGINT, volume BIGINT,
+            beta DOUBLE PRECISION, forward_pe DOUBLE PRECISION, trailing_pe DOUBLE PRECISION,
+            shares_outstanding BIGINT, revenue_growth DOUBLE PRECISION,
+            earnings_growth DOUBLE PRECISION, forward_eps DOUBLE PRECISION,
+            trailing_eps DOUBLE PRECISION, enterprise_to_revenue DOUBLE PRECISION,
+            enterprise_to_ebitda DOUBLE PRECISION, operating_margins DOUBLE PRECISION,
+            sector TEXT, industry TEXT, city TEXT, state TEXT, country TEXT,
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+          
+          CREATE TABLE IF NOT EXISTS short_interest (
+            ticker TEXT PRIMARY KEY, current_shares_short BIGINT,
+            current_short_pct_float DOUBLE PRECISION, current_short_ratio DOUBLE PRECISION,
+            current_date_val TEXT, prior_shares_short BIGINT, prior_date TEXT,
+            shares_outstanding BIGINT, float_shares BIGINT, change_pct DOUBLE PRECISION,
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+          
+          CREATE TABLE IF NOT EXISTS outperformance (
+            id BIGSERIAL PRIMARY KEY, ticker TEXT NOT NULL, date TEXT NOT NULL,
+            percentile DOUBLE PRECISION, stock_count INTEGER, UNIQUE(ticker, date)
+          );
+          CREATE INDEX IF NOT EXISTS idx_outperformance_ticker ON outperformance(ticker);
+          
+          CREATE TABLE IF NOT EXISTS cross_sector_targets (
+            ticker TEXT PRIMARY KEY, name TEXT, sector TEXT, industry TEXT,
+            market_cap BIGINT, forward_pe DOUBLE PRECISION, operating_margins DOUBLE PRECISION,
+            revenue_growth DOUBLE PRECISION, enterprise_to_revenue DOUBLE PRECISION,
+            enterprise_to_ebitda DOUBLE PRECISION, beta DOUBLE PRECISION,
+            fcf_margin DOUBLE PRECISION, updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+          
+          CREATE TABLE IF NOT EXISTS cross_sector_comps (
+            id BIGSERIAL PRIMARY KEY,
+            target_ticker TEXT NOT NULL REFERENCES cross_sector_targets(ticker) ON DELETE CASCADE,
+            comp_ticker TEXT NOT NULL, name TEXT, sector TEXT, industry TEXT,
+            market_cap BIGINT, forward_pe DOUBLE PRECISION, operating_margins DOUBLE PRECISION,
+            revenue_growth DOUBLE PRECISION, enterprise_to_revenue DOUBLE PRECISION,
+            enterprise_to_ebitda DOUBLE PRECISION, beta DOUBLE PRECISION,
+            fcf_margin DOUBLE PRECISION, similarity DOUBLE PRECISION,
+            UNIQUE(target_ticker, comp_ticker)
+          );
+          CREATE INDEX IF NOT EXISTS idx_comps_target ON cross_sector_comps(target_ticker);
+          
+          CREATE TABLE IF NOT EXISTS analyst_summary (
+            ticker TEXT PRIMARY KEY, target_mean_price DOUBLE PRECISION,
+            target_high_price DOUBLE PRECISION, target_low_price DOUBLE PRECISION,
+            target_median_price DOUBLE PRECISION, number_of_analyst_opinions INTEGER,
+            recommendation_key TEXT, recommendation_mean DOUBLE PRECISION,
+            forward_eps DOUBLE PRECISION, trailing_eps DOUBLE PRECISION,
+            forward_pe DOUBLE PRECISION, trailing_pe DOUBLE PRECISION,
+            beta DOUBLE PRECISION, average_volume BIGINT, average_volume_10days BIGINT,
+            volume BIGINT, fifty_two_week_high DOUBLE PRECISION,
+            fifty_two_week_low DOUBLE PRECISION, shares_outstanding BIGINT,
+            calendar JSONB, earnings_history JSONB, updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+          
+          CREATE TABLE IF NOT EXISTS chart_data (
+            id BIGSERIAL PRIMARY KEY, ticker TEXT NOT NULL, ts BIGINT NOT NULL,
+            close DOUBLE PRECISION, UNIQUE(ticker, ts)
+          );
+          CREATE INDEX IF NOT EXISTS idx_chart_ticker ON chart_data(ticker);
+          
+          CREATE TABLE IF NOT EXISTS chart_meta (
+            ticker TEXT PRIMARY KEY, long_name TEXT, short_name TEXT,
+            regular_market_price DOUBLE PRECISION, chart_previous_close DOUBLE PRECISION,
+            previous_close DOUBLE PRECISION, fifty_two_week_high DOUBLE PRECISION,
+            fifty_two_week_low DOUBLE PRECISION, regular_market_volume BIGINT,
+            currency TEXT DEFAULT 'USD', updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+          
+          ALTER TABLE metadata ENABLE ROW LEVEL SECURITY;
+          ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
+          ALTER TABLE short_interest ENABLE ROW LEVEL SECURITY;
+          ALTER TABLE outperformance ENABLE ROW LEVEL SECURITY;
+          ALTER TABLE cross_sector_targets ENABLE ROW LEVEL SECURITY;
+          ALTER TABLE cross_sector_comps ENABLE ROW LEVEL SECURITY;
+          ALTER TABLE analyst_summary ENABLE ROW LEVEL SECURITY;
+          ALTER TABLE chart_data ENABLE ROW LEVEL SECURITY;
+          ALTER TABLE chart_meta ENABLE ROW LEVEL SECURITY;
+          
+          CREATE POLICY "anon_read_metadata" ON metadata FOR SELECT TO anon USING (true);
+          CREATE POLICY "anon_read_quotes" ON quotes FOR SELECT TO anon USING (true);
+          CREATE POLICY "anon_read_short_interest" ON short_interest FOR SELECT TO anon USING (true);
+          CREATE POLICY "anon_read_outperformance" ON outperformance FOR SELECT TO anon USING (true);
+          CREATE POLICY "anon_read_cross_sector_targets" ON cross_sector_targets FOR SELECT TO anon USING (true);
+          CREATE POLICY "anon_read_cross_sector_comps" ON cross_sector_comps FOR SELECT TO anon USING (true);
+          CREATE POLICY "anon_read_analyst_summary" ON analyst_summary FOR SELECT TO anon USING (true);
+          CREATE POLICY "anon_read_chart_data" ON chart_data FOR SELECT TO anon USING (true);
+          CREATE POLICY "anon_read_chart_meta" ON chart_meta FOR SELECT TO anon USING (true);
+          
+          SQL
+          
+          echo "Tables created successfully!"
