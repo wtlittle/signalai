@@ -185,21 +185,21 @@ body {
   position: relative;
 }
 .table-wrapper {
-  overflow-x: auto;
-  overflow-y: visible;
+  overflow: visible;
 }
 
 /* === TABLE === */
 .watchlist-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 12px;
   table-layout: fixed;
   min-width: 1360px;
 }
 .watchlist-table thead th {
   position: sticky;
-  top: 45px;
+  top: var(--sticky-thead-top, 45px);
   background: var(--bg-header);
   border-bottom: 2px solid var(--border);
   padding: 6px 8px;
@@ -213,6 +213,7 @@ body {
   white-space: nowrap;
   cursor: default;
   user-select: none;
+  z-index: 10;
 }
 .watchlist-table thead th.num { text-align: right; }
 .watchlist-table thead th.sortable { cursor: pointer; }
