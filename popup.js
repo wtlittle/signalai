@@ -183,6 +183,7 @@ function renderPopupContent(ticker, data, summary, chart) {
         <button class="chart-period-btn active" data-period="1Y">1Y</button>
         <button class="chart-period-btn" data-period="3Y">3Y</button>
         <button class="chart-period-btn" data-period="5Y">5Y</button>
+        <button class="chart-period-btn" data-period="Max">Max</button>
       </div>
       <div class="popup-chart-container" id="popup-chart-area"></div>
     </div>

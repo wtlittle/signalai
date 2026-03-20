@@ -22,6 +22,7 @@ const PERIOD_MAP = {
   '1Y': { range: '1y', interval: '1d', days: 252 },
   '3Y': { range: '3y', interval: '1wk', days: 756 },
   '5Y': { range: '5y', interval: '1wk', days: 1260 },
+  'Max': { range: 'max', interval: '1wk', days: null },
 };
 
 // Get peer tickers from same subsector
@@ -42,9 +43,13 @@ async function fetchNormalizedSeries(ticker, range, interval) {
   if (!basePrice) return null;
 
   const normalized = closes.map(c => c ? ((c - basePrice) / basePrice) * 100 : null);
-  const dates = timestamps.map(t => new Date(t * 1000));
+  // Convert timestamps to ISO date strings for alignment
+  const dateKeys = timestamps.map(t => {
+    const d = new Date(t * 1000);
+    return d.toISOString().split('T')[0]; // "YYYY-MM-DD"
+  });
 
-  return { ticker, dates, values: normalized, basePrice, lastPrice: closes[closes.length - 1] };
+  return { ticker, dateKeys, values: normalized, basePrice, lastPrice: closes[closes.length - 1] };
 }
 
 // Render the comparison chart
@@ -62,24 +67,76 @@ async function renderPopupChart(container, ticker, period = '1Y') {
   const seriesPromises = compTickers.map(t => fetchNormalizedSeries(t, cfg.range, cfg.interval));
   const allSeries = await Promise.allSettled(seriesPromises);
 
-  const datasets = [];
-  const labels = [];
-  let maxLen = 0;
-
+  const validSeries = [];
   allSeries.forEach((result, idx) => {
     if (result.status !== 'fulfilled' || !result.value) return;
-    const s = result.value;
-    if (s.dates.length > maxLen) {
-      maxLen = s.dates.length;
-      labels.length = 0;
-      labels.push(...s.dates);
+    validSeries.push({ idx, series: result.value });
+  });
+
+  if (!validSeries.length) {
+    container.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center;">No chart data available</div>';
+    return;
+  }
+
+  // --- Date alignment: build a unified date axis from ALL series ---
+  const dateSet = new Set();
+  validSeries.forEach(({ series }) => {
+    series.dateKeys.forEach(dk => dateSet.add(dk));
+  });
+  const allDates = Array.from(dateSet).sort(); // chronological order
+
+  // For period-based filtering (1M, 3M, etc.), trim the unified date axis
+  let filteredDates = allDates;
+  if (cfg.days != null) {
+    // Keep only the last N trading days worth of dates
+    filteredDates = allDates.slice(-Math.min(cfg.days, allDates.length));
+  }
+
+  // --- Build datasets aligned to the unified date axis ---
+  const datasets = [];
+
+  validSeries.forEach(({ idx, series }) => {
+    const s = series;
+    // Create a map from dateKey → value
+    const dateValueMap = new Map();
+    for (let i = 0; i < s.dateKeys.length; i++) {
+      dateValueMap.set(s.dateKeys[i], s.values[i]);
     }
 
+    // Find the first available date in our filtered range to re-base the series
+    let baseDate = null;
+    let baseOrigIdx = null;
+    for (const dk of filteredDates) {
+      if (dateValueMap.has(dk)) {
+        baseDate = dk;
+        baseOrigIdx = s.dateKeys.indexOf(dk);
+        break;
+      }
+    }
+    if (baseDate == null) return; // No overlap at all, skip
+
+    // Re-normalize from the start of the filtered window
+    const basePrice = s.basePrice;
+    const baseOrigValue = dateValueMap.get(baseDate); // This is already % from original base
+    // We need to re-base: new_value = ((1 + old_value/100) / (1 + baseOrigValue/100) - 1) * 100
+    const baseFactor = 1 + (baseOrigValue || 0) / 100;
+
+    // Align data to filtered dates
+    const alignedData = filteredDates.map(dk => {
+      const val = dateValueMap.get(dk);
+      if (val == null) return null;
+      return ((1 + val / 100) / baseFactor - 1) * 100;
+    });
+
+    // Compute total return for legend
+    let lastVal = null;
+    for (let i = alignedData.length - 1; i >= 0; i--) {
+      if (alignedData[i] != null) { lastVal = alignedData[i]; break; }
+    }
     const displayName = s.ticker === '^GSPC' ? 'S&P 500' :
                         s.ticker === '^IXIC' ? 'NASDAQ' :
                         s.ticker;
-    const returnVal = s.values[s.values.length - 1];
-    const returnStr = returnVal != null ? ` (${returnVal >= 0 ? '+' : ''}${returnVal.toFixed(1)}%)` : '';
+    const returnStr = lastVal != null ? ` (${lastVal >= 0 ? '+' : ''}${lastVal.toFixed(1)}%)` : '';
 
     // Color logic: idx 0 = ticker (vivid), 1-3 = indexes (colored), 4+ = peers (grey)
     let lineColor, lineWidth, dash;
@@ -99,7 +156,7 @@ async function renderPopupChart(container, ticker, period = '1Y') {
 
     datasets.push({
       label: `${displayName}${returnStr}`,
-      data: s.values,
+      data: alignedData,
       borderColor: lineColor,
       backgroundColor: 'transparent',
       borderWidth: lineWidth,
@@ -107,6 +164,7 @@ async function renderPopupChart(container, ticker, period = '1Y') {
       pointHitRadius: 6,
       tension: 0.1,
       borderDash: dash,
+      spanGaps: true, // connect across null gaps for cleaner lines
     });
   });
 
@@ -128,7 +186,7 @@ async function renderPopupChart(container, ticker, period = '1Y') {
   popupChartInstance = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: labels.map(d => d.toISOString().split('T')[0]),
+      labels: filteredDates,
       datasets,
     },
     options: {
@@ -162,6 +220,7 @@ async function renderPopupChart(container, ticker, period = '1Y') {
           callbacks: {
             label: (ctx) => {
               const val = ctx.parsed.y;
+              if (val == null) return null;
               return `${ctx.dataset.label.split(' (')[0]}: ${val >= 0 ? '+' : ''}${val.toFixed(1)}%`;
             },
           },
