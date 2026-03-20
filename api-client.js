@@ -392,11 +392,12 @@ async function fetchCrossSectorCompsClient(ticker) {
 }
 
 async function fetchAnalystSummaryClient(ticker) {
+  let supaResult = null;
   if (await checkSupabase()) {
     const data = await supabaseGet('analyst_summary', `select=*&ticker=eq.${encodeURIComponent(ticker)}`);
     if (data?.length) {
       const r = data[0];
-      return {
+      supaResult = {
         targetMeanPrice: r.target_mean_price, targetHighPrice: r.target_high_price,
         targetLowPrice: r.target_low_price, targetMedianPrice: r.target_median_price,
         numberOfAnalystOpinions: r.number_of_analyst_opinions,
@@ -411,8 +412,17 @@ async function fetchAnalystSummaryClient(ticker) {
       };
     }
   }
+  // Get snapshot data (always, to fill gaps from Supabase staleness)
   const snap = await loadSnapshot();
-  return snap?.analyst_summary?.[ticker] || null;
+  const snapResult = snap?.analyst_summary?.[ticker] || null;
+  if (!supaResult) return snapResult;
+  if (!snapResult) return supaResult;
+  // Merge: Supabase values take priority, but prefer snapshot earningsHistory if it has revenue data
+  const merged = { ...supaResult };
+  if (snapResult.earningsHistory?.length && snapResult.earningsHistory[0]?.revActual != null) {
+    merged.earningsHistory = snapResult.earningsHistory;
+  }
+  return merged;
 }
 
 // --- Client-side estimates data fetch ---
