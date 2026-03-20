@@ -148,8 +148,6 @@ function renderPopupContent(ticker, data, summary, chart, estimatesData) {
       actual: e.epsActual ?? e.actual,
       estimate: e.epsEstimate ?? e.estimate,
       surprise: e.surprisePercent ?? e.surprise,
-      revActual: e.revActual ?? null,
-      revYoY: e.revYoY ?? null,
     };
   });
   const beatCount = surprises.filter(s => s.surprise > 0).length;
@@ -293,7 +291,6 @@ function renderPopupContent(ticker, data, summary, chart, estimatesData) {
 
   // Earnings history table
   if (surprises.length > 0) {
-    const hasRevData = surprises.some(s => s.revActual != null);
     html += `<div class="popup-section">
       <div class="popup-section-title">Earnings Surprise History</div>
       <table class="watchlist-table" style="min-width:auto;">
@@ -302,20 +299,14 @@ function renderPopupContent(ticker, data, summary, chart, estimatesData) {
           <th class="num">Actual EPS</th>
           <th class="num">Est. EPS</th>
           <th class="num">EPS Surprise</th>
-          ${hasRevData ? '<th class="num">Revenue</th><th class="num">Rev YoY</th>' : ''}
         </tr></thead>
         <tbody>`;
     surprises.forEach(s => {
-      const revStr = s.revActual != null ? formatLargeNumber(s.revActual) : '—';
-      const revYoYStr = s.revYoY != null
-        ? `<span class="${percentClass(s.revYoY * 100)}">${(s.revYoY * 100) >= 0 ? '+' : ''}${(s.revYoY * 100).toFixed(1)}%</span>`
-        : '—';
       html += `<tr>
         <td style="color:var(--text-secondary);">${s.date}</td>
         <td class="num">${s.actual != null ? '$' + s.actual.toFixed(2) : '—'}</td>
         <td class="num">${s.estimate != null ? '$' + s.estimate.toFixed(2) : '—'}</td>
         <td class="num ${percentClass(s.surprise)}">${s.surprise != null ? formatPercent(s.surprise) : '—'}</td>
-        ${hasRevData ? `<td class="num">${revStr}</td><td class="num">${revYoYStr}</td>` : ''}
       </tr>`;
     });
     html += `</tbody></table></div>`;

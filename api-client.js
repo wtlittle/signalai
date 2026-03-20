@@ -417,11 +417,8 @@ async function fetchAnalystSummaryClient(ticker) {
   const snapResult = snap?.analyst_summary?.[ticker] || null;
   if (!supaResult) return snapResult;
   if (!snapResult) return supaResult;
-  // Merge: Supabase values take priority, but prefer snapshot earningsHistory if it has revenue data
-  const merged = { ...supaResult };
-  if (snapResult.earningsHistory?.length && snapResult.earningsHistory[0]?.revActual != null) {
-    merged.earningsHistory = snapResult.earningsHistory;
-  }
+  // Merge: Supabase values take priority, snapshot fills gaps
+  const merged = { ...snapResult, ...supaResult };
   return merged;
 }
 
