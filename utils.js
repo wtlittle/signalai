@@ -62,6 +62,21 @@ const SUBSECTOR_MAP = {
   'SHOP': 'Digital Commerce', 'TTD': 'Digital Advertising',
   'BILL': 'Fintech', 'FOUR': 'Fintech', 'COIN': 'Fintech',
   'IOT': 'IoT & Edge', 'AI': 'Enterprise AI',
+  // Common additions (auto-classified since CORS proxy can't provide sector/industry)
+  'SE': 'Digital Commerce', 'BABA': 'E-Commerce',
+  'AAPL': 'Consumer Electronics', 'GOOGL': 'Hyperscalers',
+  'NFLX': 'Entertainment & Media', 'DIS': 'Entertainment & Media',
+  'UBER': 'Digital Commerce', 'ABNB': 'Digital Commerce',
+  'SQ': 'Fintech', 'PYPL': 'Fintech', 'V': 'Fintech', 'MA': 'Fintech',
+  'AMD': 'Semiconductors', 'INTC': 'Semiconductors', 'QCOM': 'Semiconductors',
+  'TSLA': 'Automotive', 'RIVN': 'Automotive',
+  'SNAP': 'Digital Advertising', 'PINS': 'Digital Advertising',
+  'SPOT': 'Entertainment & Media', 'ROKU': 'Entertainment & Media',
+  'TWLO': 'Enterprise Software', 'ZM': 'Enterprise Software', 'DBX': 'Enterprise Software',
+  'U': 'Gaming', 'RBLX': 'Gaming',
+  'SOFI': 'Fintech', 'HOOD': 'Fintech', 'AFRM': 'Fintech',
+  'DKNG': 'Gaming', 'DASH': 'Digital Commerce',
+  'PDD': 'E-Commerce', 'JD': 'E-Commerce', 'MELI': 'E-Commerce',
 };
 
 // Subsector display order
@@ -76,7 +91,12 @@ const SUBSECTOR_ORDER = [
   'Infrastructure Software',
   'Fintech',
   'Digital Commerce',
+  'E-Commerce',
   'Digital Advertising',
+  'Consumer Electronics',
+  'Entertainment & Media',
+  'Gaming',
+  'Automotive',
   'IoT & Edge',
   // Private company subsectors
   'AI Models & Agents',
@@ -415,6 +435,10 @@ const SECTOR_TO_SUBSECTOR = {
 };
 
 function autoClassifySubsector(sector, industry) {
+  // Guard: reject literal "undefined"/"null" strings
+  if (industry === 'undefined' || industry === 'null') industry = null;
+  if (sector === 'undefined' || sector === 'null') sector = null;
+
   // Try industry first (more specific)
   if (industry && INDUSTRY_TO_SUBSECTOR[industry]) {
     return INDUSTRY_TO_SUBSECTOR[industry];
@@ -433,10 +457,15 @@ function autoClassifySubsector(sector, industry) {
 // Subsector for a ticker (with user overrides)
 function getSubsector(ticker) {
   const overrides = Storage.get('subsector_overrides') || {};
-  return overrides[ticker] || SUBSECTOR_MAP[ticker] || 'Other';
+  const override = overrides[ticker];
+  // Guard: reject stored 'undefined'/'null' strings from bad data
+  if (override && override !== 'undefined' && override !== 'null') return override;
+  return SUBSECTOR_MAP[ticker] || 'Other';
 }
 
 function setSubsectorOverride(ticker, subsector) {
+  // Guard: never store undefined/null/empty subsector
+  if (!subsector || subsector === 'undefined' || subsector === 'null') return;
   const overrides = Storage.get('subsector_overrides') || {};
   overrides[ticker] = subsector;
   Storage.set('subsector_overrides', overrides);
