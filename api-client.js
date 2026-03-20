@@ -5,13 +5,28 @@
 const SUPABASE_URL = 'https://wcyirdvvuetzodiedzss.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_VOT04H1B4O7dVBqxTOk5rw_lyYBR9SW';
 
-async function supabaseGet(table, params = '') {
+async function supabaseGet(table, params = '', maxRows = 1000) {
   try {
+    const headers = { 'apikey': SUPABASE_KEY };
+    // For queries that may exceed 1000 rows, use offset pagination
+    if (maxRows > 1000) {
+      let allRows = [];
+      let offset = 0;
+      const pageSize = 1000;
+      while (offset < maxRows) {
+        const url = `${SUPABASE_URL}/rest/v1/${table}?${params}&limit=${pageSize}&offset=${offset}`;
+        const resp = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const page = await resp.json();
+        if (!page || page.length === 0) break;
+        allRows = allRows.concat(page);
+        if (page.length < pageSize) break; // last page
+        offset += pageSize;
+      }
+      return allRows;
+    }
     const url = `${SUPABASE_URL}/rest/v1/${table}?${params}`;
-    const resp = await fetch(url, {
-      headers: { 'apikey': SUPABASE_KEY },
-      signal: AbortSignal.timeout(15000),
-    });
+    const resp = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     return await resp.json();
   } catch (e) {
@@ -125,7 +140,7 @@ async function fetchChartDataClient(ticker, range = '5y', interval = '1d') {
     try {
       const [metaArr, points] = await Promise.all([
         supabaseGet('chart_meta', `select=*&ticker=eq.${encodeURIComponent(ticker)}`),
-        supabaseGet('chart_data', `select=ts,close&ticker=eq.${encodeURIComponent(ticker)}&order=ts.asc&limit=2000`),
+        supabaseGet('chart_data', `select=ts,close&ticker=eq.${encodeURIComponent(ticker)}&order=ts.asc&limit=2000`, 2000),
       ]);
       if (metaArr?.length && points?.length) {
         const m = metaArr[0];

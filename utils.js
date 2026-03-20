@@ -47,27 +47,31 @@ const Storage = (() => {
 const SUBSECTOR_MAP = {
   'CRWD': 'Cybersecurity', 'ZS': 'Cybersecurity', 'PANW': 'Cybersecurity',
   'S': 'Cybersecurity', 'FTNT': 'Cybersecurity', 'OKTA': 'Cybersecurity',
-  'VRNS': 'Cybersecurity',
+  'VRNS': 'Cybersecurity', 'RBRK': 'Cybersecurity', 'TENB': 'Cybersecurity',
   'SNOW': 'Data & Analytics', 'MDB': 'Data & Analytics', 'DDOG': 'Data & Analytics',
   'ESTC': 'Data & Analytics', 'PLTR': 'Data & Analytics',
-  'CFLT': 'Data & Analytics',
+  'CFLT': 'Data & Analytics', 'DT': 'Data & Analytics',
   'NET': 'Cloud Infrastructure', 'FSLY': 'Cloud Infrastructure', 'DOCN': 'Cloud Infrastructure',
+  'ANET': 'Cloud Infrastructure',
   'CRM': 'Enterprise Software', 'NOW': 'Enterprise Software', 'HUBS': 'Enterprise Software',
   'TEAM': 'Enterprise Software', 'WDAY': 'Enterprise Software', 'INTU': 'Enterprise Software',
   'MNDY': 'Enterprise Software', 'ASAN': 'Enterprise Software',
   'AMZN': 'Hyperscalers', 'GOOG': 'Hyperscalers', 'META': 'Hyperscalers', 'MSFT': 'Hyperscalers',
-  'RBRK': 'Infrastructure Software', 'GTLB': 'Infrastructure Software', 'PATH': 'Infrastructure Software',
+  'GTLB': 'DevOps & Automation', 'PATH': 'DevOps & Automation',
   'ADBE': 'Enterprise Software',
   'AVGO': 'Semiconductors', 'MRVL': 'Semiconductors', 'ARM': 'Semiconductors', 'NVDA': 'Semiconductors', 'TSM': 'Semiconductors',
-  'SHOP': 'Digital Commerce', 'TTD': 'Digital Advertising',
+  'AMD': 'Semiconductors', 'SNPS': 'Semiconductors', 'CDNS': 'Semiconductors',
+  'SHOP': 'Digital Commerce', 'SE': 'Digital Commerce',
+  'TTD': 'Digital Advertising', 'PINS': 'Digital Advertising',
   'BILL': 'Fintech', 'FOUR': 'Fintech', 'COIN': 'Fintech',
-  'IOT': 'IoT & Edge', 'AI': 'Enterprise AI',
+  'XYZ': 'Fintech', 'AFRM': 'Fintech',
+  'IOT': 'Applied AI', 'AI': 'Applied AI',
   // Common additions (auto-classified since CORS proxy can't provide sector/industry)
   'SE': 'Digital Commerce', 'BABA': 'E-Commerce',
   'AAPL': 'Consumer Electronics', 'GOOGL': 'Hyperscalers',
   'NFLX': 'Entertainment & Media', 'DIS': 'Entertainment & Media',
   'UBER': 'Digital Commerce', 'ABNB': 'Digital Commerce',
-  'SQ': 'Fintech', 'PYPL': 'Fintech', 'V': 'Fintech', 'MA': 'Fintech',
+  'XYZ': 'Fintech', 'PYPL': 'Fintech', 'V': 'Fintech', 'MA': 'Fintech',
   'AMD': 'Semiconductors', 'INTC': 'Semiconductors', 'QCOM': 'Semiconductors',
   'TSLA': 'Automotive', 'RIVN': 'Automotive',
   'SNAP': 'Digital Advertising', 'PINS': 'Digital Advertising',
@@ -85,10 +89,10 @@ const SUBSECTOR_ORDER = [
   'Semiconductors',
   'Cybersecurity',
   'Enterprise Software',
-  'Enterprise AI',
+  'Applied AI',
   'Data & Analytics',
   'Cloud Infrastructure',
-  'Infrastructure Software',
+  'DevOps & Automation',
   'Fintech',
   'Digital Commerce',
   'E-Commerce',
@@ -97,7 +101,6 @@ const SUBSECTOR_ORDER = [
   'Entertainment & Media',
   'Gaming',
   'Automotive',
-  'IoT & Edge',
   // Private company subsectors
   'AI Models & Agents',
   'AI Infrastructure',
@@ -121,7 +124,9 @@ const COMMON_NAMES = {
   'MRVL': 'Marvell', 'ARM': 'Arm', 'TSM': 'TSMC',
   'SHOP': 'Shopify', 'TTD': 'Trade Desk',
   'BILL': 'Bill.com', 'FOUR': 'Shift4 Payments',
-  'IOT': 'Samsara', 'AI': 'C3.ai',
+  'IOT': 'Samsara', 'AI': 'C3.ai', 'TENB': 'Tenable', 'DT': 'Dynatrace',
+  'ANET': 'Arista Networks', 'SE': 'Sea Limited', 'PINS': 'Pinterest', 'AFRM': 'Affirm',
+  'XYZ': 'Block',
   'NVDA': 'NVIDIA', 'JPM': 'JPMorgan Chase', 'COIN': 'Coinbase',
   'AAPL': 'Apple', 'TSLA': 'Tesla', 'NFLX': 'Netflix', 'ADBE': 'Adobe',
   'AMD': 'AMD', 'INTC': 'Intel', 'CSCO': 'Cisco', 'ORCL': 'Oracle',
@@ -173,24 +178,34 @@ const COMPANY_HQ = {
   'PATH': 'New York, NY', 'VRNS': 'New York, NY', 'BILL': 'San Jose, CA',
   'FOUR': 'Allentown, PA', 'COIN': 'New York, NY', 'SHOP': 'Ottawa, Canada',
   'TTD': 'Ventura, CA', 'AI': 'Redwood City, CA', 'IOT': 'San Francisco, CA',
+  'AMD': 'Santa Clara, CA', 'SNPS': 'Sunnyvale, CA', 'CDNS': 'San Jose, CA',
+  'TENB': 'Columbia, MD', 'DT': 'Waltham, MA', 'ANET': 'Santa Clara, CA',
+  'SE': 'Singapore', 'PINS': 'San Francisco, CA', 'XYZ': 'Oakland, CA', 'AFRM': 'San Francisco, CA',
 };
 
 // --- Initial tickers ---
 const DEFAULT_TICKERS = [
-  'RBRK','ZS','NET','PLTR','AMZN','GOOG','META','MSFT','CRWD','MDB',
-  'SNOW','PANW','CRM','NOW','S','FTNT','DDOG','HUBS','TEAM','WDAY',
-  'CFLT','DOCN','ESTC','INTU','FSLY','OKTA',
-  // --- Added: Semiconductors / AI infrastructure ---
-  'AVGO','MRVL','ARM','NVDA','TSM',
-  // --- Added: Enterprise Software / Productivity ---
-  'MNDY','ADBE','ASAN','GTLB','PATH',
-  // --- Added: Cybersecurity ---
-  'VRNS',
-  // --- Added: Fintech ---
-  'BILL','FOUR','COIN',
-  // --- Added: Digital Commerce / Advertising ---
-  'SHOP','TTD',
-  // --- Added: Enterprise AI / IoT ---
+  // --- Hyperscalers ---
+  'AMZN','GOOG','META','MSFT',
+  // --- Semiconductors ---
+  'NVDA','AVGO','AMD','TSM','ARM','MRVL','SNPS','CDNS',
+  // --- Cybersecurity ---
+  'CRWD','PANW','ZS','FTNT','S','OKTA','RBRK','VRNS','TENB',
+  // --- Enterprise Software ---
+  'CRM','NOW','WDAY','INTU','ADBE','HUBS','TEAM','MNDY','ASAN',
+  // --- Data & Analytics / Observability ---
+  'SNOW','MDB','DDOG','PLTR','ESTC','CFLT','DT',
+  // --- Cloud Infrastructure ---
+  'NET','ANET','DOCN','FSLY',
+  // --- DevOps & Automation ---
+  'GTLB','PATH',
+  // --- Fintech ---
+  'COIN','BILL','FOUR','XYZ','AFRM',
+  // --- Digital Commerce ---
+  'SHOP','SE',
+  // --- Digital Advertising ---
+  'TTD','PINS',
+  // --- Applied AI ---
   'AI','IOT',
 ];
 

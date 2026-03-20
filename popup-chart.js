@@ -4,16 +4,20 @@ let popupChartInstance = null;
 
 // Color scheme: ticker pops, indexes colored, peers muted grey
 const CHART_COLOR_TICKER = '#00e5ff';   // vivid cyan for the main ticker
-const CHART_COLOR_INDEXES = [
-  '#f5f5f5', // S&P 500 (white/light)
-  '#f59e0b', // NASDAQ (amber)
-  '#8b5cf6', // IGV (purple)
-];
+// Index colors now in INDEX_COLOR_MAP below
 const CHART_COLOR_PEERS = [
   '#4b5563', // peer 1 (dark grey)
   '#6b7280', // peer 2 (medium grey)
   '#374151', // peer 3 (darker grey)
+  '#9ca3af', // peer 4 (lighter grey fallback)
 ];
+
+const INDEX_TICKERS = new Set(['^GSPC', '^IXIC', 'IGV']);
+const INDEX_COLOR_MAP = {
+  '^GSPC': '#f5f5f5', // S&P 500 (white/light)
+  '^IXIC': '#f59e0b', // NASDAQ (amber)
+  'IGV':   '#8b5cf6', // IGV (purple)
+};
 
 const PERIOD_MAP = {
   '1M': { range: '1mo', interval: '1d', days: 21 },
@@ -25,8 +29,85 @@ const PERIOD_MAP = {
   'Max': { range: 'max', interval: '1wk', days: null },
 };
 
-// Get peer tickers from same subsector
-function getPeers(ticker, maxPeers = 2) {
+// Curated peer overrides — buy-side analyst quality comps.
+// Key = ticker, Value = ordered list of best comps (first = closest).
+// These override the subsector-based auto-peers when available.
+const PEER_OVERRIDES = {
+  // --- Cybersecurity ---
+  'RBRK': ['CRWD', 'ZS', 'S'],       // Data security — high-growth cyber peers, S similar stage/profile
+  'CRWD': ['PANW', 'S', 'ZS'],       // Endpoint platform — PANW direct comp, S competitor, ZS cloud
+  'ZS':   ['CRWD', 'PANW', 'FTNT'],  // Zero trust — platform peers + network security baseline
+  'PANW': ['CRWD', 'FTNT', 'ZS'],    // Platform cyber — CRWD direct, FTNT legacy comp, ZS cloud
+  'S':    ['CRWD', 'RBRK', 'TENB'],  // Endpoint challenger — CRWD incumbent, RBRK similar stage, TENB vuln mgmt
+  'FTNT': ['PANW', 'CRWD', 'ZS'],    // Network security — PANW direct, CRWD/ZS next-gen
+  'OKTA': ['CRWD', 'ZS', 'PANW'],    // Identity — cross-ref to platform cyber
+  'VRNS': ['RBRK', 'TENB', 'S'],     // Data security — RBRK data protection, TENB vuln mgmt, S similar size
+  'TENB': ['VRNS', 'RBRK', 'S'],     // Vulnerability mgmt — data security peers, similar size
+  // --- Hyperscalers ---
+  'AMZN': ['GOOG', 'MSFT', 'META'],
+  'GOOG': ['META', 'MSFT', 'AMZN'],
+  'META': ['GOOG', 'AMZN', 'MSFT'],
+  'MSFT': ['AMZN', 'GOOG', 'META'],
+  // --- Semiconductors ---
+  'NVDA': ['AMD', 'AVGO', 'TSM'],    // GPU — AMD direct comp, AVGO AI/networking, TSM foundry
+  'AMD':  ['NVDA', 'AVGO', 'MRVL'],  // Compute — NVDA direct, AVGO networking, MRVL custom silicon
+  'AVGO': ['MRVL', 'AMD', 'NVDA'],   // Custom/networking — MRVL closest, AMD/NVDA compute peers
+  'ARM':  ['NVDA', 'SNPS', 'CDNS'],  // IP/design — NVDA licensing comp, SNPS/CDNS EDA ecosystem
+  'TSM':  ['NVDA', 'AVGO', 'AMD'],   // Foundry — top 3 customers
+  'MRVL': ['AVGO', 'AMD', 'NVDA'],   // Custom silicon — AVGO closest, then compute peers
+  'SNPS': ['CDNS', 'ARM', 'NVDA'],   // EDA — CDNS direct comp, ARM ecosystem, NVDA design tools
+  'CDNS': ['SNPS', 'ARM', 'NVDA'],   // EDA — SNPS direct comp, ARM ecosystem
+  // --- Data & Analytics ---
+  'SNOW': ['MDB', 'DDOG', 'CFLT'],
+  'MDB':  ['SNOW', 'ESTC', 'CFLT'],
+  'DDOG': ['DT', 'SNOW', 'ESTC'],    // Observability — DT direct comp, then data platform peers
+  'DT':   ['DDOG', 'ESTC', 'SNOW'],  // Observability — DDOG direct comp
+  'PLTR': ['SNOW', 'AI', 'DDOG'],
+  'ESTC': ['MDB', 'DDOG', 'DT'],
+  'CFLT': ['MDB', 'SNOW', 'ESTC'],
+  // --- Enterprise Software ---
+  'CRM':  ['NOW', 'WDAY', 'HUBS'],
+  'NOW':  ['CRM', 'WDAY', 'TEAM'],
+  'HUBS': ['CRM', 'MNDY', 'TEAM'],
+  'WDAY': ['NOW', 'CRM', 'INTU'],
+  'INTU': ['ADBE', 'CRM', 'WDAY'],
+  'ADBE': ['INTU', 'CRM', 'NOW'],
+  'TEAM': ['MNDY', 'GTLB', 'ASAN'],
+  'MNDY': ['TEAM', 'ASAN', 'HUBS'],
+  'ASAN': ['MNDY', 'TEAM', 'HUBS'],
+  // --- Cloud Infrastructure ---
+  'NET':  ['ANET', 'FSLY', 'DOCN'],  // CDN/edge — ANET networking, FSLY direct CDN comp
+  'ANET': ['NET', 'DOCN', 'FSLY'],   // Networking — NET edge/CDN, DOCN cloud
+  'FSLY': ['NET', 'DOCN', 'ANET'],
+  'DOCN': ['NET', 'FSLY', 'ANET'],
+  // --- DevOps & Automation ---
+  'GTLB': ['TEAM', 'PATH', 'DDOG'],  // DevOps — TEAM direct comp, PATH automation, DDOG DevOps adjacent
+  'PATH': ['GTLB', 'AI', 'TEAM'],    // Automation — GTLB DevOps, AI enterprise AI comp
+  // --- Fintech ---
+  'COIN': ['XYZ', 'AFRM', 'FOUR'],   // Crypto/payments — SQ (crypto exposure), AFRM fintech disruptor
+  'XYZ':   ['COIN', 'FOUR', 'BILL'],  // Payments — COIN crypto, FOUR merchant payments
+  'BILL': ['FOUR', 'XYZ', 'COIN'],    // B2B payments — FOUR merchant, SQ SMB payments
+  'FOUR': ['XYZ', 'BILL', 'COIN'],    // Merchant payments — SQ direct, BILL B2B
+  'AFRM': ['XYZ', 'COIN', 'SHOP'],   // BNPL/fintech — SQ fintech peer, COIN disruptor, SHOP (BNPL partner)
+  // --- Digital Commerce ---
+  'SHOP': ['SE', 'XYZ', 'AFRM'],     // E-commerce platform — SE direct comp, SQ merchant, AFRM BNPL
+  'SE':   ['SHOP', 'COIN', 'XYZ'],    // E-commerce — SHOP direct, fintech peers (Sea Money)
+  // --- Digital Advertising ---
+  'TTD':  ['PINS', 'META', 'GOOG'],  // Programmatic — PINS intent-based, META/GOOG ad platforms
+  'PINS': ['TTD', 'SHOP', 'META'],   // Social commerce/ads — TTD ad-tech, SHOP commerce, META social
+  // --- Applied AI ---
+  'AI':   ['PLTR', 'IOT', 'PATH'],   // Enterprise AI — PLTR analytics, IOT IoT/AI, PATH automation
+  'IOT':  ['AI', 'DDOG', 'DT'],      // IoT/operational — AI enterprise peer, DDOG/DT monitoring comps
+};
+
+// Get peer tickers — curated overrides first, then subsector fallback
+function getPeers(ticker, maxPeers = 3) {
+  // Use curated peers if available
+  if (PEER_OVERRIDES[ticker]) {
+    const curated = PEER_OVERRIDES[ticker].filter(t => tickerList.includes(t) && t !== ticker);
+    if (curated.length > 0) return curated.slice(0, maxPeers);
+  }
+  // Fallback: same subsector, excluding self
   const sub = getSubsector(ticker);
   const peers = tickerList.filter(t => t !== ticker && getSubsector(t) === sub);
   return peers.slice(0, maxPeers);
@@ -63,15 +144,35 @@ async function renderPopupChart(container, ticker, period = '1Y') {
   const peers = getPeers(ticker);
   const compTickers = [ticker, '^GSPC', '^IXIC', 'IGV', ...peers];
 
-  // Fetch all series
+  // Fetch all series in parallel
   const seriesPromises = compTickers.map(t => fetchNormalizedSeries(t, cfg.range, cfg.interval));
   const allSeries = await Promise.allSettled(seriesPromises);
 
   const validSeries = [];
+  const failedIndexes = [];
   allSeries.forEach((result, idx) => {
-    if (result.status !== 'fulfilled' || !result.value) return;
+    if (result.status !== 'fulfilled' || !result.value) {
+      if (INDEX_TICKERS.has(compTickers[idx])) failedIndexes.push(compTickers[idx]);
+      return;
+    }
     validSeries.push({ idx, series: result.value });
   });
+
+  // Retry failed indexes once (they should always be present)
+  if (failedIndexes.length > 0) {
+    console.warn('Chart: retrying failed indexes:', failedIndexes);
+    const retries = await Promise.allSettled(
+      failedIndexes.map(t => fetchNormalizedSeries(t, cfg.range, cfg.interval))
+    );
+    retries.forEach((result, i) => {
+      if (result.status === 'fulfilled' && result.value) {
+        const origIdx = compTickers.indexOf(failedIndexes[i]);
+        validSeries.push({ idx: origIdx, series: result.value });
+      } else {
+        console.error('Chart: index still failed after retry:', failedIndexes[i]);
+      }
+    });
+  }
 
   if (!validSeries.length) {
     container.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center;">No chart data available</div>';
@@ -138,18 +239,22 @@ async function renderPopupChart(container, ticker, period = '1Y') {
                         s.ticker;
     const returnStr = lastVal != null ? ` (${lastVal >= 0 ? '+' : ''}${lastVal.toFixed(1)}%)` : '';
 
-    // Color logic: idx 0 = ticker (vivid), 1-3 = indexes (colored), 4+ = peers (grey)
+    // Color logic: based on ticker identity, not position
     let lineColor, lineWidth, dash;
-    if (idx === 0) {
+    if (s.ticker === ticker) {
+      // Main ticker: vivid cyan, thick
       lineColor = CHART_COLOR_TICKER;
       lineWidth = 3;
       dash = [];
-    } else if (idx >= 1 && idx <= 3) {
-      lineColor = CHART_COLOR_INDEXES[idx - 1];
+    } else if (INDEX_COLOR_MAP[s.ticker]) {
+      // Index: colored, medium weight
+      lineColor = INDEX_COLOR_MAP[s.ticker];
       lineWidth = 1.5;
       dash = [];
     } else {
-      lineColor = CHART_COLOR_PEERS[(idx - 4) % CHART_COLOR_PEERS.length];
+      // Peer: grey, dashed
+      const peerIdx = compTickers.filter(t => !INDEX_TICKERS.has(t) && t !== ticker).indexOf(s.ticker);
+      lineColor = CHART_COLOR_PEERS[Math.max(0, peerIdx) % CHART_COLOR_PEERS.length];
       lineWidth = 1.5;
       dash = [5, 4];
     }
