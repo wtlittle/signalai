@@ -417,12 +417,13 @@ async function fetchAnalystSummaryClient(ticker) {
 
 // --- Client-side estimates data fetch ---
 async function fetchEstimatesClient(ticker) {
+  let supaResult = null;
   // Try Supabase first (if estimates_data table exists)
   if (await checkSupabase()) {
     const data = await supabaseGet('estimates_data', `select=*&ticker=eq.${encodeURIComponent(ticker)}`);
     if (data?.length) {
       const r = data[0];
-      return {
+      supaResult = {
         revenueLtm: r.revenue_ltm, revenueGrowth: r.revenue_growth,
         grossMargins: r.gross_margins, operatingMargins: r.operating_margins,
         fcf: r.fcf, fcfMargin: r.fcf_margin,
@@ -440,12 +441,32 @@ async function fetchEstimatesClient(ticker) {
         epsTrend90d: r.eps_trend_90d,
         revisionsUp7d: r.revisions_up_7d, revisionsDown7d: r.revisions_down_7d,
         revisionsUp30d: r.revisions_up_30d, revisionsDown30d: r.revisions_down_30d,
+        // Revenue estimate ranges
+        nextQRevLow: r.next_q_rev_low, nextQRevHigh: r.next_q_rev_high,
+        nextQRevAnalysts: r.next_q_rev_analysts, nextQRevSpread: r.next_q_rev_spread,
+        fy1RevLow: r.fy1_rev_low, fy1RevHigh: r.fy1_rev_high,
+        fy1RevAnalysts: r.fy1_rev_analysts, fy1RevSpread: r.fy1_rev_spread,
+        fy2RevLow: r.fy2_rev_low, fy2RevHigh: r.fy2_rev_high,
+        fy2RevAnalysts: r.fy2_rev_analysts, fy2RevSpread: r.fy2_rev_spread,
+        // FY1 EPS trend + revision counts
+        fy1RevisionsUp30d: r.fy1_revisions_up_30d, fy1RevisionsDown30d: r.fy1_revisions_down_30d,
+        fy1EpsTrendCurrent: r.fy1_eps_trend_current, fy1EpsTrend7d: r.fy1_eps_trend_7d,
+        fy1EpsTrend30d: r.fy1_eps_trend_30d, fy1EpsTrend60d: r.fy1_eps_trend_60d,
+        fy1EpsTrend90d: r.fy1_eps_trend_90d,
       };
     }
   }
-  // Fallback to snapshot
+  // Get snapshot data (always, to fill gaps from Supabase schema lag)
   const snap = await loadSnapshot();
-  return snap?.estimates?.[ticker] || null;
+  const snapResult = snap?.estimates?.[ticker] || null;
+  if (!supaResult) return snapResult;
+  if (!snapResult) return supaResult;
+  // Merge: Supabase values take priority, but fill nulls from snapshot
+  const merged = { ...snapResult };
+  for (const [k, v] of Object.entries(supaResult)) {
+    if (v != null) merged[k] = v;
+  }
+  return merged;
 }
 
 // --- Client-side ticker search ---

@@ -26,6 +26,8 @@ body {
   --green-dim: rgba(34,197,94,0.12);
   --red: #ef4444;
   --red-dim: rgba(239,68,68,0.12);
+  --yellow: #eab308;
+  --yellow-dim: rgba(234,179,8,0.12);
   --border: #1e293b;
   --border-light: #374151;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Mono', monospace;
@@ -918,6 +920,38 @@ tr.long-pressing {
   height: 100%;
   background: var(--green);
   border-radius: 2px;
+}
+
+/* Revenue estimate range table */
+.rev-range-table td strong {
+  color: var(--accent);
+}
+
+/* Spread dispersion badges */
+.spread-tight {
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+.spread-tight small {
+  font-weight: 400;
+  opacity: 0.8;
+}
+.spread-normal {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.spread-wide {
+  color: var(--yellow);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+.spread-wide small {
+  font-weight: 400;
+  opacity: 0.8;
 }
 
 /* Narrative text */

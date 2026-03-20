@@ -655,6 +655,121 @@ function buildGuidanceSection(est, ticker) {
     html += `</div>`;
   }
 
+  // Revenue Revision Momentum
+  if (est.nextQRevEst != null || est.fy1RevEst != null) {
+    html += `
+    <div class="revision-section">
+      <div class="revision-header">
+        <span class="revision-title">Revenue Estimate Ranges</span>
+      </div>`;
+
+    // Build rows: NQ, FY1, FY2
+    const revRows = [
+      { label: 'Next Q', est: est.nextQRevEst, low: est.nextQRevLow, high: est.nextQRevHigh, growth: est.nextQRevGrowth, n: est.nextQRevAnalysts, spread: est.nextQRevSpread },
+      { label: 'FY1', est: est.fy1RevEst, low: est.fy1RevLow, high: est.fy1RevHigh, growth: est.fy1RevGrowth, n: est.fy1RevAnalysts, spread: est.fy1RevSpread },
+      { label: 'FY2', est: est.fy2RevEst, low: est.fy2RevLow, high: est.fy2RevHigh, growth: est.fy2RevGrowth, n: est.fy2RevAnalysts, spread: est.fy2RevSpread },
+    ].filter(r => r.est != null);
+
+    if (revRows.length > 0) {
+      html += `
+      <table class="guide-table rev-range-table">
+        <thead><tr>
+          <th>Period</th>
+          <th>Low</th>
+          <th>Consensus</th>
+          <th>High</th>
+          <th>YoY Growth</th>
+          <th>Spread</th>
+        </tr></thead>
+        <tbody>`;
+
+      revRows.forEach(r => {
+        // Spread classification for color coding
+        let spreadClass = '';
+        let spreadLabel = '';
+        if (r.spread != null) {
+          if (r.spread < 0.03) { spreadClass = 'spread-tight'; spreadLabel = 'Tight'; }
+          else if (r.spread < 0.08) { spreadClass = 'spread-normal'; spreadLabel = ''; }
+          else { spreadClass = 'spread-wide'; spreadLabel = 'Wide'; }
+        }
+
+        const growthHtml = r.growth != null
+          ? `<span class="${percentClass(r.growth * 100)}">${(r.growth * 100) >= 0 ? '+' : ''}${(r.growth * 100).toFixed(1)}%</span>`
+          : '\u2014';
+
+        html += `
+          <tr>
+            <td class="guide-metric">${r.label}</td>
+            <td>${fmtBig(r.low)}</td>
+            <td><strong>${fmtBig(r.est)}</strong></td>
+            <td>${fmtBig(r.high)}</td>
+            <td>${growthHtml}</td>
+            <td><span class="${spreadClass}">${r.spread != null ? (r.spread * 100).toFixed(1) + '%' : '\u2014'}${spreadLabel ? ' <small>' + spreadLabel + '</small>' : ''}</span></td>
+          </tr>`;
+      });
+
+      html += `</tbody></table>`;
+    }
+
+    // FY1 EPS revision trend (annual view)
+    if (est.fy1EpsTrendCurrent != null) {
+      const fy1Trend = [
+        { label: 'Current', val: est.fy1EpsTrendCurrent },
+        { label: '7d Ago', val: est.fy1EpsTrend7d },
+        { label: '30d Ago', val: est.fy1EpsTrend30d },
+        { label: '60d Ago', val: est.fy1EpsTrend60d },
+        { label: '90d Ago', val: est.fy1EpsTrend90d },
+      ].filter(t => t.val != null);
+
+      if (fy1Trend.length >= 2) {
+        const delta = fy1Trend[0].val - fy1Trend[fy1Trend.length - 1].val;
+        let fy1Dir = 'Flat';
+        if (Math.abs(delta) >= 0.001) {
+          fy1Dir = delta > 0
+            ? `<span class="val-pos">+$${delta.toFixed(2)} over 90d</span>`
+            : `<span class="val-neg">-$${Math.abs(delta).toFixed(2)} over 90d</span>`;
+        }
+
+        html += `
+        <div style="margin-top:10px;">
+          <div class="revision-header">
+            <span class="revision-title">FY1 EPS Revision Momentum</span>
+            <span class="revision-direction">${fy1Dir}</span>
+          </div>
+          <div class="revision-track">`;
+
+        fy1Trend.forEach((t, i) => {
+          html += `
+            <div class="revision-point ${i === 0 ? 'revision-current' : ''}">
+              <div class="revision-val">${fmtEps(t.val)}</div>
+              <div class="revision-label">${t.label}</div>
+            </div>`;
+        });
+
+        html += `</div>`;
+
+        // FY1 revision counts
+        if (est.fy1RevisionsUp30d != null || est.fy1RevisionsDown30d != null) {
+          const up = est.fy1RevisionsUp30d || 0;
+          const down = est.fy1RevisionsDown30d || 0;
+          const total = up + down;
+          const upPct = total > 0 ? Math.round((up / total) * 100) : 0;
+          html += `
+          <div class="revision-counts">
+            <span class="revision-up">\u25B2 ${up} up</span>
+            <span class="revision-bar"><span class="revision-bar-fill" style="width:${upPct}%"></span></span>
+            <span class="revision-down">\u25BC ${down} down</span>
+            <span class="revision-period">last 30d</span>
+          </div>`;
+        }
+
+        html += `</div>`;
+      }
+    }
+
+    html += `</div>`;
+  }
+
   html += `</div>`;
   return html;
 }
