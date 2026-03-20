@@ -785,6 +785,141 @@ tr.long-pressing {
   font-variant-numeric: tabular-nums;
 }
 
+/* 4-column metrics grid */
+.metrics-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 700px) {
+  .metrics-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+.metric-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  font-family: var(--font-mono);
+}
+
+/* Guidance table */
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.guide-table th {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: right;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  color: var(--text-muted);
+}
+.guide-table th:first-child {
+  text-align: left;
+}
+.guide-table td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.guide-table .guide-metric {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+}
+
+/* Signal badges */
+.signal-above { color: var(--green); font-weight: 600; font-size: 11px; }
+.signal-below { color: var(--red); font-weight: 600; font-size: 11px; }
+.signal-high { color: var(--green); font-size: 11px; opacity: 0.85; }
+.signal-low { color: var(--yellow); font-size: 11px; opacity: 0.85; }
+.signal-mid { color: var(--text-muted); font-size: 11px; }
+
+/* Revision momentum */
+.revision-section {
+  margin-top: 4px;
+}
+.revision-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.revision-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.revision-direction {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+.revision-track {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+.revision-point {
+  flex: 1;
+  text-align: center;
+  padding: 6px 4px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.revision-current {
+  border-color: var(--accent);
+  background: rgba(0, 200, 255, 0.05);
+}
+.revision-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.revision-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.revision-counts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+.revision-up { color: var(--green); font-weight: 600; }
+.revision-down { color: var(--red); font-weight: 600; }
+.revision-period { color: var(--text-muted); font-size: 10px; margin-left: auto; }
+.revision-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--red);
+  border-radius: 2px;
+  overflow: hidden;
+  max-width: 120px;
+}
+.revision-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--green);
+  border-radius: 2px;
+}
+
 /* Narrative text */
 .narrative-text {
   font-size: 12px;

@@ -415,6 +415,39 @@ async function fetchAnalystSummaryClient(ticker) {
   return snap?.analyst_summary?.[ticker] || null;
 }
 
+// --- Client-side estimates data fetch ---
+async function fetchEstimatesClient(ticker) {
+  // Try Supabase first (if estimates_data table exists)
+  if (await checkSupabase()) {
+    const data = await supabaseGet('estimates_data', `select=*&ticker=eq.${encodeURIComponent(ticker)}`);
+    if (data?.length) {
+      const r = data[0];
+      return {
+        revenueLtm: r.revenue_ltm, revenueGrowth: r.revenue_growth,
+        grossMargins: r.gross_margins, operatingMargins: r.operating_margins,
+        fcf: r.fcf, fcfMargin: r.fcf_margin,
+        nextQRevEst: r.next_q_rev_est, nextQRevGrowth: r.next_q_rev_growth,
+        nextQEpsEst: r.next_q_eps_est, nextQEpsGrowth: r.next_q_eps_growth,
+        fy1RevEst: r.fy1_rev_est, fy1RevGrowth: r.fy1_rev_growth,
+        fy1EpsEst: r.fy1_eps_est, fy1EpsGrowth: r.fy1_eps_growth,
+        fy2RevEst: r.fy2_rev_est, fy2RevGrowth: r.fy2_rev_growth,
+        fy2EpsEst: r.fy2_eps_est, fy2EpsGrowth: r.fy2_eps_growth,
+        guideRevHigh: r.guide_rev_high, guideRevLow: r.guide_rev_low,
+        guideEpsHigh: r.guide_eps_high, guideEpsLow: r.guide_eps_low,
+        consensusRev: r.consensus_rev, consensusEps: r.consensus_eps,
+        epsTrendCurrent: r.eps_trend_current, epsTrend7d: r.eps_trend_7d,
+        epsTrend30d: r.eps_trend_30d, epsTrend60d: r.eps_trend_60d,
+        epsTrend90d: r.eps_trend_90d,
+        revisionsUp7d: r.revisions_up_7d, revisionsDown7d: r.revisions_down_7d,
+        revisionsUp30d: r.revisions_up_30d, revisionsDown30d: r.revisions_down_30d,
+      };
+    }
+  }
+  // Fallback to snapshot
+  const snap = await loadSnapshot();
+  return snap?.estimates?.[ticker] || null;
+}
+
 // --- Client-side ticker search ---
 async function searchTickerClient(query) {
   try {

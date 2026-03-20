@@ -35,9 +35,10 @@ async function openPopup(ticker) {
 
   try {
     // Fetch fresh data from chart + backend
-    const [chart, backendData] = await Promise.all([
+    const [chart, backendData, estimatesData] = await Promise.all([
       fetchChartData(ticker, '5y', '1d'),
       fetchSummaryFromBackend(ticker),
+      typeof fetchEstimatesClient === 'function' ? fetchEstimatesClient(ticker) : null,
     ]);
 
     if (currentPopupTicker !== ticker) return; // User closed/switched
@@ -76,14 +77,14 @@ async function openPopup(ticker) {
     data.calendarEvents = calendarData;
     data.earningsHistory = earningsHistoryData;
     const summary = null; // We use backend data instead
-    renderPopupContent(ticker, data, summary, chart);
+    renderPopupContent(ticker, data, summary, chart, estimatesData);
   } catch (e) {
     console.error('Popup load error:', e);
     $popupContent.innerHTML = `<div style="color:var(--red);padding:40px;text-align:center;">Failed to load data for ${ticker}</div>`;
   }
 }
 
-function renderPopupContent(ticker, data, summary, chart) {
+function renderPopupContent(ticker, data, summary, chart, estimatesData) {
   // Data is now primarily from backend
   const cal = data.calendarEvents || {};
   const earningsHistory = data.earningsHistory || [];
@@ -189,7 +190,12 @@ function renderPopupContent(ticker, data, summary, chart) {
     </div>
   `;
 
-  // Section 2: Consensus
+  // Section 2: Top Line Snapshot + Guidance vs Consensus
+  const est = estimatesData || {};
+  html += buildTopLineSection(est);
+  html += buildGuidanceSection(est, ticker);
+
+  // Section 3: Consensus
   html += `<div class="popup-section">
     <div class="popup-section-title">What the Street Thinks</div>
     <div class="metrics-grid">
@@ -438,4 +444,217 @@ function generatePreEarningsNarrative(ticker, data, info) {
   }
 
   return parts.join(' ');
+}
+
+// --- Top Line Snapshot section ---
+function buildTopLineSection(est) {
+  if (!est || (!est.revenueLtm && !est.nextQRevEst)) return '';
+
+  const fmtBig = (v) => v != null ? formatLargeNumber(v) : '—';
+  const fmtPct = (v) => {
+    if (v == null) return '—';
+    const pct = (v * 100);
+    return `<span class="${percentClass(pct)}">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</span>`;
+  };
+  const fmtEps = (v) => v != null ? (v >= 0 ? '$' + v.toFixed(2) : '-$' + Math.abs(v).toFixed(2)) : '—';
+
+  let html = `<div class="popup-section">
+    <div class="popup-section-title">Top Line Snapshot</div>
+    <div class="metrics-grid metrics-grid-4">`;
+
+  // Row 1: LTM Revenue, Rev Growth, Gross Margin, Op Margin
+  html += `
+      <div class="metric-card">
+        <div class="metric-label">LTM Revenue</div>
+        <div class="metric-value">${fmtBig(est.revenueLtm)}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Rev Growth (YoY)</div>
+        <div class="metric-value">${fmtPct(est.revenueGrowth)}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Gross Margin</div>
+        <div class="metric-value">${est.grossMargins != null ? (est.grossMargins * 100).toFixed(1) + '%' : '—'}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Op Margin</div>
+        <div class="metric-value">${est.operatingMargins != null ? (est.operatingMargins * 100).toFixed(1) + '%' : '—'}</div>
+      </div>`;
+
+  // Row 2: FCF, FCF Margin, NQ Rev Est, NQ EPS Est
+  html += `
+      <div class="metric-card">
+        <div class="metric-label">FCF (LTM)</div>
+        <div class="metric-value">${fmtBig(est.fcf)}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">FCF Margin</div>
+        <div class="metric-value">${est.fcfMargin != null ? (est.fcfMargin * 100).toFixed(1) + '%' : '—'}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">NQ Rev Est</div>
+        <div class="metric-value">${fmtBig(est.nextQRevEst)}</div>
+        ${est.nextQRevGrowth != null ? `<div class="metric-sub">${fmtPct(est.nextQRevGrowth)} YoY</div>` : ''}
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">NQ EPS Est</div>
+        <div class="metric-value">${fmtEps(est.nextQEpsEst)}</div>
+        ${est.nextQEpsGrowth != null ? `<div class="metric-sub">${fmtPct(est.nextQEpsGrowth)} YoY</div>` : ''}
+      </div>`;
+
+  // Row 3: FY1 & FY2 estimates
+  html += `
+      <div class="metric-card">
+        <div class="metric-label">FY1 Rev Est</div>
+        <div class="metric-value">${fmtBig(est.fy1RevEst)}</div>
+        ${est.fy1RevGrowth != null ? `<div class="metric-sub">${fmtPct(est.fy1RevGrowth)} YoY</div>` : ''}
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">FY1 EPS Est</div>
+        <div class="metric-value">${fmtEps(est.fy1EpsEst)}</div>
+        ${est.fy1EpsGrowth != null ? `<div class="metric-sub">${fmtPct(est.fy1EpsGrowth)} YoY</div>` : ''}
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">FY2 Rev Est</div>
+        <div class="metric-value">${fmtBig(est.fy2RevEst)}</div>
+        ${est.fy2RevGrowth != null ? `<div class="metric-sub">${fmtPct(est.fy2RevGrowth)} YoY</div>` : ''}
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">FY2 EPS Est</div>
+        <div class="metric-value">${fmtEps(est.fy2EpsEst)}</div>
+        ${est.fy2EpsGrowth != null ? `<div class="metric-sub">${fmtPct(est.fy2EpsGrowth)} YoY</div>` : ''}
+      </div>`;
+
+  html += `</div></div>`;
+  return html;
+}
+
+// --- Guidance vs Consensus section ---
+function buildGuidanceSection(est, ticker) {
+  // Only show if we have guidance data
+  if (!est || (est.guideRevHigh == null && est.guideEpsHigh == null && est.epsTrendCurrent == null)) return '';
+
+  const fmtBig = (v) => v != null ? formatLargeNumber(v) : '—';
+  const fmtEps = (v) => v != null ? (v >= 0 ? '$' + v.toFixed(2) : '-$' + Math.abs(v).toFixed(2)) : '—';
+
+  let html = `<div class="popup-section">
+    <div class="popup-section-title">Guidance vs Consensus</div>`;
+
+  // Guidance table (next quarter)
+  if (est.guideRevHigh != null || est.guideEpsHigh != null) {
+    // Determine if consensus sits inside or outside guidance range
+    let revSignal = '';
+    if (est.consensusRev != null && est.guideRevLow != null && est.guideRevHigh != null) {
+      if (est.consensusRev > est.guideRevHigh) revSignal = '<span class="signal-above">Above guide</span>';
+      else if (est.consensusRev < est.guideRevLow) revSignal = '<span class="signal-below">Below guide</span>';
+      else {
+        const mid = (est.guideRevLow + est.guideRevHigh) / 2;
+        const pctOfRange = (est.consensusRev - est.guideRevLow) / (est.guideRevHigh - est.guideRevLow);
+        if (pctOfRange > 0.7) revSignal = '<span class="signal-high">High end</span>';
+        else if (pctOfRange < 0.3) revSignal = '<span class="signal-low">Low end</span>';
+        else revSignal = '<span class="signal-mid">Mid-range</span>';
+      }
+    }
+
+    let epsSignal = '';
+    if (est.consensusEps != null && est.guideEpsLow != null && est.guideEpsHigh != null) {
+      if (est.consensusEps > est.guideEpsHigh) epsSignal = '<span class="signal-above">Above guide</span>';
+      else if (est.consensusEps < est.guideEpsLow) epsSignal = '<span class="signal-below">Below guide</span>';
+      else {
+        const range = est.guideEpsHigh - est.guideEpsLow;
+        if (range > 0) {
+          const pct = (est.consensusEps - est.guideEpsLow) / range;
+          if (pct > 0.7) epsSignal = '<span class="signal-high">High end</span>';
+          else if (pct < 0.3) epsSignal = '<span class="signal-low">Low end</span>';
+          else epsSignal = '<span class="signal-mid">Mid-range</span>';
+        }
+      }
+    }
+
+    html += `
+    <table class="guide-table">
+      <thead><tr>
+        <th>Next Quarter</th>
+        <th>Guide Low</th>
+        <th>Guide High</th>
+        <th>Street Consensus</th>
+        <th>Signal</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="guide-metric">Revenue</td>
+          <td>${fmtBig(est.guideRevLow)}</td>
+          <td>${fmtBig(est.guideRevHigh)}</td>
+          <td>${fmtBig(est.consensusRev)}</td>
+          <td>${revSignal}</td>
+        </tr>
+        <tr>
+          <td class="guide-metric">EPS</td>
+          <td>${fmtEps(est.guideEpsLow)}</td>
+          <td>${fmtEps(est.guideEpsHigh)}</td>
+          <td>${fmtEps(est.consensusEps)}</td>
+          <td>${epsSignal}</td>
+        </tr>
+      </tbody>
+    </table>`;
+  }
+
+  // EPS Revision Momentum
+  if (est.epsTrendCurrent != null) {
+    const trend = [
+      { label: 'Current', val: est.epsTrendCurrent },
+      { label: '7d Ago', val: est.epsTrend7d },
+      { label: '30d Ago', val: est.epsTrend30d },
+      { label: '60d Ago', val: est.epsTrend60d },
+      { label: '90d Ago', val: est.epsTrend90d },
+    ].filter(t => t.val != null);
+
+    // Calculate direction of revisions
+    let revisionDirection = '';
+    if (trend.length >= 2) {
+      const delta = trend[0].val - trend[trend.length - 1].val;
+      if (Math.abs(delta) < 0.001) revisionDirection = 'Flat';
+      else if (delta > 0) revisionDirection = `<span class="val-pos">+$${delta.toFixed(2)} over ${trend.length > 2 ? '90' : '7'}d</span>`;
+      else revisionDirection = `<span class="val-neg">-$${Math.abs(delta).toFixed(2)} over ${trend.length > 2 ? '90' : '7'}d</span>`;
+    }
+
+    html += `
+    <div class="revision-section">
+      <div class="revision-header">
+        <span class="revision-title">EPS Revision Momentum (Next Q)</span>
+        <span class="revision-direction">${revisionDirection}</span>
+      </div>
+      <div class="revision-track">`;
+
+    trend.forEach((t, i) => {
+      const isFirst = i === 0;
+      html += `
+        <div class="revision-point ${isFirst ? 'revision-current' : ''}">
+          <div class="revision-val">${fmtEps(t.val)}</div>
+          <div class="revision-label">${t.label}</div>
+        </div>`;
+    });
+
+    html += `</div>`;
+
+    // Analyst revision counts
+    if (est.revisionsUp30d != null || est.revisionsDown30d != null) {
+      const up = est.revisionsUp30d || 0;
+      const down = est.revisionsDown30d || 0;
+      const total = up + down;
+      const upPct = total > 0 ? Math.round((up / total) * 100) : 0;
+      html += `
+      <div class="revision-counts">
+        <span class="revision-up">\u25B2 ${up} up</span>
+        <span class="revision-bar"><span class="revision-bar-fill" style="width:${upPct}%"></span></span>
+        <span class="revision-down">\u25BC ${down} down</span>
+        <span class="revision-period">last 30d</span>
+      </div>`;
+    }
+
+    html += `</div>`;
+  }
+
+  html += `</div>`;
+  return html;
 }
