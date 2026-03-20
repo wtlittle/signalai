@@ -2,14 +2,17 @@
 
 let popupChartInstance = null;
 
-const CHART_COLORS = [
-  '#3b82f6', // ticker (blue)
-  '#9ca3af', // S&P 500 (gray)
+// Color scheme: ticker pops, indexes colored, peers muted grey
+const CHART_COLOR_TICKER = '#00e5ff';   // vivid cyan for the main ticker
+const CHART_COLOR_INDEXES = [
+  '#f5f5f5', // S&P 500 (white/light)
   '#f59e0b', // NASDAQ (amber)
   '#8b5cf6', // IGV (purple)
-  '#22c55e', // peer 1 (green)
-  '#ef4444', // peer 2 (red)
-  '#06b6d4', // peer 3 (cyan)
+];
+const CHART_COLOR_PEERS = [
+  '#4b5563', // peer 1 (dark grey)
+  '#6b7280', // peer 2 (medium grey)
+  '#374151', // peer 3 (darker grey)
 ];
 
 const PERIOD_MAP = {
@@ -78,16 +81,32 @@ async function renderPopupChart(container, ticker, period = '1Y') {
     const returnVal = s.values[s.values.length - 1];
     const returnStr = returnVal != null ? ` (${returnVal >= 0 ? '+' : ''}${returnVal.toFixed(1)}%)` : '';
 
+    // Color logic: idx 0 = ticker (vivid), 1-3 = indexes (colored), 4+ = peers (grey)
+    let lineColor, lineWidth, dash;
+    if (idx === 0) {
+      lineColor = CHART_COLOR_TICKER;
+      lineWidth = 3;
+      dash = [];
+    } else if (idx >= 1 && idx <= 3) {
+      lineColor = CHART_COLOR_INDEXES[idx - 1];
+      lineWidth = 1.5;
+      dash = [];
+    } else {
+      lineColor = CHART_COLOR_PEERS[(idx - 4) % CHART_COLOR_PEERS.length];
+      lineWidth = 1.5;
+      dash = [5, 4];
+    }
+
     datasets.push({
       label: `${displayName}${returnStr}`,
       data: s.values,
-      borderColor: CHART_COLORS[idx % CHART_COLORS.length],
+      borderColor: lineColor,
       backgroundColor: 'transparent',
-      borderWidth: idx === 0 ? 2.5 : 1.5,
+      borderWidth: lineWidth,
       pointRadius: 0,
       pointHitRadius: 6,
       tension: 0.1,
-      borderDash: idx > 3 ? [4, 3] : [],
+      borderDash: dash,
     });
   });
 
