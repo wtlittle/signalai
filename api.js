@@ -98,6 +98,7 @@ function parseTickerData(ticker, chart, quote) {
   if (quote) {
     row.name = quote.longName || row.name;
     row.price = quote.price ?? row.price;
+    row.currency = quote.currency || row.currency;
     row.marketCap = quote.marketCap ?? null;
     row.enterpriseValue = quote.enterpriseValue ?? null;
     row.totalRevenue = quote.totalRevenue ?? null;
@@ -155,50 +156,61 @@ function parseTickerData(ticker, chart, quote) {
   if (!fcf && row.operatingCashflow) fcf = row.operatingCashflow * 0.85;
   row.evFcf = (row.ev && fcf && fcf > 0) ? row.ev / fcf : null;
 
-  // Performance calculations from chart data
-  const closes = chart?.closes || [];
-  const timestamps = chart?.timestamps || [];
-  const len = closes.length;
+  // Performance calculations — prefer pre-computed returns from quote data (avoids chart fetch on load)
+  if (quote && quote.change1d != null) {
+    row.d1 = quote.change1d;
+    row.w1 = quote.change1w ?? null;
+    row.m1 = quote.change1m ?? null;
+    row.m3 = quote.change3m ?? null;
+    row.y1 = quote.change1y ?? null;
+    row.y3 = quote.change3y ?? null;
+    row.ytd = quote.changeYtd ?? null;
+  } else {
+    // Fallback: compute from chart close prices if available
+    const closes = chart?.closes || [];
+    const timestamps = chart?.timestamps || [];
+    const len = closes.length;
 
-  const validCloses = [];
-  const validTimestamps = [];
-  for (let i = 0; i < len; i++) {
-    if (closes[i] != null) {
-      validCloses.push(closes[i]);
-      validTimestamps.push(timestamps[i]);
-    }
-  }
-  const vlen = validCloses.length;
-
-  if (vlen > 0) {
-    const current = row.price || validCloses[vlen - 1];
-    const findClose = (daysBack) => {
-      if (daysBack >= vlen) return validCloses[0];
-      return validCloses[vlen - 1 - daysBack];
-    };
-    const calcReturn = (prev) => {
-      if (!prev || !current) return null;
-      return ((current - prev) / prev) * 100;
-    };
-
-    row.d1 = calcReturn(findClose(1));
-    row.w1 = calcReturn(findClose(5));
-    row.m1 = calcReturn(findClose(21));
-    row.m3 = calcReturn(findClose(63));
-    row.y1 = calcReturn(findClose(252));
-    row.y3 = calcReturn(findClose(756));
-
-    // YTD
-    const now = new Date();
-    const yearStart = new Date(now.getFullYear(), 0, 1).getTime() / 1000;
-    let ytdPrice = null;
-    for (let i = 0; i < validTimestamps.length; i++) {
-      if (validTimestamps[i] >= yearStart) {
-        ytdPrice = validCloses[i > 0 ? i - 1 : 0];
-        break;
+    const validCloses = [];
+    const validTimestamps = [];
+    for (let i = 0; i < len; i++) {
+      if (closes[i] != null) {
+        validCloses.push(closes[i]);
+        validTimestamps.push(timestamps[i]);
       }
     }
-    row.ytd = calcReturn(ytdPrice);
+    const vlen = validCloses.length;
+
+    if (vlen > 0) {
+      const current = row.price || validCloses[vlen - 1];
+      const findClose = (daysBack) => {
+        if (daysBack >= vlen) return validCloses[0];
+        return validCloses[vlen - 1 - daysBack];
+      };
+      const calcReturn = (prev) => {
+        if (!prev || !current) return null;
+        return ((current - prev) / prev) * 100;
+      };
+
+      row.d1 = calcReturn(findClose(1));
+      row.w1 = calcReturn(findClose(5));
+      row.m1 = calcReturn(findClose(21));
+      row.m3 = calcReturn(findClose(63));
+      row.y1 = calcReturn(findClose(252));
+      row.y3 = calcReturn(findClose(756));
+
+      // YTD
+      const now = new Date();
+      const yearStart = new Date(now.getFullYear(), 0, 1).getTime() / 1000;
+      let ytdPrice = null;
+      for (let i = 0; i < validTimestamps.length; i++) {
+        if (validTimestamps[i] >= yearStart) {
+          ytdPrice = validCloses[i > 0 ? i - 1 : 0];
+          break;
+        }
+      }
+      row.ytd = calcReturn(ytdPrice);
+    }
   }
 
   // Subsector — auto-classify from sector/industry if not already mapped
@@ -227,37 +239,21 @@ async function fetchTickerFull(ticker) {
   return parseTickerData(ticker, chart, quotes[ticker]);
 }
 
-// Fetch all tickers — chart data batched, fundamentals batched via backend
+// Fetch all tickers — quotes only on initial load (chart data lazy-loaded in popups)
 async function fetchAllTickers(tickers, onProgress) {
-  // First, fetch all fundamentals in one batch from backend
   if (onProgress) onProgress(0, tickers.length);
 
-  // Start fundamentals fetch (single HTTP call for all tickers)
-  const quotesPromise = fetchQuotesBatch(tickers);
+  // Single batch fetch for all quotes — no chart data needed on initial load
+  // Performance returns come from pre-computed quote fields (change_1d, etc.)
+  const quotes = await fetchQuotesBatch(tickers);
 
-  // Fetch chart data in parallel batches
-  const chartResults = {};
-  const batchSize = 5;
-  for (let i = 0; i < tickers.length; i += batchSize) {
-    const batch = tickers.slice(i, i + batchSize);
-    const batchResults = await Promise.allSettled(
-      batch.map(t => fetchChartData(t, '5y', '1d'))
-    );
-    batchResults.forEach((r, idx) => {
-      chartResults[batch[idx]] = r.status === 'fulfilled' ? r.value : null;
-    });
-    if (onProgress) onProgress(Math.min(i + batchSize, tickers.length), tickers.length);
-  }
+  if (onProgress) onProgress(tickers.length, tickers.length);
 
-  // Await fundamentals
-  const quotes = await quotesPromise;
-
-  // Merge
+  // Build rows from quote data only (no chart needed for table view)
   const results = {};
   tickers.forEach(ticker => {
-    const chart = chartResults[ticker];
     const quote = quotes[ticker];
-    results[ticker] = parseTickerData(ticker, chart, quote);
+    results[ticker] = parseTickerData(ticker, null, quote);
   });
 
   return results;

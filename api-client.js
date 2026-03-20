@@ -20,23 +20,30 @@ async function supabaseGet(table, params = '') {
   }
 }
 
-// --- Supabase connection test ---
+// --- Supabase connection test (deduped: single in-flight request) ---
 let _supabaseAvailable = null;
+let _supabaseCheckPromise = null;
+let _supabaseGenerated = null;
+
 async function checkSupabase() {
   if (_supabaseAvailable !== null) return _supabaseAvailable;
-  try {
-    const data = await supabaseGet('metadata', 'select=key,value&key=eq.generated');
-    _supabaseAvailable = !!(data && data.length > 0);
-    if (_supabaseAvailable) {
-      console.log('Supabase connected, data generated:', data[0].value);
-      _supabaseGenerated = data[0].value;
+  if (_supabaseCheckPromise) return _supabaseCheckPromise;
+  _supabaseCheckPromise = (async () => {
+    try {
+      const data = await supabaseGet('metadata', 'select=key,value&key=eq.generated');
+      _supabaseAvailable = !!(data && data.length > 0);
+      if (_supabaseAvailable) {
+        console.log('Supabase connected, data generated:', data[0].value);
+        _supabaseGenerated = data[0].value;
+      }
+    } catch {
+      _supabaseAvailable = false;
     }
-  } catch {
-    _supabaseAvailable = false;
-  }
-  return _supabaseAvailable;
+    _supabaseCheckPromise = null;
+    return _supabaseAvailable;
+  })();
+  return _supabaseCheckPromise;
 }
-let _supabaseGenerated = null;
 
 // --- CORS proxy for live chart prices (best-effort enhancement) ---
 const YF_CHART_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart/';
