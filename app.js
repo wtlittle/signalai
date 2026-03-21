@@ -117,6 +117,22 @@ let refreshCountdown = 60;
   Storage.set(MIGRATION_KEY, true);
 })();
 
+// --- Migration v6: Add weekly briefing picks ---
+(function migrate_v6() {
+  const MIGRATION_KEY = 'migration_v6_done';
+  if (Storage.get(MIGRATION_KEY)) return;
+  const newTickers = ['ELV','TMO','ACGL','LPLA','SNDK','CIEN','WDC','CF'];
+  let added = false;
+  newTickers.forEach(t => {
+    if (!tickerList.includes(t)) {
+      tickerList.push(t);
+      added = true;
+    }
+  });
+  if (added) Storage.set('ticker_list', tickerList);
+  Storage.set(MIGRATION_KEY, true);
+})();
+
 // --- DOM refs ---
 const $body = document.getElementById('watchlist-body');
 const $privateBody = document.getElementById('private-body');

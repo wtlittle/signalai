@@ -207,6 +207,9 @@ const DEFAULT_TICKERS = [
   'TTD','PINS',
   // --- Applied AI ---
   'AI','IOT',
+  // --- Weekly Briefing Picks ---
+  'ELV','TMO','ACGL','LPLA',   // Value picks
+  'SNDK','CIEN','WDC','CF',    // Momentum picks
 ];
 
 // --- Default private companies ---

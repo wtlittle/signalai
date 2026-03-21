@@ -1,0 +1,454 @@
+{
+  "week_ending": "2026-03-21",
+  "generated": "2026-03-21T09:15:00-04:00",
+  "market_summary": {
+    "sp500_weekly": "-2.88%",
+    "nasdaq_weekly": "-3.25%",
+    "russell_weekly": "-2.59%",
+    "sp500_30d": "-4.92%",
+    "nasdaq_30d": "-4.12%",
+    "russell_30d": "-7.86%",
+    "sp500_level": 6506.49,
+    "narrative": "U.S. equities declined sharply for a second consecutive week as the Iran conflict continued to drive energy prices above $98/barrel, the Fed held rates steady at 3.50\u20133.75% with hawkish commentary, and hotter-than-expected February PPI data (+0.7% vs. 0.3% est.) amplified stagflation fears. All three major indices broke below their 200-day moving averages, with the S&P 500 now down ~6.7% from its all-time high and trading near 6,500.",
+    "sources": "https://www.watrust.com/articles/week-in-review-march-20-2026, https://www.marketbeat.com/originals/marketbeat-week-in-review-03-16-03-20/, https://247wallst.com/investing/2026/03/18/stock-market-live-march-18-2026-sp-500-spy-flat-on-hot-inflation-reading/"
+  },
+  "value_picks": [
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft Corporation",
+      "price": "$381.87",
+      "high_52w": "$555.45",
+      "low_52w": "$344.79",
+      "off_high_pct": "-31.3%",
+      "market_cap_b": "$2,835.6B",
+      "pe_ratio": "23.9x",
+      "ev_ebitda": "22.5x",
+      "rev_growth": "+14.9% (FY2025 $281.7B vs FY2024 $245.1B)",
+      "fcf_yield": "1.9%",
+      "fcf_ttm": "$71.6B (FY2025)",
+      "debt_equity": "0.33x",
+      "analyst_avg_target": "$586.33 (+53.5% upside)",
+      "analyst_consensus": "Strong Buy (88.9% bullish, 9 analysts)",
+      "why_undervalued": "Market overreaction to AI investment fears: Microsoft spent heavily on Azure/AI infrastructure in 2025, triggering a broad sell-off despite 14.9% revenue growth and $71.6B in FCF. The stock trades at 23.9x earnings vs. its 5-year average of ~36x. Azure grew ~31% in FY2025. Fears that AI capex destroys returns have been overblown \u2014 Microsoft's subscription moat (Office 365, Azure, GitHub Copilot) insulates it from near-term disruption, and AI monetization is just beginning.",
+      "bull_case": "Azure's AI-powered growth is accelerating and still in early innings, while Microsoft's subscription flywheel generates $71B+ in annual FCF regardless of macro uncertainty. At 23.9x earnings vs. historical 30-36x, re-rating to the mean alone implies 25-50% upside even without incremental growth.",
+      "sources": "https://www.morningstar.com/stocks/5-oversold-stocks-buy-before-they-rebound-2, https://perplexity.ai/finance/MSFT",
+      "data_as_of": "2026-03-20"
+    },
+    {
+      "ticker": "ELV",
+      "name": "Elevance Health Inc.",
+      "price": "$291.48",
+      "high_52w": "$458.75",
+      "low_52w": "$273.71",
+      "off_high_pct": "-36.5%",
+      "market_cap_b": "$64.3B",
+      "pe_ratio": "11.6x",
+      "ev_ebitda": "N/A (negative net cash offset; P/E 11.6x is primary valuation metric)",
+      "rev_growth": "+12.6% (FY2025 $199.1B vs FY2024 $176.8B)",
+      "fcf_yield": "4.1%",
+      "fcf_ttm": "$3.2B (FY2025)",
+      "debt_equity": "0.76x",
+      "analyst_avg_target": "$386.17 (+32.5% upside)",
+      "analyst_consensus": "Strong Buy (100% bullish, 6 analysts)",
+      "why_undervalued": "Elevance has sold off 36.5% from its 52-week high due to sector-wide managed care pressure: elevated Medicaid redeterminations post-COVID expanded enrollment, rising medical cost ratios, and political uncertainty around ACA subsidies. However, ELV's Carelon services division (formerly Anthem Health) grew 33% in 2025 and provides a high-margin diversification stream. At 11.6x earnings \u2014 a fraction of its own historical 16-19x \u2014 the market is pricing in persistent medical cost inflation that management guidance suggests is peaking. Free cash flow yield of 4.1% with a 2% dividend further supports the floor.",
+      "bull_case": "Elevance trades at only 11.6x earnings \u2014 a decade-low multiple \u2014 while its Carelon B2B services business is growing 30%+ and diversifying revenue beyond insurance premiums. As medical cost ratios normalize in 2026 and ACA subsidy uncertainty resolves, mean-reversion in valuation multiples alone implies $390+ fair value, consistent with 100% bullish analyst consensus and a $386 average price target.",
+      "sources": "https://www.forbes.com/sites/investor-hub/article/best-undervalued-stocks-buy-april-2026/, https://perplexity.ai/finance/ELV",
+      "data_as_of": "2026-03-20"
+    },
+    {
+      "ticker": "TMO",
+      "name": "Thermo Fisher Scientific Inc.",
+      "price": "$474.39",
+      "high_52w": "$643.99",
+      "low_52w": "$385.46",
+      "off_high_pct": "-26.3%",
+      "market_cap_b": "$176.2B",
+      "pe_ratio": "26.8x",
+      "ev_ebitda": "23.5x",
+      "rev_growth": "+3.9% (FY2025 $44.6B vs FY2024 $42.9B)",
+      "fcf_yield": "2.9%",
+      "fcf_ttm": "$6.3B (FY2025)",
+      "debt_equity": "0.76x",
+      "analyst_avg_target": "$677.17 (+42.7% upside)",
+      "analyst_consensus": "Strong Buy (100% bullish, 6 analysts)",
+      "why_undervalued": "TMO sold off 26% from its 52-week high as tariff concerns pressured its supply chain costs and a modest operating margin dip was interpreted as structural deterioration rather than the temporary headwind it is. Revenue grew 3.9% organically in FY2025 \u2014 modest vs. the bioprocessing boom of 2021-2022, but normalizing from elevated COVID-related instrument demand. The company guides 3-4% organic growth for 2026 with margin recovery as tariff impacts are absorbed. Wide-moat status via switching costs (lab instruments are integrated into workflows) and intangible assets (proprietary reagents) is intact. Morningstar fair value: $630/share vs current $474.",
+      "bull_case": "Thermo Fisher's monopoly-like position in laboratory instruments and reagents \u2014 where replacement costs are prohibitively high \u2014 ensures highly recurring revenue regardless of economic cycles. Trading at a 26% discount to Morningstar's $630 fair value, with 100% bullish analyst consensus and a $677 average target, the tariff-driven selloff presents a textbook buy-the-dip opportunity in a wide-moat compounder.",
+      "sources": "https://www.morningstar.com/stocks/5-oversold-stocks-buy-before-they-rebound-2, https://perplexity.ai/finance/TMO",
+      "data_as_of": "2026-03-20"
+    },
+    {
+      "ticker": "ACGL",
+      "name": "Arch Capital Group Ltd.",
+      "price": "$92.30",
+      "high_52w": "$103.39",
+      "low_52w": "$82.45",
+      "off_high_pct": "-10.7%",
+      "market_cap_b": "$33.5B",
+      "pe_ratio": "8.0x",
+      "ev_ebitda": "6.5x",
+      "rev_growth": "+14.3% (FY2025 $19.9B vs FY2024 $17.4B)",
+      "fcf_yield": "17.8%",
+      "fcf_ttm": "$6.1B (FY2025)",
+      "debt_equity": "0.11x",
+      "analyst_avg_target": "$106.78 (+15.7% upside)",
+      "analyst_consensus": "Buy (44.4% bullish, 44.4% neutral, 11.1% bearish \u2014 9 analysts)",
+      "why_undervalued": "Arch Capital trades at just 8x earnings and 6.5x EV/EBITDA \u2014 deeply cheap for a specialty insurer/reinsurer with 14.3% revenue growth, near-zero financial leverage (0.11x D/E), and a 17.8% FCF yield. The stock dipped 10.7% from its high amid broad property/casualty insurance sector pressure from catastrophe loss fears (wildfires, hurricanes) and concerns that hardening reinsurance rates may peak. However, ACGL's disciplined cycle management \u2014 it scales back underwriting when pricing deteriorates \u2014 has produced superior through-cycle returns vs. peers. The business produced $6.1B in FCF in FY2025 on a $33.5B market cap. Forbes identified it as meeting all three screening criteria: low price multiples, low beta, high quality.",
+      "bull_case": "Arch Capital's combination of 8x P/E, 17.8% FCF yield, and fortress-like 0.11x debt/equity ratio makes it one of the cheapest quality businesses in US large-cap equities; its cycle-disciplined underwriting consistently outperforms industry peers through hard and soft markets alike. Revenue growing 14.3% while trading at a discount to book value provides both a growth and a value margin of safety.",
+      "sources": "https://www.forbes.com/sites/investor-hub/article/best-undervalued-stocks-buy-april-2026/, https://perplexity.ai/finance/ACGL",
+      "data_as_of": "2026-03-20"
+    },
+    {
+      "ticker": "LPLA",
+      "name": "LPL Financial Holdings Inc.",
+      "price": "$293.08",
+      "high_52w": "$403.58",
+      "low_52w": "$262.83",
+      "off_high_pct": "-27.4%",
+      "market_cap_b": "$23.5B",
+      "pe_ratio": "26.8x",
+      "ev_ebitda": "15.8x",
+      "rev_growth": "+37.2% (FY2025 $17.0B vs FY2024 $12.4B)",
+      "fcf_yield": "N/A (broker-dealer client cash flows distort GAAP FCF; operating EBITDA $2.18B used instead)",
+      "fcf_ttm": "Operating cash: -$423M reported (distorted by client cash movements \u2014 not indicative of business FCF)",
+      "debt_equity": "1.36x",
+      "analyst_avg_target": "$427.80 (+46.0% upside)",
+      "analyst_consensus": "Strong Buy (80% bullish, 5 analysts)",
+      "why_undervalued": "LPL Financial sold off 27% from its 52-week high as wealth management stocks broadly fell on fears that AI-driven robo-advisors would displace human financial advisors. Morningstar's analysis finds this thesis fundamentally flawed: robo-advisors have not taken meaningful market share despite a decade of existence, and investors increasingly value human relationships as wealth grows. LPL reported 37.2% revenue growth in FY2025 \u2014 fueled by organic advisor recruitment and the integration of Prudential's advisory network \u2014 while maintaining a wide economic moat via switching costs and cost-advantage scale. Morningstar rates it 4-star with a 41% discount to fair value and projects >26% 5-year EPS CAGR.",
+      "bull_case": "LPL's advisor-recruitment flywheel is accelerating \u2014 generating 37% revenue growth in FY2025 \u2014 while the feared AI displacement of financial advisors remains a theoretical risk rather than a market reality, creating a misunderstood sell-off. With analysts targeting $428 on average (46% upside) and a strong-buy consensus, the stock offers asymmetric upside if wealth management sentiment normalizes.",
+      "sources": "https://www.morningstar.com/stocks/5-oversold-stocks-buy-before-they-rebound-2, https://perplexity.ai/finance/LPLA",
+      "data_as_of": "2026-03-20"
+    }
+  ],
+  "momentum_picks": [
+    {
+      "ticker": "SNDK",
+      "name": "Sandisk Corporation",
+      "price": "$709.71",
+      "perf_1w": "+15.4%",
+      "perf_1m": "+11.7%",
+      "perf_3m": "+199.0%",
+      "rev_growth": "+61% YoY (Q2 FY2026: $3.03B revenue, driven by +36% avg selling price/GB and +22% exabytes shipped)",
+      "earnings_surprise": "Q2 FY2026 adj. EPS ~$6.20 vs ~$1.21 prior year (+408% YoY); Q3 FY2026 adj. EPS guidance $12\u2013$14 (implies another ~100%+ sequential jump)",
+      "relative_strength": "52-week range: $27.89\u2013$777.60; near 52-week high; 22.3M daily volume vs 18M avg (1.2x); S&P 500 YTD #1 performer (+172.8% per Bankrate); 1-year TSR +1,176%",
+      "market_cap": "$104.8B",
+      "catalyst": "AI data center NAND flash supercycle: SanDisk (spun out from Western Digital in early 2025) is the dominant beneficiary of surging hyperscaler demand for NAND flash storage used in AI training and inference. Q2 FY2026 revenue grew 61% YoY as both pricing and volume expanded simultaneously. Multi-year supply agreements with major hyperscalers provide demand visibility, and the company projects customer demand to remain well above available supply through at least 2026. The adj. EPS trajectory (from near-zero to ~$6.20, with Q3 guidance of $12\u2013$14) reflects extraordinary operating leverage in the NAND upcycle.",
+      "risk_reward": "Reward: Dominant pure-play AI storage beneficiary with contracted hyperscaler demand, accelerating margins, and a forward P/E of ~27.7x that appears reasonable given projected 1,190% EPS growth in FY2026. Risk: Memory semiconductors are notoriously cyclical\u2014any supply overshoot, hyperscaler capex pullback, or AI demand normalization could trigger a violent reversal from a stock that has already risen over 1,000% in six months.",
+      "sources": "https://perplexity.ai/finance/SNDK, https://www.barchart.com/story/news/541200/sandisk-stock-forecast-can-the-rally-continue-into-2026, https://simplywall.st/stocks/us/tech/nasdaq-sndk/sandisk/news/sandisk-sndk-valuation-check-after-ai-driven-stock-rally-and, https://www.bankrate.com/investing/best-performing-stocks/"
+    },
+    {
+      "ticker": "CIEN",
+      "name": "Ciena Corporation",
+      "price": "$383.89",
+      "perf_1w": "+13.3%",
+      "perf_1m": "+10.1%",
+      "perf_3m": "+64.1%",
+      "rev_growth": "+33% YoY (Q1 FY2026: $1.427B; company raised FY2026 guidance to $5.90\u2013$6.30B, implying ~25% full-year growth)",
+      "earnings_surprise": "Q1 FY2026 EPS $1.06 vs $0.06 year-ago (+1,667% YoY); revenue beat consensus; record order backlog $7B+; 111% YoY EPS growth",
+      "relative_strength": "52-week range: $49.21\u2013$419.80; up 485% over 52 weeks (#1 52-week performer per StockTitan); avg volume 3.28M; trading at 63x TTM P/E reflecting re-rating from earnings inflection",
+      "market_cap": "$54.3B",
+      "catalyst": "AI optical networking demand surge with raised guidance: Ciena beat Q1 FY2026 estimates on both revenue (+33% YoY) and EPS (+1,667% YoY), then raised its full-year FY2026 revenue guidance to $5.90\u2013$6.30B. Hyperscalers are dramatically increasing optical interconnect budgets to support AI data center buildouts, WAN connectivity, and data center interconnect (DCI). At OFC 2026, Ciena showcased AI-oriented and quantum-secure networking innovations. A record $7B+ order backlog provides multi-quarter revenue visibility. Goldman Sachs and Morgan Stanley raised price targets in March 2026.",
+      "risk_reward": "Reward: Multi-year AI bandwidth demand tailwind supported by a record order backlog, raised guidance, and an EPS inflection from near-zero to a meaningful earnings stream\u2014offering a genuine re-rating story. Risk: Heavy customer concentration among a small number of hyperscalers and telcos means any pause in their AI network capex would disproportionately impact Ciena's revenue trajectory.",
+      "sources": "https://perplexity.ai/finance/CIEN, https://finance.yahoo.com/news/ciena-surges-73-3-months-125000122.html, https://simplywall.st/stocks/us/tech/nyse-cien/ciena/news/ciena-cien-is-up-125-after-hiking-2026-guidance-and-showcasi, https://www.stocktitan.net/rankings/stock-gains-monthly/2026/march"
+    },
+    {
+      "ticker": "WDC",
+      "name": "Western Digital Corporation",
+      "price": "$293.10",
+      "perf_1w": "+5.6%",
+      "perf_1m": "+4.8%",
+      "perf_3m": "+70.1%",
+      "rev_growth": "+31.5% YoY (Q2 FY2026: $3.017B vs $2.294B year-ago; EPS $5.27 vs $0.79 year-ago, +567% YoY)",
+      "earnings_surprise": "Q2 FY2026 EPS $5.27 beat consensus; Q1 FY2026 revenue beat consensus by $88M; Zacks FY2026 consensus estimate revised +17% to $8.96 in past 60 days",
+      "relative_strength": "52-week range: $28.83\u2013$319.62; near 52-week high; avg volume 9.5M shares; 11.2M volume on March 20 (above avg); up 58.3% YTD through early March",
+      "market_cap": "$99.4B",
+      "catalyst": "Pure-play HDD supplier with 2026 capacity fully sold out: Post-SanDisk spinoff, Western Digital is a pure-play mass-capacity hard disk drive (HDD) company supplying cloud and AI data centers. Management confirmed HDD manufacturing capacity is sold out through 2026 under multi-year customer contracts\u2014providing unusually high earnings visibility. Q2 FY2026 EPS of $5.27 vs $0.79 a year ago demonstrates massive operating leverage from AI-driven hyperscaler demand. Named a 2026 World's Most Ethical Company. Analyst consensus raised 17% in 60 days.",
+      "risk_reward": "Reward: Fully contracted production through year-end provides rare earnings certainty for a cyclical company; pure-play post-spinoff eliminates NAND flash volatility, and the stock trades at a reasonable 27.7x P/E for a secular AI infrastructure beneficiary. Risk: Concentrated hyperscale customer base (3\u20135 customers) means contract renewal or demand-shift risk could rapidly reverse the earnings outlook.",
+      "sources": "https://perplexity.ai/finance/WDC, https://simplywall.st/stocks/us/tech/nasdaq-wdc/western-digital/news/why-western-digital-wdc-is-up-213-after-selling-out-2026-hdd, https://www.theglobeandmail.com/investing/markets/stocks/STX/pressreleases/865099/western-digitals-hyperscaler-momentum-boosts-revenue-visibility/, https://www.bankrate.com/investing/best-performing-stocks/"
+    },
+    {
+      "ticker": "DOCN",
+      "name": "DigitalOcean Holdings, Inc.",
+      "price": "$82.65",
+      "perf_1w": "+42.2%",
+      "perf_1m": "+47.4%",
+      "perf_3m": "+71.8%",
+      "rev_growth": "+18.3% YoY (Q4 2025: $242.4M vs ~$205M year-ago; crossed $1B annualized run-rate; AI and large-customer segment accelerating)",
+      "earnings_surprise": "Q4 2025 adj. EPS $0.44 beat estimates; adj. EBITDA $99.26M (~8% above consensus); revenue $242.4M beat by ~$10M; stock gained 8.1% the day of earnings and continued rising",
+      "relative_strength": "52-week range: $25.45\u2013$86.50; near 52-week high; avg volume 3.1M shares; current volume 3.5M (above avg); highest 1-week and 1-month percentage gain among the 5 picks",
+      "market_cap": "$7.6B",
+      "catalyst": "Mid-cap AI cloud infrastructure re-rating + sector rotation: DigitalOcean beat Q4 2025 estimates across revenue, adj. EPS, and adj. EBITDA, crossing the $1B annualized revenue milestone. Investor rotation from mega-cap tech toward small/mid-cap AI infrastructure names accelerated in March 2026, with DOCN benefiting from renewed optimism in the AI sector (reinforced by NVIDIA's $2B AI infrastructure investment). Workato AI Research Lab joined as a key client, demonstrating DOCN's expanding enterprise AI customer base. The stock was up 58.6% YTD heading into mid-March.",
+      "risk_reward": "Reward: At $7.6B market cap with a 32x P/E and a genuine AI-infrastructure growth angle, DOCN offers levered upside to mid-market cloud adoption at a fraction of hyperscaler valuations\u2014with rising institutional ownership. Risk: FY2026 full-year EPS guidance missed consensus estimates; the stock is highly volatile (49 moves >5% over the past year) and is dependent on continued AI-driven SMB demand amid a potentially softening macro environment.",
+      "sources": "https://perplexity.ai/finance/DOCN, https://finance.yahoo.com/news/digitalocean-docn-soars-26-amid-094033098.html, https://www.barchart.com/story/news/804509/digitalocean-docn-shares-skyrocket-what-you-need-to-know, https://www.marketbeat.com/instant-alerts/digitalocean-nysedocn-sets-new-1-year-high-heres-why-2026-03-16/"
+    },
+    {
+      "ticker": "CF",
+      "name": "CF Industries Holdings, Inc.",
+      "price": "$124.90",
+      "perf_1w": "+12.0%",
+      "perf_1m": "+25.5%",
+      "perf_3m": "+61.5%",
+      "rev_growth": "+23.5% YoY (Q4 2025: $1.872B vs ~$1.516B year-ago; driven by higher average urea/ammonia selling prices and strong global demand)",
+      "earnings_surprise": "Q4 2025 EPS $2.59 beat consensus $2.50 (+3.6%); revenue $1.872B beat $1.783B estimate (+5.0%); Q3 2025 EPS $2.19 beat $2.06; consistent beater across last 3 quarters",
+      "relative_strength": "52-week range: $67.34\u2013$137.44 (hit all-time high $137.44 on March 13); P/E 13.9x; avg volume 3.4M\u2014recent volume spiked to 16.3M (4.8x avg); S&P 500 #1 performer YTD as of mid-March 2026",
+      "market_cap": "$19.5B",
+      "catalyst": "Geopolitical nitrogen supply shock + anti-tech rotation into real assets: Iran's closure of the Strait of Hormuz triggered a global urea supply disruption, spiking nitrogen fertilizer prices. CF Industries\u2014the largest North American nitrogen (urea/ammonia) producer\u2014is a direct beneficiary, with Q4 2025 net sales rising 23.5% YoY. Simultaneously, institutional investors rotated out of overvalued tech into low P/E, high free cash flow 'real yield' assets. CF returned $1.7B to shareholders in 2025 via buybacks (retired ~30% of float over a decade). Emerging blue ammonia opportunity (zero-carbon shipping fuel under IMO 2030 targets) adds long-term optionality. Vanguard and BlackRock increased stakes in Q1 2026.",
+      "risk_reward": "Reward: Trades at only 13.9x earnings with a hard-asset, cash-generative business receiving a geopolitical premium; aggressive buyback program and clean-energy optionality provide multiple return pathways. Risk: The nitrogen price spike is event-driven\u2014a resolution to Middle East tensions or rapid supply normalization could quickly deflate urea prices and collapse the geopolitical risk premium.",
+      "sources": "https://perplexity.ai/finance/CF, https://money.mymotherlode.com/clarkebroadcasting.mymotherlode/article/finterra-2026-3-13-the-nitrogen-king-why-cf-industries-is-march-2026s-1-s-and-p-500-performer, https://finance.yahoo.com/news/cf-cf-surges-13-2-083900774.html, https://www.zacks.com/stock/news/2878419/cf-industries-stock-rallies-37-in-3-months-heres-why, https://seekingalpha.com/news/4564109-cf-industries-hits-record-high-topping-s-and-p-500-for-second-straight-day-on-war-fueled"
+    }
+  ],
+  "trends": [
+    {
+      "title": "Iran War Energy Shock Dominates Sentiment",
+      "detail": "U.S.-Israeli military operations against Iran, ongoing since late February, drove WTI crude above $98/barrel this week as strikes hit energy infrastructure across Iran, Kuwait, Saudi Arabia, Qatar, and the UAE. Iran targeted an LNG facility in Qatar (representing 20% of global LNG supply), adding supply disruption risk. Late-week signals of potential de-escalation \u2014 Israel pledging to avoid further attacks on energy infrastructure \u2014 briefly lifted futures before fading.",
+      "sources": "https://www.aljazeera.com/news/2026/3/16/the-tell-tale-signs-how-bad-has-the-iran-war-hit-the-global-economy, https://www.watrust.com/articles/week-in-review-march-20-2026"
+    },
+    {
+      "title": "Fed Holds Rates, Signals Hawkish Tilt",
+      "detail": "The FOMC kept the federal funds rate at 3.50\u20133.75% at its March 18\u201319 meeting, its second consecutive pause in 2026. The updated Summary of Economic Projections raised both inflation (to 2.7% from 2.4%) and GDP forecasts, and Chair Powell noted progress on inflation has been insufficient. The median dot still calls for one cut in 2026, but several members moved toward fewer cuts and markets have pushed full-cut odds out to late 2027.",
+      "sources": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm, https://www.cbsnews.com/news/federal-reserve-fomc-march-18-interest-rate-decision/, https://www.nuveen.com/en-us/insights/investment-outlook/fed-update"
+    },
+    {
+      "title": "Inflation Surprise Amplifies Stagflation Fears",
+      "detail": "February Core PPI came in at +0.5% m/m vs. consensus of +0.3%, and the headline PPI surged +0.7% \u2014 well above expectations. This was the most prominent data catalyst of the week, arriving ahead of Wednesday's Fed meeting and reinforcing fears that war-related energy costs are already flowing into producer prices. The PCE index had also shown rising cost pressures in prior weeks, before the full energy shock materialized.",
+      "sources": "https://247wallst.com/investing/2026/03/18/stock-market-live-march-18-2026-sp-500-spy-flat-on-hot-inflation-reading/"
+    },
+    {
+      "title": "NVIDIA GTC Provides AI Structural Tailwind",
+      "detail": "NVIDIA held its GTC 2026 conference (March 16\u201319, San Jose) where CEO Jensen Huang projected $1 trillion in Blackwell/Vera Rubin purchase orders through 2027. Announcements included the Vera Rubin next-generation platform, DGX Station for agentic AI, the NVIDIA NemoClaw enterprise security stack, and a groundbreaking partnership with Palantir. China H200 export approval and manufacturing restart added incremental positive news. AI infrastructure stocks (CRDO, ALAB) outperformed the broader tech selloff.",
+      "sources": "https://blogs.nvidia.com/blog/gtc-2026-news/, https://www.cnbc.com/2026/03/16/nvidia-gtc-2026-ceo-jensen-huang-keynote-blackwell-vera-rubin.html"
+    },
+    {
+      "title": "Defensive Sector Rotation: Energy and Defense Over Tech",
+      "detail": "Capital rotated aggressively from high-multiple technology and SaaS into energy, aerospace & defense, utilities, and consumer staples. Analysts at Bank of America termed the shift a 'Bits to Atoms' transition, with defense primes (LMT, RTX, NOC) and oil majors (XOM, CVX) seeing significant inflows. Conversely, Nasdaq growth stocks continued to underperform as investors repriced risk around rising energy costs and the potential for hyperscalers to divert AI capex toward energy.",
+      "sources": "http://business.times-online.com/times-online/article/marketminute-2026-3-4-the-great-2026-defensive-rotation-why-markets-are-pivoting-to-energy-and-defense, https://finance.yahoo.com/news/3-blue-chip-stocks-built-163500286.html"
+    }
+  ],
+  "risks": [
+    {
+      "title": "Iran War Escalation / Strait of Hormuz Disruption",
+      "detail": "The Strait of Hormuz handles ~20% of global oil and LNG flows. Iran's ongoing targeting of tankers in Iraqi territorial waters, plus the LNG facility strike in Qatar, raises the risk of a prolonged supply shock. Capital Economics warns that a protracted conflict could push Brent crude to $130/barrel in Q2. Any re-escalation targeting Saudi Aramco or UAE infrastructure would generate another sharp equity selloff.",
+      "sources": "https://www.aljazeera.com/news/2026/3/16/the-tell-tale-signs-how-bad-has-the-iran-war-hit-the-global-economy"
+    },
+    {
+      "title": "Fed Rate Hike Probability Creeping Higher",
+      "detail": "While not the base case, Powell acknowledged 'rate hikes were discussed' at the March meeting. Markets are now assigning a small but non-zero probability to a hike before year-end, and a full 25bp cut is not priced until late 2027. If energy-driven inflation prints accelerate further, the Fed could be forced off the sideline \u2014 historically the most damaging scenario for high-multiple growth stocks. The Bank of England is already signaling potential April hikes.",
+      "sources": "https://www.watrust.com/articles/week-in-review-march-20-2026, https://www.nuveen.com/en-us/insights/investment-outlook/fed-update"
+    },
+    {
+      "title": "Below-200-DMA Technical Breakdown",
+      "detail": "All three major indices (S&P 500, Nasdaq, Russell 2000) closed the week below their respective 200-day moving averages \u2014 a key technical level that often attracts algorithmic selling and risk-off sentiment among institutional investors. The S&P 500 is now ~6.7% off its all-time high. A sustained close below 6,500 increases the probability of a more substantial pullback toward 6,200\u20136,300 support.",
+      "sources": "https://www.marketbeat.com/originals/marketbeat-week-in-review-03-16-03-20/, https://www.watrust.com/articles/week-in-review-march-20-2026"
+    },
+    {
+      "title": "Tariff Overhang on Tech Supply Chains",
+      "detail": "Ongoing tariff uncertainty from the Trump administration continues to weigh on semiconductor and hardware companies with significant Asia-Pacific supply chains (AAPL, NVDA, TSM, AVGO). Forbes noted the VIX has remained elevated post-Supreme Court tariff decisions, and bullish AAII sentiment fell well below its historical average. Any new tariff escalation targeting semiconductors or electronics could trigger another repricing event.",
+      "sources": "https://www.forbes.com/sites/investor-hub/article/how-tariffs-might-affect-your-investments-in-2026/"
+    },
+    {
+      "title": "Earnings Growth Expectations vs. Energy Cost Reality",
+      "detail": "S&P 500 consensus estimates call for >11% EPS growth in Q1 2026, built on pre-war macro assumptions. Rising energy prices have not yet fully flowed through to company cost structures, and Q1 guidance issued in February may now be too optimistic. Companies with energy-intensive operations, logistics exposure, or Middle East revenue concentration could miss estimates materially in the April\u2013May earnings season.",
+      "sources": "https://www.watrust.com/articles/week-in-review-march-20-2026"
+    }
+  ],
+  "watchlist_updates": [
+    {
+      "ticker": "FSLY",
+      "headline": "Fastly surges +43% in 30 days to 52-week high; Q4 beat plus edge CDN AI tailwind",
+      "detail": "Fastly is the biggest mover in the entire watchlist over 30 days, up ~42.8% and hitting a new 52-week high of $27.59 (on March 19, up 11.2% that day). The catalyst: Q4 2025 revenue of $172.61M beat consensus by 6.97% and grew 22.79% YoY, while non-GAAP operating income swung from -$2.79M loss to +$21.23M profit. The company renewed its partnership with Bronto IO for real-time data platform solutions. CAUTION: Heavy insider selling \u2014 CEO, CTO, and other executives have sold millions of shares throughout the rally. The consensus analyst price target of ~$13.71 is roughly half the current trading price.",
+      "price_change_1w": "-0.0%",
+      "price_change_30d": "+42.8%",
+      "is_major_mover": true,
+      "sources": "https://www.marketbeat.com/instant-alerts/fastly-nysefsly-hits-new-1-year-high-heres-what-happened-2026-03-19/, https://finance.yahoo.com/news/fastly-fsly-surges-22-tech-094121284.html, https://247wallst.com/investing/2026/03/18/fastly-surges-11-the-comeback-is-real-but-insiders-have-been-selling-the-whole-way-up/, https://perplexity.ai/finance/FSLY"
+    },
+    {
+      "ticker": "IOT",
+      "headline": "Samsara surges +28% in 30 days on blowout Q4 FY2026 earnings and analyst estimate revisions",
+      "detail": "Samsara is the single largest positive mover in the watchlist over 30 days, up ~28.2%. Q4 FY2026 results delivered EPS of $0.18 (vs. $0.07 est., +157% beat) and revenue of $444.3M (+28.3% YoY, beat vs. $426.5M est.). This extended IOT's pattern of massive beats: Q1 +83%, Q2 +1,100%, Q3 +150%, Q4 +157%. Analysts raised FY2027 consensus estimates by 254% in the 30 days post-earnings. The stock moved ~14% on earnings day and has continued to appreciate through the month.",
+      "price_change_1w": "+0.4%",
+      "price_change_30d": "+28.2%",
+      "is_major_mover": true,
+      "sources": "https://public.com/stocks/iot/earnings, https://www.quiverquant.com/news/Samsara+Inc.+(IOT)+Stock+Rises+on+Q4+2026+Earnings, https://finance.yahoo.com/news/earnings-estimates-moving-higher-samsara-162002629.html, https://perplexity.ai/finance/IOT"
+    },
+    {
+      "ticker": "SE",
+      "headline": "Sea Limited down 27% in 30 days on EPS miss and analyst target cuts",
+      "detail": "Sea Limited is one of the worst performers in the watchlist, down ~27.1% over 30 days. Q4 2025 earnings showed EPS of $0.63 vs. $0.80 est. (miss of 21%), while revenue of $6.9B beat (+6.3%). Jefferies cut its price target from $197 to $150 (maintaining Buy). Morgan Stanley (Overweight, $173 PT) flagged concerns about further earnings downgrades for 2026. Shopee GMV growth of 25% YoY and stable e-commerce margins were positives, but EPS misses and rising warehouse investment costs dominated sentiment.",
+      "price_change_1w": "-0.9%",
+      "price_change_30d": "-27.1%",
+      "is_major_mover": true,
+      "sources": "https://www.investing.com/news/analyst-ratings/jefferies-cuts-sea-stock-price-target-on-2026-outlook-to-150-93CH-4538770, https://perplexity.ai/finance/SE"
+    },
+    {
+      "ticker": "FOUR",
+      "headline": "Shift4 Payments plunges 26% in 30 days; massive revenue miss and leverage concerns",
+      "detail": "Shift4 is one of the largest decliners in the watchlist over 30 days, down ~26.2%, hitting a new 52-week low. Q4 2025 results showed a massive revenue shortfall ($610M vs. $1.20B expected \u2014 largely due to a reporting reclassification related to the Global Blue acquisition), though adjusted EPS of $1.60 beat the $1.56 estimate. Multiple analysts cut price targets: Goldman $81\u2192$56, Benchmark $100\u2192$67, Wells Fargo $77\u2192$55. FY2026 EPS guidance of $5.50\u20135.70 was below expectations. The company also announced executive leadership changes for its international integration.",
+      "price_change_1w": "-2.0%",
+      "price_change_30d": "-26.2%",
+      "is_major_mover": true,
+      "sources": "https://www.marketbeat.com/instant-alerts/shift4-payments-nysefour-hits-new-1-year-low-time-to-sell-2026-03-13/, https://perplexity.ai/finance/FOUR"
+    },
+    {
+      "ticker": "MDB",
+      "headline": "MongoDB plunges 25% in 30 days following mixed FY2027 guidance",
+      "detail": "MongoDB is the largest decliner among the prominent growth names in the watchlist, down ~25.3% over 30 days. While Q4 FY2026 results were strong (revenue $695M, +27% YoY; EPS $1.65 vs. $1.47 est.), the stock dropped sharply on FY2027 guidance that called for another year of GAAP operating losses ($97\u2013117M) despite $2.86\u20132.90B in projected revenue. The market's reaction reflected concern about the pace of profitability improvement relative to valuation. Prior to results, MDB was trading near its 52-week high of ~$444.",
+      "price_change_1w": "-0.7%",
+      "price_change_30d": "-25.3%",
+      "is_major_mover": true,
+      "sources": "https://finance.yahoo.com/news/why-mongodb-mdb-down-19-181252851.html, https://www.stocktitan.net/sec-filings/MDB/8-k-mongo-db-inc-reports-material-event-cb8ea4d02374.html, https://perplexity.ai/finance/MDB"
+    },
+    {
+      "ticker": "DOCN",
+      "headline": "DigitalOcean surges +22% in 30 days to 4-year high on Oppenheimer upgrade and AI infrastructure expansion",
+      "detail": "DigitalOcean is one of the biggest positive surprises in the watchlist, up ~22.3% over 30 days and reaching a new 4-year high of $86.45 on March 18. Oppenheimer raised its price target from $85 to $100 (Outperform), citing 209% planned capacity expansion to 136 MW by end-2028. DOCN's FY2025 net income tripled to $259M and revenue rose 15.5% to $901M. The company has been positioning as a cost-effective AI cloud provider for SMBs and developer communities. Significant insider selling (CFO and CAO) in early March is a risk to watch.",
+      "price_change_1w": "+0.3%",
+      "price_change_30d": "+22.3%",
+      "is_major_mover": true,
+      "sources": "https://www.marketbeat.com/instant-alerts/digitalocean-nysedocn-stock-price-expected-to-rise-oppenheimer-analyst-says-2026-03-18/, https://finance.yahoo.com/markets/stocks/articles/digitalocean-docn-hits-4-high-005253977.html, https://perplexity.ai/finance/DOCN"
+    },
+    {
+      "ticker": "GTLB",
+      "headline": "GitLab plunges 21.7% to 52-week low on weak Q4 FY2026 reaction and multiple analyst downgrades",
+      "detail": "GitLab is down ~21.7% over 30 days, hitting a new 52-week low of $22.39 on March 16. Despite a solid Q4 FY2026 report (revenue $260.4M, +23.2% YoY; EPS $0.30 vs. $0.23 est.) and surpassing $1B ARR, the stock has collapsed. Multiple analyst downgrades and target cuts: TD Cowen downgraded to Hold ($29), Wells Fargo cut to $26, UBS cut to $44 (maintaining Buy). The company also launched a $400M buyback. The sell-off appears driven by guidance deceleration concerns, continued GAAP losses, and significant insider selling (48 sales vs. 1 purchase in last 6 months).",
+      "price_change_1w": "-1.1%",
+      "price_change_30d": "-21.7%",
+      "is_major_mover": true,
+      "sources": "https://www.marketbeat.com/instant-alerts/gitlab-nasdaqgtlb-hits-new-12-month-low-time-to-sell-2026-03-16/, https://finance.yahoo.com/news/gitlab-reports-fourth-quarter-full-210500576.html, https://perplexity.ai/finance/GTLB"
+    },
+    {
+      "ticker": "PINS",
+      "headline": "Pinterest up +20.9% in 30 days; AI-driven ad targeting and user growth momentum",
+      "detail": "Pinterest has been a strong outperformer over 30 days, up ~20.9%. The stock has rallied from ~$15 to ~$19 on strong momentum around AI-driven ad targeting improvements, robust user growth, and the platform's appeal as a positive, non-news-feed social network in a volatile macro environment. No material company-specific news this week.",
+      "price_change_1w": "-1.6%",
+      "price_change_30d": "+20.9%",
+      "is_major_mover": true,
+      "sources": "https://perplexity.ai/finance/PINS"
+    },
+    {
+      "ticker": "INTU",
+      "headline": "Intuit surges +20% in 30 days on Q2 FY2026 earnings beat and full-year guidance reiteration",
+      "detail": "Intuit is the top-performing large-cap SaaS name in the watchlist over 30 days, up ~20.2%. Intuit reported Q2 FY2026 revenue of $4.65B (+17.4% YoY), significantly beating consensus of $4.53B. Non-GAAP EPS of $4.15 beat by 13.25%. Global Business Solutions grew 21% and Consumer (TurboTax) grew 15%. The company reiterated full-year FY2026 guidance of $22.98\u201323.18 non-GAAP EPS (+14\u201315%). Notably, Intuit has 3M+ clients using AI agents and partnerships with Anthropic and OpenAI.",
+      "price_change_1w": "+0.4%",
+      "price_change_30d": "+20.2%",
+      "is_major_mover": true,
+      "sources": "https://investors.intuit.com/news-events/press-releases/detail/1307/intuit-reports-strong-second-quarter-results-and-reiterates-full-year-guidance, https://finance.yahoo.com/news/intuit-intu-q2-earnings-taking-223002567.html, https://perplexity.ai/finance/INTU"
+    },
+    {
+      "ticker": "AI",
+      "headline": "C3.ai drops 18.5% in 30 days; valuation and revenue model concerns persist",
+      "detail": "C3.ai has declined ~18.5% over 30 days, one of the sharpest drops in the watchlist. The company continues to face investor skepticism around its subscription revenue model transition, sustained GAAP losses, and competition from larger platform vendors in the enterprise AI space. No material specific news this week.",
+      "price_change_1w": "+0.8%",
+      "price_change_30d": "-18.5%",
+      "is_major_mover": true,
+      "sources": "https://perplexity.ai/finance/AI"
+    },
+    {
+      "ticker": "COIN",
+      "headline": "Coinbase up +17.8% in 30 days on crypto regulatory tailwinds and Bitcoin rebound",
+      "detail": "Coinbase has been a strong performer over 30 days, up ~17.8%. Key catalysts: (1) Trump administration signaling support for loosening banking restrictions on yield-bearing stablecoins, triggering a crypto rally; (2) Coinbase's integration of Morpho DeFi lending protocols into its app, targeting up to 10.8% APY on USDC; (3) Bitcoin rebound from lows. S&P Global notes that while the stock has rallied, 2026 underlying fundamentals are mixed (transaction revenue expected to grow only 2.1% YoY).",
+      "price_change_1w": "+0.2%",
+      "price_change_30d": "+17.8%",
+      "is_major_mover": true,
+      "sources": "https://www.spglobal.com/market-intelligence/en/news-insights/research/2026/03/coinbase-s-recent-rally-meets-cautious-2026-outlook, https://perplexity.ai/finance/COIN"
+    },
+    {
+      "ticker": "XYZ",
+      "headline": "Block (XYZ) up +16.6% in 30 days on crypto/fintech tailwinds and structural momentum",
+      "detail": "Block (formerly Square, ticker XYZ) has gained ~16.6% over 30 days, benefiting from the broader cryptocurrency regulatory tailwind (Trump stablecoin support), Bitcoin appreciation, and Cash App ecosystem momentum. No material company-specific news this week beyond the macro crypto backdrop.",
+      "price_change_1w": "-1.1%",
+      "price_change_30d": "+16.6%",
+      "is_major_mover": true,
+      "sources": "https://perplexity.ai/finance/XYZ"
+    },
+    {
+      "ticker": "AFRM",
+      "headline": "Affirm down 14.4% in 30 days; rising rate environment pressures BNPL model",
+      "detail": "Affirm has declined ~14.4% over 30 days. The BNPL business model is highly sensitive to interest rate changes; the hawkish Fed commentary and reduced expectations for 2026 rate cuts are a direct headwind to Affirm's funding costs and unit economics. No material company-specific news this week.",
+      "price_change_1w": "-0.4%",
+      "price_change_30d": "-14.4%",
+      "is_major_mover": true,
+      "sources": "https://perplexity.ai/finance/AFRM"
+    },
+    {
+      "ticker": "PLTR",
+      "headline": "Palantir +14% in 30 days on DHS $1B contract and NVIDIA GTC partnership",
+      "detail": "Palantir is one of the top-performing large-cap tech names in the watchlist over 30 days, up ~14.3%. Key catalysts: (1) $1B Blanket Purchase Agreement with the Department of Homeland Security for software, maintenance, and implementation services; (2) A groundbreaking partnership with NVIDIA announced at GTC, positioning PLTR as a software layer for AI-powered defense and enterprise; (3) Strong FY2025 Q4 results with U.S. commercial revenue up 137% YoY. The geopolitical environment (Iran war, DHS/border activity) is enhancing the narrative for government AI contracts.",
+      "price_change_1w": "-0.2%",
+      "price_change_30d": "+14.3%",
+      "is_major_mover": true,
+      "sources": "https://finance.yahoo.com/news/palantir-landed-next-1-billion-182109647.html, https://blogs.nvidia.com/blog/gtc-2026-news/, https://perplexity.ai/finance/PLTR"
+    },
+    {
+      "ticker": "ZS",
+      "headline": "Zscaler down 12% in 30 days despite strong Q2 earnings beat",
+      "detail": "Zscaler reported Q2 FY2026 EPS of $1.01 (vs. $0.52 est., +94% beat) and revenue of $815.8M (+26% YoY, beat). The company raised FY2026 ARR growth guidance to 24% and its AI Security offering reached ~$400M ARR. Despite the strong print, shares declined ~9% after-hours on higher spending concerns and have continued to erode as macro headwinds weigh on SaaS valuations broadly. ZS is down ~11.9% over 30 days.",
+      "price_change_1w": "+0.1%",
+      "price_change_30d": "-11.9%",
+      "is_major_mover": true,
+      "sources": "https://www.reuters.com/technology/zscaler-posts-wider-quarterly-loss-higher-spending-shares-down-9-2026-02-27/, https://www.marketbeat.com/instant-alerts/zscaler-nasdaqzs-issues-q3-2026-earnings-guidance-2026-02-26/, https://perplexity.ai/finance/ZS"
+    },
+    {
+      "ticker": "NET",
+      "headline": "Cloudflare surges +12% in 30 days on AI agent traffic boom and stablecoin partnership",
+      "detail": "Cloudflare (NET) is one of the standout outperformers in the watchlist, up ~11.9% over 30 days against a sharply declining market. Key catalysts: (1) CFO Thomas Seifert at the Morgan Stanley TMT Conference highlighted 30% revenue growth and a $130M largest-ever contract; (2) AI agent traffic on Cloudflare's network doubled in January 2026; (3) MarketBeat noted a surge on stablecoin news as investors positioned Cloudflare as an AI-era infrastructure winner. The stock was trading near $215, well above its prior 52-week highs.",
+      "price_change_1w": "+0.2%",
+      "price_change_30d": "+11.9%",
+      "is_major_mover": true,
+      "sources": "https://finance.yahoo.com/news/why-cloudflare-net-stock-today-210042986.html, https://simplywall.st/stocks/us/software/nyse-net/cloudflare/news/is-it-too-late-to-consider-cloudflare-net-after-its-83-one-y, https://perplexity.ai/finance/NET"
+    },
+    {
+      "ticker": "ASAN",
+      "headline": "Asana down 11.9% in 30 days; project management SaaS compression continues",
+      "detail": "Asana has declined ~11.9% over 30 days as the project management software category continues to face pricing pressure and competitive threats from AI-native alternatives. No material company-specific news this week.",
+      "price_change_1w": "-1.5%",
+      "price_change_30d": "-11.9%",
+      "is_major_mover": true,
+      "sources": "https://perplexity.ai/finance/ASAN"
+    },
+    {
+      "ticker": "PATH",
+      "headline": "UiPath up +10.9% in 30 days; agentic AI narrative tailwind",
+      "detail": "UiPath is up ~10.9% over 30 days, modestly exceeding the major-mover threshold. The agentic AI trend has driven renewed interest in RPA/automation platforms as investors look for picks-and-shovels AI plays outside of pure infrastructure. No material company-specific news this week.",
+      "price_change_1w": "-0.3%",
+      "price_change_30d": "+10.9%",
+      "is_major_mover": true,
+      "sources": "https://perplexity.ai/finance/PATH"
+    },
+    {
+      "ticker": "TENB",
+      "headline": "Tenable down 10.7% in 30 days; valuation compression in vulnerability management",
+      "detail": "Tenable has declined ~10.7% over 30 days, entering major-mover territory. No specific material news this week beyond broader valuation compression in smaller-cap cybersecurity names. TENB has been declining from $22 toward $20 as investors favor larger-cap cybersecurity platforms.",
+      "price_change_1w": "-0.8%",
+      "price_change_30d": "-10.7%",
+      "is_major_mover": true,
+      "sources": "https://perplexity.ai/finance/TENB"
+    },
+    {
+      "ticker": "ESTC",
+      "headline": "Elastic down 10.6% in 30 days; valuation compression in search/observability",
+      "detail": "Elastic has declined ~10.6% over the 30-day period, entering major-mover territory. No specific material news this week; the decline reflects broader SaaS valuation compression and concerns around competition from AI-native search alternatives. ESTC was down from ~$59.97 to ~$53.36.",
+      "price_change_1w": "-0.3%",
+      "price_change_30d": "-10.6%",
+      "is_major_mover": true,
+      "sources": "https://perplexity.ai/finance/ESTC"
+    },
+    {
+      "ticker": "MRVL",
+      "headline": "Marvell soars +10% in 30 days on record FY2026 results and bullish multi-year AI forecast",
+      "detail": "Marvell reported Q4 FY2026 EPS of $0.80 non-GAAP and record FY2026 revenue of $8.195B (+42% YoY), driven by robust AI demand. The company guided for FY2027 revenue approaching $11B (+30%+) and FY2028 revenue near $15B (+40%), far exceeding the $12.92B consensus. Data center revenue (MRVL's largest segment) grew 21%. Custom ASIC revenue nearly doubled in FY2026. Shares initially surged 11% on March 6, and MRVL is one of only a handful of semiconductor names positive over 30 days (+10.1%).",
+      "price_change_1w": "+0.5%",
+      "price_change_30d": "+10.1%",
+      "is_major_mover": true,
+      "sources": "https://investor.marvell.com/news-events/press-releases/detail/1011/marvell-technology-inc-reports-fourth-quarter-and-fiscal-year-2026-financial-results, https://www.reuters.com/technology/marvell-tech-shares-rally-forecast-multi-year-ai-chip-growth-2026-03-06/, https://perplexity.ai/finance/MRVL"
+    },
+    {
+      "ticker": "BILL",
+      "headline": "Bill.com down 10.1% in 30 days; macro headwinds on SMB payments",
+      "detail": "Bill.com has declined ~10.1% over the 30-day period, entering major-mover territory. SMB-focused fintech names are sensitive to any economic slowdown risk, and the current environment (war, inflation, potential rate hike) is weighing on the segment. No material company-specific news this week.",
+      "price_change_1w": "-0.4%",
+      "price_change_30d": "-10.1%",
+      "is_major_mover": true,
+      "sources": "https://perplexity.ai/finance/BILL"
+    }
+  ],
+  "archive": []
+}
