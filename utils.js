@@ -231,6 +231,32 @@ const DEFAULT_PRIVATE_COMPANIES = [
   // --- Design & Creative ---
   { name: 'Canva', subsector: 'Design & Creative', valuation: '$42B', funding: 'Secondary (Sep 2025)', revenue: '~$4B TTM', metrics: '11,813 employees, 200M+ monthly users', headquarters: 'Surry Hills, Australia', lead_investors: 'Sequoia, Blackbird, CapitalG' },
   { name: 'Figma', subsector: 'Design & Creative', valuation: '$16.1B (IPO)', funding: 'IPO Jul 2025 (NYSE: FIG)', revenue: '~$1.1B TTM', metrics: '1,886 employees · NOW PUBLIC (FIG)', headquarters: 'San Francisco, CA', lead_investors: 'a16z, Greylock, Index Ventures', status: 'public', ticker: 'FIG' },
+  // --- T. Rowe Price Private Portfolio ---
+  // Aerospace & Defense
+  { name: 'SpaceX', subsector: 'Aerospace & Defense', valuation: '$800B+', funding: 'Multiple growth rounds', revenue: '~$15B TTM', metrics: 'Starlink, Starship, 13,000+ employees', headquarters: 'Hawthorne, CA', lead_investors: 'Founders Fund, a16z, T. Rowe Price' },
+  { name: 'Anduril', subsector: 'Aerospace & Defense', valuation: '$30.5B', funding: '$2.5B Series G (Jun 2025)', revenue: '~$1B TTM', metrics: 'Autonomous defense systems, 4,000+ employees', headquarters: 'Costa Mesa, CA', lead_investors: 'Founders Fund, a16z, T. Rowe Price' },
+  { name: 'ABL Space Systems', subsector: 'Aerospace & Defense', valuation: '$2B', funding: 'Later Stage VC', revenue: 'N/A', metrics: 'RS1 launch vehicle, small satellite deployment', headquarters: 'El Segundo, CA', lead_investors: 'T. Rowe Price, Fidelity' },
+  // AI Infrastructure & Hardware
+  { name: 'ClickHouse', subsector: 'AI Infrastructure', valuation: '$15B', funding: '$400M Series D (Jan 2026)', revenue: 'N/A', metrics: 'Real-time analytics DB, used by Meta, Anthropic', headquarters: 'San Francisco, CA', lead_investors: 'Index Ventures, Coatue, T. Rowe Price' },
+  { name: 'Lightmatter', subsector: 'AI Infrastructure', valuation: '$4B', funding: 'Later Stage VC', revenue: 'N/A', metrics: 'Photonic AI chips using light instead of electricity', headquarters: 'Mountain View, CA', lead_investors: 'T. Rowe Price, GV, Viking Global' },
+  { name: 'SandboxAQ', subsector: 'AI Infrastructure', valuation: '$5.75B', funding: 'Series E (Apr 2025)', revenue: 'N/A', metrics: 'Quantum-AI, Alphabet spinout 2022', headquarters: 'Palo Alto, CA', lead_investors: 'T. Rowe Price, Rizvi Traverse, Eric Schmidt' },
+  // AI Software
+  { name: 'Perplexity', subsector: 'AI Software', valuation: '$20B', funding: '$500M Later Stage VC (Sep 2025)', revenue: '~$100M+ TTM', metrics: 'AI search platform, 100M+ users', headquarters: 'San Francisco, CA', lead_investors: 'IVP, NEA, T. Rowe Price' },
+  { name: 'Harvey', subsector: 'AI Software', valuation: '$8B', funding: '$160M (Dec 2025)', revenue: 'N/A', metrics: 'Legal AI, 50%+ Am Law 100 adoption', headquarters: 'San Francisco, CA', lead_investors: 'a16z, Sequoia, T. Rowe Price' },
+  // Autonomous Vehicles
+  { name: 'Waymo', subsector: 'Autonomous Vehicles', valuation: '$126B', funding: '$16B (Feb 2026)', revenue: 'N/A', metrics: '15M+ rides in 2025, Alphabet subsidiary', headquarters: 'Mountain View, CA', lead_investors: 'Alphabet, a16z, T. Rowe Price' },
+  // Fintech
+  { name: 'iCapital', subsector: 'Fintech', valuation: '$7.5B', funding: '$820M Series E (Jul 2025)', revenue: 'N/A', metrics: 'Alt investment access for wealth advisors', headquarters: 'New York, NY', lead_investors: 'SurgoCap, T. Rowe Price, WestCap' },
+  // Identity & Security
+  { name: 'Socure', subsector: 'Identity & Security', valuation: '$5B', funding: 'Later Stage VC', revenue: 'N/A', metrics: 'AI identity verification for banks & gov', headquarters: 'Midtown, NY', lead_investors: 'Accel, T. Rowe Price, Bain Capital' },
+  // Legal Technology
+  { name: 'Clio', subsector: 'Legal Technology', valuation: '$5B', funding: '$900M Series F (Jul 2024)', revenue: '~$250M TTM', metrics: '150K+ law professionals, cloud practice mgmt', headquarters: 'Burnaby, Canada', lead_investors: 'NEA, TCV, T. Rowe Price' },
+  // Healthcare & Biotech
+  { name: 'Color', subsector: 'Healthcare & Biotech', valuation: '$5B', funding: 'Later Stage VC', revenue: 'N/A', metrics: 'Population health, genetic screening at scale', headquarters: 'Burlingame, CA', lead_investors: 'T. Rowe Price, General Catalyst, Viking' },
+  // Consumer Software
+  { name: 'Bending Spoons', subsector: 'Consumer Software', valuation: '$11B', funding: 'Later Stage VC', revenue: '~$1B TTM', metrics: 'Acquired Evernote, Splice, Issuu; 800+ employees', headquarters: 'Milan, Italy', lead_investors: 'T. Rowe Price' },
+  // Clean Energy & Mining
+  { name: 'KoBold Metals', subsector: 'Clean Energy & Mining', valuation: '$2.96B', funding: '$537M Series C (Oct 2024)', revenue: 'N/A', metrics: 'AI-powered critical mineral exploration', headquarters: 'Berkeley, CA', lead_investors: 'T. Rowe Price, Durable Capital, Andreessen' },
 ];
 
 // --- Proper capitalization for company names ---
@@ -253,6 +279,9 @@ const KNOWN_COMPANY_NAMES = {
   'supabase': 'Supabase', 'vercel': 'Vercel', 'netlify': 'Netlify',
   'plaid': 'Plaid', 'brex': 'Brex', 'ramp': 'Ramp', 'klarna': 'Klarna',
   'revolut': 'Revolut', 'nubank': 'Nubank', 'chime': 'Chime',
+  'spacex': 'SpaceX', 'clickhouse': 'ClickHouse', 'sandboxaq': 'SandboxAQ',
+  'icapital': 'iCapital', 'kobold metals': 'KoBold Metals',
+  'abl space systems': 'ABL Space Systems', 'bending spoons': 'Bending Spoons',
 };
 function capitalizeCompanyName(name) {
   if (!name || typeof name !== 'string') return name;
