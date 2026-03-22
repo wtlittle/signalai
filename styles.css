@@ -180,6 +180,63 @@ body {
 .total-mcap { color: var(--text-secondary); font-weight: 500; }
 .refresh-timer { color: var(--accent); }
 
+/* === TAB BAR === */
+.tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 41px; /* header height */
+  z-index: 90;
+  padding: 0 12px;
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  position: relative;
+}
+.tab-btn svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.tab-btn:hover {
+  color: var(--text-secondary);
+}
+.tab-btn:hover svg { opacity: 0.8; }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-btn.active svg { opacity: 1; }
+
+/* === TAB PANES === */
+.tab-pane {
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
+
 /* === MAIN CONTENT === */
 .main-content {
   flex: 1;
@@ -201,7 +258,7 @@ body {
 }
 .watchlist-table thead th {
   position: sticky;
-  top: var(--sticky-thead-top, 45px);
+  top: var(--sticky-thead-top, 82px);
   background: var(--bg-header);
   border-bottom: 2px solid var(--border);
   padding: 6px 8px;
@@ -2195,6 +2252,108 @@ tbody tr:hover .comps-sticky-col {
   text-align: center;
 }
 
+/* === EARNINGS CALENDAR === */
+.earnings-calendar-section { padding: 0 16px 16px; }
+.earnings-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.ecal-day-header {
+  background: var(--bg-header);
+  padding: 6px 4px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+.ecal-cell {
+  background: var(--bg-primary);
+  min-height: 72px;
+  padding: 4px;
+  position: relative;
+}
+.ecal-cell.ecal-today {
+  background: rgba(59,130,246,0.06);
+}
+.ecal-cell.ecal-other-month {
+  opacity: 0.35;
+}
+.ecal-date {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+  padding: 0 2px;
+}
+.ecal-today .ecal-date {
+  color: var(--accent);
+  font-weight: 700;
+}
+.ecal-tickers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.ecal-ticker-chip {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.ecal-ticker-chip.ecal-pre {
+  color: var(--accent);
+  background: rgba(59,130,246,0.1);
+}
+.ecal-ticker-chip.ecal-pre:hover {
+  background: rgba(59,130,246,0.2);
+}
+.ecal-ticker-chip.ecal-post {
+  color: var(--green);
+  background: var(--green-dim);
+}
+.ecal-ticker-chip.ecal-post:hover {
+  background: rgba(34,197,94,0.2);
+}
+.ecal-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ecal-nav-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.ecal-nav-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.ecal-month-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 120px;
+  text-align: center;
+}
+
 /* === RESPONSIVE === */
 @media (max-width: 900px) {
   .header-meta { flex-direction: column; gap: 2px; align-items: flex-end; }
@@ -2205,4 +2364,9 @@ tbody tr:hover .comps-sticky-col {
   .si-cards { grid-template-columns: 1fr; }
   .comps-table { min-width: 700px; }
   .earnings-panels { grid-template-columns: 1fr; }
+  .tab-btn { padding: 8px 12px; font-size: 11px; }
+  .tab-btn svg { width: 12px; height: 12px; }
+  .earnings-calendar-grid { grid-template-columns: repeat(7, 1fr); }
+  .ecal-cell { min-height: 56px; }
+  .ecal-ticker-chip { font-size: 8px; }
 }

@@ -202,15 +202,10 @@ function renderWeeklyBriefing() {
   $content.innerHTML = html;
 }
 
-// Load on section visibility
+// initWeeklyBriefing is called by the tab system when the Briefing tab is activated
 function initWeeklyBriefing() {
   const section = document.getElementById('weekly-briefing-section');
   if (section) {
     loadWeeklyBriefing();
   }
 }
-
-// Auto-init
-document.addEventListener('DOMContentLoaded', () => {
-  initWeeklyBriefing();
-});

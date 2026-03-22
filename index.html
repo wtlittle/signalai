@@ -44,120 +44,158 @@
     </div>
   </header>
 
-  <!-- Main Table -->
+  <!-- Tab Navigation -->
+  <nav class="tab-bar" id="tab-bar">
+    <button class="tab-btn active" data-tab="watchlist">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 9L5.5 5L7.5 7L10.5 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Watchlist
+    </button>
+    <button class="tab-btn" data-tab="research">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 11.5V2.5H8.5L11.5 5.5V11.5H2.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8.5 2.5V5.5H11.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><line x1="5" y1="7.5" x2="9" y2="7.5" stroke="currentColor" stroke-width="1.1"/><line x1="5" y1="9.5" x2="8" y2="9.5" stroke="currentColor" stroke-width="1.1"/></svg>
+      Research
+    </button>
+    <button class="tab-btn" data-tab="briefing">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 3.5V7L9 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Briefing
+    </button>
+    <button class="tab-btn" data-tab="news">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><line x1="4" y1="5.5" x2="10" y2="5.5" stroke="currentColor" stroke-width="1.1"/><line x1="4" y1="7.5" x2="9" y2="7.5" stroke="currentColor" stroke-width="1.1"/><line x1="4" y1="9.5" x2="7" y2="9.5" stroke="currentColor" stroke-width="1.1"/></svg>
+      News
+    </button>
+  </nav>
+
+  <!-- Main Content -->
   <main class="main-content">
-    <section class="public-section">
-      <div class="section-header-bar">
-        <h2>Public Companies</h2>
-        <div class="add-ticker-group">
-          <div class="search-wrapper">
-            <input type="text" id="ticker-input" placeholder="Search company or ticker..." autocomplete="off" spellcheck="false">
-            <div class="search-dropdown" id="search-dropdown"></div>
+
+    <!-- === TAB: WATCHLIST === -->
+    <div class="tab-pane active" id="tab-watchlist">
+      <section class="public-section">
+        <div class="section-header-bar">
+          <h2>Public Companies</h2>
+          <div class="add-ticker-group">
+            <div class="search-wrapper">
+              <input type="text" id="ticker-input" placeholder="Search company or ticker..." autocomplete="off" spellcheck="false">
+              <div class="search-dropdown" id="search-dropdown"></div>
+            </div>
+            <button id="add-ticker-btn" class="btn-sm">+ Add Company</button>
           </div>
-          <button id="add-ticker-btn" class="btn-sm">+ Add Company</button>
         </div>
-      </div>
-    </section>
-    <div class="table-wrapper" id="table-wrapper">
-      <table class="watchlist-table" id="watchlist-table">
-        <thead>
-          <tr>
-            <th class="col-ticker sortable" data-col="ticker">Ticker</th>
-            <th class="col-name sortable" data-col="name">Company</th>
-            <th class="col-subsector sortable" data-col="subsector">Subsector</th>
-            <th class="col-price sortable num" data-col="price">Price</th>
-            <th class="col-mcap sortable num" data-col="marketCap">Mkt Cap</th>
-            <th class="col-ev sortable num" data-col="ev">EV</th>
-            <th class="col-ev-sales sortable num" data-col="evSales">FY1 EV/Sales</th>
-            <th class="col-ev-fcf sortable num" data-col="evFcf">FY1 EV/FCF</th>
-            <th class="col-perf sortable num" data-col="ytd">YTD%</th>
-            <th class="col-perf sortable num" data-col="d1">1D%</th>
-            <th class="col-perf sortable num" data-col="w1">1W%</th>
-            <th class="col-perf sortable num" data-col="m1">1M%</th>
-            <th class="col-perf sortable num" data-col="m3">3M%</th>
-            <th class="col-perf sortable num" data-col="y1">1Y%</th>
-            <th class="col-perf sortable num" data-col="y3">3Y%</th>
-            <th class="col-remove"></th>
-          </tr>
-        </thead>
-        <tbody id="watchlist-body">
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Loading Skeleton -->
-    <div class="loading-overlay" id="loading-overlay">
-      <div class="loading-skeleton">
-        <div class="skeleton-row" style="--i:0"></div>
-        <div class="skeleton-row" style="--i:1"></div>
-        <div class="skeleton-row" style="--i:2"></div>
-        <div class="skeleton-row" style="--i:3"></div>
-        <div class="skeleton-row" style="--i:4"></div>
-        <div class="skeleton-row" style="--i:5"></div>
-        <div class="skeleton-row" style="--i:6"></div>
-        <div class="skeleton-row" style="--i:7"></div>
-        <div class="skeleton-row" style="--i:8"></div>
-        <div class="skeleton-row" style="--i:9"></div>
-      </div>
-    </div>
-
-    <!-- Private Companies Section -->
-    <section class="private-section">
-      <div class="section-header-bar">
-        <h2>Private Companies</h2>
-        <div class="add-private-group">
-          <input type="text" id="private-input" placeholder="Search private company..." autocomplete="off" spellcheck="false">
-          <button id="add-private-btn" class="btn-sm">+ Add Private Company</button>
-        </div>
-      </div>
-      <div class="table-wrapper">
-        <table class="watchlist-table private-table" id="private-table">
+      </section>
+      <div class="table-wrapper" id="table-wrapper">
+        <table class="watchlist-table" id="watchlist-table">
           <thead>
             <tr>
-              <th>Company Name</th>
-              <th>Subsector</th>
-              <th class="num">Last Valuation</th>
-              <th>Last Funding Round</th>
-              <th>Lead Investors</th>
-              <th class="num">Est. Revenue</th>
-              <th>Key Metrics</th>
+              <th class="col-ticker sortable" data-col="ticker">Ticker</th>
+              <th class="col-name sortable" data-col="name">Company</th>
+              <th class="col-subsector sortable" data-col="subsector">Subsector</th>
+              <th class="col-price sortable num" data-col="price">Price</th>
+              <th class="col-mcap sortable num" data-col="marketCap">Mkt Cap</th>
+              <th class="col-ev sortable num" data-col="ev">EV</th>
+              <th class="col-ev-sales sortable num" data-col="evSales">FY1 EV/Sales</th>
+              <th class="col-ev-fcf sortable num" data-col="evFcf">FY1 EV/FCF</th>
+              <th class="col-perf sortable num" data-col="ytd">YTD%</th>
+              <th class="col-perf sortable num" data-col="d1">1D%</th>
+              <th class="col-perf sortable num" data-col="w1">1W%</th>
+              <th class="col-perf sortable num" data-col="m1">1M%</th>
+              <th class="col-perf sortable num" data-col="m3">3M%</th>
+              <th class="col-perf sortable num" data-col="y1">1Y%</th>
+              <th class="col-perf sortable num" data-col="y3">3Y%</th>
               <th class="col-remove"></th>
             </tr>
           </thead>
-          <tbody id="private-body">
+          <tbody id="watchlist-body">
           </tbody>
         </table>
       </div>
-    </section>
 
-    <!-- Earnings Section -->
-    <section class="earnings-section" id="earnings-section">
-      <div class="section-header-bar">
-        <h2>Earnings</h2>
-        <div class="earnings-header-controls">
-          <span class="earnings-status" id="earnings-status"></span>
-          <button class="btn-sm btn-ghost" id="earnings-archive-btn">Archive</button>
+      <!-- Loading Skeleton -->
+      <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-skeleton">
+          <div class="skeleton-row" style="--i:0"></div>
+          <div class="skeleton-row" style="--i:1"></div>
+          <div class="skeleton-row" style="--i:2"></div>
+          <div class="skeleton-row" style="--i:3"></div>
+          <div class="skeleton-row" style="--i:4"></div>
+          <div class="skeleton-row" style="--i:5"></div>
+          <div class="skeleton-row" style="--i:6"></div>
+          <div class="skeleton-row" style="--i:7"></div>
+          <div class="skeleton-row" style="--i:8"></div>
+          <div class="skeleton-row" style="--i:9"></div>
         </div>
       </div>
-      <div class="earnings-panels">
-        <!-- Recent Earnings (post-earnings) -->
-        <div class="earnings-panel" id="recent-earnings-panel">
-          <h3 class="earnings-panel-title">Recent Reports</h3>
-          <div class="earnings-cards" id="recent-earnings-cards">
-            <div class="earnings-empty">No recent earnings</div>
-          </div>
-        </div>
-        <!-- Upcoming Earnings (pre-earnings) -->
-        <div class="earnings-panel" id="upcoming-earnings-panel">
-          <h3 class="earnings-panel-title">Upcoming Earnings</h3>
-          <div class="earnings-cards" id="upcoming-earnings-cards">
-            <div class="earnings-empty">No upcoming earnings in the next 14 days</div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Earnings Note Modal -->
+      <!-- Private Companies Section -->
+      <section class="private-section">
+        <div class="section-header-bar">
+          <h2>Private Companies</h2>
+          <div class="add-private-group">
+            <input type="text" id="private-input" placeholder="Search private company..." autocomplete="off" spellcheck="false">
+            <button id="add-private-btn" class="btn-sm">+ Add Private Company</button>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="watchlist-table private-table" id="private-table">
+            <thead>
+              <tr>
+                <th>Company Name</th>
+                <th>Subsector</th>
+                <th class="num">Last Valuation</th>
+                <th>Last Funding Round</th>
+                <th>Lead Investors</th>
+                <th class="num">Est. Revenue</th>
+                <th>Key Metrics</th>
+                <th class="col-remove"></th>
+              </tr>
+            </thead>
+            <tbody id="private-body">
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- === TAB: RESEARCH === -->
+    <div class="tab-pane" id="tab-research">
+      <!-- Earnings Section -->
+      <section class="earnings-section" id="earnings-section">
+        <div class="section-header-bar">
+          <h2>Earnings</h2>
+          <div class="earnings-header-controls">
+            <span class="earnings-status" id="earnings-status"></span>
+            <button class="btn-sm btn-ghost" id="earnings-archive-btn">Archive</button>
+          </div>
+        </div>
+        <div class="earnings-panels">
+          <!-- Recent Earnings (post-earnings) -->
+          <div class="earnings-panel" id="recent-earnings-panel">
+            <h3 class="earnings-panel-title">Recent Reports</h3>
+            <div class="earnings-cards" id="recent-earnings-cards">
+              <div class="earnings-empty">No recent earnings</div>
+            </div>
+          </div>
+          <!-- Upcoming Earnings (pre-earnings) -->
+          <div class="earnings-panel" id="upcoming-earnings-panel">
+            <h3 class="earnings-panel-title">Upcoming Earnings</h3>
+            <div class="earnings-cards" id="upcoming-earnings-cards">
+              <div class="earnings-empty">No upcoming earnings in the next 14 days</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Earnings Calendar -->
+      <section class="earnings-calendar-section" id="earnings-calendar-section">
+        <div class="section-header-bar">
+          <h2>Earnings Calendar</h2>
+          <span class="calendar-status" id="calendar-status"></span>
+        </div>
+        <div class="earnings-calendar-grid" id="earnings-calendar-grid">
+          <!-- Populated by earnings.js -->
+        </div>
+      </section>
+    </div>
+
+    <!-- Earnings Note Modal (outside tabs -- modals are global) -->
     <div class="popup-overlay" id="earnings-note-overlay">
       <div class="popup-modal earnings-note-modal" id="earnings-note-modal">
         <button class="popup-close" id="earnings-note-close">&times;</button>
@@ -178,27 +216,32 @@
       </div>
     </div>
 
-    <!-- News Feed -->
-    <section class="news-section" id="news-section">
-      <div class="section-header-bar">
-        <h2>Market News</h2>
-        <span class="news-status" id="news-status"></span>
-      </div>
-      <div class="news-feed" id="news-feed">
-        <div class="news-loading">Loading news...</div>
-      </div>
-    </section>
+    <!-- === TAB: BRIEFING === -->
+    <div class="tab-pane" id="tab-briefing">
+      <section class="weekly-briefing-section" id="weekly-briefing-section">
+        <div class="section-header-bar">
+          <h2>Weekly Briefing</h2>
+          <span class="wb-status" id="wb-status">Updated weekly</span>
+        </div>
+        <div class="weekly-briefing-content" id="weekly-briefing-content">
+          <div class="wb-empty">Loading weekly briefing...</div>
+        </div>
+      </section>
+    </div>
 
-    <!-- Weekly Briefing Section -->
-    <section class="weekly-briefing-section" id="weekly-briefing-section">
-      <div class="section-header-bar">
-        <h2>Weekly Briefing</h2>
-        <span class="wb-status" id="wb-status">Updated weekly</span>
-      </div>
-      <div class="weekly-briefing-content" id="weekly-briefing-content">
-        <div class="wb-empty">Loading weekly briefing...</div>
-      </div>
-    </section>
+    <!-- === TAB: NEWS === -->
+    <div class="tab-pane" id="tab-news">
+      <section class="news-section" id="news-section">
+        <div class="section-header-bar">
+          <h2>Market News</h2>
+          <span class="news-status" id="news-status"></span>
+        </div>
+        <div class="news-feed" id="news-feed">
+          <div class="news-loading">Loading news...</div>
+        </div>
+      </section>
+    </div>
+
   </main>
 
   <!-- Ticker Detail Popup -->
@@ -234,14 +277,14 @@
     <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
   </footer>
 
-  <script src="utils.js?v=20260322a"></script>
-  <script src="api-client.js?v=20260322a"></script>
-  <script src="api.js?v=20260322a"></script>
-  <script src="popup-chart.js?v=20260322a"></script>
-  <script src="popup-deep-dive.js?v=20260322a"></script>
-  <script src="popup.js?v=20260322a"></script>
-  <script src="earnings.js?v=20260322a"></script>
-  <script src="weekly-briefing.js?v=20260322a"></script>
-  <script src="app.js?v=20260322a"></script>
+  <script src="utils.js?v=20260322b"></script>
+  <script src="api-client.js?v=20260322b"></script>
+  <script src="api.js?v=20260322b"></script>
+  <script src="popup-chart.js?v=20260322b"></script>
+  <script src="popup-deep-dive.js?v=20260322b"></script>
+  <script src="popup.js?v=20260322b"></script>
+  <script src="earnings.js?v=20260322b"></script>
+  <script src="weekly-briefing.js?v=20260322b"></script>
+  <script src="app.js?v=20260322b"></script>
 </body>
 </html>

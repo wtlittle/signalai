@@ -1321,11 +1321,75 @@ async function fetchNews() {
   }
 }
 
+// --- Tab Navigation ---
+(function initTabs() {
+  const TAB_KEY = 'active_tab';
+  const tabBar = document.getElementById('tab-bar');
+  const tabBtns = tabBar ? tabBar.querySelectorAll('.tab-btn') : [];
+  const tabPanes = document.querySelectorAll('.tab-pane');
+  const validTabs = ['watchlist', 'research', 'briefing', 'news'];
+
+  function activateTab(tabId) {
+    if (!validTabs.includes(tabId)) tabId = 'watchlist';
+    tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
+    tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === 'tab-' + tabId));
+    try { localStorage.setItem(TAB_KEY, tabId); } catch(e) {}
+    // Update hash without scroll
+    history.replaceState(null, '', '#' + tabId);
+    // Lazy-load data for the tab
+    if (tabId === 'research' && !window._earningsLoaded) {
+      window._earningsLoaded = true;
+      fetchEarnings();
+      if (typeof renderEarningsCalendar === 'function') renderEarningsCalendar();
+    }
+    if (tabId === 'briefing' && !window._briefingLoaded) {
+      window._briefingLoaded = true;
+      if (typeof loadWeeklyBriefing === 'function') loadWeeklyBriefing();
+    }
+    if (tabId === 'news' && !window._newsLoaded) {
+      window._newsLoaded = true;
+      fetchNews();
+    }
+  }
+
+  // Click handlers
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+  });
+
+  // Determine initial tab: hash > localStorage > default
+  let initial = 'watchlist';
+  const hash = location.hash.replace('#', '');
+  if (validTabs.includes(hash)) {
+    initial = hash;
+  } else {
+    try {
+      const saved = localStorage.getItem(TAB_KEY);
+      if (validTabs.includes(saved)) initial = saved;
+    } catch(e) {}
+  }
+  activateTab(initial);
+
+  // Listen for hash changes (e.g. from email deep links)
+  window.addEventListener('hashchange', () => {
+    const h = location.hash.replace('#', '');
+    if (validTabs.includes(h)) activateTab(h);
+  });
+
+  // Make activateTab globally accessible
+  window.activateTab = activateTab;
+})();
+
 // --- Boot ---
 renderTable();
 renderPrivateTable();
 loadAllData();
-// Load earnings data after a short delay
-setTimeout(() => fetchEarnings(), 2000);
-// Load news shortly after main data (staggered to not block)
-setTimeout(() => fetchNews(), 4000);
+// Earnings and news are now lazy-loaded by tab activation
+// But if user starts on those tabs, they'll load automatically via activateTab above
+// As a fallback, load earnings after a delay if on watchlist tab (for card data)
+setTimeout(() => {
+  if (!window._earningsLoaded) {
+    window._earningsLoaded = true;
+    fetchEarnings();
+  }
+}, 5000);

@@ -291,3 +291,143 @@ async function fetchEarnings() {
     $earningsStatus.textContent = 'error';
   }
 }
+
+// --- Earnings Calendar Grid ---
+let ecalData = null;
+let ecalViewMonth = null; // Date object for current view month
+
+async function loadEarningsCalendarData() {
+  try {
+    const resp = await fetch('earnings_calendar.json?v=' + Date.now());
+    ecalData = await resp.json();
+  } catch (e) {
+    console.warn('Calendar data load failed:', e);
+    ecalData = { upcoming: [] };
+  }
+}
+
+function renderEarningsCalendarGrid() {
+  const $grid = document.getElementById('earnings-calendar-grid');
+  const $status = document.getElementById('calendar-status');
+  if (!$grid || !ecalData) return;
+
+  const now = new Date();
+  if (!ecalViewMonth) ecalViewMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const year = ecalViewMonth.getFullYear();
+  const month = ecalViewMonth.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startDow = firstDay.getDay(); // 0=Sun
+  const daysInMonth = lastDay.getDate();
+
+  // Also include reported (post) earnings from main data
+  const recentTickers = (earningsData && earningsData.recent) ? earningsData.recent : [];
+
+  // Build a map of date -> [{ticker, type}]
+  const dateMap = {};
+  (ecalData.upcoming || []).forEach(u => {
+    if (!dateMap[u.earnings_date]) dateMap[u.earnings_date] = [];
+    dateMap[u.earnings_date].push({ ticker: u.ticker, name: u.name, type: 'pre' });
+  });
+  recentTickers.forEach(r => {
+    if (!dateMap[r.earnings_date]) dateMap[r.earnings_date] = [];
+    // Avoid duplicates
+    if (!dateMap[r.earnings_date].some(x => x.ticker === r.ticker)) {
+      dateMap[r.earnings_date].push({ ticker: r.ticker, name: r.name, type: 'post' });
+    }
+  });
+
+  // Build navigation
+  const monthLabel = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  if ($status) {
+    $status.innerHTML = `
+      <div class="ecal-nav">
+        <button class="ecal-nav-btn" id="ecal-prev">&#8592;</button>
+        <span class="ecal-month-label">${monthLabel}</span>
+        <button class="ecal-nav-btn" id="ecal-next">&#8594;</button>
+      </div>`;
+  }
+
+  // Day headers
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  let html = dayNames.map(d => `<div class="ecal-day-header">${d}</div>`).join('');
+
+  // Leading blanks
+  const prevMonth = new Date(year, month, 0);
+  for (let i = startDow - 1; i >= 0; i--) {
+    const d = prevMonth.getDate() - i;
+    const dateStr = fmtDate(new Date(year, month - 1, d));
+    const tickers = dateMap[dateStr] || [];
+    html += renderCalCell(d, dateStr, tickers, true, now);
+  }
+
+  // Current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = fmtDate(new Date(year, month, d));
+    const tickers = dateMap[dateStr] || [];
+    html += renderCalCell(d, dateStr, tickers, false, now);
+  }
+
+  // Trailing blanks to fill the last row
+  const totalCells = startDow + daysInMonth;
+  const remainder = totalCells % 7;
+  if (remainder > 0) {
+    for (let d = 1; d <= 7 - remainder; d++) {
+      const dateStr = fmtDate(new Date(year, month + 1, d));
+      const tickers = dateMap[dateStr] || [];
+      html += renderCalCell(d, dateStr, tickers, true, now);
+    }
+  }
+
+  $grid.innerHTML = html;
+
+  // Attach nav handlers
+  const prevBtn = document.getElementById('ecal-prev');
+  const nextBtn = document.getElementById('ecal-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => {
+    ecalViewMonth = new Date(year, month - 1, 1);
+    renderEarningsCalendarGrid();
+  });
+  if (nextBtn) nextBtn.addEventListener('click', () => {
+    ecalViewMonth = new Date(year, month + 1, 1);
+    renderEarningsCalendarGrid();
+  });
+
+  // Click on ticker chips
+  $grid.querySelectorAll('.ecal-ticker-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const ticker = chip.dataset.ticker;
+      const date = chip.dataset.date;
+      const type = chip.dataset.type;
+      openEarningsNote(ticker, date, type);
+    });
+  });
+}
+
+function renderCalCell(day, dateStr, tickers, isOtherMonth, now) {
+  const todayStr = fmtDate(now);
+  const isToday = dateStr === todayStr;
+  const cls = ['ecal-cell'];
+  if (isToday) cls.push('ecal-today');
+  if (isOtherMonth) cls.push('ecal-other-month');
+  let chips = '';
+  if (tickers.length > 0) {
+    chips = '<div class="ecal-tickers">' + tickers.map(t =>
+      `<span class="ecal-ticker-chip ecal-${t.type}" data-ticker="${t.ticker}" data-date="${dateStr}" data-type="${t.type}" title="${t.name || t.ticker}">${t.ticker}</span>`
+    ).join('') + '</div>';
+  }
+  return `<div class="${cls.join(' ')}"><div class="ecal-date">${day}</div>${chips}</div>`;
+}
+
+function fmtDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dd}`;
+}
+
+async function renderEarningsCalendar() {
+  if (!ecalData) await loadEarningsCalendarData();
+  renderEarningsCalendarGrid();
+}
