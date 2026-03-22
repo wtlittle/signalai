@@ -1,483 +1,601 @@
 {
-    "generated": "2026-03-21",
-    "upcoming": [
-        {
-            "ticker": "TSM",
-            "name": "TSMC",
-            "earnings_date": "2026-04-16",
-            "days_until": 26,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "NOW",
-            "name": "ServiceNow",
-            "earnings_date": "2026-04-22",
-            "days_until": 32,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "GOOG",
-            "name": "Alphabet",
-            "earnings_date": "2026-04-23",
-            "days_until": 33,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "PINS",
-            "name": "Pinterest",
-            "earnings_date": "2026-04-23",
-            "days_until": 33,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "CDNS",
-            "name": "Cadence Design Systems",
-            "earnings_date": "2026-04-27",
-            "days_until": 37,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "FOUR",
-            "name": "Shift4 Payments",
-            "earnings_date": "2026-04-28",
-            "days_until": 38,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "TENB",
-            "name": "Tenable",
-            "earnings_date": "2026-04-29",
-            "days_until": 39,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "META",
-            "name": "Meta",
-            "earnings_date": "2026-04-29",
-            "days_until": 39,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "MSFT",
-            "name": "Microsoft",
-            "earnings_date": "2026-04-29",
-            "days_until": 39,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "CFLT",
-            "name": "Confluent",
-            "earnings_date": "2026-04-29",
-            "days_until": 39,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "AMZN",
-            "name": "Amazon",
-            "earnings_date": "2026-04-30",
-            "days_until": 40,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "TEAM",
-            "name": "Atlassian",
-            "earnings_date": "2026-04-30",
-            "days_until": 40,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "SHOP",
-            "name": "Shopify",
-            "earnings_date": "2026-04-30",
-            "days_until": 40,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "XYZ",
-            "name": "Block",
-            "earnings_date": "2026-04-30",
-            "days_until": 40,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "NET",
-            "name": "Cloudflare",
-            "earnings_date": "2026-05-01",
-            "days_until": 41,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "PLTR",
-            "name": "Palantir",
-            "earnings_date": "2026-05-04",
-            "days_until": 44,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "DDOG",
-            "name": "Datadog",
-            "earnings_date": "2026-05-05",
-            "days_until": 45,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "VRNS",
-            "name": "Varonis",
-            "earnings_date": "2026-05-05",
-            "days_until": 45,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "AMD",
-            "name": "AMD",
-            "earnings_date": "2026-05-05",
-            "days_until": 45,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "ANET",
-            "name": "Arista Networks",
-            "earnings_date": "2026-05-05",
-            "days_until": 45,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "FTNT",
-            "name": "Fortinet",
-            "earnings_date": "2026-05-06",
-            "days_until": 46,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "FSLY",
-            "name": "Fastly",
-            "earnings_date": "2026-05-06",
-            "days_until": 46,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "ARM",
-            "name": "Arm Holdings",
-            "earnings_date": "2026-05-06",
-            "days_until": 46,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "DOCN",
-            "name": "DigitalOcean",
-            "earnings_date": "2026-05-06",
-            "days_until": 46,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "TTD",
-            "name": "Trade Desk",
-            "earnings_date": "2026-05-07",
-            "days_until": 47,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "BILL",
-            "name": "BILL Holdings",
-            "earnings_date": "2026-05-07",
-            "days_until": 47,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "COIN",
-            "name": "Coinbase",
-            "earnings_date": "2026-05-07",
-            "days_until": 47,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "HUBS",
-            "name": "HubSpot",
-            "earnings_date": "2026-05-07",
-            "days_until": 47,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "AFRM",
-            "name": "Affirm",
-            "earnings_date": "2026-05-07",
-            "days_until": 47,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "MNDY",
-            "name": "monday.com",
-            "earnings_date": "2026-05-11",
-            "days_until": 51,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "SE",
-            "name": "Sea Limited",
-            "earnings_date": "2026-05-13",
-            "days_until": 53,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "DT",
-            "name": "Dynatrace",
-            "earnings_date": "2026-05-14",
-            "days_until": 54,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "PANW",
-            "name": "Palo Alto Networks",
-            "earnings_date": "2026-05-19",
-            "days_until": 59,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "SNOW",
-            "name": "Snowflake",
-            "earnings_date": "2026-05-20",
-            "days_until": 60,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "NVDA",
-            "name": "NVIDIA",
-            "earnings_date": "2026-05-20",
-            "days_until": 60,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "WDAY",
-            "name": "Workday",
-            "earnings_date": "2026-05-21",
-            "days_until": 61,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "INTU",
-            "name": "Intuit",
-            "earnings_date": "2026-05-21",
-            "days_until": 61,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "CRM",
-            "name": "Salesforce",
-            "earnings_date": "2026-05-27",
-            "days_until": 67,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "SNPS",
-            "name": "Synopsys",
-            "earnings_date": "2026-05-27",
-            "days_until": 67,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "ZS",
-            "name": "Zscaler",
-            "earnings_date": "2026-05-28",
-            "days_until": 68,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "PATH",
-            "name": "UiPath",
-            "earnings_date": "2026-06-02",
-            "days_until": 73,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "ASAN",
-            "name": "Asana",
-            "earnings_date": "2026-06-02",
-            "days_until": 73,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "CRWD",
-            "name": "CrowdStrike",
-            "earnings_date": "2026-06-02",
-            "days_until": 73,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "S",
-            "name": "SentinelOne",
-            "earnings_date": "2026-06-03",
-            "days_until": 74,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "MDB",
-            "name": "MongoDB",
-            "earnings_date": "2026-06-03",
-            "days_until": 74,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "AI",
-            "name": "C3.ai",
-            "earnings_date": "2026-06-03",
-            "days_until": 74,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "RBRK",
-            "name": "Rubrik",
-            "earnings_date": "2026-06-04",
-            "days_until": 75,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "MRVL",
-            "name": "Marvell",
-            "earnings_date": "2026-06-04",
-            "days_until": 75,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "IOT",
-            "name": "Samsara",
-            "earnings_date": "2026-06-04",
-            "days_until": 75,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "AVGO",
-            "name": "Broadcom",
-            "earnings_date": "2026-06-04",
-            "days_until": 75,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "OKTA",
-            "name": "Okta",
-            "earnings_date": "2026-06-04",
-            "days_until": 75,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "ESTC",
-            "name": "Elastic",
-            "earnings_date": "2026-06-04",
-            "days_until": 75,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "GTLB",
-            "name": "GitLab",
-            "earnings_date": "2026-06-09",
-            "days_until": 80,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "ADBE",
-            "name": "Adobe",
-            "earnings_date": "2026-06-11",
-            "days_until": 82,
-            "status": "upcoming"
-        },
-        {
-            "ticker": "AYX",
-            "name": "Alteryx",
-            "earnings_date": null,
-            "days_until": null,
-            "status": "private/no_public_date",
-            "note": "Alteryx was acquired by Clearlake Capital; no public earnings date"
-        }
-    ],
-    "recent": [
-        {
-            "ticker": "RBRK",
-            "name": "Rubrik",
-            "earnings_date": "2026-03-12",
-            "days_since": 9,
-            "status": "reported",
-            "revenue_actual": "$377.7M",
-            "revenue_beat_miss": "Beat by $35.5M (+10.4%)",
-            "eps_actual": "Non-GAAP $0.04",
-            "eps_beat_miss": "Beat by $0.15 (137.9% surprise)",
-            "stock_reaction": "Fell 6.08% on earnings day. Continued selling to $49.28 by Mar 20 (-52% from 52w high). Consensus PT $89.60-$104.74.",
-            "fiscal_quarter": "Q4 FY2026",
-            "note_file": "notes/post_earnings/RBRK_2026-03-12.md"
-        },
-        {
-            "ticker": "ADBE",
-            "name": "Adobe",
-            "earnings_date": "2026-03-12",
-            "days_since": 9,
-            "status": "reported",
-            "revenue_actual": "$6.40B",
-            "revenue_beat_miss": "Beat by $121M (+1.9%)",
-            "eps_actual": "Non-GAAP $6.06 (GAAP $4.60)",
-            "eps_beat_miss": "Non-GAAP beat by $0.18 (+3.1%)",
-            "stock_reaction": "Flat day-1; drifted to ~$246 by Mar 20 from ~$270 pre-earnings (-9%). String of analyst downgrades.",
-            "fiscal_quarter": "Q1 FY2026",
-            "note_file": "notes/post_earnings/ADBE_2026-03-12.md"
-        },
-        {
-            "ticker": "S",
-            "name": "SentinelOne",
-            "earnings_date": "2026-03-12",
-            "days_since": 9,
-            "status": "reported",
-            "revenue_actual": "$271M",
-            "revenue_beat_miss": "In-line / slight beat (+20% YoY)",
-            "eps_actual": "Non-GAAP $0.07",
-            "eps_beat_miss": "Beat by $0.01 (16.7% surprise)",
-            "stock_reaction": "-2.6% AH; recovered to ~$14.29 by Mar 17. Zacks Rank #2 Buy. Consensus PT $19.70 (+38% upside).",
-            "fiscal_quarter": "Q4 FY2026",
-            "note_file": "notes/post_earnings/S_2026-03-12.md"
-        },
-        {
-            "ticker": "PATH",
-            "name": "UiPath",
-            "earnings_date": "2026-03-11",
-            "days_since": 10,
-            "status": "reported",
-            "revenue_actual": "$481M",
-            "revenue_beat_miss": "Beat by $17M (+3.5%)",
-            "eps_actual": "Non-GAAP $0.30 (GAAP $0.19)",
-            "eps_beat_miss": "Non-GAAP beat by $0.05 (+20%)",
-            "stock_reaction": "Mixed action; drifted to $12.06 by Mar 20. Multiple PT cuts (MS, Mizuho, RBC). Hold consensus.",
-            "fiscal_quarter": "Q4 FY2026",
-            "note_file": "notes/post_earnings/PATH_2026-03-11.md"
-        }
-    ],
-    "recently_archived": [
-        {
-            "ticker": "MRVL",
-            "name": "Marvell",
-            "earnings_date": "2026-03-05",
-            "days_since": 16,
-            "status": "archived",
-            "archive_file": "archive/post_earnings/MRVL_2026-03-05.md"
-        },
-        {
-            "ticker": "IOT",
-            "name": "Samsara",
-            "earnings_date": "2026-03-05",
-            "days_since": 16,
-            "status": "archived",
-            "archive_file": "archive/post_earnings/IOT_2026-03-05.md"
-        }
-    ],
-    "next_reporter": {
-        "ticker": "TSM",
-        "name": "TSMC",
-        "earnings_date": "2026-04-16",
-        "days_until": 26,
-        "status": "upcoming"
+  "generated": "2026-03-22",
+  "upcoming": [
+    {
+      "ticker": "NKE",
+      "name": "Nike",
+      "earnings_date": "2026-03-31",
+      "days_until": 9,
+      "status": "upcoming"
     },
-    "summary": {
-        "upcoming_count": 54,
-        "recent_count": 4,
-        "archived_today": 0,
-        "pre_earnings_window_count": 0,
-        "next_report_ticker": "TSM",
-        "next_report_date": "2026-04-16",
-        "note": "No tickers reporting in the next 14 days. Quiet period until mid-April Q1 earnings season begins with TSMC on Apr 16 (26 days). 9 new tickers added to calendar (AMD, SNPS, CDNS, TENB, DT, ANET, XYZ, AFRM, SE, PINS). Archive milestones: PATH on Mar 25, RBRK/ADBE/S on Mar 26."
+    {
+      "ticker": "MKC",
+      "name": "McCormick & Company",
+      "earnings_date": "2026-03-31",
+      "days_until": 9,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "TSM",
+      "name": "TSMC",
+      "earnings_date": "2026-04-16",
+      "days_until": 25,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "ELV",
+      "name": "Elevance Health",
+      "earnings_date": "2026-04-21",
+      "days_until": 30,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "UNH",
+      "name": "UnitedHealth Group",
+      "earnings_date": "2026-04-21",
+      "days_until": 30,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "NOW",
+      "name": "ServiceNow",
+      "earnings_date": "2026-04-22",
+      "days_until": 31,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "TMO",
+      "name": "Thermo Fisher Scientific",
+      "earnings_date": "2026-04-22",
+      "days_until": 31,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "GOOG",
+      "name": "Alphabet",
+      "earnings_date": "2026-04-23",
+      "days_until": 32,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "PINS",
+      "name": "Pinterest",
+      "earnings_date": "2026-04-23",
+      "days_until": 32,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "CMCSA",
+      "name": "Comcast",
+      "earnings_date": "2026-04-23",
+      "days_until": 32,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "CDNS",
+      "name": "Cadence Design Systems",
+      "earnings_date": "2026-04-27",
+      "days_until": 36,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "FOUR",
+      "name": "Shift4 Payments",
+      "earnings_date": "2026-04-28",
+      "days_until": 37,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "ACGL",
+      "name": "Arch Capital Group",
+      "earnings_date": "2026-04-28",
+      "days_until": 37,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "TENB",
+      "name": "Tenable",
+      "earnings_date": "2026-04-29",
+      "days_until": 38,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "META",
+      "name": "Meta",
+      "earnings_date": "2026-04-29",
+      "days_until": 38,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft",
+      "earnings_date": "2026-04-29",
+      "days_until": 38,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "CFLT",
+      "name": "Confluent",
+      "earnings_date": "2026-04-29",
+      "days_until": 38,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "WDC",
+      "name": "Western Digital",
+      "earnings_date": "2026-04-29",
+      "days_until": 38,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "AMZN",
+      "name": "Amazon",
+      "earnings_date": "2026-04-30",
+      "days_until": 39,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "TEAM",
+      "name": "Atlassian",
+      "earnings_date": "2026-04-30",
+      "days_until": 39,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "SHOP",
+      "name": "Shopify",
+      "earnings_date": "2026-04-30",
+      "days_until": 39,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "XYZ",
+      "name": "Block",
+      "earnings_date": "2026-04-30",
+      "days_until": 39,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "NET",
+      "name": "Cloudflare",
+      "earnings_date": "2026-05-01",
+      "days_until": 40,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "PLTR",
+      "name": "Palantir",
+      "earnings_date": "2026-05-04",
+      "days_until": 43,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "BWXT",
+      "name": "BWX Technologies",
+      "earnings_date": "2026-05-04",
+      "days_until": 43,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "HIMS",
+      "name": "Hims & Hers Health",
+      "earnings_date": "2026-05-04",
+      "days_until": 43,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "DDOG",
+      "name": "Datadog",
+      "earnings_date": "2026-05-05",
+      "days_until": 44,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "VRNS",
+      "name": "Varonis",
+      "earnings_date": "2026-05-05",
+      "days_until": 44,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "AMD",
+      "name": "AMD",
+      "earnings_date": "2026-05-05",
+      "days_until": 44,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "ANET",
+      "name": "Arista Networks",
+      "earnings_date": "2026-05-05",
+      "days_until": 44,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "FTNT",
+      "name": "Fortinet",
+      "earnings_date": "2026-05-06",
+      "days_until": 45,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "FSLY",
+      "name": "Fastly",
+      "earnings_date": "2026-05-06",
+      "days_until": 45,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "ARM",
+      "name": "Arm Holdings",
+      "earnings_date": "2026-05-06",
+      "days_until": 45,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "DOCN",
+      "name": "DigitalOcean",
+      "earnings_date": "2026-05-06",
+      "days_until": 45,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "SNDK",
+      "name": "SanDisk",
+      "earnings_date": "2026-05-06",
+      "days_until": 45,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "TTD",
+      "name": "Trade Desk",
+      "earnings_date": "2026-05-07",
+      "days_until": 46,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "BILL",
+      "name": "BILL Holdings",
+      "earnings_date": "2026-05-07",
+      "days_until": 46,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "COIN",
+      "name": "Coinbase",
+      "earnings_date": "2026-05-07",
+      "days_until": 46,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "HUBS",
+      "name": "HubSpot",
+      "earnings_date": "2026-05-07",
+      "days_until": 46,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "AFRM",
+      "name": "Affirm",
+      "earnings_date": "2026-05-07",
+      "days_until": 46,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "CF",
+      "name": "CF Industries",
+      "earnings_date": "2026-05-07",
+      "days_until": 46,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "LPLA",
+      "name": "LPL Financial",
+      "earnings_date": "2026-05-07",
+      "days_until": 46,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "MNDY",
+      "name": "monday.com",
+      "earnings_date": "2026-05-11",
+      "days_until": 50,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "GCT",
+      "name": "GigaCloud Technology",
+      "earnings_date": "2026-05-11",
+      "days_until": 50,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "SE",
+      "name": "Sea Limited",
+      "earnings_date": "2026-05-13",
+      "days_until": 52,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "DT",
+      "name": "Dynatrace",
+      "earnings_date": "2026-05-14",
+      "days_until": 53,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "SOC",
+      "name": "Sable Offshore",
+      "earnings_date": "2026-05-14",
+      "days_until": 53,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "PANW",
+      "name": "Palo Alto Networks",
+      "earnings_date": "2026-05-19",
+      "days_until": 58,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "HD",
+      "name": "Home Depot",
+      "earnings_date": "2026-05-19",
+      "days_until": 58,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "SNOW",
+      "name": "Snowflake",
+      "earnings_date": "2026-05-20",
+      "days_until": 59,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA",
+      "earnings_date": "2026-05-20",
+      "days_until": 59,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "WDAY",
+      "name": "Workday",
+      "earnings_date": "2026-05-21",
+      "days_until": 60,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "INTU",
+      "name": "Intuit",
+      "earnings_date": "2026-05-21",
+      "days_until": 60,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "CRM",
+      "name": "Salesforce",
+      "earnings_date": "2026-05-27",
+      "days_until": 66,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "SNPS",
+      "name": "Synopsys",
+      "earnings_date": "2026-05-27",
+      "days_until": 66,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "ZS",
+      "name": "Zscaler",
+      "earnings_date": "2026-05-28",
+      "days_until": 67,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "PATH",
+      "name": "UiPath",
+      "earnings_date": "2026-06-02",
+      "days_until": 72,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "ASAN",
+      "name": "Asana",
+      "earnings_date": "2026-06-02",
+      "days_until": 72,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "CRWD",
+      "name": "CrowdStrike",
+      "earnings_date": "2026-06-02",
+      "days_until": 72,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "S",
+      "name": "SentinelOne",
+      "earnings_date": "2026-06-03",
+      "days_until": 73,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "MDB",
+      "name": "MongoDB",
+      "earnings_date": "2026-06-03",
+      "days_until": 73,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "AI",
+      "name": "C3.ai",
+      "earnings_date": "2026-06-03",
+      "days_until": 73,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "RBRK",
+      "name": "Rubrik",
+      "earnings_date": "2026-06-04",
+      "days_until": 74,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell",
+      "earnings_date": "2026-06-04",
+      "days_until": 74,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "IOT",
+      "name": "Samsara",
+      "earnings_date": "2026-06-04",
+      "days_until": 74,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom",
+      "earnings_date": "2026-06-04",
+      "days_until": 74,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "OKTA",
+      "name": "Okta",
+      "earnings_date": "2026-06-04",
+      "days_until": 74,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "ESTC",
+      "name": "Elastic",
+      "earnings_date": "2026-06-04",
+      "days_until": 74,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "CIEN",
+      "name": "Ciena",
+      "earnings_date": "2026-06-04",
+      "days_until": 74,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "GTLB",
+      "name": "GitLab",
+      "earnings_date": "2026-06-09",
+      "days_until": 79,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "ADBE",
+      "name": "Adobe",
+      "earnings_date": "2026-06-11",
+      "days_until": 81,
+      "status": "upcoming"
+    },
+    {
+      "ticker": "MU",
+      "name": "Micron Technology",
+      "earnings_date": "2026-06-24",
+      "days_until": 94,
+      "status": "upcoming"
     }
+  ],
+  "recent": [
+    {
+      "ticker": "RBRK",
+      "name": "Rubrik",
+      "earnings_date": "2026-03-12",
+      "days_since": 10,
+      "status": "reported",
+      "revenue_actual": "$377.7M",
+      "revenue_beat_miss": "Beat by $35.5M (+10.4%)",
+      "eps_actual": "Non-GAAP $0.04",
+      "eps_beat_miss": "Beat by $0.15 (137.9% surprise)",
+      "stock_reaction": "Fell 6.08% on earnings day. Continued selling to $49.28 by Mar 20 (-52% from 52w high). Consensus PT $89.60-$104.74.",
+      "fiscal_quarter": "Q4 FY2026",
+      "note_file": "notes/post_earnings/RBRK_2026-03-12.md"
+    },
+    {
+      "ticker": "ADBE",
+      "name": "Adobe",
+      "earnings_date": "2026-03-12",
+      "days_since": 10,
+      "status": "reported",
+      "revenue_actual": "$6.40B",
+      "revenue_beat_miss": "Beat by $121M (+1.9%)",
+      "eps_actual": "Non-GAAP $6.06 (GAAP $4.60)",
+      "eps_beat_miss": "Non-GAAP beat by $0.18 (+3.1%)",
+      "stock_reaction": "Flat day-1; drifted to ~$246 by Mar 20 from ~$270 pre-earnings (-9%). String of analyst downgrades.",
+      "fiscal_quarter": "Q1 FY2026",
+      "note_file": "notes/post_earnings/ADBE_2026-03-12.md"
+    },
+    {
+      "ticker": "S",
+      "name": "SentinelOne",
+      "earnings_date": "2026-03-12",
+      "days_since": 10,
+      "status": "reported",
+      "revenue_actual": "$271M",
+      "revenue_beat_miss": "In-line / slight beat (+20% YoY)",
+      "eps_actual": "Non-GAAP $0.07",
+      "eps_beat_miss": "Beat by $0.01 (16.7% surprise)",
+      "stock_reaction": "-2.6% AH; recovered to ~$14.29 by Mar 17. Zacks Rank #2 Buy. Consensus PT $19.70 (+38% upside).",
+      "fiscal_quarter": "Q4 FY2026",
+      "note_file": "notes/post_earnings/S_2026-03-12.md"
+    },
+    {
+      "ticker": "PATH",
+      "name": "UiPath",
+      "earnings_date": "2026-03-11",
+      "days_since": 11,
+      "status": "reported",
+      "revenue_actual": "$481M",
+      "revenue_beat_miss": "Beat by $17M (+3.5%)",
+      "eps_actual": "Non-GAAP $0.30 (GAAP $0.19)",
+      "eps_beat_miss": "Non-GAAP beat by $0.05 (+20%)",
+      "stock_reaction": "Mixed action; drifted to $12.06 by Mar 20. Multiple PT cuts (MS, Mizuho, RBC). Hold consensus.",
+      "fiscal_quarter": "Q4 FY2026",
+      "note_file": "notes/post_earnings/PATH_2026-03-11.md"
+    }
+  ],
+  "recently_archived": [
+    {
+      "ticker": "MRVL",
+      "name": "Marvell",
+      "earnings_date": "2026-03-05",
+      "days_since": 16,
+      "status": "archived",
+      "archive_file": "archive/post_earnings/MRVL_2026-03-05.md"
+    },
+    {
+      "ticker": "IOT",
+      "name": "Samsara",
+      "earnings_date": "2026-03-05",
+      "days_since": 16,
+      "status": "archived",
+      "archive_file": "archive/post_earnings/IOT_2026-03-05.md"
+    }
+  ],
+  "next_reporter": {
+    "ticker": "TSM",
+    "name": "TSMC",
+    "earnings_date": "2026-04-16",
+    "days_until": 26,
+    "status": "upcoming"
+  },
+  "summary": {
+    "upcoming_count": 54,
+    "recent_count": 4,
+    "archived_today": 0,
+    "pre_earnings_window_count": 0,
+    "next_report_ticker": "TSM",
+    "next_report_date": "2026-04-16",
+    "note": "No tickers reporting in the next 14 days. Quiet period until mid-April Q1 earnings season begins with TSMC on Apr 16 (26 days). 9 new tickers added to calendar (AMD, SNPS, CDNS, TENB, DT, ANET, XYZ, AFRM, SE, PINS). Archive milestones: PATH on Mar 25, RBRK/ADBE/S on Mar 26."
+  }
 }
