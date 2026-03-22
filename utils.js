@@ -207,9 +207,12 @@ const DEFAULT_TICKERS = [
   'TTD','PINS',
   // --- Applied AI ---
   'AI','IOT',
-  // --- Weekly Briefing Picks ---
+  // --- Weekly Briefing Picks (Week 1: 2026-03-21) ---
   'ELV','TMO','ACGL','LPLA',   // Value picks
   'SNDK','CIEN','WDC','CF',    // Momentum picks
+  // --- Weekly Briefing Picks (Week 2: 2026-03-22) ---
+  'NKE','UNH','CMCSA','HD','MKC',   // Value picks
+  'MU','SOC','HIMS','GCT','BWXT',   // Momentum picks
 ];
 
 // --- Default private companies ---

@@ -133,6 +133,22 @@ let refreshCountdown = 60;
   Storage.set(MIGRATION_KEY, true);
 })();
 
+// --- Migration v7: Add weekly briefing picks week 2 (2026-03-22) ---
+(function migrate_v7() {
+  const MIGRATION_KEY = 'migration_v7_done';
+  if (Storage.get(MIGRATION_KEY)) return;
+  const newTickers = ['NKE','UNH','CMCSA','HD','MKC','MU','SOC','HIMS','GCT','BWXT'];
+  let added = false;
+  newTickers.forEach(t => {
+    if (!tickerList.includes(t)) {
+      tickerList.push(t);
+      added = true;
+    }
+  });
+  if (added) Storage.set('ticker_list', tickerList);
+  Storage.set(MIGRATION_KEY, true);
+})();
+
 // --- DOM refs ---
 const $body = document.getElementById('watchlist-body');
 const $privateBody = document.getElementById('private-body');
