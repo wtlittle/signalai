@@ -1333,7 +1333,7 @@ async function fetchNews() {
     if (!validTabs.includes(tabId)) tabId = 'watchlist';
     tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
     tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === 'tab-' + tabId));
-    try { localStorage.setItem(TAB_KEY, tabId); } catch(e) {}
+    Storage.set(TAB_KEY, tabId);
     // Update hash without scroll
     history.replaceState(null, '', '#' + tabId);
     // Lazy-load data for the tab
@@ -1357,16 +1357,14 @@ async function fetchNews() {
     btn.addEventListener('click', () => activateTab(btn.dataset.tab));
   });
 
-  // Determine initial tab: hash > localStorage > default
+  // Determine initial tab: hash > saved preference > default
   let initial = 'watchlist';
   const hash = location.hash.replace('#', '');
   if (validTabs.includes(hash)) {
     initial = hash;
   } else {
-    try {
-      const saved = localStorage.getItem(TAB_KEY);
-      if (validTabs.includes(saved)) initial = saved;
-    } catch(e) {}
+    const saved = Storage.get(TAB_KEY);
+    if (validTabs.includes(saved)) initial = saved;
   }
   activateTab(initial);
 
