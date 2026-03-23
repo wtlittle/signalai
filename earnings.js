@@ -14,11 +14,13 @@ const $earningsArchiveClose = document.getElementById('earnings-archive-close');
 const $earningsArchiveContent = document.getElementById('earnings-archive-content');
 
 let earningsData = null;
+let earningsNotesIndex = null;
 
 // --- Simple markdown to HTML (no external lib) ---
 function mdToHtml(md) {
   let html = md
     // Headers
+    .replace(/^#### (.+)$/gm, '<h5>$1</h5>')
     .replace(/^### (.+)$/gm, '<h4>$1</h4>')
     .replace(/^## (.+)$/gm, '<h3>$1</h3>')
     .replace(/^# (.+)$/gm, '<h2>$1</h2>')
@@ -32,6 +34,8 @@ function mdToHtml(md) {
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     // Unordered lists
     .replace(/^- (.+)$/gm, '<li>$1</li>')
+    // Numbered lists
+    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
     // Wrap consecutive <li> in <ul>
     .replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>')
     // Tables
@@ -39,7 +43,6 @@ function mdToHtml(md) {
       const cells = match.split('|').filter(c => c.trim());
       return '<tr>' + cells.map(c => {
         const trimmed = c.trim();
-        // Check if it's a separator row
         if (/^[-:]+$/.test(trimmed)) return null;
         return `<td>${trimmed}</td>`;
       }).filter(Boolean).join('') + '</tr>';
@@ -47,10 +50,8 @@ function mdToHtml(md) {
 
   // Wrap table rows
   html = html.replace(/((?:<tr>.*<\/tr>\n?)+)/g, (match) => {
-    // Check if first row should be header
     const rows = match.trim().split('\n').filter(r => r.includes('<tr>'));
     if (rows.length >= 2) {
-      // Remove separator rows (rows with only dashes)
       const filtered = rows.filter(r => !r.includes('---'));
       if (filtered.length > 0) {
         const header = filtered[0].replace(/<td>/g, '<th>').replace(/<\/td>/g, '</th>');
@@ -70,6 +71,19 @@ function mdToHtml(md) {
   }).join('\n');
 
   return html;
+}
+
+// --- Load earnings notes index ---
+async function loadEarningsNotesIndex() {
+  if (earningsNotesIndex) return earningsNotesIndex;
+  try {
+    const resp = await fetch('earnings_notes_index.json?v=' + Date.now());
+    earningsNotesIndex = await resp.json();
+    return earningsNotesIndex;
+  } catch (e) {
+    console.warn('Failed to load earnings notes index:', e);
+    return null;
+  }
 }
 
 // --- Render earnings cards ---
@@ -121,9 +135,7 @@ function renderRecentEarnings(recent) {
 }
 
 function renderUpcomingEarnings(upcoming) {
-  // Only show tickers reporting in next 14 days
   const soon = (upcoming || []).filter(u => u.days_until <= 14);
-  // Also show a "next up" preview of tickers 15-45 days out
   const nextUp = (upcoming || []).filter(u => u.days_until > 14 && u.days_until <= 45);
 
   if (soon.length === 0 && nextUp.length === 0) {
@@ -180,19 +192,70 @@ function renderUpcomingEarnings(upcoming) {
 }
 
 // --- Open earnings note in modal ---
+// Now loads from static .md files first, falls back to backend
 async function openEarningsNote(ticker, date, type) {
   $earningsNoteContent.innerHTML = '<div class="earnings-note-loading">Loading note...</div>';
   $earningsNoteOverlay.classList.add('active');
   document.body.style.overflow = 'hidden';
 
   try {
-    const url = `${BACKEND_URL}/earnings-note?ticker=${encodeURIComponent(ticker)}&date=${encodeURIComponent(date)}&type=${encodeURIComponent(type)}`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(10000) });
-    const data = await resp.json();
-    if (data.error) {
-      $earningsNoteContent.innerHTML = `<div class="earnings-note-error">Note not available: ${data.error}</div>`;
-    } else {
-      $earningsNoteContent.innerHTML = mdToHtml(data.content);
+    // Strategy 1: Look up the note path from the index
+    const index = await loadEarningsNotesIndex();
+    let notePath = null;
+    if (index && index.notes) {
+      const match = index.notes.find(n =>
+        n.ticker === ticker && n.earnings_date === date && n.type === type
+      );
+      if (match) notePath = match.path;
+    }
+
+    // Strategy 2: Try conventional file paths
+    if (!notePath) {
+      const prefix = type === 'post' ? 'notes/post_earnings' : 'notes/pre_earnings';
+      notePath = `${prefix}/${ticker}_${date}.md`;
+    }
+
+    // Try loading from static file
+    let loaded = false;
+    const paths = [
+      notePath,
+      // Also try archive path
+      notePath.replace('notes/', 'archive/')
+    ];
+
+    for (const p of paths) {
+      try {
+        const resp = await fetch(p + '?v=' + Date.now(), { signal: AbortSignal.timeout(5000) });
+        if (resp.ok) {
+          const contentType = resp.headers.get('content-type') || '';
+          // Check it's actually markdown, not an HTML error page
+          if (!contentType.includes('html') || contentType.includes('text/plain')) {
+            const text = await resp.text();
+            if (text.startsWith('#') || text.includes('## ')) {
+              $earningsNoteContent.innerHTML = mdToHtml(text);
+              loaded = true;
+              break;
+            }
+          }
+        }
+      } catch (e) { /* try next path */ }
+    }
+
+    if (!loaded) {
+      // Strategy 3: Fall back to backend
+      try {
+        const url = `${BACKEND_URL}/earnings-note?ticker=${encodeURIComponent(ticker)}&date=${encodeURIComponent(date)}&type=${encodeURIComponent(type)}`;
+        const resp = await fetch(url, { signal: AbortSignal.timeout(10000) });
+        const data = await resp.json();
+        if (!data.error) {
+          $earningsNoteContent.innerHTML = mdToHtml(data.content);
+          loaded = true;
+        }
+      } catch (e) { /* backend unavailable */ }
+    }
+
+    if (!loaded) {
+      $earningsNoteContent.innerHTML = `<div class="earnings-note-error">Note not available for ${ticker} (${date})</div>`;
     }
   } catch (e) {
     $earningsNoteContent.innerHTML = `<div class="earnings-note-error">Failed to load note</div>`;
@@ -209,53 +272,95 @@ $earningsNoteOverlay.addEventListener('click', (e) => {
   if (e.target === $earningsNoteOverlay) closeEarningsNote();
 });
 
-// --- Archive modal ---
-function openArchive() {
+// --- Archive modal — now shows PAST earnings notes, not just upcoming calendar ---
+async function openArchive() {
   $earningsArchiveOverlay.classList.add('active');
   document.body.style.overflow = 'hidden';
-  // Show all upcoming earnings as a full calendar view
-  if (!earningsData) {
-    $earningsArchiveContent.innerHTML = '<div class="earnings-empty">No data</div>';
-    return;
-  }
-  const all = earningsData.upcoming || [];
-  if (all.length === 0) {
-    $earningsArchiveContent.innerHTML = '<div class="earnings-empty">No upcoming earnings data</div>';
+
+  const index = await loadEarningsNotesIndex();
+  if (!index || !index.notes || index.notes.length === 0) {
+    $earningsArchiveContent.innerHTML = '<div class="earnings-empty">No archived earnings notes</div>';
     return;
   }
 
-  // Group by month
-  const byMonth = {};
-  all.forEach(u => {
-    const month = u.earnings_date.substring(0, 7); // YYYY-MM
-    if (!byMonth[month]) byMonth[month] = [];
-    byMonth[month].push(u);
-  });
+  // Get all post-earnings notes (both active and archived)
+  const postNotes = index.notes
+    .filter(n => n.type === 'post')
+    .sort((a, b) => b.earnings_date.localeCompare(a.earnings_date));
+
+  const archivedNotes = postNotes.filter(n => n.status === 'archived');
+  const activeNotes = postNotes.filter(n => n.status === 'active');
+
+  // Also get pre-earnings notes
+  const preNotes = index.notes
+    .filter(n => n.type === 'pre')
+    .sort((a, b) => a.earnings_date.localeCompare(b.earnings_date));
 
   let html = '';
-  Object.keys(byMonth).sort().forEach(month => {
-    const monthName = new Date(month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    const items = byMonth[month];
-    html += `<div class="archive-month">
-      <h3 class="archive-month-title">${monthName}</h3>
-      <table class="archive-table">
-        <thead><tr><th>Date</th><th>Ticker</th><th>Company</th><th>Days</th></tr></thead>
-        <tbody>
-          ${items.map(u => {
-            const name = (COMMON_NAMES && COMMON_NAMES[u.ticker]) || u.name || u.ticker;
-            return `<tr>
-              <td>${u.earnings_date}</td>
-              <td class="archive-ticker">${u.ticker}</td>
-              <td>${name}</td>
-              <td>${u.days_until}d</td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
+
+  // Active post-earnings
+  if (activeNotes.length > 0) {
+    html += `<div class="archive-section">
+      <h3 class="archive-section-title">Active Post-Earnings Notes</h3>
+      <div class="archive-notes-grid">
+        ${activeNotes.map(n => renderArchiveCard(n)).join('')}
+      </div>
     </div>`;
-  });
+  }
+
+  // Pre-earnings
+  if (preNotes.length > 0) {
+    html += `<div class="archive-section">
+      <h3 class="archive-section-title">Pre-Earnings Notes</h3>
+      <div class="archive-notes-grid">
+        ${preNotes.map(n => renderArchiveCard(n)).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Archived
+  if (archivedNotes.length > 0) {
+    html += `<div class="archive-section">
+      <h3 class="archive-section-title">Archived Notes (older than 14 days)</h3>
+      <div class="archive-notes-grid">
+        ${archivedNotes.map(n => renderArchiveCard(n)).join('')}
+      </div>
+    </div>`;
+  }
 
   $earningsArchiveContent.innerHTML = html;
+
+  // Attach click handlers
+  $earningsArchiveContent.querySelectorAll('.archive-note-card').forEach(card => {
+    card.addEventListener('click', () => {
+      closeArchive();
+      openEarningsNote(card.dataset.ticker, card.dataset.date, card.dataset.type);
+    });
+  });
+}
+
+function renderArchiveCard(note) {
+  const name = (COMMON_NAMES && COMMON_NAMES[note.ticker]) || note.name || note.ticker;
+  const isPost = note.type === 'post';
+  const reactionClass = (note.reaction || '').includes('+') ? 'positive'
+    : (note.reaction || '').includes('-') ? 'negative' : '';
+
+  return `<div class="archive-note-card ${note.status === 'archived' ? 'archived' : ''}" 
+    data-ticker="${note.ticker}" data-date="${note.earnings_date}" data-type="${note.type}">
+    <div class="archive-card-header">
+      <span class="archive-card-ticker">${note.ticker}</span>
+      <span class="archive-card-name">${name}</span>
+      <span class="archive-card-type ${note.type}">${isPost ? 'Post' : 'Pre'}</span>
+    </div>
+    <div class="archive-card-date">${note.earnings_date}</div>
+    ${note.headline ? `<div class="archive-card-headline">${note.headline}</div>` : ''}
+    ${isPost ? `<div class="archive-card-metrics">
+      ${note.revenue ? `<span class="archive-metric">Rev: ${note.revenue}</span>` : ''}
+      ${note.eps ? `<span class="archive-metric">EPS: ${note.eps}</span>` : ''}
+      ${note.reaction ? `<span class="archive-metric ${reactionClass}">Rx: ${note.reaction}</span>` : ''}
+    </div>` : ''}
+    <div class="archive-card-cta">View Note →</div>
+  </div>`;
 }
 
 function closeArchive() {
@@ -269,32 +374,91 @@ $earningsArchiveOverlay.addEventListener('click', (e) => {
   if (e.target === $earningsArchiveOverlay) closeArchive();
 });
 
-// --- Fetch earnings data from backend ---
+// --- Fetch earnings data from backend / Supabase ---
 async function fetchEarnings() {
-  if (!(await checkBackend())) return;
-  try {
-    $earningsStatus.textContent = 'updating...';
-    const url = `${BACKEND_URL}/earnings`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(10000) });
-    const data = await resp.json();
-    if (data.error && !data.recent) {
-      $earningsStatus.textContent = 'no data';
-      return;
+  // Try backend first
+  if (await checkBackend()) {
+    try {
+      $earningsStatus.textContent = 'updating...';
+      const url = `${BACKEND_URL}/earnings`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(10000) });
+      const data = await resp.json();
+      if (!data.error || data.recent) {
+        earningsData = data;
+        renderRecentEarnings(data.recent || []);
+        renderUpcomingEarnings(data.upcoming || []);
+        const total = (data.recent || []).length + ((data.upcoming || []).filter(u => u.days_until <= 14)).length;
+        $earningsStatus.textContent = total > 0 ? `${total} active` : 'up to date';
+        return;
+      }
+    } catch (e) {
+      console.warn('Backend earnings fetch failed:', e);
     }
-    earningsData = data;
-    renderRecentEarnings(data.recent || []);
-    renderUpcomingEarnings(data.upcoming || []);
-    const total = (data.recent || []).length + ((data.upcoming || []).filter(u => u.days_until <= 14)).length;
+  }
+
+  // Fallback: build earnings data from the notes index + calendar
+  try {
+    $earningsStatus.textContent = 'loading...';
+    const index = await loadEarningsNotesIndex();
+    const calResp = await fetch('earnings_calendar.json?v=' + Date.now());
+    const calData = await calResp.json();
+
+    const now = new Date();
+    const recent = [];
+    const upcoming = [];
+
+    // Build recent from post-earnings notes in index
+    if (index && index.notes) {
+      index.notes.filter(n => n.type === 'post' && n.status === 'active').forEach(n => {
+        const earningsDate = new Date(n.earnings_date + 'T00:00:00');
+        const daysSince = Math.floor((now - earningsDate) / 86400000);
+        if (daysSince >= 0 && daysSince <= 14) {
+          recent.push({
+            ticker: n.ticker,
+            name: n.name,
+            earnings_date: n.earnings_date,
+            days_since: daysSince,
+            revenue_actual: n.revenue || '',
+            eps_actual: n.eps || '',
+            revenue_beat_miss: '',
+            eps_beat_miss: '',
+            stock_reaction: n.reaction || ''
+          });
+        }
+      });
+    }
+
+    // Build upcoming from calendar
+    if (calData && calData.upcoming) {
+      calData.upcoming.forEach(u => {
+        const earningsDate = new Date(u.earnings_date + 'T00:00:00');
+        const daysUntil = Math.floor((earningsDate - now) / 86400000);
+        if (daysUntil >= 0) {
+          upcoming.push({
+            ticker: u.ticker,
+            name: u.name,
+            earnings_date: u.earnings_date,
+            days_until: daysUntil,
+            status: u.status
+          });
+        }
+      });
+    }
+
+    earningsData = { recent, upcoming };
+    renderRecentEarnings(recent);
+    renderUpcomingEarnings(upcoming);
+    const total = recent.length + upcoming.filter(u => u.days_until <= 14).length;
     $earningsStatus.textContent = total > 0 ? `${total} active` : 'up to date';
   } catch (e) {
-    console.warn('Earnings fetch failed:', e);
+    console.warn('Earnings fallback failed:', e);
     $earningsStatus.textContent = 'error';
   }
 }
 
 // --- Earnings Calendar Grid ---
 let ecalData = null;
-let ecalViewMonth = null; // Date object for current view month
+let ecalViewMonth = null;
 
 async function loadEarningsCalendarData() {
   try {
@@ -318,10 +482,9 @@ function renderEarningsCalendarGrid() {
   const month = ecalViewMonth.getMonth();
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  const startDow = firstDay.getDay(); // 0=Sun
+  const startDow = firstDay.getDay();
   const daysInMonth = lastDay.getDate();
 
-  // Also include reported (post) earnings from main data
   const recentTickers = (earningsData && earningsData.recent) ? earningsData.recent : [];
 
   // Build a map of date -> [{ticker, type}]
@@ -332,13 +495,12 @@ function renderEarningsCalendarGrid() {
   });
   recentTickers.forEach(r => {
     if (!dateMap[r.earnings_date]) dateMap[r.earnings_date] = [];
-    // Avoid duplicates
     if (!dateMap[r.earnings_date].some(x => x.ticker === r.ticker)) {
       dateMap[r.earnings_date].push({ ticker: r.ticker, name: r.name, type: 'post' });
     }
   });
 
-  // Build navigation
+  // Navigation
   const monthLabel = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   if ($status) {
     $status.innerHTML = `
@@ -369,7 +531,7 @@ function renderEarningsCalendarGrid() {
     html += renderCalCell(d, dateStr, tickers, false, now);
   }
 
-  // Trailing blanks to fill the last row
+  // Trailing blanks
   const totalCells = startDow + daysInMonth;
   const remainder = totalCells % 7;
   if (remainder > 0) {
@@ -382,7 +544,7 @@ function renderEarningsCalendarGrid() {
 
   $grid.innerHTML = html;
 
-  // Attach nav handlers
+  // Nav handlers
   const prevBtn = document.getElementById('ecal-prev');
   const nextBtn = document.getElementById('ecal-next');
   if (prevBtn) prevBtn.addEventListener('click', () => {
@@ -397,10 +559,7 @@ function renderEarningsCalendarGrid() {
   // Click on ticker chips
   $grid.querySelectorAll('.ecal-ticker-chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      const ticker = chip.dataset.ticker;
-      const date = chip.dataset.date;
-      const type = chip.dataset.type;
-      openEarningsNote(ticker, date, type);
+      openEarningsNote(chip.dataset.ticker, chip.dataset.date, chip.dataset.type);
     });
   });
 }

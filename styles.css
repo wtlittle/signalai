@@ -1934,44 +1934,113 @@ tbody tr:hover .comps-sticky-col {
 
 /* --- Earnings Archive Modal --- */
 .earnings-archive-modal {
-  max-width: 640px;
-  width: 90vw;
+  max-width: 800px;
+  width: 95vw;
   max-height: 85vh;
   overflow-y: auto;
 }
-.archive-month {
-  margin-bottom: 20px;
+.archive-section {
+  margin-bottom: 24px;
 }
-.archive-month-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #e5e7eb;
-  margin: 0 0 8px 0;
-}
-.archive-table {
-  width: 100%;
-  border-collapse: collapse;
+.archive-section-title {
   font-size: 12px;
-}
-.archive-table th {
-  padding: 6px 8px;
-  text-align: left;
-  color: #6b7280;
-  border-bottom: 1px solid #1e293b;
   font-weight: 600;
-  font-size: 10px;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.5px;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
 }
-.archive-table td {
-  padding: 5px 8px;
-  color: #d1d5db;
-  border-bottom: 1px solid #0d1117;
+.archive-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
 }
-.archive-ticker {
-  font-family: 'JetBrains Mono', monospace;
+.archive-note-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.archive-note-card:hover {
+  border-color: var(--accent);
+  background: var(--bg-hover);
+}
+.archive-note-card.archived {
+  opacity: 0.7;
+}
+.archive-note-card.archived:hover {
+  opacity: 1;
+}
+.archive-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.archive-card-ticker {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--accent);
+}
+.archive-card-name {
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.archive-card-type {
+  font-size: 9px;
   font-weight: 600;
-  color: #e5e7eb;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.archive-card-type.post {
+  color: var(--green);
+  background: var(--green-dim);
+}
+.archive-card-type.pre {
+  color: var(--accent);
+  background: rgba(59,130,246,0.1);
+}
+.archive-card-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.archive-card-headline {
+  font-size: 11px;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+.archive-card-metrics {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.archive-metric {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  padding: 2px 6px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 3px;
+}
+.archive-metric.positive { color: var(--green); }
+.archive-metric.negative { color: var(--red); }
+.archive-card-cta {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 500;
 }
 
 /* === WEEKLY BRIEFING === */
