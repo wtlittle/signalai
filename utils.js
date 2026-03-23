@@ -66,6 +66,12 @@ const SUBSECTOR_MAP = {
   'BILL': 'Fintech', 'FOUR': 'Fintech', 'COIN': 'Fintech',
   'XYZ': 'Fintech', 'AFRM': 'Fintech',
   'IOT': 'Applied AI', 'AI': 'Applied AI',
+  // Weekly Briefing Picks — auto-classified
+  'ELV': 'Healthcare Services', 'TMO': 'Life Sciences', 'ACGL': 'Insurance', 'LPLA': 'Capital Markets',
+  'SNDK': 'Data Storage', 'CIEN': 'Networking', 'WDC': 'Data Storage', 'CF': 'Materials',
+  'NKE': 'Retail', 'UNH': 'Healthcare Services', 'CMCSA': 'Entertainment & Media', 'HD': 'Retail',
+  'MKC': 'Consumer Staples', 'MU': 'Semiconductors', 'SOC': 'Energy', 'HIMS': 'Health Tech',
+  'GCT': 'E-Commerce', 'BWXT': 'Aerospace & Defense',
   // Common additions (auto-classified since CORS proxy can't provide sector/industry)
   'SE': 'Digital Commerce', 'BABA': 'E-Commerce',
   'AAPL': 'Consumer Electronics', 'GOOGL': 'Hyperscalers',
@@ -101,6 +107,18 @@ const SUBSECTOR_ORDER = [
   'Entertainment & Media',
   'Gaming',
   'Automotive',
+  'Healthcare Services',
+  'Life Sciences',
+  'Insurance',
+  'Capital Markets',
+  'Data Storage',
+  'Networking',
+  'Materials',
+  'Retail',
+  'Consumer Staples',
+  'Health Tech',
+  'Energy',
+  'Aerospace & Defense',
   // Private company subsectors
   'AI Models & Agents',
   'AI Infrastructure',
@@ -137,6 +155,11 @@ const COMMON_NAMES = {
   'PYPL': 'PayPal', 'SQ': 'Block', 'DIS': 'Disney', 'CMCSA': 'Comcast',
   'T': 'AT&T', 'VZ': 'Verizon', 'TMUS': 'T-Mobile',
   'HD': 'Home Depot', 'NKE': 'Nike', 'SBUX': 'Starbucks', 'MCD': "McDonald's",
+  'ELV': 'Elevance Health', 'TMO': 'Thermo Fisher', 'ACGL': 'Arch Capital',
+  'LPLA': 'LPL Financial', 'SNDK': 'SanDisk', 'CIEN': 'Ciena', 'WDC': 'Western Digital',
+  'CF': 'CF Industries', 'UNH': 'UnitedHealth', 'MKC': 'McCormick',
+  'MU': 'Micron', 'SOC': 'Sable Offshore', 'HIMS': 'Hims & Hers',
+  'GCT': 'GigaCloud', 'BWXT': 'BWX Technologies',
 };
 
 function cleanCompanyName(name) {
@@ -181,6 +204,12 @@ const COMPANY_HQ = {
   'AMD': 'Santa Clara, CA', 'SNPS': 'Sunnyvale, CA', 'CDNS': 'San Jose, CA',
   'TENB': 'Columbia, MD', 'DT': 'Waltham, MA', 'ANET': 'Santa Clara, CA',
   'SE': 'Singapore', 'PINS': 'San Francisco, CA', 'XYZ': 'Oakland, CA', 'AFRM': 'San Francisco, CA',
+  'ELV': 'Indianapolis, IN', 'TMO': 'Waltham, MA', 'ACGL': 'Hamilton, Bermuda',
+  'LPLA': 'San Diego, CA', 'SNDK': 'Milpitas, CA', 'CIEN': 'Hanover, MD',
+  'WDC': 'San Jose, CA', 'CF': 'Northbrook, IL', 'NKE': 'Beaverton, OR',
+  'UNH': 'Minnetonka, MN', 'MKC': 'Hunt Valley, MD', 'MU': 'Boise, ID',
+  'SOC': 'Houston, TX', 'HIMS': 'San Francisco, CA', 'GCT': 'El Monte, CA',
+  'BWXT': 'Lynchburg, VA',
 };
 
 // --- Initial tickers ---
