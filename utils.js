@@ -72,6 +72,11 @@ const SUBSECTOR_MAP = {
   'NKE': 'Retail', 'UNH': 'Healthcare Services', 'CMCSA': 'Entertainment & Media', 'HD': 'Retail',
   'MKC': 'Consumer Staples', 'MU': 'Semiconductors', 'SOC': 'Energy', 'HIMS': 'Health Tech',
   'GCT': 'E-Commerce', 'BWXT': 'Aerospace & Defense',
+  // Weekly Briefing Picks — Week 3 (auto-classified)
+  'NVO': 'Pharmaceuticals', 'KHC': 'Consumer Staples', 'UL': 'Consumer Staples',
+  'MDLZ': 'Consumer Staples', 'STZ': 'Consumer Staples',
+  'GEV': 'Power & Utilities', 'STX': 'Data Storage', 'TER': 'Semiconductors',
+  'FIX': 'Industrials', 'GLW': 'Specialty Materials',
   // Common additions (auto-classified since CORS proxy can't provide sector/industry)
   'SE': 'Digital Commerce', 'BABA': 'E-Commerce',
   'AAPL': 'Consumer Electronics', 'GOOGL': 'Hyperscalers',
@@ -119,6 +124,10 @@ const SUBSECTOR_ORDER = [
   'Health Tech',
   'Energy',
   'Aerospace & Defense',
+  'Pharmaceuticals',
+  'Power & Utilities',
+  'Industrials',
+  'Specialty Materials',
   // Private company subsectors
   'AI Models & Agents',
   'AI Infrastructure',
@@ -160,6 +169,10 @@ const COMMON_NAMES = {
   'CF': 'CF Industries', 'UNH': 'UnitedHealth', 'MKC': 'McCormick',
   'MU': 'Micron', 'SOC': 'Sable Offshore', 'HIMS': 'Hims & Hers',
   'GCT': 'GigaCloud', 'BWXT': 'BWX Technologies',
+  'NVO': 'Novo Nordisk', 'KHC': 'Kraft Heinz', 'UL': 'Unilever',
+  'MDLZ': 'Mondelez', 'STZ': 'Constellation Brands',
+  'GEV': 'GE Vernova', 'STX': 'Seagate', 'TER': 'Teradyne',
+  'FIX': 'Comfort Systems', 'GLW': 'Corning',
 };
 
 function cleanCompanyName(name) {
@@ -210,6 +223,10 @@ const COMPANY_HQ = {
   'UNH': 'Minnetonka, MN', 'MKC': 'Hunt Valley, MD', 'MU': 'Boise, ID',
   'SOC': 'Houston, TX', 'HIMS': 'San Francisco, CA', 'GCT': 'El Monte, CA',
   'BWXT': 'Lynchburg, VA',
+  'NVO': 'Bagsværd, Denmark', 'KHC': 'Pittsburgh, PA', 'UL': 'London, UK',
+  'MDLZ': 'Chicago, IL', 'STZ': 'Victor, NY',
+  'GEV': 'Cambridge, MA', 'STX': 'Fremont, CA', 'TER': 'North Reading, MA',
+  'FIX': 'Houston, TX', 'GLW': 'Corning, NY',
 };
 
 // --- Initial tickers ---
@@ -242,6 +259,9 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 2: 2026-03-22) ---
   'NKE','UNH','CMCSA','HD','MKC',   // Value picks
   'MU','SOC','HIMS','GCT','BWXT',   // Momentum picks
+  // --- Weekly Briefing Picks (Week 3: 2026-03-23) ---
+  'NVO','KHC','UL','MDLZ','STZ',    // Value picks
+  'GEV','STX','TER','FIX','GLW',    // Momentum picks
 ];
 
 // --- Default private companies ---
