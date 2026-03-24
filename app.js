@@ -220,13 +220,14 @@ function renderTable() {
     const headerRow = document.createElement('tr');
     headerRow.className = 'subsector-header';
     headerRow.innerHTML = `
-      <td colspan="16">
+      <td class="subsector-label-cell">
         <button class="subsector-toggle" data-subsector="${subsector}">
           <span class="chevron ${isCollapsed ? 'collapsed' : ''}">▼</span>
           ${subsector}
           <span class="subsector-count">(${tickers.length})</span>
         </button>
       </td>
+      <td colspan="15" class="subsector-fill-cell"></td>
     `;
     headerRow.querySelector('.subsector-toggle').addEventListener('click', () => {
       collapsedGroups[subsector] = !collapsedGroups[subsector];

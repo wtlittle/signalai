@@ -244,7 +244,19 @@ body {
   position: relative;
 }
 .table-wrapper {
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
+.table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.table-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 3px;
 }
 
 /* === TABLE === */
@@ -286,7 +298,7 @@ body {
 .watchlist-table thead th.sort-active .sort-arrow { opacity: 1; }
 
 /* Column widths */
-.col-ticker { width: 60px; }
+.col-ticker { width: 72px; min-width: 72px; }
 .col-name { width: 150px; }
 .col-subsector { width: 130px; }
 .col-price { width: 68px; }
@@ -296,6 +308,43 @@ body {
 .col-ev-fcf { width: 76px; }
 .col-perf { width: 66px; }
 .col-remove { width: 24px; }
+
+/* Pinned first column (Ticker) */
+.watchlist-table:not(.private-table) thead th.col-ticker,
+.watchlist-table:not(.private-table) tbody td.cell-ticker {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+.watchlist-table:not(.private-table) thead th.col-ticker {
+  z-index: 15; /* above both sticky-top headers and sticky-left cells */
+  background: var(--bg-header);
+}
+.watchlist-table:not(.private-table) tbody td.cell-ticker {
+  background: var(--bg-primary);
+}
+.watchlist-table:not(.private-table) tbody tr:nth-child(even) td.cell-ticker {
+  background: #0e1322; /* matches the even-row tint on --bg-primary */
+}
+.watchlist-table:not(.private-table) tbody tr:hover td.cell-ticker {
+  background: var(--bg-hover);
+}
+/* Subtle right border on pinned column to show separation when scrolled */
+.watchlist-table:not(.private-table) thead th.col-ticker,
+.watchlist-table:not(.private-table) tbody td.cell-ticker {
+  border-right: 1px solid var(--border);
+}
+/* Subsector header row — label cell pinned to left */
+.watchlist-table:not(.private-table) .subsector-header .subsector-label-cell {
+  position: sticky;
+  left: 0;
+  z-index: 6;
+  white-space: nowrap;
+  overflow: visible;
+}
+.watchlist-table:not(.private-table) .subsector-header .subsector-fill-cell {
+  /* inherits background from .subsector-header td rule */
+}
 
 /* Body rows */
 .watchlist-table tbody tr {
