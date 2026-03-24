@@ -338,6 +338,38 @@ body {
 .watchlist-table:not(.private-table) tbody td.cell-ticker {
   border-right: 1px solid var(--border);
 }
+/* Pinned first column (Company Name) — private table */
+.private-table thead th.col-company,
+.private-table tbody td.private-name-cell {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+.private-table thead th.col-company {
+  z-index: 15;
+  background: var(--bg-header);
+}
+.private-table tbody td.private-name-cell {
+  background: var(--bg-primary);
+}
+.private-table tbody tr:nth-child(even) td.private-name-cell {
+  background: #0e1322;
+}
+.private-table tbody tr:hover td.private-name-cell {
+  background: var(--bg-hover);
+}
+.private-table thead th.col-company,
+.private-table tbody td.private-name-cell {
+  border-right: 1px solid var(--border);
+}
+/* Private subsector header — pin label cell */
+.private-table .subsector-header td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 6;
+  background: var(--bg-surface-alt);
+}
+
 /* Subsector header row — label cell pinned to left */
 .watchlist-table:not(.private-table) .subsector-header .subsector-label-cell {
   position: sticky;

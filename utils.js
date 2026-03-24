@@ -77,6 +77,8 @@ const SUBSECTOR_MAP = {
   'MDLZ': 'Consumer Staples', 'STZ': 'Consumer Staples',
   'GEV': 'Power & Utilities', 'STX': 'Data Storage', 'TER': 'Semiconductors',
   'FIX': 'Industrials', 'GLW': 'Specialty Materials',
+  'VRT': 'Data Center Infrastructure', 'NTNX': 'Cloud Infrastructure', 'VRTX': 'Pharmaceuticals',
+  'INTC': 'Semiconductors', 'IBM': 'Enterprise Software',
   // Common additions (auto-classified since CORS proxy can't provide sector/industry)
   'SE': 'Digital Commerce', 'BABA': 'E-Commerce',
   'AAPL': 'Consumer Electronics', 'GOOGL': 'Hyperscalers',
@@ -262,6 +264,8 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 3: 2026-03-23) ---
   'NVO','KHC','UL','MDLZ','STZ',    // Value picks
   'GEV','STX','TER','FIX','GLW',    // Momentum picks
+  // --- User Additions (2026-03-24) ---
+  'VRT','NTNX','VRTX','INTC','IBM',
 ];
 
 // --- Default private companies ---
