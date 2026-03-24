@@ -245,11 +245,15 @@ body {
 }
 .table-wrapper {
   overflow-x: auto;
-  overflow-y: visible;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* Fill remaining viewport height so thead sticks inside this container */
+  max-height: calc(100vh - var(--table-top-offset, 130px));
+  max-height: calc(100dvh - var(--table-top-offset, 130px));
 }
 .table-wrapper::-webkit-scrollbar {
   height: 6px;
+  width: 6px;
 }
 .table-wrapper::-webkit-scrollbar-track {
   background: var(--bg-primary);
@@ -270,7 +274,7 @@ body {
 }
 .watchlist-table thead th {
   position: sticky;
-  top: var(--sticky-thead-top, 82px);
+  top: 0;
   background: var(--bg-header);
   border-bottom: 2px solid var(--border);
   padding: 6px 8px;

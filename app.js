@@ -808,12 +808,14 @@ function showDemoBanner() {
   } else {
     document.body.prepend(banner);
   }
-  // Adjust sticky thead offset to account for the banner height
+  // Recalculate table-wrapper top offset after banner insertion
   requestAnimationFrame(() => {
-    const bannerHeight = banner.offsetHeight;
-    const headerHeight = header ? header.offsetHeight : 45;
-    const totalOffset = headerHeight + bannerHeight;
-    document.documentElement.style.setProperty('--sticky-thead-top', totalOffset + 'px');
+    const wrapper = document.getElementById('table-wrapper');
+    if (wrapper) {
+      const rect = wrapper.getBoundingClientRect();
+      const offset = Math.max(0, rect.top + window.scrollY);
+      document.documentElement.style.setProperty('--table-top-offset', offset + 'px');
+    }
   });
 }
 
@@ -1383,6 +1385,21 @@ async function fetchNews() {
 renderTable();
 renderPrivateTable();
 loadAllData();
+
+// Calculate table-wrapper top offset for proper sticky thead inside scroll container
+(function setTableTopOffset() {
+  function update() {
+    const wrapper = document.getElementById('table-wrapper');
+    if (!wrapper) return;
+    const rect = wrapper.getBoundingClientRect();
+    const offset = Math.max(0, rect.top + window.scrollY);
+    document.documentElement.style.setProperty('--table-top-offset', offset + 'px');
+  }
+  // Run after layout settles
+  requestAnimationFrame(update);
+  setTimeout(update, 500);
+  window.addEventListener('resize', update);
+})();
 // Earnings and news are now lazy-loaded by tab activation
 // But if user starts on those tabs, they'll load automatically via activateTab above
 // As a fallback, load earnings after a delay if on watchlist tab (for card data)
