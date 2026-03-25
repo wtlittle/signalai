@@ -80,6 +80,19 @@ const SUBSECTOR_MAP = {
   'VRT': 'Data Center Infrastructure', 'NTNX': 'Cloud Infrastructure', 'VRTX': 'Pharmaceuticals',
   'INTC': 'Semiconductors', 'IBM': 'Enterprise Software',
   'BRZE': 'Marketing Tech', 'KVYO': 'Marketing Tech', 'AMPL': 'Data & Analytics',
+  // Software Coverage Expansion (2026-03-25)
+  'ZETA': 'Marketing Tech', 'RAMP': 'Marketing Tech', 'CXM': 'Marketing Tech', 'SEMR': 'Marketing Tech',
+  'ORCL': 'Enterprise Software', 'VEEV': 'Enterprise Software', 'DOCU': 'Enterprise Software',
+  'ZM': 'Enterprise Software', 'TTAN': 'Enterprise Software', 'FRSH': 'Enterprise Software',
+  'OS': 'Enterprise Software', 'BL': 'Enterprise Software', 'TWLO': 'Enterprise Software', 'RNG': 'Enterprise Software',
+  'APP': 'Digital Advertising',
+  'CHKP': 'Cybersecurity', 'QLYS': 'Cybersecurity', 'RPD': 'Cybersecurity',
+  'ADSK': 'Industrial Software', 'PTC': 'Industrial Software', 'BSY': 'Industrial Software',
+  'TRMB': 'Industrial Software', 'ROP': 'Industrial Software', 'PCOR': 'Industrial Software',
+  'TYL': 'Vertical Software', 'GWRE': 'Vertical Software', 'MANH': 'Vertical Software',
+  'FICO': 'Data & Analytics',
+  'PSTG': 'Cloud Infrastructure', 'AKAM': 'Cloud Infrastructure',
+  'WIX': 'Digital Commerce', 'GDDY': 'Digital Commerce',
   // Common additions (auto-classified since CORS proxy can't provide sector/industry)
   'SE': 'Digital Commerce', 'BABA': 'E-Commerce',
   'AAPL': 'Consumer Electronics', 'GOOGL': 'Hyperscalers',
@@ -107,6 +120,8 @@ const SUBSECTOR_ORDER = [
   'Data & Analytics',
   'Cloud Infrastructure',
   'DevOps & Automation',
+  'Industrial Software',
+  'Vertical Software',
   'Fintech',
   'Digital Commerce',
   'E-Commerce',
@@ -178,6 +193,17 @@ const COMMON_NAMES = {
   'GEV': 'GE Vernova', 'STX': 'Seagate', 'TER': 'Teradyne',
   'FIX': 'Comfort Systems', 'GLW': 'Corning',
   'BRZE': 'Braze', 'KVYO': 'Klaviyo', 'AMPL': 'Amplitude',
+  // Software Coverage Expansion (2026-03-25)
+  'ZETA': 'Zeta Global', 'RAMP': 'LiveRamp', 'CXM': 'Sprinklr', 'SEMR': 'Semrush',
+  'ORCL': 'Oracle', 'VEEV': 'Veeva Systems', 'DOCU': 'DocuSign', 'ZM': 'Zoom',
+  'TTAN': 'ServiceTitan', 'FRSH': 'Freshworks', 'OS': 'OneStream', 'BL': 'BlackLine',
+  'TWLO': 'Twilio', 'RNG': 'RingCentral', 'APP': 'AppLovin',
+  'CHKP': 'Check Point', 'QLYS': 'Qualys', 'RPD': 'Rapid7',
+  'ADSK': 'Autodesk', 'PTC': 'PTC', 'BSY': 'Bentley Systems', 'TRMB': 'Trimble',
+  'ROP': 'Roper Technologies', 'PCOR': 'Procore', 'TYL': 'Tyler Technologies',
+  'GWRE': 'Guidewire', 'MANH': 'Manhattan Associates',
+  'FICO': 'FICO', 'PSTG': 'Pure Storage', 'AKAM': 'Akamai',
+  'WIX': 'Wix', 'GDDY': 'GoDaddy',
 };
 
 function cleanCompanyName(name) {
@@ -233,6 +259,17 @@ const COMPANY_HQ = {
   'GEV': 'Cambridge, MA', 'STX': 'Fremont, CA', 'TER': 'North Reading, MA',
   'FIX': 'Houston, TX', 'GLW': 'Corning, NY',
   'BRZE': 'New York, NY', 'KVYO': 'Boston, MA', 'AMPL': 'San Francisco, CA',
+  // Software Coverage Expansion (2026-03-25)
+  'ZETA': 'New York, NY', 'RAMP': 'San Francisco, CA', 'CXM': 'New York, NY', 'SEMR': 'Boston, MA',
+  'ORCL': 'Austin, TX', 'VEEV': 'Pleasanton, CA', 'DOCU': 'San Francisco, CA', 'ZM': 'San Jose, CA',
+  'TTAN': 'Glendale, CA', 'FRSH': 'San Mateo, CA', 'OS': 'Birmingham, MI', 'BL': 'Woodland Hills, CA',
+  'TWLO': 'San Francisco, CA', 'RNG': 'Belmont, CA', 'APP': 'Palo Alto, CA',
+  'CHKP': 'Tel Aviv, Israel', 'QLYS': 'Foster City, CA', 'RPD': 'Boston, MA',
+  'ADSK': 'San Francisco, CA', 'PTC': 'Boston, MA', 'BSY': 'Exton, PA', 'TRMB': 'Westminster, CO',
+  'ROP': 'Sarasota, FL', 'PCOR': 'Carpinteria, CA', 'TYL': 'Plano, TX',
+  'GWRE': 'San Mateo, CA', 'MANH': 'Atlanta, GA',
+  'FICO': 'Bozeman, MT', 'PSTG': 'Santa Clara, CA', 'AKAM': 'Cambridge, MA',
+  'WIX': 'Tel Aviv, Israel', 'GDDY': 'Tempe, AZ',
 };
 
 // --- Initial tickers ---
@@ -272,6 +309,23 @@ const DEFAULT_TICKERS = [
   'VRT','NTNX','VRTX','INTC','IBM',
   // --- User Additions (2026-03-25) ---
   'BRZE','KVYO','AMPL',
+  // --- Software Coverage Expansion (2026-03-25) ---
+  // Marketing Tech / AdTech
+  'ZETA','RAMP','CXM','SEMR',
+  // Enterprise Software (sell-side staples)
+  'ORCL','VEEV','DOCU','ZM','TTAN','FRSH','OS','BL','TWLO','RNG',
+  // Digital Advertising
+  'APP',
+  // Cybersecurity (coverage gaps)
+  'CHKP','QLYS','RPD',
+  // Industrial / Vertical Software
+  'ADSK','PTC','BSY','TRMB','ROP','PCOR','TYL','GWRE','MANH',
+  // Data & Analytics
+  'FICO',
+  // Cloud Infrastructure
+  'PSTG','AKAM',
+  // Digital Commerce
+  'WIX','GDDY',
 ];
 
 // --- Default private companies ---
