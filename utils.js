@@ -79,6 +79,7 @@ const SUBSECTOR_MAP = {
   'FIX': 'Industrials', 'GLW': 'Specialty Materials',
   'VRT': 'Data Center Infrastructure', 'NTNX': 'Cloud Infrastructure', 'VRTX': 'Pharmaceuticals',
   'INTC': 'Semiconductors', 'IBM': 'Enterprise Software',
+  'BRZE': 'Marketing Tech', 'KVYO': 'Marketing Tech', 'AMPL': 'Data & Analytics',
   // Common additions (auto-classified since CORS proxy can't provide sector/industry)
   'SE': 'Digital Commerce', 'BABA': 'E-Commerce',
   'AAPL': 'Consumer Electronics', 'GOOGL': 'Hyperscalers',
@@ -110,6 +111,7 @@ const SUBSECTOR_ORDER = [
   'Digital Commerce',
   'E-Commerce',
   'Digital Advertising',
+  'Marketing Tech',
   'Consumer Electronics',
   'Entertainment & Media',
   'Gaming',
@@ -175,6 +177,7 @@ const COMMON_NAMES = {
   'MDLZ': 'Mondelez', 'STZ': 'Constellation Brands',
   'GEV': 'GE Vernova', 'STX': 'Seagate', 'TER': 'Teradyne',
   'FIX': 'Comfort Systems', 'GLW': 'Corning',
+  'BRZE': 'Braze', 'KVYO': 'Klaviyo', 'AMPL': 'Amplitude',
 };
 
 function cleanCompanyName(name) {
@@ -229,6 +232,7 @@ const COMPANY_HQ = {
   'MDLZ': 'Chicago, IL', 'STZ': 'Victor, NY',
   'GEV': 'Cambridge, MA', 'STX': 'Fremont, CA', 'TER': 'North Reading, MA',
   'FIX': 'Houston, TX', 'GLW': 'Corning, NY',
+  'BRZE': 'New York, NY', 'KVYO': 'Boston, MA', 'AMPL': 'San Francisco, CA',
 };
 
 // --- Initial tickers ---
@@ -266,6 +270,8 @@ const DEFAULT_TICKERS = [
   'GEV','STX','TER','FIX','GLW',    // Momentum picks
   // --- User Additions (2026-03-24) ---
   'VRT','NTNX','VRTX','INTC','IBM',
+  // --- User Additions (2026-03-25) ---
+  'BRZE','KVYO','AMPL',
 ];
 
 // --- Default private companies ---
