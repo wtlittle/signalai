@@ -151,7 +151,19 @@ const SUBSECTOR_ORDER = [
   'AI Models & Agents',
   'AI Infrastructure',
   'AI Software',
+  'AI for Finance',
+  'Generative AI',
+  'Quantum Computing',
+  'Enterprise Networking',
+  'Sales & GTM',
+  'Developer Tools',
   'Design & Creative',
+  'Autonomous Vehicles',
+  'Identity & Security',
+  'Legal Technology',
+  'Healthcare & Biotech',
+  'Consumer Software',
+  'Clean Energy & Mining',
 ];
 
 // --- Common company names (human-friendly, not legal names) ---
@@ -376,6 +388,29 @@ const DEFAULT_PRIVATE_COMPANIES = [
   { name: 'Bending Spoons', subsector: 'Consumer Software', valuation: '$11B', funding: 'Later Stage VC', revenue: '~$1B TTM', metrics: 'Acquired Evernote, Splice, Issuu; 800+ employees', headquarters: 'Milan, Italy', lead_investors: 'T. Rowe Price' },
   // Clean Energy & Mining
   { name: 'KoBold Metals', subsector: 'Clean Energy & Mining', valuation: '$2.96B', funding: '$537M Series C (Oct 2024)', revenue: 'N/A', metrics: 'AI-powered critical mineral exploration', headquarters: 'Berkeley, CA', lead_investors: 'T. Rowe Price, Durable Capital, Andreessen' },
+  // --- User Additions (2026-03-25) ---
+  // AI for Finance
+  { name: 'Rogo', subsector: 'AI for Finance', valuation: '$750M', funding: '$75M Series C (Jan 2026)', revenue: 'N/A', metrics: '100+ employees, 25K+ DAUs, clients: Rothschild, Jefferies, Lazard, Moelis', headquarters: 'New York, NY', lead_investors: 'Sequoia Capital, Thrive Capital, Khosla Ventures' },
+  { name: 'Hebbia', subsector: 'AI for Finance', valuation: '$700M', funding: '$130M Series B (Jul 2024)', revenue: '~$13M ARR (mid-2024, accelerating)', metrics: '120 employees, 40% of largest AMs by AUM, clients: BlackRock, KKR, Carlyle', headquarters: 'New York, NY', lead_investors: 'Andreessen Horowitz, Index Ventures, Peter Thiel' },
+  { name: 'AlphaSense', subsector: 'AI for Finance', valuation: '$4B', funding: '$650M Series F (Jun 2024)', revenue: '~$500M+ ARR', metrics: '6,500+ enterprise clients (90% S&P 100), 2,000+ employees', headquarters: 'New York, NY', lead_investors: 'Viking Global, BDT & MSD Partners' },
+  // Quantum Computing
+  { name: 'PsiQuantum', subsector: 'Quantum Computing', valuation: '$7B', funding: '$1B Series E (Sep 2025)', revenue: 'Pre-revenue', metrics: '321 employees, partners: NVIDIA, GlobalFoundries, US/Aus govts', headquarters: 'Palo Alto, CA', lead_investors: 'BlackRock, Temasek, Baillie Gifford' },
+  // Fintech
+  { name: 'Ramp', subsector: 'Fintech', valuation: '$32B', funding: '$300M (Nov 2025)', revenue: '~$1B+ annualized', metrics: '50K+ customers, $100B+ annualized spend, 1,100+ employees, clients: Shopify, Anduril', headquarters: 'New York, NY', lead_investors: 'Lightspeed Venture Partners' },
+  // Enterprise Networking
+  { name: 'Meter', subsector: 'Enterprise Networking', valuation: '$1B+', funding: '$170M Series C (Jun 2025)', revenue: '~$17M', metrics: '111-121 employees, clients: Bridgewater, Lyft, Reddit', headquarters: 'San Francisco, CA', lead_investors: 'General Catalyst, Sequoia Capital, Sam Altman' },
+  // Sales & GTM
+  { name: 'Clay', subsector: 'Sales & GTM', valuation: '$5B', funding: '$100M Series C (Aug 2025)', revenue: '$100M ARR (Dec 2025)', metrics: '14K customers, NRR >200%, clients: OpenAI, Anthropic, Google, Canva', headquarters: 'New York, NY', lead_investors: 'DST Global, CapitalG, Meritech, Sequoia' },
+  // Generative AI / Video
+  { name: 'Runway AI', subsector: 'Generative AI', valuation: '$5.3B', funding: '$315M Series E (Feb 2026)', revenue: '~$90M annualized (targeting $300M)', metrics: '140 employees, tens of millions users, enterprise clients: Chime, Robinhood', headquarters: 'New York, NY', lead_investors: 'General Atlantic' },
+  // --- PitchBook / Research Additions (2026-03-25) ---
+  // AI Models & Agents
+  { name: 'Mistral AI', subsector: 'AI Models & Agents', valuation: '€12B (~$13.7B)', funding: '€1.7B Series C (Sep 2025)', revenue: '~$400M+ annualized, targeting €1B in 2026', metrics: '687 employees, open-source + enterprise LLMs, European AI champion', headquarters: 'Paris, France', lead_investors: 'ASML, Andreessen Horowitz, General Catalyst' },
+  { name: 'Cohere', subsector: 'AI Models & Agents', valuation: '$7B', funding: '$500M (Aug 2025)', revenue: '~$240M ARR', metrics: '450 employees, 70% gross margins, enterprise LLMs, IPO-track', headquarters: 'Toronto, Canada', lead_investors: 'Nvidia, AMD, Salesforce Ventures' },
+  { name: 'ElevenLabs', subsector: 'Generative AI', valuation: '$11B', funding: '$500M Series D (Feb 2026)', revenue: '~$330M ARR', metrics: 'Voice AI platform, enterprise clients: Deutsche Telekom, Revolut, Square', headquarters: 'London, UK', lead_investors: 'Sequoia Capital, Andreessen Horowitz, ICONIQ' },
+  // Developer Tools
+  { name: 'Vercel', subsector: 'Developer Tools', valuation: '$9.3B', funding: '$300M Series F (Sep 2025)', revenue: '~$200M+ ARR', metrics: '875 employees, 4M+ websites, v0 AI agent, powers Next.js ecosystem', headquarters: 'Covina, CA', lead_investors: 'Accel, GIC, BlackRock, Khosla Ventures' },
+  { name: 'Replit', subsector: 'Developer Tools', valuation: '$9B', funding: '$400M Series D (Mar 2026)', revenue: 'Targeting $1B ARR by end 2026', metrics: '85% of Fortune 500, AI-powered app builder, vibe coding pioneer', headquarters: 'San Francisco, CA', lead_investors: 'Georgian, G Squared, Coatue, a16z' },
 ];
 
 // --- Proper capitalization for company names ---
@@ -401,6 +436,11 @@ const KNOWN_COMPANY_NAMES = {
   'spacex': 'SpaceX', 'clickhouse': 'ClickHouse', 'sandboxaq': 'SandboxAQ',
   'icapital': 'iCapital', 'kobold metals': 'KoBold Metals',
   'abl space systems': 'ABL Space Systems', 'bending spoons': 'Bending Spoons',
+  'rogo': 'Rogo', 'hebbia': 'Hebbia', 'alphasense': 'AlphaSense',
+  'psiquantum': 'PsiQuantum', 'meter': 'Meter', 'clay': 'Clay',
+  'runway ai': 'Runway AI', 'runway': 'Runway AI', 'mistral ai': 'Mistral AI',
+  'cohere': 'Cohere', 'elevenlabs': 'ElevenLabs', 'eleven labs': 'ElevenLabs',
+  'replit': 'Replit',
 };
 function capitalizeCompanyName(name) {
   if (!name || typeof name !== 'string') return name;
