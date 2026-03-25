@@ -270,6 +270,8 @@ const COMPANY_HQ = {
   'MDLZ': 'Chicago, IL', 'STZ': 'Victor, NY',
   'GEV': 'Cambridge, MA', 'STX': 'Fremont, CA', 'TER': 'North Reading, MA',
   'FIX': 'Houston, TX', 'GLW': 'Corning, NY',
+  'VRT': 'Westerville, OH', 'NTNX': 'San Jose, CA', 'VRTX': 'Boston, MA',
+  'INTC': 'Santa Clara, CA', 'IBM': 'Armonk, NY',
   'BRZE': 'New York, NY', 'KVYO': 'Boston, MA', 'AMPL': 'San Francisco, CA',
   // Software Coverage Expansion (2026-03-25)
   'ZETA': 'New York, NY', 'RAMP': 'San Francisco, CA', 'CXM': 'New York, NY', 'SEMR': 'Boston, MA',
