@@ -107,38 +107,33 @@ console.log(`Found ${privateCompanies.length} private companies`);
 // ---------------------------------------------------------------------------
 async function fetchYahooQuotes(tickerList) {
   const results = {};
-  // Process in batches of 20
-  for (let i = 0; i < tickerList.length; i += 20) {
-    const batch = tickerList.slice(i, i + 20);
-    const symbols = batch.join(',');
+  // Process one ticker at a time using the v8 chart endpoint (no auth needed)
+  for (let i = 0; i < tickerList.length; i++) {
+    const ticker = tickerList[i];
     try {
-      const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}&fields=regularMarketPrice,marketCap,shortName,longName,regularMarketChangePercent,fiftyTwoWeekHigh,fiftyTwoWeekLow,sector,industry`;
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=5d&interval=1d&includePrePost=false`;
       const resp = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0' },
-        signal: AbortSignal.timeout(15000),
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+        signal: AbortSignal.timeout(10000),
       });
       if (resp.ok) {
         const data = await resp.json();
-        for (const q of (data.quoteResponse?.result || [])) {
-          results[q.symbol] = {
-            price: q.regularMarketPrice,
-            marketCap: q.marketCap,
-            longName: q.longName || q.shortName,
-            change1d: q.regularMarketChangePercent,
-            fiftyTwoWeekHigh: q.fiftyTwoWeekHigh,
-            fiftyTwoWeekLow: q.fiftyTwoWeekLow,
-            sector: q.sector,
-            industry: q.industry,
+        const meta = data.chart?.result?.[0]?.meta;
+        if (meta) {
+          results[ticker] = {
+            price: meta.regularMarketPrice,
+            marketCap: null,  // v8 chart doesn't include marketCap
+            longName: meta.longName || meta.shortName,
+            fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
           };
         }
-      } else {
-        console.warn(`Yahoo batch ${i} returned HTTP ${resp.status}`);
       }
     } catch (err) {
-      console.warn(`Yahoo batch ${i} error: ${err.message}`);
+      // Silently skip failed tickers
     }
-    // Small delay between batches
-    if (i + 20 < tickerList.length) await new Promise(r => setTimeout(r, 500));
+    // Small delay to avoid rate limiting
+    if (i % 10 === 9) await new Promise(r => setTimeout(r, 1000));
   }
   return results;
 }
