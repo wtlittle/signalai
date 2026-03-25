@@ -93,6 +93,7 @@ const SUBSECTOR_MAP = {
   'FICO': 'Data & Analytics',
   'PSTG': 'Cloud Infrastructure', 'AKAM': 'Cloud Infrastructure',
   'WIX': 'Digital Commerce', 'GDDY': 'Digital Commerce',
+  'GLBE': 'Digital Commerce',
   // Common additions (auto-classified since CORS proxy can't provide sector/industry)
   'SE': 'Digital Commerce', 'BABA': 'E-Commerce',
   'AAPL': 'Consumer Electronics', 'GOOGL': 'Hyperscalers',
@@ -216,6 +217,7 @@ const COMMON_NAMES = {
   'GWRE': 'Guidewire', 'MANH': 'Manhattan Associates',
   'FICO': 'FICO', 'PSTG': 'Pure Storage', 'AKAM': 'Akamai',
   'WIX': 'Wix', 'GDDY': 'GoDaddy',
+  'GLBE': 'Global-E',
 };
 
 function cleanCompanyName(name) {
@@ -284,6 +286,7 @@ const COMPANY_HQ = {
   'GWRE': 'San Mateo, CA', 'MANH': 'Atlanta, GA',
   'FICO': 'Bozeman, MT', 'PSTG': 'Santa Clara, CA', 'AKAM': 'Cambridge, MA',
   'WIX': 'Tel Aviv, Israel', 'GDDY': 'Tempe, AZ',
+  'GLBE': 'Petah Tikva, Israel',
 };
 
 // --- Initial tickers ---
@@ -340,6 +343,8 @@ const DEFAULT_TICKERS = [
   'PSTG','AKAM',
   // Digital Commerce
   'WIX','GDDY',
+  // --- User Addition (2026-03-25) ---
+  'GLBE',
 ];
 
 // --- Default private companies ---
