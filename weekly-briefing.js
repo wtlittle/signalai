@@ -93,9 +93,9 @@ function renderWeeklyBriefing() {
           <span class="wb-card-price">${m.price}</span>
         </div>
         <div class="wb-card-stats">
-          <span class="wb-stat ${parseFloat((m.perf_1w||'').replace('%','').replace('+','')) >= 0 ? 'positive' : 'negative'}">1W: ${m.perf_1w}</span>
-          <span class="wb-stat ${parseFloat((m.perf_1m||'').replace('%','').replace('+','')) >= 0 ? 'positive' : 'negative'}">1M: ${m.perf_1m}</span>
-          <span class="wb-stat ${parseFloat((m.perf_3m||'').replace('%','').replace('+','')) >= 0 ? 'positive' : 'negative'}">3M: ${m.perf_3m}</span>
+          <span class="wb-stat ${parseFloat(((m.perf_1w||m.one_week||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1W: ${m.perf_1w||m.one_week||'N/A'}</span>
+          <span class="wb-stat ${parseFloat(((m.perf_1m||m.one_month||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1M: ${m.perf_1m||m.one_month||'N/A'}</span>
+          <span class="wb-stat ${parseFloat(((m.perf_3m||m.three_month||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">3M: ${m.perf_3m||m.three_month||'N/A'}</span>
           <span class="wb-stat">Rev Growth: ${m.rev_growth || 'N/A'}</span>
         </div>
         <div class="wb-card-thesis">
@@ -119,8 +119,8 @@ function renderWeeklyBriefing() {
   (d.trends || []).forEach(t => {
     html += `
       <div class="wb-list-item">
-        <div class="wb-list-title">${t.title}</div>
-        <div class="wb-list-detail">${t.detail}</div>
+        <div class="wb-list-title">${t.title || t.name || ''}</div>
+        <div class="wb-list-detail">${t.detail || t.description || ''}</div>
       </div>`;
   });
   html += `</div></div>`;
@@ -134,8 +134,8 @@ function renderWeeklyBriefing() {
   (d.risks || []).forEach(r => {
     html += `
       <div class="wb-list-item wb-risk-item">
-        <div class="wb-list-title">${r.title}</div>
-        <div class="wb-list-detail">${r.detail}</div>
+        <div class="wb-list-title">${r.title || r.name || ''}</div>
+        <div class="wb-list-detail">${r.detail || r.description || ''}</div>
       </div>`;
   });
   html += `</div></div>`;
