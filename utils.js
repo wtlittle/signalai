@@ -1,5 +1,5 @@
 /* ===== UTILS.JS — Formatting helpers, storage, constants ===== */
-/* Last synced: 2026-03-25 */
+/* Last synced: 2026-03-25T12:49 */
 
 // --- Storage wrapper (in-memory, with optional persistence) ---
 const Storage = (() => {
