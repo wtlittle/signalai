@@ -1516,8 +1516,15 @@ tr.long-pressing {
 }
 
 /* S&P 500 Outperformance */
+.outperf-chart-block {
+  margin-bottom: 4px;
+}
 .outperf-header {
   margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
 }
 .outperf-big-number {
   padding: 12px 16px;
@@ -1555,6 +1562,39 @@ tr.long-pressing {
   border-radius: 4px;
   padding: 12px;
   height: 310px;
+}
+
+/* Lookback toggle buttons */
+.outperf-lookback-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.lookback-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.3px;
+}
+.lookback-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.05);
+}
+.lookback-btn.active {
+  background: rgba(59,130,246,0.2);
+  color: #60a5fa;
 }
 
 /* Cross-Sector Comps Table */

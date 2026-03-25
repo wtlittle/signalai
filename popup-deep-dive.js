@@ -2,7 +2,10 @@
 
 let deepDiveExpanded = false;
 let shortInterestChart = null;
-let outperformanceChart = null;
+let outperformanceChart1Y = null;
+let outperformanceChart3Y = null;
+let _outperfData1Y = null; // cached full data for lookback toggling
+let _outperfData3Y = null;
 
 function createSeeMoreButton() {
   return `
@@ -69,7 +72,10 @@ async function toggleDeepDive(ticker, data) {
 
 function destroyDeepDiveCharts() {
   if (shortInterestChart) { shortInterestChart.destroy(); shortInterestChart = null; }
-  if (outperformanceChart) { outperformanceChart.destroy(); outperformanceChart = null; }
+  if (outperformanceChart1Y) { outperformanceChart1Y.destroy(); outperformanceChart1Y = null; }
+  if (outperformanceChart3Y) { outperformanceChart3Y.destroy(); outperformanceChart3Y = null; }
+  _outperfData1Y = null;
+  _outperfData3Y = null;
 }
 
 // --- Data fetching ---
@@ -237,13 +243,14 @@ function computeClientSideQuant(ticker) {
 }
 
 // --- Client-side S&P 500 outperformance approximation ---
-async function computeClientSideOutperformance(ticker) {
-  // Fetch 4Y daily data for the ticker and S&P 500
-  // Then compute rolling 1Y return difference and approximate percentile
+// rollingYears: 1 = rolling 1Y return, 3 = rolling 3Y return
+async function computeClientSideOutperformance(ticker, rollingYears = 1) {
   try {
+    // Fetch max range for longer lookbacks
+    const range = rollingYears >= 3 ? 'max' : '5y';
     const [tickerChart, spChart] = await Promise.all([
-      fetchChartData(ticker, '5y', '1wk'),
-      fetchChartData('^GSPC', '5y', '1wk'),
+      fetchChartData(ticker, range, '1wk'),
+      fetchChartData('^GSPC', range, '1wk'),
     ]);
 
     if (!tickerChart || !spChart) return null;
@@ -260,9 +267,12 @@ async function computeClientSideOutperformance(ticker) {
       spMap[d] = spCloses[i];
     });
 
-    // For each weekly point (after first 52 weeks), compute rolling return vs S&P
+    // Rolling lookback in weeks
+    const lookback = rollingYears * 52;
+    // Std dev scales with sqrt of time for cross-sectional dispersion
+    const stdDev = 0.25 * Math.sqrt(rollingYears);
+
     const data = [];
-    const lookback = 52; // ~1 year in weeks
 
     for (let i = lookback; i < tickerCloses.length; i++) {
       if (!tickerCloses[i] || !tickerCloses[i - lookback]) continue;
@@ -284,26 +294,17 @@ async function computeClientSideOutperformance(ticker) {
       if (spIdx < lookback || !spCloses[spIdx] || !spCloses[spIdx - lookback]) continue;
       const spReturn = (spCloses[spIdx] - spCloses[spIdx - lookback]) / spCloses[spIdx - lookback];
 
-      // Approximate percentile based on how much we beat the index
-      // Using a heuristic: excess return maps to percentile via normal distribution approximation
-      // Typical stock dispersion around S&P is ~20% std dev
       const excessReturn = tickerReturn - spReturn;
-      const stdDev = 0.25; // approximate annual cross-sectional std dev of S&P 500 stock returns
       const zScore = excessReturn / stdDev;
-      // Convert z-score to percentile using approximation
       const percentile = Math.min(99, Math.max(1, Math.round(normCDF(zScore) * 100)));
 
       data.push({ date: dateStr, percentile });
     }
 
-    // Filter to last 3 years
-    const threeYearsAgo = new Date();
-    threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
-    const filtered = data.filter(d => new Date(d.date) >= threeYearsAgo);
-
-    return { ticker, data: filtered, approximate: true };
+    // Keep all available data (lookback filtering is done at display time)
+    return { ticker, data, approximate: true, rollingYears };
   } catch (e) {
-    console.error('Client-side outperformance calc failed:', e);
+    console.error(`Client-side outperformance calc failed (${rollingYears}Y):`, e);
     return null;
   }
 }
@@ -331,7 +332,7 @@ function renderDeepDiveContent(ticker, quant, short_, outperf, data, comps) {
   // Section B: Short Interest
   html += renderShortInterest(ticker, short_);
 
-  // Section C: S&P 500 Outperformance
+  // Section C: S&P 500 Outperformance (1Y rolling + 3Y rolling)
   html += renderOutperformance(ticker, outperf);
 
   // Section D: Cross-Sector Fundamental Comps
@@ -340,9 +341,35 @@ function renderDeepDiveContent(ticker, quant, short_, outperf, data, comps) {
   contentEl.innerHTML = html;
 
   // Initialize charts after DOM is ready
-  setTimeout(() => {
+  setTimeout(async () => {
     if (short_ && short_.current) initShortInterestChart(short_);
-    if (outperf && outperf.data && outperf.data.length > 0) initOutperformanceChart(outperf);
+    if (outperf && outperf.data && outperf.data.length > 0) {
+      _outperfData1Y = outperf;
+      initOutperformanceChartInstance(outperf, 'outperf-canvas-1y', '1y', 1);
+    }
+    // Compute 3Y rolling outperformance asynchronously
+    try {
+      const outperf3Y = await computeClientSideOutperformance(ticker, 3);
+      if (outperf3Y && outperf3Y.data && outperf3Y.data.length > 0) {
+        _outperfData3Y = outperf3Y;
+        const latest3Y = outperf3Y.data[outperf3Y.data.length - 1];
+        const val3Y = document.getElementById('outperf-3y-value');
+        const loading3Y = document.getElementById('outperf-3y-loading');
+        if (val3Y) {
+          val3Y.innerHTML = `${Math.round(latest3Y.percentile)}<span class="outperf-unit">%ile</span>`;
+          val3Y.style.color = getFactorBarColor(latest3Y.percentile);
+        }
+        if (loading3Y) loading3Y.style.display = 'none';
+        initOutperformanceChartInstance(outperf3Y, 'outperf-canvas-3y', '3y', 3);
+      } else {
+        const loading3Y = document.getElementById('outperf-3y-loading');
+        if (loading3Y) loading3Y.textContent = 'Insufficient data for 3Y rolling calculation';
+      }
+    } catch (e) {
+      console.warn('Failed to compute 3Y outperformance:', e);
+      const loading3Y = document.getElementById('outperf-3y-loading');
+      if (loading3Y) loading3Y.textContent = 'Failed to compute 3Y rolling data';
+    }
   }, 50);
 }
 
@@ -574,28 +601,70 @@ function renderOutperformance(ticker, outperf) {
 
   let html = `<div class="deep-dive-section">
     <div class="popup-section-title">S&P 500 Outperformance Percentile</div>
-    <div class="outperf-header">
-      <div class="outperf-big-number">
-        <div class="outperf-value" style="color:${getFactorBarColor(currentPctile)}">${currentPctile != null ? Math.round(currentPctile) : '—'}<span class="outperf-unit">%ile</span></div>
-        <div class="outperf-label">Rolling 1Y return vs S&P 500 constituents</div>
-        ${outperf.approximate ? '<div class="outperf-approx">Approximated from index-relative performance</div>' : ''}
+
+    <!-- Rolling 1Y Chart -->
+    <div class="outperf-chart-block">
+      <div class="outperf-header">
+        <div class="outperf-big-number">
+          <div class="outperf-value" style="color:${getFactorBarColor(currentPctile)}">${currentPctile != null ? Math.round(currentPctile) : '—'}<span class="outperf-unit">%ile</span></div>
+          <div class="outperf-label">Rolling 1Y return vs S&P 500 constituents</div>
+          ${outperf.approximate ? '<div class="outperf-approx">Approximated from index-relative performance</div>' : ''}
+        </div>
+        <div class="outperf-lookback-toggle" id="outperf-toggle-1y">
+          <button class="lookback-btn active" data-chart="1y" data-lookback="1">1Y</button>
+          <button class="lookback-btn" data-chart="1y" data-lookback="3">3Y</button>
+          <button class="lookback-btn" data-chart="1y" data-lookback="5">5Y</button>
+        </div>
+      </div>
+      <div class="outperf-chart-container" id="outperf-chart-area-1y">
+        <canvas id="outperf-canvas-1y" style="width:100%;height:280px;"></canvas>
       </div>
     </div>
-    <div class="outperf-chart-container" id="outperf-chart-area">
-      <canvas id="outperf-canvas" style="width:100%;height:280px;"></canvas>
+
+    <!-- Rolling 3Y Chart -->
+    <div class="outperf-chart-block" style="margin-top:20px;">
+      <div class="outperf-header">
+        <div class="outperf-big-number">
+          <div class="outperf-value" id="outperf-3y-value" style="color:var(--text-muted)">—<span class="outperf-unit">%ile</span></div>
+          <div class="outperf-label">Rolling 3Y return vs S&P 500 constituents</div>
+          <div class="outperf-approx" id="outperf-3y-loading">Computing 3Y rolling data…</div>
+        </div>
+        <div class="outperf-lookback-toggle" id="outperf-toggle-3y">
+          <button class="lookback-btn active" data-chart="3y" data-lookback="1">1Y</button>
+          <button class="lookback-btn" data-chart="3y" data-lookback="3">3Y</button>
+          <button class="lookback-btn" data-chart="3y" data-lookback="5">5Y</button>
+        </div>
+      </div>
+      <div class="outperf-chart-container" id="outperf-chart-area-3y">
+        <canvas id="outperf-canvas-3y" style="width:100%;height:280px;"></canvas>
+      </div>
     </div>
   </div>`;
 
   return html;
 }
 
-function initOutperformanceChart(outperf) {
-  const canvas = document.getElementById('outperf-canvas');
+// Shared outperformance chart initializer — used for both 1Y and 3Y rolling charts
+// chartId: 'outperf-canvas-1y' or 'outperf-canvas-3y'
+// rollingLabel: '1y' or '3y'
+// rollingYears: 1 or 3 — used for tooltip label
+function initOutperformanceChartInstance(outperf, canvasId, chartKey, rollingYears, lookbackYears) {
+  const canvas = document.getElementById(canvasId);
   if (!canvas) return;
+
+  // Default lookback = 1 year displayed
+  if (!lookbackYears) lookbackYears = 1;
+
+  // Filter data to the requested display window
+  const cutoff = new Date();
+  cutoff.setFullYear(cutoff.getFullYear() - lookbackYears);
+  const filtered = outperf.data.filter(d => new Date(d.date) >= cutoff);
+  if (filtered.length === 0) return;
+
   const ctx = canvas.getContext('2d');
 
-  const labels = outperf.data.map(d => d.date);
-  const values = outperf.data.map(d => d.percentile);
+  const labels = filtered.map(d => d.date);
+  const values = filtered.map(d => d.percentile);
 
   // Create gradient
   const gradient = ctx.createLinearGradient(0, 0, 0, 280);
@@ -603,14 +672,16 @@ function initOutperformanceChart(outperf) {
   gradient.addColorStop(0.5, 'rgba(59,130,246,0.05)');
   gradient.addColorStop(1, 'rgba(239,68,68,0.15)');
 
-  outperformanceChart = new Chart(ctx, {
+  const rollingLabel = rollingYears === 1 ? '1Y' : rollingYears === 3 ? '3Y' : '5Y';
+
+  const chart = new Chart(ctx, {
     type: 'line',
     data: {
       labels,
       datasets: [{
-        label: 'Outperformance %ile',
+        label: `Rolling ${rollingLabel} Outperformance %ile`,
         data: values,
-        borderColor: '#3b82f6',
+        borderColor: chartKey === '3y' ? '#a78bfa' : '#3b82f6',
         backgroundColor: gradient,
         fill: true,
         borderWidth: 2,
@@ -633,7 +704,7 @@ function initOutperformanceChart(outperf) {
           titleFont: { family: "'JetBrains Mono', monospace", size: 11 },
           bodyFont: { family: "'JetBrains Mono', monospace", size: 11 },
           callbacks: {
-            label: (ctx) => `Outperformed ${ctx.parsed.y.toFixed(0)}% of S&P 500`,
+            label: (ctx) => `Rolling ${rollingLabel}: Outperformed ${ctx.parsed.y.toFixed(0)}% of S&P 500`,
           },
         },
       },
@@ -661,7 +732,6 @@ function initOutperformanceChart(outperf) {
       },
     },
     plugins: [{
-      // Draw horizontal reference lines at 25%, 50%, 75%
       id: 'referenceLines',
       beforeDraw: (chart) => {
         const ctx = chart.ctx;
@@ -680,7 +750,6 @@ function initOutperformanceChart(outperf) {
           ctx.stroke();
           ctx.restore();
 
-          // Label
           if (val === 50) {
             ctx.save();
             ctx.fillStyle = 'rgba(255,255,255,0.25)';
@@ -692,7 +761,48 @@ function initOutperformanceChart(outperf) {
       },
     }],
   });
+
+  // Store chart reference
+  if (chartKey === '1y') outperformanceChart1Y = chart;
+  else outperformanceChart3Y = chart;
 }
+
+// Handle lookback toggle clicks — rebuild chart with different time window
+function handleOutperfLookbackToggle(chartKey, lookbackYears, btn) {
+  // Update active button state
+  const toggleContainer = document.getElementById(`outperf-toggle-${chartKey}`);
+  if (toggleContainer) {
+    toggleContainer.querySelectorAll('.lookback-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  const data = chartKey === '1y' ? _outperfData1Y : _outperfData3Y;
+  if (!data || !data.data || data.data.length === 0) return;
+
+  // Destroy existing chart
+  if (chartKey === '1y' && outperformanceChart1Y) {
+    outperformanceChart1Y.destroy();
+    outperformanceChart1Y = null;
+  } else if (chartKey === '3y' && outperformanceChart3Y) {
+    outperformanceChart3Y.destroy();
+    outperformanceChart3Y = null;
+  }
+
+  const rollingYears = chartKey === '1y' ? 1 : 3;
+  const canvasId = `outperf-canvas-${chartKey}`;
+  initOutperformanceChartInstance(data, canvasId, chartKey, rollingYears, lookbackYears);
+}
+
+// Event delegation for lookback toggle buttons
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.lookback-btn');
+  if (!btn) return;
+  const chartKey = btn.dataset.chart;
+  const lookback = parseInt(btn.dataset.lookback, 10);
+  if (chartKey && lookback) {
+    handleOutperfLookbackToggle(chartKey, lookback, btn);
+  }
+});
 
 // --- Section D: Cross-Sector Fundamental Comps ---
 
