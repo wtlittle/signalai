@@ -11,89 +11,41 @@ let collapsedPrivateGroups = Storage.get('collapsed_private_groups') || {};
 let refreshInterval = null;
 let refreshCountdown = 60;
 
-// --- One-time migration: add new tickers/companies for returning users ---
-(function migrate_v2() {
-  const MIGRATION_KEY = 'migration_v2_done';
-  if (Storage.get(MIGRATION_KEY)) return;
-
-  // New public tickers to add
-  const newTickers = ['AVGO','MRVL','ARM','NVDA','TSM','MNDY','ADBE','ASAN','GTLB','PATH','VRNS','BILL','FOUR','COIN','SHOP','TTD','AI','IOT'];
-  let addedTicker = false;
-  newTickers.forEach(t => {
-    if (!tickerList.includes(t)) {
+// --- Always-sync: merge defaults into stored state on EVERY page load ---
+// This replaces the old one-time migration system (v2-v7) which broke when
+// new companies/tickers were added after migration flags were already set.
+(function syncDefaults() {
+  // 1. Sync public tickers — add any from DEFAULT_TICKERS not in stored list
+  let tickerChanged = false;
+  const tickerSet = new Set(tickerList);
+  DEFAULT_TICKERS.forEach(t => {
+    if (!tickerSet.has(t)) {
       tickerList.push(t);
-      addedTicker = true;
+      tickerChanged = true;
     }
   });
-  if (addedTicker) Storage.set('ticker_list', tickerList);
-
-  // New private companies to add (match by name)
-  const existingNames = new Set(privateCompanies.map(c => c.name.toLowerCase()));
-  const newPrivate = DEFAULT_PRIVATE_COMPANIES.filter(c => !existingNames.has(c.name.toLowerCase()));
-  if (newPrivate.length > 0) {
-    // Also update existing entries with refreshed data
-    privateCompanies.forEach((c, i) => {
-      const updated = DEFAULT_PRIVATE_COMPANIES.find(d => d.name.toLowerCase() === c.name.toLowerCase());
-      if (updated) privateCompanies[i] = { ...c, ...updated };
-    });
-    privateCompanies.push(...newPrivate);
-    Storage.set('private_companies', privateCompanies);
-  }
-
-  Storage.set(MIGRATION_KEY, true);
-})();
-
-// --- Migration v3: Consolidate private company subsectors ---
-(function migrate_v3() {
-  const MIGRATION_KEY = 'migration_v3_done';
-  if (Storage.get(MIGRATION_KEY)) return;
-
-  const SUBSECTOR_REMAP = {
-    'AI Foundation Models': 'AI Models & Agents',
-    'AI Agents': 'AI Models & Agents',
-    'AI / Data Platform': 'AI Infrastructure',
-    'AI Data Infrastructure': 'AI Infrastructure',
-    'AI Chips': 'AI Infrastructure',
-    'AI Developer Tools': 'AI Software',
-    'Enterprise AI Search': 'AI Software',
-    'Fintech / Payments': 'Fintech',
-    'HR Tech / Fintech': 'Fintech',
-  };
-
-  let changed = false;
-  privateCompanies.forEach((c, i) => {
-    if (c.subsector && SUBSECTOR_REMAP[c.subsector]) {
-      privateCompanies[i] = { ...c, subsector: SUBSECTOR_REMAP[c.subsector] };
-      changed = true;
-    }
+  // Remove known delisted tickers
+  const DELISTED = ['AYX'];
+  DELISTED.forEach(t => {
+    const idx = tickerList.indexOf(t);
+    if (idx !== -1) { tickerList.splice(idx, 1); tickerChanged = true; }
   });
+  if (tickerChanged) Storage.set('ticker_list', tickerList);
 
-  // Also refresh data from defaults
+  // 2. Sync private companies — update existing from defaults + add missing
+  const defaultNameMap = new Map();
+  DEFAULT_PRIVATE_COMPANIES.forEach(d => defaultNameMap.set(d.name.toLowerCase(), d));
+
+  // Update existing entries that match a default (refresh data but keep user overrides for fields not in default)
   privateCompanies.forEach((c, i) => {
-    const updated = DEFAULT_PRIVATE_COMPANIES.find(d => d.name.toLowerCase() === c.name.toLowerCase());
-    if (updated) privateCompanies[i] = { ...c, ...updated };
-  });
-
-  if (changed) Storage.set('private_companies', privateCompanies);
-  Storage.set(MIGRATION_KEY, true);
-})();
-
-// --- Migration v4: PitchBook data refresh (Mar 2026) ---
-// Adds headquarters, lead_investors, updated valuations/funding/revenue from PitchBook
-// Also flags CoreWeave and Figma as now-public
-(function migrate_v4() {
-  const MIGRATION_KEY = 'migration_v4_done';
-  if (Storage.get(MIGRATION_KEY)) return;
-
-  // Refresh all existing private companies from updated defaults
-  privateCompanies.forEach((c, i) => {
-    const updated = DEFAULT_PRIVATE_COMPANIES.find(d => d.name.toLowerCase() === c.name.toLowerCase());
+    const key = c.name.toLowerCase();
+    const updated = defaultNameMap.get(key);
     if (updated) {
       privateCompanies[i] = { ...c, ...updated };
     }
   });
 
-  // Add any new companies from defaults that user doesn't have
+  // Add any default companies not yet in the stored list
   const existingNames = new Set(privateCompanies.map(c => c.name.toLowerCase()));
   DEFAULT_PRIVATE_COMPANIES.forEach(d => {
     if (!existingNames.has(d.name.toLowerCase())) {
@@ -102,51 +54,6 @@ let refreshCountdown = 60;
   });
 
   Storage.set('private_companies', privateCompanies);
-  Storage.set(MIGRATION_KEY, true);
-})();
-
-// --- Migration v5: Remove delisted AYX ---
-(function migrate_v5() {
-  const MIGRATION_KEY = 'migration_v5_done';
-  if (Storage.get(MIGRATION_KEY)) return;
-  const idx = tickerList.indexOf('AYX');
-  if (idx !== -1) {
-    tickerList.splice(idx, 1);
-    Storage.set('ticker_list', tickerList);
-  }
-  Storage.set(MIGRATION_KEY, true);
-})();
-
-// --- Migration v6: Add weekly briefing picks ---
-(function migrate_v6() {
-  const MIGRATION_KEY = 'migration_v6_done';
-  if (Storage.get(MIGRATION_KEY)) return;
-  const newTickers = ['ELV','TMO','ACGL','LPLA','SNDK','CIEN','WDC','CF'];
-  let added = false;
-  newTickers.forEach(t => {
-    if (!tickerList.includes(t)) {
-      tickerList.push(t);
-      added = true;
-    }
-  });
-  if (added) Storage.set('ticker_list', tickerList);
-  Storage.set(MIGRATION_KEY, true);
-})();
-
-// --- Migration v7: Add weekly briefing picks week 2 (2026-03-22) ---
-(function migrate_v7() {
-  const MIGRATION_KEY = 'migration_v7_done';
-  if (Storage.get(MIGRATION_KEY)) return;
-  const newTickers = ['NKE','UNH','CMCSA','HD','MKC','MU','SOC','HIMS','GCT','BWXT'];
-  let added = false;
-  newTickers.forEach(t => {
-    if (!tickerList.includes(t)) {
-      tickerList.push(t);
-      added = true;
-    }
-  });
-  if (added) Storage.set('ticker_list', tickerList);
-  Storage.set(MIGRATION_KEY, true);
 })();
 
 // --- DOM refs ---

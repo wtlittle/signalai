@@ -419,6 +419,11 @@ const DEFAULT_PRIVATE_COMPANIES = [
   // Developer Tools
   { name: 'Vercel', subsector: 'Developer Tools', valuation: '$9.3B', funding: '$300M Series F (Sep 2025)', revenue: '~$200M+ ARR', metrics: '875 employees, 4M+ websites, v0 AI agent, powers Next.js ecosystem', headquarters: 'Covina, CA', lead_investors: 'Accel, GIC, BlackRock, Khosla Ventures' },
   { name: 'Replit', subsector: 'Developer Tools', valuation: '$9B', funding: '$400M Series D (Mar 2026)', revenue: 'Targeting $1B ARR by end 2026', metrics: '85% of Fortune 500, AI-powered app builder, vibe coding pioneer', headquarters: 'San Francisco, CA', lead_investors: 'Georgian, G Squared, Coatue, a16z' },
+  // --- Productivity & Collaboration ---
+  { name: 'Airtable', subsector: 'Technology', valuation: '$11.7B (2021); ~$4B secondary', funding: '$1.4B total · $735M Series F (Dec 2021)', revenue: '~$478M ARR (2024)', metrics: '15M+ MAUs, no-code/low-code platform, 1,000+ employees', headquarters: 'San Francisco, CA', lead_investors: 'Greenoaks Capital, Coatue, Salesforce Ventures' },
+  { name: 'Gamma', subsector: 'Technology', valuation: '$2.1B', funding: '$68M Series B (Nov 2025)', revenue: '$100M+ ARR (profitable)', metrics: '70M users, 600K paid subscribers, 52 employees, AI presentations', headquarters: 'San Francisco, CA', lead_investors: 'Andreessen Horowitz, Accel, Uncork Capital' },
+  // --- Data Protection & Cyber Resilience ---
+  { name: 'Cohesity', subsector: 'Identity & Security', valuation: '$7B+ (targeting ~$17B IPO 2026)', funding: 'Series H (Veritas merger, Dec 2024)', revenue: '$1.7B rev, $1.5B ARR (FY Jul 2024)', metrics: '12,000 customers, 85% of Fortune 100, #1 data protection provider, Nvidia-backed', headquarters: 'San Jose, CA', lead_investors: 'Sequoia, SoftBank, Haveli Investments, Nvidia', status: 'ipo_pending' },
 ];
 
 // --- Proper capitalization for company names ---
@@ -448,7 +453,7 @@ const KNOWN_COMPANY_NAMES = {
   'psiquantum': 'PsiQuantum', 'meter': 'Meter', 'clay': 'Clay',
   'runway ai': 'Runway AI', 'runway': 'Runway AI', 'mistral ai': 'Mistral AI',
   'cohere': 'Cohere', 'elevenlabs': 'ElevenLabs', 'eleven labs': 'ElevenLabs',
-  'replit': 'Replit',
+  'replit': 'Replit', 'airtable': 'Airtable', 'gamma': 'Gamma', 'cohesity': 'Cohesity',
 };
 function capitalizeCompanyName(name) {
   if (!name || typeof name !== 'string') return name;
