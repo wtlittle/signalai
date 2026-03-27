@@ -2713,7 +2713,7 @@ tbody tr:hover .comps-sticky-col {
 }
 .pillar-signal {
   display: grid;
-  grid-template-columns: 1fr 50px 24px 40px 40px 40px;
+  grid-template-columns: 1fr 50px 24px 40px 40px 40px 40px 40px 40px;
   gap: 4px;
   align-items: center;
   padding: 3px 0;
@@ -2818,7 +2818,7 @@ tbody tr:hover .comps-sticky-col {
 /* Heatmap rows */
 .hm-header {
   display: grid;
-  grid-template-columns: 44px 1fr auto 60px 46px 46px 46px;
+  grid-template-columns: 44px 1fr auto 60px 46px 46px 46px 46px 46px 46px;
   gap: 6px;
   align-items: center;
   padding: 0 0 4px;
@@ -2832,7 +2832,7 @@ tbody tr:hover .comps-sticky-col {
 }
 .hm-row {
   display: grid;
-  grid-template-columns: 44px 1fr auto 60px 46px 46px 46px;
+  grid-template-columns: 44px 1fr auto 60px 46px 46px 46px 46px 46px 46px;
   gap: 6px;
   align-items: center;
   padding: 4px 0;
@@ -2936,7 +2936,7 @@ tbody tr:hover .comps-sticky-col {
 /* Commodities & Rates */
 .commodity-header {
   display: grid;
-  grid-template-columns: 1fr 70px 46px 46px 46px;
+  grid-template-columns: 1fr 70px 46px 46px 46px 46px 46px 46px;
   gap: 6px;
   padding: 0 0 4px;
   border-bottom: 1px solid var(--border);
@@ -2949,7 +2949,7 @@ tbody tr:hover .comps-sticky-col {
 }
 .commodity-row {
   display: grid;
-  grid-template-columns: 1fr 70px 46px 46px 46px;
+  grid-template-columns: 1fr 70px 46px 46px 46px 46px 46px 46px;
   gap: 6px;
   padding: 4px 0;
   font-size: 11px;
@@ -2974,18 +2974,23 @@ tbody tr:hover .comps-sticky-col {
   text-align: right;
 }
 
+/* Hide extended columns on narrower pillar tiles */
+@media (max-width: 1200px) {
+  .hide-narrow { display: none; }
+  .pillar-signal { grid-template-columns: 1fr 50px 24px 40px 40px 40px; }
+}
 /* Mobile responsive */
 @media (max-width: 900px) {
   .macro-pillars { grid-template-columns: 1fr 1fr; }
   .macro-grid-2col { grid-template-columns: 1fr; }
+  .hm-extended, .commodity-ext { display: none; }
+  .hm-row, .hm-header { grid-template-columns: 44px 1fr auto 60px 46px 46px 46px; }
+  .commodity-row, .commodity-header { grid-template-columns: 1fr 70px 46px 46px 46px; }
 }
 @media (max-width: 600px) {
   .macro-pillars { grid-template-columns: 1fr; }
   .macro-indices-bar { flex-direction: column; }
   .index-chip { min-width: unset; }
-  .hm-row, .hm-header {
-    grid-template-columns: 44px 1fr auto 46px 46px;
-  }
-  .hm-row > :nth-child(6), .hm-header > :nth-child(6),
-  .hm-row > :nth-child(7), .hm-header > :nth-child(7) { display: none; }
+  .hm-row, .hm-header { grid-template-columns: 44px 1fr auto 46px 46px; }
+  .commodity-row, .commodity-header { grid-template-columns: 1fr 60px 46px 46px; }
 }

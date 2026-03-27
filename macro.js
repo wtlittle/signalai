@@ -117,16 +117,16 @@ function renderPillarTile(name, pillar, icon) {
   let signalRows = '';
   if (pillar.signals && pillar.signals.length > 0) {
     signalRows = pillar.signals.map(s => {
-      const chg1d = s.change1d != null ? fmtPct(s.change1d) : '';
-      const chg1w = s.change1w != null ? fmtPct(s.change1w) : '';
-      const chg1m = s.change1m != null ? fmtPct(s.change1m) : '';
       return `<div class="pillar-signal">
         <span class="signal-name">${s.name}</span>
         <span class="signal-price">${fmtNum(s.price)}</span>
         <span class="signal-dir ${s.trend === 'up' ? 'val-pos' : s.trend === 'down' ? 'val-neg' : 'val-neutral'}">${s.direction}</span>
-        <span class="signal-chg ${pctCls(s.change1d)}">${chg1d}</span>
-        <span class="signal-chg ${pctCls(s.change1w)}">${chg1w}</span>
-        <span class="signal-chg ${pctCls(s.change1m)}">${chg1m}</span>
+        <span class="signal-chg ${pctCls(s.change1d)}">${fmtPctS(s.change1d)}</span>
+        <span class="signal-chg ${pctCls(s.change1w)}">${fmtPctS(s.change1w)}</span>
+        <span class="signal-chg ${pctCls(s.change1m)}">${fmtPctS(s.change1m)}</span>
+        <span class="signal-chg hide-narrow ${pctCls(s.change3m)}">${fmtPctS(s.change3m)}</span>
+        <span class="signal-chg hide-narrow ${pctCls(s.change6m)}">${fmtPctS(s.change6m)}</span>
+        <span class="signal-chg hide-narrow ${pctCls(s.change1y)}">${fmtPctS(s.change1y)}</span>
       </div>`;
     }).join('');
   }
@@ -153,6 +153,9 @@ function renderPillarTile(name, pillar, icon) {
           <span class="signal-chg">1D</span>
           <span class="signal-chg">1W</span>
           <span class="signal-chg">1M</span>
+          <span class="signal-chg hide-narrow">3M</span>
+          <span class="signal-chg hide-narrow">6M</span>
+          <span class="signal-chg hide-narrow">1Y</span>
         </div>
         ${signalRows}
       </div>` : ''}
@@ -203,6 +206,9 @@ function renderSectorHeatmap(sectors, regime) {
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="hm-val ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
+      <span class="hm-val hm-extended ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
+      <span class="hm-val hm-extended ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
+      <span class="hm-val hm-extended ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
     </div>`;
   }).join('');
 
@@ -216,6 +222,9 @@ function renderSectorHeatmap(sectors, regime) {
         <span class="hm-val">1D</span>
         <span class="hm-val">1W</span>
         <span class="hm-val">1M</span>
+        <span class="hm-val hm-extended">3M</span>
+        <span class="hm-val hm-extended">6M</span>
+        <span class="hm-val hm-extended">1Y</span>
       </div>
       ${rows}
     </div>`;
@@ -239,6 +248,9 @@ function renderFactorHeatmap(factors, regime) {
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="hm-val ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
+      <span class="hm-val hm-extended ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
+      <span class="hm-val hm-extended ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
+      <span class="hm-val hm-extended ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
     </div>`;
   }).join('');
 
@@ -252,6 +264,9 @@ function renderFactorHeatmap(factors, regime) {
         <span class="hm-val">1D</span>
         <span class="hm-val">1W</span>
         <span class="hm-val">1M</span>
+        <span class="hm-val hm-extended">3M</span>
+        <span class="hm-val hm-extended">6M</span>
+        <span class="hm-val hm-extended">1Y</span>
       </div>
       ${rows}
     </div>`;
@@ -307,6 +322,9 @@ function renderCommodities(commodities) {
       <span class="commodity-chg ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="commodity-chg ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="commodity-chg ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
+      <span class="commodity-chg commodity-ext ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
+      <span class="commodity-chg commodity-ext ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
+      <span class="commodity-chg commodity-ext ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
     </div>`).join('');
 
   return `
@@ -318,6 +336,9 @@ function renderCommodities(commodities) {
         <span class="commodity-chg">1D</span>
         <span class="commodity-chg">1W</span>
         <span class="commodity-chg">1M</span>
+        <span class="commodity-chg commodity-ext">3M</span>
+        <span class="commodity-chg commodity-ext">6M</span>
+        <span class="commodity-chg commodity-ext">1Y</span>
       </div>
       ${rows}
     </div>`;
@@ -333,6 +354,9 @@ function renderRates(rates) {
       <span class="commodity-chg ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="commodity-chg ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="commodity-chg ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
+      <span class="commodity-chg commodity-ext ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
+      <span class="commodity-chg commodity-ext ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
+      <span class="commodity-chg commodity-ext ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
     </div>`).join('');
 
   return `
@@ -344,6 +368,9 @@ function renderRates(rates) {
         <span class="commodity-chg">1D</span>
         <span class="commodity-chg">1W</span>
         <span class="commodity-chg">1M</span>
+        <span class="commodity-chg commodity-ext">3M</span>
+        <span class="commodity-chg commodity-ext">6M</span>
+        <span class="commodity-chg commodity-ext">1Y</span>
       </div>
       ${rows}
     </div>`;
@@ -352,6 +379,10 @@ function renderRates(rates) {
 // ── Formatting helpers ──
 function fmtPct(v) {
   if (v == null || isNaN(v)) return '—';
+  return (v > 0 ? '+' : '') + v.toFixed(1) + '%';
+}
+function fmtPctS(v) {
+  if (v == null || isNaN(v)) return '';
   return (v > 0 ? '+' : '') + v.toFixed(1) + '%';
 }
 function fmtNum(v) {

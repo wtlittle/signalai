@@ -86,7 +86,7 @@ function httpGet(url) {
 }
 
 // ── Yahoo Finance chart fetch ──
-async function fetchYahoo(ticker, range = '6mo', interval = '1d') {
+async function fetchYahoo(ticker, range = '1y', interval = '1d') {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=${range}&interval=${interval}&includePrePost=false`;
   try {
     const data = await httpGet(url);
@@ -124,7 +124,10 @@ function perfFromCloses(closes) {
     const idx = Math.max(0, c.length - 1 - n);
     return c[idx] ? ((lat - c[idx]) / c[idx] * 100) : null;
   };
-  return { change_1w: pct(5), change_1m: pct(21), change_3m: pct(63), change_6m: pct(126) };
+  return {
+    change_1w: pct(5), change_1m: pct(21), change_3m: pct(63),
+    change_6m: pct(126), change_1y: pct(252),
+  };
 }
 
 // ── Trend direction from closes (recent vs older) ──
@@ -271,7 +274,7 @@ async function main() {
   const batchSize = 4;
   for (let i = 0; i < allTickers.length; i += batchSize) {
     const batch = allTickers.slice(i, i + batchSize);
-    const results = await Promise.all(batch.map(t => fetchYahoo(t, '6mo', '1d')));
+    const results = await Promise.all(batch.map(t => fetchYahoo(t, '1y', '1d')));
     results.forEach((r, idx) => {
       if (r) {
         allData[batch[idx]] = r;
@@ -464,6 +467,8 @@ function buildPillarSignals(pillar, allData, macroData) {
       ticker, name: customName || d.name,
       price: d.price, change1d: d.change1d,
       change1w: perf.change_1w, change1m: perf.change_1m,
+      change3m: perf.change_3m, change6m: perf.change_6m,
+      change1y: perf.change_1y,
       trend, direction: trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→',
     });
   };
@@ -478,6 +483,9 @@ function buildPillarSignals(pillar, allData, macroData) {
       change1d: macroData.indices['^GSPC'].change1d,
       change1w: macroData.indices['^GSPC'].change_1w,
       change1m: macroData.indices['^GSPC'].change_1m,
+      change3m: macroData.indices['^GSPC'].change_3m,
+      change6m: macroData.indices['^GSPC'].change_6m,
+      change1y: macroData.indices['^GSPC'].change_1y,
       trend: allData['^GSPC'] ? trendDir(allData['^GSPC'].closes) : 'flat',
       direction: '→',
     });
@@ -501,6 +509,11 @@ function buildPillarSignals(pillar, allData, macroData) {
       ticker: '^VIX', name: 'VIX',
       price: macroData.indices['^VIX']?.price,
       change1d: macroData.indices['^VIX']?.change1d,
+      change1w: macroData.indices['^VIX']?.change_1w,
+      change1m: macroData.indices['^VIX']?.change_1m,
+      change3m: macroData.indices['^VIX']?.change_3m,
+      change6m: macroData.indices['^VIX']?.change_6m,
+      change1y: macroData.indices['^VIX']?.change_1y,
       trend: allData['^VIX'] ? trendDir(allData['^VIX'].closes) : 'flat',
       direction: (macroData.indices['^VIX']?.price || 20) > 25 ? '⚠' : '→',
     });
