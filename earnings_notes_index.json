@@ -1,116 +1,67 @@
 {
-  "generated": "2026-03-26",
-  "notes": [
-    {
-      "ticker": "RBRK",
-      "name": "Rubrik",
-      "earnings_date": "2026-03-12",
-      "type": "post",
-      "status": "archived",
-      "path": "archive/post_earnings/RBRK_2026-03-12.md",
-      "headline": "Massive Q4 beat but stock fell 6% on deceleration fears",
-      "revenue": "$377.7M",
-      "eps": "$0.04",
-      "reaction": "-6.1%",
-      "days_since": 14
-    },
-    {
-      "ticker": "ADBE",
-      "name": "Adobe",
-      "earnings_date": "2026-03-12",
-      "type": "post",
-      "status": "archived",
-      "path": "archive/post_earnings/ADBE_2026-03-12.md",
-      "headline": "Beat on both lines but CEO Narayen departure triggered downgrades",
-      "revenue": "$6.40B",
-      "eps": "$6.06",
-      "reaction": "-8%",
-      "days_since": 14
-    },
-    {
-      "ticker": "S",
-      "name": "SentinelOne",
-      "earnings_date": "2026-03-12",
-      "type": "post",
-      "status": "archived",
-      "path": "archive/post_earnings/S_2026-03-12.md",
-      "headline": "Crossed $1B revenue milestone, first full-year profitability",
-      "revenue": "$271M",
-      "eps": "$0.07",
-      "reaction": "-2.6% AH, then +5.2%",
-      "days_since": 14
-    },
-    {
-      "ticker": "PATH",
-      "name": "UiPath",
-      "earnings_date": "2026-03-11",
-      "type": "post",
-      "status": "archived",
-      "path": "archive/post_earnings/PATH_2026-03-11.md",
-      "headline": "Q4 beat on revenue but GAAP EPS miss",
-      "revenue": "$464.4M",
-      "eps": "$0.07",
-      "reaction": "-8%",
-      "days_since": 15
-    },
-    {
-      "ticker": "MRVL",
-      "name": "Marvell",
-      "earnings_date": "2026-03-05",
-      "type": "post",
-      "status": "archived",
-      "path": "archive/post_earnings/MRVL_2026-03-05.md",
-      "headline": "Beat-and-raise but stock sold off on slowing custom AI silicon ramp",
-      "revenue": "$2.03B",
-      "eps": "$0.77",
-      "reaction": "-5%",
-      "days_since": 21
-    },
-    {
-      "ticker": "IOT",
-      "name": "Samsara",
-      "earnings_date": "2026-03-05",
-      "type": "post",
-      "status": "archived",
-      "path": "archive/post_earnings/IOT_2026-03-05.md",
-      "headline": "Strong Q4, 37% revenue growth, first positive FCF quarter",
-      "revenue": "$384M",
-      "eps": "$0.08",
-      "reaction": "+4%",
-      "days_since": 21
-    },
+  "generated": "2026-03-27",
+  "active_pre_earnings": [
     {
       "ticker": "NKE",
       "name": "Nike",
       "earnings_date": "2026-03-31",
-      "type": "pre",
-      "status": "active",
-      "path": "notes/pre_earnings/NKE_2026-03-31.md",
-      "consensus_revenue": "$11.22B",
-      "consensus_eps": "$0.29-$0.32",
-      "days_until": 5
+      "file": "notes/pre_earnings/NKE_2026-03-31.md",
+      "last_updated": "2026-03-27"
     },
     {
       "ticker": "MKC",
-      "name": "McCormick",
+      "name": "McCormick & Company",
       "earnings_date": "2026-03-31",
-      "type": "pre",
-      "status": "active",
-      "path": "notes/pre_earnings/MKC_2026-03-31.md",
-      "consensus_revenue": "$1.789B",
-      "consensus_eps": "$0.62",
-      "days_until": 5
+      "file": "notes/pre_earnings/MKC_2026-03-31.md",
+      "last_updated": "2026-03-27"
     },
     {
       "ticker": "STZ",
       "name": "Constellation Brands",
       "earnings_date": "2026-04-08",
-      "type": "pre",
-      "status": "active",
-      "path": "notes/pre_earnings/STZ_2026-04-08.md",
-      "consensus_revenue": "$1.85B",
-      "consensus_eps": "$1.39-$1.69",
-      "days_until": 13
+      "file": "notes/pre_earnings/STZ_2026-04-08.md",
+      "last_updated": "2026-03-27"
+    }
+  ],
+  "active_post_earnings": [
+    {
+      "ticker": "MU",
+      "name": "Micron Technology",
+      "earnings_date": "2026-03-18",
+      "file": "notes/post_earnings/MU_2026-03-18.md",
+      "last_updated": "2026-03-27"
+    }
+  ],
+  "archived": [
+    {
+      "ticker": "S",
+      "earnings_date": "2026-03-12",
+      "file": "archive/post_earnings/S_2026-03-12.md"
+    },
+    {
+      "ticker": "ADBE",
+      "earnings_date": "2026-03-12",
+      "file": "archive/post_earnings/ADBE_2026-03-12.md"
+    },
+    {
+      "ticker": "RBRK",
+      "earnings_date": "2026-03-12",
+      "file": "archive/post_earnings/RBRK_2026-03-12.md"
+    },
+    {
+      "ticker": "PATH",
+      "earnings_date": "2026-03-11",
+      "file": "archive/post_earnings/PATH_2026-03-11.md"
+    },
+    {
+      "ticker": "IOT",
+      "earnings_date": "2026-03-05",
+      "file": "archive/post_earnings/IOT_2026-03-05.md"
+    },
+    {
+      "ticker": "MRVL",
+      "earnings_date": "2026-03-05",
+      "file": "archive/post_earnings/MRVL_2026-03-05.md"
     }
   ]
 }
