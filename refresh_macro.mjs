@@ -102,11 +102,15 @@ async function fetchYahoo(ticker, range = '1y', interval = '1d') {
       if (cl[i] != null) { validCloses.push(cl[i]); validTs.push(ts[i]); }
     }
     const price = m.regularMarketPrice;
-    const prevClose = m.previousClose || m.chartPreviousClose;
+    // previousClose is NOT available in chart API with range=1y;
+    // chartPreviousClose is the price at the START of the range (1y ago), not yesterday.
+    // Compute true 1-day change from the last two valid closes.
+    const prevDayClose = validCloses.length >= 2 ? validCloses[validCloses.length - 2] : null;
+    const change1d = price && prevDayClose ? ((price - prevDayClose) / prevDayClose * 100) : null;
     return {
       ticker, name: m.longName || m.shortName || ticker,
-      price, previousClose: prevClose,
-      change1d: price && prevClose ? ((price - prevClose) / prevClose * 100) : null,
+      price, previousClose: prevDayClose,
+      change1d,
       timestamps: validTs, closes: validCloses,
     };
   } catch (e) {
