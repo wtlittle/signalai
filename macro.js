@@ -189,23 +189,34 @@ function renderIndicesBar(indices) {
 // ── Sector Heatmap ──
 function renderSectorHeatmap(sectors, regime) {
   if (!sectors || Object.keys(sectors).length === 0) return '';
-  const sorted = Object.entries(sectors).sort((a, b) => (b[1].change1d || 0) - (a[1].change1d || 0));
+  const sorted = Object.entries(sectors).sort((a, b) => (b[1].change_1m || 0) - (a[1].change_1m || 0));
   const favoredSet = new Set(regime?.favored_sectors || []);
   const avoidSet = new Set(regime?.avoid_sectors || []);
+
+  // Find max absolute 1M change for scaling the diverging bars
+  const vals1m = sorted.map(([,d]) => Math.abs(d.change_1m || 0));
+  const max1m = Math.max(...vals1m, 5); // at least 5% scale
 
   const rows = sorted.map(([ticker, d]) => {
     const tag = favoredSet.has(ticker) ? '<span class="hm-tag hm-favor">FAVOR</span>' :
                 avoidSet.has(ticker) ? '<span class="hm-tag hm-avoid">AVOID</span>' : '';
+    const pct1m = d.change_1m || 0;
+    const barWidth = Math.min(50, (Math.abs(pct1m) / max1m) * 50);
+    const barColor = pct1m >= 0 ? 'var(--green)' : 'var(--red)';
+    const barSide = pct1m >= 0
+      ? `left:50%;width:${barWidth}%`
+      : `right:50%;width:${barWidth}%`;
     return `<div class="hm-row">
       <span class="hm-ticker">${ticker}</span>
       <span class="hm-name">${d.sectorName || d.name}</span>
       ${tag}
-      <span class="hm-bar-wrap">
-        <span class="hm-bar ${pctCls(d.change1d)}" style="width:${Math.min(100, Math.abs(d.change1d || 0) * 4)}%"></span>
+      <span class="hm-diverge-wrap">
+        <span class="hm-diverge-center"></span>
+        <span class="hm-diverge-bar" style="${barSide};background:${barColor}"></span>
+        <span class="hm-diverge-label ${pctCls(pct1m)}">${fmtPct(pct1m)}</span>
       </span>
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
-      <span class="hm-val ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
       <span class="hm-val ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
       <span class="hm-val ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
       <span class="hm-val ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
@@ -219,10 +230,9 @@ function renderSectorHeatmap(sectors, regime) {
         <div class="hm-header">
           <span class="hm-ticker">ETF</span>
           <span class="hm-name">Sector</span>
-          <span class="hm-bar-wrap"></span>
+          <span class="hm-diverge-wrap">1M Momentum</span>
           <span class="hm-val">1D</span>
           <span class="hm-val">1W</span>
-          <span class="hm-val">1M</span>
           <span class="hm-val">3M</span>
           <span class="hm-val">6M</span>
           <span class="hm-val">1Y</span>
@@ -235,21 +245,32 @@ function renderSectorHeatmap(sectors, regime) {
 // ── Factor Heatmap ──
 function renderFactorHeatmap(factors, regime) {
   if (!factors || Object.keys(factors).length === 0) return '';
-  const sorted = Object.entries(factors).sort((a, b) => (b[1].change1d || 0) - (a[1].change1d || 0));
+  const sorted = Object.entries(factors).sort((a, b) => (b[1].change_1m || 0) - (a[1].change_1m || 0));
   const favoredSet = new Set(regime?.favored_factors || []);
+
+  // Find max absolute 1M change for scaling
+  const fVals1m = sorted.map(([,d]) => Math.abs(d.change_1m || 0));
+  const fMax1m = Math.max(...fVals1m, 5);
 
   const rows = sorted.map(([ticker, d]) => {
     const tag = favoredSet.has(ticker) ? '<span class="hm-tag hm-favor">FAVOR</span>' : '';
+    const pct1m = d.change_1m || 0;
+    const barWidth = Math.min(50, (Math.abs(pct1m) / fMax1m) * 50);
+    const barColor = pct1m >= 0 ? 'var(--green)' : 'var(--red)';
+    const barSide = pct1m >= 0
+      ? `left:50%;width:${barWidth}%`
+      : `right:50%;width:${barWidth}%`;
     return `<div class="hm-row">
       <span class="hm-ticker">${ticker}</span>
       <span class="hm-name">${d.factorName || d.name}</span>
       ${tag}
-      <span class="hm-bar-wrap">
-        <span class="hm-bar ${pctCls(d.change1d)}" style="width:${Math.min(100, Math.abs(d.change1d || 0) * 4)}%"></span>
+      <span class="hm-diverge-wrap">
+        <span class="hm-diverge-center"></span>
+        <span class="hm-diverge-bar" style="${barSide};background:${barColor}"></span>
+        <span class="hm-diverge-label ${pctCls(pct1m)}">${fmtPct(pct1m)}</span>
       </span>
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
-      <span class="hm-val ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
       <span class="hm-val ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
       <span class="hm-val ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
       <span class="hm-val ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
@@ -263,10 +284,9 @@ function renderFactorHeatmap(factors, regime) {
         <div class="hm-header">
           <span class="hm-ticker">ETF</span>
           <span class="hm-name">Factor</span>
-          <span class="hm-bar-wrap"></span>
+          <span class="hm-diverge-wrap">1M Momentum</span>
           <span class="hm-val">1D</span>
           <span class="hm-val">1W</span>
-          <span class="hm-val">1M</span>
           <span class="hm-val">3M</span>
           <span class="hm-val">6M</span>
           <span class="hm-val">1Y</span>

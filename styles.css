@@ -2874,25 +2874,56 @@ tbody tr:hover .comps-sticky-col {
 }
 .hm-favor { background: var(--green-dim); color: var(--green); }
 .hm-avoid { background: var(--red-dim); color: var(--red); }
-.hm-bar-wrap {
+/* Diverging momentum bar — centered at 0, extends left (red) or right (green) */
+.hm-diverge-wrap {
   position: relative;
-  height: 6px;
-  background: var(--bg-primary);
+  height: 22px;
+  background: rgba(17,24,39,0.6);
   border-radius: 3px;
+  min-width: 120px;
+  flex: 1 1 120px;
   overflow: hidden;
-  min-width: 40px;
-  flex: 0 1 60px;
 }
-.hm-bar {
+.hm-diverge-center {
   position: absolute;
-  top: 0; left: 0;
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.3s;
+  left: 50%;
+  top: 2px;
+  bottom: 2px;
+  width: 1px;
+  background: var(--border-light);
 }
-.hm-bar.val-pos { background: var(--green); }
-.hm-bar.val-neg { background: var(--red); }
-.hm-bar.val-neutral { background: var(--text-muted); }
+.hm-diverge-bar {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  opacity: 0.75;
+}
+.hm-diverge-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  text-shadow: 0 0 4px rgba(0,0,0,0.8);
+  z-index: 1;
+}
+.hm-header .hm-diverge-wrap {
+  background: none;
+  height: auto;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .hm-val {
   font-family: var(--font-mono);
   font-size: 10px;
