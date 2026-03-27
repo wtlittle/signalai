@@ -72,6 +72,29 @@ async function openPopup(ticker) {
       }
     }
 
+    // Final fallback: merge from tickerData (quotes table data already loaded for the main table)
+    // This covers tickers not in analyst_summary but with full data in quotes
+    if (typeof tickerData !== 'undefined' && tickerData[ticker]) {
+      const td = tickerData[ticker];
+      const fallbackFields = [
+        'targetMeanPrice', 'targetHighPrice', 'targetLowPrice',
+        'numberOfAnalystOpinions', 'recommendationKey',
+        'forwardEps', 'trailingEps', 'forwardPE', 'trailingPE',
+        'beta', 'averageVolume', 'volume',
+        'fiftyTwoWeekHigh', 'fiftyTwoWeekLow', 'sharesOutstanding',
+        'marketCap', 'enterpriseValue', 'totalRevenue', 'totalCash',
+        'totalDebt', 'freeCashflow', 'operatingCashflow',
+        'revenueGrowth', 'earningsGrowth', 'operatingMargins',
+        'enterpriseToRevenue', 'enterpriseToEbitda',
+        'sector', 'industry',
+      ];
+      for (const field of fallbackFields) {
+        if (td[field] != null && !quote[field]) {
+          quote[field] = td[field];
+        }
+      }
+    }
+
     const data = parseTickerData(ticker, chart, quote);
     // Add calendar and earnings data
     data.calendarEvents = calendarData;

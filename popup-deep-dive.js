@@ -397,7 +397,7 @@ function renderQuantFactors(ticker, quant) {
     return `<div class="deep-dive-section">
       <div class="popup-section-title">Quant Factor Scorecard</div>
       <div style="color:var(--text-muted);padding:16px 0;font-size:12px;">
-        Quant factor data unavailable. Run the backend server for full analysis.
+        Quant factor data not available for this ticker.
       </div>
     </div>`;
   }
@@ -448,7 +448,7 @@ function renderShortInterest(ticker, short_) {
     return `<div class="deep-dive-section">
       <div class="popup-section-title">Short Interest</div>
       <div style="color:var(--text-muted);padding:16px 0;font-size:12px;">
-        Short interest data unavailable. Run the backend server for this data.
+        Short interest data not available for this ticker.
       </div>
     </div>`;
   }
@@ -590,7 +590,7 @@ function renderOutperformance(ticker, outperf) {
     return `<div class="deep-dive-section">
       <div class="popup-section-title">S&P 500 Outperformance Percentile</div>
       <div style="color:var(--text-muted);padding:16px 0;font-size:12px;">
-        Outperformance data unavailable. Run the backend server for full S&P 500 analysis.
+        Outperformance data not available for this ticker.
         ${outperf?.approximate ? '<br>Client-side approximation had insufficient data.' : ''}
       </div>
     </div>`;
@@ -829,7 +829,7 @@ function renderCrossSectorComps(ticker, comps) {
     return `<div class="deep-dive-section">
       <div class="popup-section-title">Cross-Sector Fundamental Comps</div>
       <div style="color:var(--text-muted);padding:16px 0;font-size:12px;">
-        Cross-sector comparable data unavailable. Run the backend server for this analysis.
+        Cross-sector comparable data not available for this ticker.
       </div>
     </div>`;
   }
@@ -943,10 +943,10 @@ function generateCompsNarrative(ticker, target, peers) {
 
   const sharedMetrics = [];
   if (target.forwardPE && best.forwardPE) {
-    sharedMetrics.push(`forward P/E of ${best.forwardPE}x vs ${target.forwardPE}x`);
+    sharedMetrics.push(`forward P/E of ${best.forwardPE.toFixed(1)}x vs ${target.forwardPE.toFixed(1)}x`);
   }
   if (target.operatingMargins != null && best.operatingMargins != null) {
-    sharedMetrics.push(`operating margin of ${best.operatingMargins}% vs ${target.operatingMargins}%`);
+    sharedMetrics.push(`operating margin of ${best.operatingMargins.toFixed(1)}% vs ${target.operatingMargins.toFixed(1)}%`);
   }
   if (sharedMetrics.length > 0) {
     parts[0] += `, with ${sharedMetrics.join(' and ')}.`;
