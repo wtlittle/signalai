@@ -2974,23 +2974,34 @@ tbody tr:hover .comps-sticky-col {
   text-align: right;
 }
 
-/* Hide extended columns on narrower pillar tiles */
-@media (max-width: 1200px) {
-  .hide-narrow { display: none; }
-  .pillar-signal { grid-template-columns: 1fr 50px 24px 40px 40px 40px; }
+/* Horizontal scroll wrappers for data tables on small screens */
+.pillar-signals {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
+.pillar-signals .pillar-signal {
+  min-width: 520px;
+}
+.hm-scroll-wrap, .commodity-scroll-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.hm-scroll-wrap .hm-header,
+.hm-scroll-wrap .hm-row {
+  min-width: 580px;
+}
+.commodity-scroll-wrap .commodity-header,
+.commodity-scroll-wrap .commodity-row {
+  min-width: 520px;
+}
+
 /* Mobile responsive */
 @media (max-width: 900px) {
   .macro-pillars { grid-template-columns: 1fr 1fr; }
   .macro-grid-2col { grid-template-columns: 1fr; }
-  .hm-extended, .commodity-ext { display: none; }
-  .hm-row, .hm-header { grid-template-columns: 44px 1fr auto 60px 46px 46px 46px; }
-  .commodity-row, .commodity-header { grid-template-columns: 1fr 70px 46px 46px 46px; }
 }
 @media (max-width: 600px) {
   .macro-pillars { grid-template-columns: 1fr; }
   .macro-indices-bar { flex-direction: column; }
   .index-chip { min-width: unset; }
-  .hm-row, .hm-header { grid-template-columns: 44px 1fr auto 46px 46px; }
-  .commodity-row, .commodity-header { grid-template-columns: 1fr 60px 46px 46px; }
 }

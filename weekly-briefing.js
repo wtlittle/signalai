@@ -41,6 +41,36 @@ function renderWeeklyBriefing() {
     <div class="wb-narrative">${ms.narrative || ''}</div>
   `;
 
+  // --- Trends ---
+  html += `<div class="wb-section">
+    <h3 class="wb-section-title">
+      <span class="wb-icon">&#8680;</span> Key Trends
+    </h3>
+    <div class="wb-list">`;
+  (d.trends || []).forEach(t => {
+    html += `
+      <div class="wb-list-item">
+        <div class="wb-list-title">${t.title || t.name || ''}</div>
+        <div class="wb-list-detail">${t.detail || t.description || ''}</div>
+      </div>`;
+  });
+  html += `</div></div>`;
+
+  // --- Risks ---
+  html += `<div class="wb-section">
+    <h3 class="wb-section-title">
+      <span class="wb-icon">&#9888;</span> Risks to Watch
+    </h3>
+    <div class="wb-list wb-risks">`;
+  (d.risks || []).forEach(r => {
+    html += `
+      <div class="wb-list-item wb-risk-item">
+        <div class="wb-list-title">${r.title || r.name || ''}</div>
+        <div class="wb-list-detail">${r.detail || r.description || ''}</div>
+      </div>`;
+  });
+  html += `</div></div>`;
+
   // --- Value Picks ---
   html += `<div class="wb-section">
     <h3 class="wb-section-title">
@@ -106,36 +136,6 @@ function renderWeeklyBriefing() {
           <div class="wb-label">Risk/reward:</div>
           <div>${m.risk_reward || ''}</div>
         </div>
-      </div>`;
-  });
-  html += `</div></div>`;
-
-  // --- Trends ---
-  html += `<div class="wb-section">
-    <h3 class="wb-section-title">
-      <span class="wb-icon">&#8680;</span> Key Trends
-    </h3>
-    <div class="wb-list">`;
-  (d.trends || []).forEach(t => {
-    html += `
-      <div class="wb-list-item">
-        <div class="wb-list-title">${t.title || t.name || ''}</div>
-        <div class="wb-list-detail">${t.detail || t.description || ''}</div>
-      </div>`;
-  });
-  html += `</div></div>`;
-
-  // --- Risks ---
-  html += `<div class="wb-section">
-    <h3 class="wb-section-title">
-      <span class="wb-icon">&#9888;</span> Risks to Watch
-    </h3>
-    <div class="wb-list wb-risks">`;
-  (d.risks || []).forEach(r => {
-    html += `
-      <div class="wb-list-item wb-risk-item">
-        <div class="wb-list-title">${r.title || r.name || ''}</div>
-        <div class="wb-list-detail">${r.detail || r.description || ''}</div>
       </div>`;
   });
   html += `</div></div>`;

@@ -124,9 +124,9 @@ function renderPillarTile(name, pillar, icon) {
         <span class="signal-chg ${pctCls(s.change1d)}">${fmtPctS(s.change1d)}</span>
         <span class="signal-chg ${pctCls(s.change1w)}">${fmtPctS(s.change1w)}</span>
         <span class="signal-chg ${pctCls(s.change1m)}">${fmtPctS(s.change1m)}</span>
-        <span class="signal-chg hide-narrow ${pctCls(s.change3m)}">${fmtPctS(s.change3m)}</span>
-        <span class="signal-chg hide-narrow ${pctCls(s.change6m)}">${fmtPctS(s.change6m)}</span>
-        <span class="signal-chg hide-narrow ${pctCls(s.change1y)}">${fmtPctS(s.change1y)}</span>
+        <span class="signal-chg ${pctCls(s.change3m)}">${fmtPctS(s.change3m)}</span>
+        <span class="signal-chg ${pctCls(s.change6m)}">${fmtPctS(s.change6m)}</span>
+        <span class="signal-chg ${pctCls(s.change1y)}">${fmtPctS(s.change1y)}</span>
       </div>`;
     }).join('');
   }
@@ -153,9 +153,9 @@ function renderPillarTile(name, pillar, icon) {
           <span class="signal-chg">1D</span>
           <span class="signal-chg">1W</span>
           <span class="signal-chg">1M</span>
-          <span class="signal-chg hide-narrow">3M</span>
-          <span class="signal-chg hide-narrow">6M</span>
-          <span class="signal-chg hide-narrow">1Y</span>
+          <span class="signal-chg">3M</span>
+          <span class="signal-chg">6M</span>
+          <span class="signal-chg">1Y</span>
         </div>
         ${signalRows}
       </div>` : ''}
@@ -206,27 +206,29 @@ function renderSectorHeatmap(sectors, regime) {
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="hm-val ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
-      <span class="hm-val hm-extended ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
-      <span class="hm-val hm-extended ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
-      <span class="hm-val hm-extended ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
+      <span class="hm-val ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
+      <span class="hm-val ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
+      <span class="hm-val ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
     </div>`;
   }).join('');
 
   return `
     <div class="macro-card">
       <h3 class="macro-card-title">Sector Heatmap</h3>
-      <div class="hm-header">
-        <span class="hm-ticker">ETF</span>
-        <span class="hm-name">Sector</span>
-        <span class="hm-bar-wrap"></span>
-        <span class="hm-val">1D</span>
-        <span class="hm-val">1W</span>
-        <span class="hm-val">1M</span>
-        <span class="hm-val hm-extended">3M</span>
-        <span class="hm-val hm-extended">6M</span>
-        <span class="hm-val hm-extended">1Y</span>
+      <div class="hm-scroll-wrap">
+        <div class="hm-header">
+          <span class="hm-ticker">ETF</span>
+          <span class="hm-name">Sector</span>
+          <span class="hm-bar-wrap"></span>
+          <span class="hm-val">1D</span>
+          <span class="hm-val">1W</span>
+          <span class="hm-val">1M</span>
+          <span class="hm-val">3M</span>
+          <span class="hm-val">6M</span>
+          <span class="hm-val">1Y</span>
+        </div>
+        ${rows}
       </div>
-      ${rows}
     </div>`;
 }
 
@@ -248,27 +250,29 @@ function renderFactorHeatmap(factors, regime) {
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="hm-val ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
-      <span class="hm-val hm-extended ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
-      <span class="hm-val hm-extended ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
-      <span class="hm-val hm-extended ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
+      <span class="hm-val ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
+      <span class="hm-val ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
+      <span class="hm-val ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
     </div>`;
   }).join('');
 
   return `
     <div class="macro-card">
       <h3 class="macro-card-title">Factor Performance</h3>
-      <div class="hm-header">
-        <span class="hm-ticker">ETF</span>
-        <span class="hm-name">Factor</span>
-        <span class="hm-bar-wrap"></span>
-        <span class="hm-val">1D</span>
-        <span class="hm-val">1W</span>
-        <span class="hm-val">1M</span>
-        <span class="hm-val hm-extended">3M</span>
-        <span class="hm-val hm-extended">6M</span>
-        <span class="hm-val hm-extended">1Y</span>
+      <div class="hm-scroll-wrap">
+        <div class="hm-header">
+          <span class="hm-ticker">ETF</span>
+          <span class="hm-name">Factor</span>
+          <span class="hm-bar-wrap"></span>
+          <span class="hm-val">1D</span>
+          <span class="hm-val">1W</span>
+          <span class="hm-val">1M</span>
+          <span class="hm-val">3M</span>
+          <span class="hm-val">6M</span>
+          <span class="hm-val">1Y</span>
+        </div>
+        ${rows}
       </div>
-      ${rows}
     </div>`;
 }
 
@@ -322,25 +326,27 @@ function renderCommodities(commodities) {
       <span class="commodity-chg ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="commodity-chg ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="commodity-chg ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
-      <span class="commodity-chg commodity-ext ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
-      <span class="commodity-chg commodity-ext ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
-      <span class="commodity-chg commodity-ext ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
+      <span class="commodity-chg ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
+      <span class="commodity-chg ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
+      <span class="commodity-chg ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
     </div>`).join('');
 
   return `
     <div class="macro-card">
       <h3 class="macro-card-title">Commodities</h3>
-      <div class="commodity-header">
-        <span class="commodity-name">Name</span>
-        <span class="commodity-price">Price</span>
-        <span class="commodity-chg">1D</span>
-        <span class="commodity-chg">1W</span>
-        <span class="commodity-chg">1M</span>
-        <span class="commodity-chg commodity-ext">3M</span>
-        <span class="commodity-chg commodity-ext">6M</span>
-        <span class="commodity-chg commodity-ext">1Y</span>
+      <div class="commodity-scroll-wrap">
+        <div class="commodity-header">
+          <span class="commodity-name">Name</span>
+          <span class="commodity-price">Price</span>
+          <span class="commodity-chg">1D</span>
+          <span class="commodity-chg">1W</span>
+          <span class="commodity-chg">1M</span>
+          <span class="commodity-chg">3M</span>
+          <span class="commodity-chg">6M</span>
+          <span class="commodity-chg">1Y</span>
+        </div>
+        ${rows}
       </div>
-      ${rows}
     </div>`;
 }
 
@@ -354,25 +360,27 @@ function renderRates(rates) {
       <span class="commodity-chg ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="commodity-chg ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="commodity-chg ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
-      <span class="commodity-chg commodity-ext ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
-      <span class="commodity-chg commodity-ext ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
-      <span class="commodity-chg commodity-ext ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
+      <span class="commodity-chg ${pctCls(d.change_3m)}">${fmtPct(d.change_3m)}</span>
+      <span class="commodity-chg ${pctCls(d.change_6m)}">${fmtPct(d.change_6m)}</span>
+      <span class="commodity-chg ${pctCls(d.change_1y)}">${fmtPct(d.change_1y)}</span>
     </div>`).join('');
 
   return `
     <div class="macro-card">
       <h3 class="macro-card-title">Rates & Policy</h3>
-      <div class="commodity-header">
-        <span class="commodity-name">Indicator</span>
-        <span class="commodity-price">Level</span>
-        <span class="commodity-chg">1D</span>
-        <span class="commodity-chg">1W</span>
-        <span class="commodity-chg">1M</span>
-        <span class="commodity-chg commodity-ext">3M</span>
-        <span class="commodity-chg commodity-ext">6M</span>
-        <span class="commodity-chg commodity-ext">1Y</span>
+      <div class="commodity-scroll-wrap">
+        <div class="commodity-header">
+          <span class="commodity-name">Indicator</span>
+          <span class="commodity-price">Level</span>
+          <span class="commodity-chg">1D</span>
+          <span class="commodity-chg">1W</span>
+          <span class="commodity-chg">1M</span>
+          <span class="commodity-chg">3M</span>
+          <span class="commodity-chg">6M</span>
+          <span class="commodity-chg">1Y</span>
+        </div>
+        ${rows}
       </div>
-      ${rows}
     </div>`;
 }
 
