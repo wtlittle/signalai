@@ -1237,7 +1237,7 @@ async function fetchNews() {
   const tabBar = document.getElementById('tab-bar');
   const tabBtns = tabBar ? tabBar.querySelectorAll('.tab-btn') : [];
   const tabPanes = document.querySelectorAll('.tab-pane');
-  const validTabs = ['watchlist', 'research', 'briefing', 'news'];
+  const validTabs = ['watchlist', 'research', 'briefing', 'macro', 'news'];
 
   function activateTab(tabId) {
     if (!validTabs.includes(tabId)) tabId = 'watchlist';
@@ -1255,6 +1255,10 @@ async function fetchNews() {
     if (tabId === 'briefing' && !window._briefingLoaded) {
       window._briefingLoaded = true;
       if (typeof loadWeeklyBriefing === 'function') loadWeeklyBriefing();
+    }
+    if (tabId === 'macro' && !window._macroLoaded) {
+      window._macroLoaded = true;
+      if (typeof renderMacroTab === 'function') renderMacroTab();
     }
     if (tabId === 'news' && !window._newsLoaded) {
       window._newsLoaded = true;

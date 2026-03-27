@@ -1,0 +1,702 @@
+{
+  "generated": "2026-03-27T07:44:10.219Z",
+  "pillars": {
+    "growth": {
+      "score": -0.5,
+      "label": "Contracting",
+      "color": "red",
+      "signals": [
+        {
+          "ticker": "XLI",
+          "name": "Industrials ETF",
+          "price": 161.27,
+          "change1d": 5.695372919124392,
+          "change1w": -1.7005932754182633,
+          "change1m": -8.160593014220739,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "XLY",
+          "name": "Consumer Disc ETF",
+          "price": 108.83,
+          "change1d": -9.198614993116687,
+          "change1w": -0.793067585587969,
+          "change1m": -7.0543981255237105,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "IWM",
+          "name": "Russell 2000",
+          "price": 247.44,
+          "change1d": 2.5275544874450957,
+          "change1w": -0.07672835991590198,
+          "change1m": -6.478186182150203,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "^GSPC",
+          "name": "S&P 500",
+          "price": 6477.16,
+          "change1d": -2.506735704502009,
+          "change1w": -1.957621574191809,
+          "change1m": -6.751525446175696,
+          "trend": "down",
+          "direction": "→"
+        }
+      ]
+    },
+    "inflation": {
+      "score": -0.429,
+      "label": "Falling",
+      "color": "red",
+      "signals": [
+        {
+          "ticker": "CL=F",
+          "name": "WTI Crude",
+          "price": 95.18,
+          "change1d": 44.826536822884975,
+          "change1w": -3.1936527658611595,
+          "change1m": 45.959211227529934,
+          "trend": "up",
+          "direction": "↑"
+        },
+        {
+          "ticker": "HG=F",
+          "name": "Copper",
+          "price": 5.523,
+          "change1d": 17.13679745493107,
+          "change1w": 3.3879222976365213,
+          "change1m": -7.121238593132342,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "GC=F",
+          "name": "Gold",
+          "price": 4477.9,
+          "change1d": 18.61044155431355,
+          "change1w": -2.023892919141824,
+          "change1m": -13.495607025137641,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "TIP",
+          "name": "TIPS ETF",
+          "price": 109.76,
+          "change1d": -1.215012150121496,
+          "change1w": -1.2150107701424324,
+          "change1m": -1.4810173877052595,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "DX-Y.NYB",
+          "name": "US Dollar (DXY)",
+          "price": 99.969,
+          "change1d": 1.8532857870606096,
+          "change1w": 0.3201206615714715,
+          "change1m": 2.228245049690147,
+          "trend": "up",
+          "direction": "↑"
+        }
+      ]
+    },
+    "policy": {
+      "score": -1,
+      "label": "Restrictive",
+      "color": "red",
+      "signals": [
+        {
+          "ticker": "^TNX",
+          "name": "10Y Treasury Yield",
+          "price": 4.416,
+          "change1d": 5.4693097683305485,
+          "change1w": 3.1534629225427575,
+          "change1m": 9.090910161779497,
+          "trend": "up",
+          "direction": "↑"
+        },
+        {
+          "ticker": "^FVX",
+          "name": "5Y Treasury Yield",
+          "price": 4.095,
+          "change1d": 8.620689655172406,
+          "change1w": 4.490938603290518,
+          "change1m": 13.152800156740948,
+          "trend": "up",
+          "direction": "↑"
+        },
+        {
+          "ticker": "TLT",
+          "name": "Long Bond ETF",
+          "price": 86.11,
+          "change1d": -3.1383577052868463,
+          "change1w": -1.5773200218461076,
+          "change1m": -4.226451892982451,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "HYG",
+          "name": "High Yield ETF",
+          "price": 78.92,
+          "change1d": -2.664035520473602,
+          "change1w": -0.9289548821801641,
+          "change1m": -2.4715769219672827,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "LQD",
+          "name": "IG Credit ETF",
+          "price": 107.88,
+          "change1d": -2.994335041812785,
+          "change1w": -1.1997482907753014,
+          "change1m": -3.376627157131837,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "DX-Y.NYB",
+          "name": "US Dollar (DXY)",
+          "price": 99.969,
+          "change1d": 1.8532857870606096,
+          "change1w": 0.3201206615714715,
+          "change1m": 2.228245049690147,
+          "trend": "up",
+          "direction": "↑"
+        }
+      ]
+    },
+    "sentiment": {
+      "score": -0.75,
+      "label": "Risk-Off",
+      "color": "red",
+      "signals": [
+        {
+          "ticker": "SPHB",
+          "name": "S&P High Beta",
+          "price": 115.94,
+          "change1d": 5.94900849858356,
+          "change1w": -2.4566701614933435,
+          "change1m": -7.218307225633789,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "SPLV",
+          "name": "S&P Low Vol",
+          "price": 72.63,
+          "change1d": -0.23351648351648585,
+          "change1w": -1.0085940649614271,
+          "change1m": -4.67253586285956,
+          "trend": "down",
+          "direction": "↓"
+        },
+        {
+          "ticker": "^VIX",
+          "name": "VIX",
+          "price": 27.69,
+          "change1d": 81.09875735775019,
+          "trend": "up",
+          "direction": "⚠"
+        }
+      ]
+    }
+  },
+  "regime": {
+    "regime": "Deflation Risk",
+    "color": "#eab308",
+    "desc": "Weakening growth and falling prices. Favors Treasuries, Defensives, Quality. Reduce cyclical exposure.",
+    "favored_sectors": [
+      "XLU",
+      "XLV",
+      "XLP"
+    ],
+    "avoid_sectors": [
+      "XLE",
+      "XLF",
+      "XLB"
+    ],
+    "favored_factors": [
+      "QUAL",
+      "USMV"
+    ],
+    "avoid_factors": [
+      "VLUE",
+      "IWM"
+    ]
+  },
+  "sectors": {
+    "XLK": {
+      "name": "State Street Technology Select Sector SPDR ETF",
+      "price": 132.5,
+      "change1d": -4.963419882369809,
+      "change_1w": -4.283748457366436,
+      "change_1m": -7.349132865209331,
+      "change_3m": -9.215482856784107,
+      "change_6m": -5.46855038938681,
+      "sectorName": "Technology"
+    },
+    "XLF": {
+      "name": "State Street Financial Select Sector SPDR ETF",
+      "price": 49.05,
+      "change1d": -8.93056071295953,
+      "change_1w": 0.12246898660573326,
+      "change_1m": -5.436668118168689,
+      "change_3m": -11.510014492133246,
+      "change_6m": -9.384817533371553,
+      "sectorName": "Financials"
+    },
+    "XLV": {
+      "name": "State Street Health Care Select Sector SPDR ETF",
+      "price": 145.74,
+      "change1d": 7.5571955719557256,
+      "change_1w": -0.5934077577011299,
+      "change_1m": -7.660138248513783,
+      "change_3m": -5.968126764411256,
+      "change_6m": 7.240626959979754,
+      "sectorName": "Health Care"
+    },
+    "XLE": {
+      "name": "State Street Energy Select Sector SPDR ETF",
+      "price": 61.52,
+      "change1d": 33.753668877051865,
+      "change_1w": 3.638813721702414,
+      "change_1m": 12.119558329378084,
+      "change_3m": 38.24719203991837,
+      "change_6m": 36.25691778216635,
+      "sectorName": "Energy"
+    },
+    "XLI": {
+      "name": "State Street Industrial Select Sector SPDR ETF",
+      "price": 161.27,
+      "change1d": 5.695372919124392,
+      "change_1w": -1.7005932754182633,
+      "change_1m": -8.160593014220739,
+      "change_3m": 2.7262874256560505,
+      "change_6m": 5.370794548709234,
+      "sectorName": "Industrials"
+    },
+    "XLC": {
+      "name": "State Street Communication Services Select Sector SPDR ETF",
+      "price": 108.81,
+      "change1d": -7.920792079207921,
+      "change_1w": -3.8271184854282883,
+      "change_1m": -6.600860464726395,
+      "change_3m": -7.308971697474326,
+      "change_6m": -8.215947062364618,
+      "sectorName": "Communication Svcs"
+    },
+    "XLY": {
+      "name": "State Street Consumer Discretionary Select Sector SPDR ETF",
+      "price": 108.83,
+      "change1d": -9.198614993116687,
+      "change_1w": -0.793067585587969,
+      "change_1m": -7.0543981255237105,
+      "change_3m": -10.919208101683962,
+      "change_6m": -9.59461346227547,
+      "sectorName": "Consumer Disc"
+    },
+    "XLP": {
+      "name": "State Street Consumer Staples Select Sector SPDR ETF",
+      "price": 81.14,
+      "change1d": 4.079014879425356,
+      "change_1w": -1.0125677915020626,
+      "change_1m": -8.841706052918564,
+      "change_3m": 4.683263002674078,
+      "change_6m": 3.87914320268911,
+      "sectorName": "Consumer Staples"
+    },
+    "XLRE": {
+      "name": "State Street Real Estate Select Sector SPDR ETF",
+      "price": 40.29,
+      "change1d": -3.796561604584535,
+      "change_1w": -3.888352396507222,
+      "change_1m": -7.251376175792215,
+      "change_3m": 0.27376956076675985,
+      "change_6m": -3.9799766572523523,
+      "sectorName": "Real Estate"
+    },
+    "XLU": {
+      "name": "State Street Utilities Select Sector SPDR ETF",
+      "price": 45.33,
+      "change1d": 4.434972929386008,
+      "change_1w": -2.5999120340991633,
+      "change_1m": -4.286314934829571,
+      "change_3m": 6.358524089831737,
+      "change_6m": 4.135086382345373,
+      "sectorName": "Utilities"
+    },
+    "XLB": {
+      "name": "State Street Materials Select Sector SPDR ETF",
+      "price": 49.09,
+      "change1d": 10.513282305267902,
+      "change_1w": 2.8278140482973897,
+      "change_1m": -7.482097847629376,
+      "change_3m": 7.3005467816128755,
+      "change_6m": 10.091948832924217,
+      "sectorName": "Materials"
+    }
+  },
+  "factors": {
+    "MTUM": {
+      "name": "iShares MSCI USA Momentum Factor ETF",
+      "price": 238.21,
+      "change1d": -6.459593183067615,
+      "change_1w": -3.5040078891264717,
+      "change_1m": -7.0871354329096565,
+      "change_3m": -6.334539220822606,
+      "change_6m": -6.818178969408587,
+      "factorName": "Momentum"
+    },
+    "VLUE": {
+      "name": "iShares MSCI USA Value Factor ETF",
+      "price": 142.9,
+      "change1d": 14.659391799727201,
+      "change_1w": -1.6923546391977673,
+      "change_1m": -5.980664035891834,
+      "change_3m": 4.1013983017358475,
+      "change_6m": 14.45734532876641,
+      "factorName": "Value"
+    },
+    "QUAL": {
+      "name": "iShares MSCI USA Quality Factor ETF",
+      "price": 190.15,
+      "change1d": -1.272066458982341,
+      "change_1w": -2.0905270980009263,
+      "change_1m": -7.447069009016463,
+      "change_3m": -5.001003988050941,
+      "change_6m": -1.6601193130609346,
+      "factorName": "Quality"
+    },
+    "SIZE": {
+      "name": "iShares MSCI USA Size Factor ETF",
+      "price": 158.18,
+      "change1d": -1.044729433844221,
+      "change_1w": -0.9765949441197259,
+      "change_1m": -5.996322184875001,
+      "change_3m": -3.129402180449182,
+      "change_6m": -1.1498634842846014,
+      "factorName": "Size (Small)"
+    },
+    "USMV": {
+      "name": "iShares MSCI USA Min Vol Factor ETF",
+      "price": 92.21,
+      "change1d": -2.464565263380593,
+      "change_1w": -1.1470837358776864,
+      "change_1m": -4.356399147495713,
+      "change_3m": -2.6807397525354553,
+      "change_6m": -2.6499177617006335,
+      "factorName": "Low Volatility"
+    },
+    "IWM": {
+      "name": "iShares Russell 2000 ETF",
+      "price": 247.44,
+      "change1d": 2.5275544874450957,
+      "change_1w": -0.07672835991590198,
+      "change_1m": -6.478186182150203,
+      "change_3m": -1.8406852411712489,
+      "change_6m": 2.408744078235745,
+      "factorName": "Russell 2000"
+    },
+    "IWF": {
+      "name": "iShares Russell 1000 Growth ETF",
+      "price": 422.35,
+      "change1d": -9.14077962309611,
+      "change_1w": -3.001701098056658,
+      "change_1m": -7.884404339473146,
+      "change_3m": -11.881907602729251,
+      "change_6m": -9.475735529496596,
+      "factorName": "Russell Growth"
+    },
+    "IWD": {
+      "name": "iShares Russell 1000 Value ETF",
+      "price": 212.51,
+      "change1d": 4.6950438466844036,
+      "change_1w": -0.6730556026858037,
+      "change_1m": -5.567898663845626,
+      "change_3m": 0.42530782755470065,
+      "change_6m": 4.571397121508525,
+      "factorName": "Russell Value"
+    }
+  },
+  "indices": {
+    "^GSPC": {
+      "name": "S&P 500",
+      "price": 6477.16,
+      "change1d": -2.506735704502009,
+      "change_1w": -1.957621574191809,
+      "change_1m": -6.751525446175696,
+      "change_3m": -6.261114742513913,
+      "change_6m": -2.7630086090485095
+    },
+    "^IXIC": {
+      "name": "NASDAQ Composite",
+      "price": 21408.08,
+      "change1d": -4.7855659584763695,
+      "change_1w": -3.0900320085004704,
+      "change_1m": -7.532800483217921,
+      "change_3m": -9.140881102272262,
+      "change_6m": -5.236875024261522
+    },
+    "^RUT": {
+      "name": " Russell 2000 Index",
+      "price": 2493.321,
+      "change1d": 2.4237158631568465,
+      "change_1w": -0.055713593960345004,
+      "change_1m": -6.383362361353011,
+      "change_3m": -1.8810621546308435,
+      "change_6m": 2.384562913843548
+    },
+    "^VIX": {
+      "name": "CBOE Volatility Index",
+      "price": 27.69,
+      "change1d": 81.09875735775019,
+      "change_1w": 3.3980575955171752,
+      "change_1m": 48.63124949769567,
+      "change_3m": 105.56792862013383,
+      "change_6m": 71.77418791855622
+    }
+  },
+  "commodities": {
+    "WTI": {
+      "name": "Crude Oil May 26",
+      "price": 95.18,
+      "change1d": 44.826536822884975,
+      "change_1w": -3.1936527658611595,
+      "change_1m": 45.959211227529934,
+      "change_3m": 63.11911361469738,
+      "change_6m": 50.00787889788258,
+      "ticker": "CL=F",
+      "commodityName": "WTI Crude"
+    },
+    "BRENT": {
+      "name": "Brent Crude Oil Last Day Financ",
+      "price": 102.87,
+      "change1d": 46.684728361614155,
+      "change_1w": -8.307335316880662,
+      "change_1m": 45.39929716831382,
+      "change_3m": 65.27956293769192,
+      "change_6m": 51.34618346196034,
+      "ticker": "BZ=F",
+      "commodityName": "Brent Crude"
+    },
+    "NATGAS": {
+      "name": "Natural Gas Apr 26",
+      "price": 2.97,
+      "change1d": 4.76190476190477,
+      "change_1w": -4.038772175912698,
+      "change_1m": 5.058370385763299,
+      "change_3m": -29.985856753939554,
+      "change_6m": -9.090907100604541,
+      "ticker": "NG=F",
+      "commodityName": "Natural Gas"
+    },
+    "COPPER": {
+      "name": "Copper May 26",
+      "price": 5.523,
+      "change1d": 17.13679745493107,
+      "change_1w": 3.3879222976365213,
+      "change_1m": -7.121238593132342,
+      "change_3m": 0.4546712004571947,
+      "change_6m": 14.098324194693369,
+      "ticker": "HG=F",
+      "commodityName": "Copper"
+    },
+    "GOLD": {
+      "name": "Gold Apr 26",
+      "price": 4477.9,
+      "change1d": 18.61044155431355,
+      "change_1w": -2.023892919141824,
+      "change_1m": -13.495607025137641,
+      "change_3m": -0.06026414439245406,
+      "change_6m": 17.194902164199448,
+      "ticker": "GC=F",
+      "commodityName": "Gold"
+    },
+    "SILVER": {
+      "name": "Silver May 26",
+      "price": 69.645,
+      "change1d": 50.678263127150004,
+      "change_1w": 0.41089393051751183,
+      "change_1m": -19.946440419812255,
+      "change_3m": -1.9512629998899054,
+      "change_6m": 49.41430827389612,
+      "ticker": "SI=F",
+      "commodityName": "Silver"
+    }
+  },
+  "rates": {
+    "^TNX": {
+      "name": "CBOE Interest Rate 10 Year T No",
+      "price": 4.416,
+      "change1d": 5.4693097683305485,
+      "change_1w": 3.1534629225427575,
+      "change_1m": 9.090910161779497,
+      "change_3m": 5.924675744453266,
+      "change_6m": 5.469312219023948,
+      "rateName": "10Y Treasury Yield"
+    },
+    "^FVX": {
+      "name": "Treasury Yield 5 Years",
+      "price": 4.095,
+      "change1d": 8.620689655172406,
+      "change_1w": 4.490938603290518,
+      "change_1m": 13.152800156740948,
+      "change_3m": 9.667911776952074,
+      "change_6m": 8.62068463950668,
+      "rateName": "5Y Treasury Yield"
+    },
+    "^TYX": {
+      "name": "Treasury Yield 30 Years",
+      "price": 4.936,
+      "change1d": 3.5669324381032297,
+      "change_1w": 1.7312372154676847,
+      "change_1m": 5.155520131945948,
+      "change_3m": 2.1734635128755415,
+      "change_6m": 3.566934193067632,
+      "rateName": "30Y Treasury Yield"
+    },
+    "^IRX": {
+      "name": "13 WEEK TREASURY BILL",
+      "price": 3.6200001,
+      "change1d": -6.217613989637305,
+      "change_1w": 0.22148109159801568,
+      "change_1m": 0.8918569092513651,
+      "change_3m": 2.058075997654397,
+      "change_6m": -6.217616996354481,
+      "rateName": "13-Week T-Bill"
+    },
+    "DX-Y.NYB": {
+      "name": "US Dollar Index",
+      "price": 99.969,
+      "change1d": 1.8532857870606096,
+      "change_1w": 0.3201206615714715,
+      "change_1m": 2.228245049690147,
+      "change_3m": 2.030004434517286,
+      "change_6m": 2.1029496791929723,
+      "rateName": "US Dollar Index (DXY)"
+    },
+    "TLT": {
+      "name": "iShares 20+ Year Treasury Bond ETF",
+      "price": 86.11,
+      "change1d": -3.1383577052868463,
+      "change_1w": -1.5773200218461076,
+      "change_1m": -4.226451892982451,
+      "change_3m": -1.5885707310267856,
+      "change_6m": -3.927252873961428,
+      "rateName": "20+ Year Treasury Bond ETF"
+    },
+    "HYG": {
+      "name": "iShares iBoxx $ High Yield Corporate Bond ETF",
+      "price": 78.92,
+      "change1d": -2.664035520473602,
+      "change_1w": -0.9289548821801641,
+      "change_1m": -2.4715769219672827,
+      "change_3m": -1.9505525363306204,
+      "change_6m": -2.8318185387708876,
+      "rateName": "High Yield Corporate Bond ETF"
+    },
+    "LQD": {
+      "name": "iShares iBoxx $ Investment Grade Corporate Bond ETF",
+      "price": 107.88,
+      "change1d": -2.994335041812785,
+      "change_1w": -1.1997482907753014,
+      "change_1m": -3.376627157131837,
+      "change_3m": -2.1230302498360185,
+      "change_6m": -3.3160105009130247,
+      "rateName": "Investment Grade Bond ETF"
+    }
+  },
+  "ideas": {
+    "own": [
+      {
+        "ticker": "ELV",
+        "name": "Elevance Health",
+        "subsector": "Healthcare Services",
+        "sectorEtf": "XLV",
+        "sectorName": "Health Care",
+        "reason": "In favored sector (Health Care) for Deflation Risk regime"
+      },
+      {
+        "ticker": "TMO",
+        "name": "Thermo Fisher",
+        "subsector": "Life Sciences",
+        "sectorEtf": "XLV",
+        "sectorName": "Health Care",
+        "reason": "In favored sector (Health Care) for Deflation Risk regime"
+      },
+      {
+        "ticker": "UNH",
+        "name": "UnitedHealth",
+        "subsector": "Healthcare Services",
+        "sectorEtf": "XLV",
+        "sectorName": "Health Care",
+        "reason": "In favored sector (Health Care) for Deflation Risk regime"
+      },
+      {
+        "ticker": "MKC",
+        "name": "McCormick",
+        "subsector": "Consumer Staples",
+        "sectorEtf": "XLP",
+        "sectorName": "Consumer Staples",
+        "reason": "In favored sector (Consumer Staples) for Deflation Risk regime"
+      },
+      {
+        "ticker": "HIMS",
+        "name": "Hims & Hers",
+        "subsector": "Health Tech",
+        "sectorEtf": "XLV",
+        "sectorName": "Health Care",
+        "reason": "In favored sector (Health Care) for Deflation Risk regime"
+      }
+    ],
+    "avoid": [
+      {
+        "ticker": "COIN",
+        "name": "Coinbase",
+        "subsector": "Fintech",
+        "sectorEtf": "XLF",
+        "sectorName": "Financials",
+        "reason": "In unfavored sector (Financials) for Deflation Risk regime"
+      },
+      {
+        "ticker": "BILL",
+        "name": "Bill.com",
+        "subsector": "Fintech",
+        "sectorEtf": "XLF",
+        "sectorName": "Financials",
+        "reason": "In unfavored sector (Financials) for Deflation Risk regime"
+      },
+      {
+        "ticker": "FOUR",
+        "name": "Shift4 Payments",
+        "subsector": "Fintech",
+        "sectorEtf": "XLF",
+        "sectorName": "Financials",
+        "reason": "In unfavored sector (Financials) for Deflation Risk regime"
+      },
+      {
+        "ticker": "XYZ",
+        "name": "Block",
+        "subsector": "Fintech",
+        "sectorEtf": "XLF",
+        "sectorName": "Financials",
+        "reason": "In unfavored sector (Financials) for Deflation Risk regime"
+      },
+      {
+        "ticker": "AFRM",
+        "name": "Affirm",
+        "subsector": "Fintech",
+        "sectorEtf": "XLF",
+        "sectorName": "Financials",
+        "reason": "In unfavored sector (Financials) for Deflation Risk regime"
+      }
+    ]
+  }
+}
