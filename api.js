@@ -1,14 +1,15 @@
 /* ===== API.JS — Data fetching via backend proxy (all requests route through Python backend) ===== */
 
-// Backend URL — uses __PORT_5001__ which deploy_website replaces with the proxy path
+// Backend URL — uses relative path ./api which the Express server can proxy,
+// or falls back to direct backend connection in local dev
 const BACKEND_URL = (() => {
-  const marker = '__PORT_5001__';
-  // If the marker was replaced by deploy_website, use the proxy path
-  if (!marker.startsWith('__')) return marker;
-  // Local dev: backend on port 5001
   const loc = window.location;
-  if (loc.port === '5000') return 'http://127.0.0.1:5001';
-  return `${loc.protocol}//${loc.hostname}:5001`;
+  // Local dev: backend on port 5001
+  if (loc.hostname === '127.0.0.1' || loc.hostname === 'localhost') {
+    return `${loc.protocol}//${loc.hostname}:5001`;
+  }
+  // Deployed: backend not available, will use client-side fallback
+  return '';
 })();
 let backendAvailable = null; // null = untested, true/false after first check
 

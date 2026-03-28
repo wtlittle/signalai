@@ -193,19 +193,36 @@ function renderSectorHeatmap(sectors, regime) {
   const favoredSet = new Set(regime?.favored_sectors || []);
   const avoidSet = new Set(regime?.avoid_sectors || []);
 
-  // Find max absolute 1M change for scaling the diverging bars
-  const vals1m = sorted.map(([,d]) => Math.abs(d.change_1m || 0));
-  const max1m = Math.max(...vals1m, 5); // at least 5% scale
+  // Compute regime score: FAVOR = positive (green right), AVOID = negative (red left)
+  // Magnitude based on relative 1M performance so bars show signal strength
+  const allPct1m = sorted.map(([,d]) => d.change_1m || 0);
+  const median1m = allPct1m.slice().sort((a,b) => a - b)[Math.floor(allPct1m.length / 2)] || 0;
 
-  const rows = sorted.map(([ticker, d]) => {
+  const scored = sorted.map(([ticker, d]) => {
+    const isFavor = favoredSet.has(ticker);
+    const isAvoid = avoidSet.has(ticker);
+    const rel = (d.change_1m || 0) - median1m; // relative to median
+    // Score: FAVOR gets positive, AVOID gets negative, neutral uses relative perf
+    let score;
+    if (isFavor) score = Math.max(Math.abs(rel), 2); // always positive, min 2
+    else if (isAvoid) score = -Math.max(Math.abs(rel), 2); // always negative, min -2
+    else score = rel * 0.5; // neutral: small bar based on relative perf
+    return [ticker, d, score];
+  });
+  // Sort by score descending (FAVOR at top, AVOID at bottom)
+  scored.sort((a, b) => b[2] - a[2]);
+
+  const maxScore = Math.max(...scored.map(s => Math.abs(s[2])), 5);
+
+  const rows = scored.map(([ticker, d, score]) => {
     const tag = favoredSet.has(ticker) ? '<span class="hm-tag hm-favor">FAVOR</span>' :
                 avoidSet.has(ticker) ? '<span class="hm-tag hm-avoid">AVOID</span>' : '';
-    const pct1m = d.change_1m || 0;
-    const barWidth = Math.min(50, (Math.abs(pct1m) / max1m) * 50);
-    const barColor = pct1m >= 0 ? 'var(--green)' : 'var(--red)';
-    const barSide = pct1m >= 0
+    const barWidth = Math.min(50, (Math.abs(score) / maxScore) * 50);
+    const barColor = score >= 0 ? 'var(--green)' : 'var(--red)';
+    const barSide = score >= 0
       ? `left:50%;width:${barWidth}%`
       : `right:50%;width:${barWidth}%`;
+    const pct1m = d.change_1m || 0;
     return `<div class="hm-row">
       <span class="hm-ticker">${ticker}</span>
       <span class="hm-name">${d.sectorName || d.name}</span>
@@ -213,7 +230,7 @@ function renderSectorHeatmap(sectors, regime) {
       <span class="hm-diverge-wrap">
         <span class="hm-diverge-center"></span>
         <span class="hm-diverge-bar" style="${barSide};background:${barColor}"></span>
-        <span class="hm-diverge-label ${pctCls(pct1m)}">${fmtPct(pct1m)}</span>
+        <span class="hm-diverge-label" style="color:${barColor}">${fmtPct(pct1m)}</span>
       </span>
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
@@ -230,7 +247,7 @@ function renderSectorHeatmap(sectors, regime) {
         <div class="hm-header">
           <span class="hm-ticker">ETF</span>
           <span class="hm-name">Sector</span>
-          <span class="hm-diverge-wrap">1M Momentum</span>
+          <span class="hm-diverge-wrap">Regime Signal</span>
           <span class="hm-val">1D</span>
           <span class="hm-val">1W</span>
           <span class="hm-val">3M</span>
@@ -248,18 +265,30 @@ function renderFactorHeatmap(factors, regime) {
   const sorted = Object.entries(factors).sort((a, b) => (b[1].change_1m || 0) - (a[1].change_1m || 0));
   const favoredSet = new Set(regime?.favored_factors || []);
 
-  // Find max absolute 1M change for scaling
-  const fVals1m = sorted.map(([,d]) => Math.abs(d.change_1m || 0));
-  const fMax1m = Math.max(...fVals1m, 5);
+  // Compute regime score for factors: FAVOR = positive (green), rest = relative perf
+  const fAllPct1m = sorted.map(([,d]) => d.change_1m || 0);
+  const fMedian1m = fAllPct1m.slice().sort((a,b) => a - b)[Math.floor(fAllPct1m.length / 2)] || 0;
 
-  const rows = sorted.map(([ticker, d]) => {
+  const fScored = sorted.map(([ticker, d]) => {
+    const isFavor = favoredSet.has(ticker);
+    const rel = (d.change_1m || 0) - fMedian1m;
+    let score;
+    if (isFavor) score = Math.max(Math.abs(rel), 2);
+    else score = rel * 0.5;
+    return [ticker, d, score];
+  });
+  fScored.sort((a, b) => b[2] - a[2]);
+
+  const fMaxScore = Math.max(...fScored.map(s => Math.abs(s[2])), 5);
+
+  const rows = fScored.map(([ticker, d, score]) => {
     const tag = favoredSet.has(ticker) ? '<span class="hm-tag hm-favor">FAVOR</span>' : '';
-    const pct1m = d.change_1m || 0;
-    const barWidth = Math.min(50, (Math.abs(pct1m) / fMax1m) * 50);
-    const barColor = pct1m >= 0 ? 'var(--green)' : 'var(--red)';
-    const barSide = pct1m >= 0
+    const barWidth = Math.min(50, (Math.abs(score) / fMaxScore) * 50);
+    const barColor = score >= 0 ? 'var(--green)' : 'var(--red)';
+    const barSide = score >= 0
       ? `left:50%;width:${barWidth}%`
       : `right:50%;width:${barWidth}%`;
+    const pct1m = d.change_1m || 0;
     return `<div class="hm-row">
       <span class="hm-ticker">${ticker}</span>
       <span class="hm-name">${d.factorName || d.name}</span>
@@ -267,7 +296,7 @@ function renderFactorHeatmap(factors, regime) {
       <span class="hm-diverge-wrap">
         <span class="hm-diverge-center"></span>
         <span class="hm-diverge-bar" style="${barSide};background:${barColor}"></span>
-        <span class="hm-diverge-label ${pctCls(pct1m)}">${fmtPct(pct1m)}</span>
+        <span class="hm-diverge-label" style="color:${barColor}">${fmtPct(pct1m)}</span>
       </span>
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
@@ -284,7 +313,7 @@ function renderFactorHeatmap(factors, regime) {
         <div class="hm-header">
           <span class="hm-ticker">ETF</span>
           <span class="hm-name">Factor</span>
-          <span class="hm-diverge-wrap">1M Momentum</span>
+          <span class="hm-diverge-wrap">Regime Signal</span>
           <span class="hm-val">1D</span>
           <span class="hm-val">1W</span>
           <span class="hm-val">3M</span>
