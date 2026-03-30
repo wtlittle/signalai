@@ -1,12 +1,37 @@
 {
-  "updated": "2026-03-28T09:00:00-04:00",
+  "updated": "2026-03-30T09:00:00-04:00",
   "active_pre_earnings": [
-    {"ticker": "NKE", "date": "2026-03-31", "file": "notes/pre_earnings/NKE_2026-03-31.md"},
-    {"ticker": "MKC", "date": "2026-03-31", "file": "notes/pre_earnings/MKC_2026-03-31.md"},
-    {"ticker": "STZ", "date": "2026-04-08", "file": "notes/pre_earnings/STZ_2026-04-08.md"}
+    {
+      "ticker": "NKE",
+      "earnings_date": "2026-03-31",
+      "note_path": "notes/pre_earnings/NKE_2026-03-31.md",
+      "last_updated": "2026-03-30",
+      "status": "final"
+    },
+    {
+      "ticker": "MKC",
+      "earnings_date": "2026-03-31",
+      "note_path": "notes/pre_earnings/MKC_2026-03-31.md",
+      "last_updated": "2026-03-30",
+      "status": "final"
+    },
+    {
+      "ticker": "STZ",
+      "earnings_date": "2026-04-08",
+      "note_path": "notes/pre_earnings/STZ_2026-04-08.md",
+      "last_updated": "2026-03-30",
+      "status": "active"
+    }
   ],
   "active_post_earnings": [
-    {"ticker": "MU", "date": "2026-03-18", "file": "notes/post_earnings/MU_2026-03-18.md"}
+    {
+      "ticker": "MU",
+      "earnings_date": "2026-03-18",
+      "note_path": "notes/post_earnings/MU_2026-03-18.md",
+      "last_updated": "2026-03-30",
+      "days_since": 12,
+      "status": "active"
+    }
   ],
   "archived": []
 }
