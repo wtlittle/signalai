@@ -1,69 +1,57 @@
 {
-  "generated": "2026-03-27",
-  "upcoming": [
+  "updated": "2026-03-28T09:00:00-04:00",
+  "pre_earnings": [
     {
       "ticker": "NKE",
       "name": "Nike",
-      "earnings_date": "2026-03-31",
-      "days_until": 4,
-      "status": "upcoming",
-      "consensus_eps": "$0.29-0.32",
-      "consensus_revenue": "$11.23B"
+      "date": "2026-03-31",
+      "time": "After Close",
+      "quarter": "Q3 FY2026",
+      "consensus_eps": 0.29,
+      "consensus_revenue": "11.23B",
+      "days_until": 2
     },
     {
       "ticker": "MKC",
-      "name": "McCormick & Company",
-      "earnings_date": "2026-03-31",
-      "days_until": 4,
-      "status": "upcoming",
-      "consensus_eps": "$0.61",
-      "consensus_revenue": "~$1.6B"
+      "name": "McCormick",
+      "date": "2026-03-31",
+      "time": "Before Open",
+      "quarter": "Q1 FY2026",
+      "consensus_eps": 0.62,
+      "consensus_revenue": "1.79B",
+      "days_until": 2
     },
     {
       "ticker": "STZ",
       "name": "Constellation Brands",
-      "earnings_date": "2026-04-08",
-      "days_until": 12,
-      "status": "upcoming",
-      "consensus_eps": "$1.73",
-      "consensus_revenue": "~$2.0B"
-    },
-    {
-      "ticker": "TSM",
-      "name": "TSMC",
-      "earnings_date": "2026-04-16",
-      "days_until": 20,
-      "status": "upcoming"
-    },
-    {
-      "ticker": "ELV",
-      "name": "Elevance Health",
-      "earnings_date": "2026-04-21",
-      "days_until": 25,
-      "status": "upcoming"
-    },
-    {
-      "ticker": "UNH",
-      "name": "UnitedHealth Group",
-      "earnings_date": "2026-04-21",
-      "days_until": 25,
-      "status": "upcoming"
+      "date": "2026-04-08",
+      "time": "After Close",
+      "quarter": "Q4 FY2026",
+      "consensus_eps": null,
+      "consensus_revenue": null,
+      "days_until": 10
     }
   ],
-  "recently_reported": [
+  "post_earnings": [
     {
       "ticker": "MU",
       "name": "Micron Technology",
-      "earnings_date": "2026-03-18",
-      "days_since": 9,
-      "status": "reported",
-      "result": "beat",
-      "actual_eps": "$12.20",
-      "consensus_eps": "$8.60",
-      "surprise": "+41.9%",
-      "revenue": "$23.86B",
-      "revenue_yoy": "+196%",
-      "stock_reaction": "-5% (sell the news)"
+      "date": "2026-03-18",
+      "quarter": "Q2 FY2026",
+      "eps_actual": 12.20,
+      "eps_estimate": 8.80,
+      "surprise_pct": 38.6,
+      "revenue_actual": "23.86B",
+      "revenue_estimate": "19.60B",
+      "days_since": 10
     }
+  ],
+  "upcoming_notable": [
+    {"ticker": "TSM", "name": "TSMC", "date": "2026-04-16", "note": "Q1 2026 -- key AI demand signal"},
+    {"ticker": "NFLX", "name": "Netflix", "date": "2026-04-17", "note": "Not on watchlist but sector read"},
+    {"ticker": "GOOG", "name": "Alphabet", "date": "2026-04-29", "note": "Q1 2026 -- hyperscaler capex"},
+    {"ticker": "MSFT", "name": "Microsoft", "date": "2026-04-29", "note": "Q3 FY2026 -- Azure/AI growth"},
+    {"ticker": "META", "name": "Meta", "date": "2026-04-30", "note": "Q1 2026 -- AI capex plans"},
+    {"ticker": "AMZN", "name": "Amazon", "date": "2026-05-01", "note": "Q1 2026 -- AWS growth"}
   ]
 }
