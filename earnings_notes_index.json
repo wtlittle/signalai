@@ -1,40 +1,56 @@
 {
-  "updated": "2026-03-31T09:00:00-04:00",
+  "updated": "2026-04-01T09:10:00-04:00",
   "active_pre_earnings": [
-    {
-      "ticker": "NKE",
-      "earnings_date": "2026-03-31",
-      "note_path": "notes/pre_earnings/NKE_2026-03-31.md",
-      "last_updated": "2026-03-31",
-      "status": "final_day"
-    },
     {
       "ticker": "STZ",
       "earnings_date": "2026-04-08",
       "note_path": "notes/pre_earnings/STZ_2026-04-08.md",
-      "last_updated": "2026-03-30",
+      "last_updated": "2026-04-01",
       "status": "active"
+    },
+    {
+      "ticker": "TSM",
+      "earnings_date": "2026-04-16",
+      "note_path": "notes/pre_earnings/TSM_2026-04-16.md",
+      "last_updated": "2026-04-01",
+      "status": "new"
     }
   ],
   "active_post_earnings": [
     {
-      "ticker": "MKC",
+      "ticker": "NKE",
       "earnings_date": "2026-03-31",
-      "note_path": "notes/post_earnings/MKC_2026-03-31.md",
-      "last_updated": "2026-03-31",
-      "days_since": 0,
+      "note_path": "notes/post_earnings/NKE_2026-03-31.md",
+      "last_updated": "2026-04-01",
+      "days_since": 1,
       "status": "new"
     },
     {
-      "ticker": "MU",
-      "earnings_date": "2026-03-18",
-      "note_path": "notes/post_earnings/MU_2026-03-18.md",
-      "last_updated": "2026-03-30",
-      "days_since": 13,
+      "ticker": "MKC",
+      "earnings_date": "2026-03-31",
+      "note_path": "notes/post_earnings/MKC_2026-03-31.md",
+      "last_updated": "2026-04-01",
+      "days_since": 1,
       "status": "active"
     }
   ],
   "archived": [
+    {
+      "ticker": "NKE",
+      "type": "pre_earnings",
+      "earnings_date": "2026-03-31",
+      "archive_path": "archive/pre_earnings/NKE_2026-03-31.md",
+      "archived_on": "2026-04-01",
+      "reason": "ticker reported Mar 31 after close"
+    },
+    {
+      "ticker": "MU",
+      "type": "post_earnings",
+      "earnings_date": "2026-03-18",
+      "archive_path": "archive/post_earnings/MU_2026-03-18.md",
+      "archived_on": "2026-04-01",
+      "reason": "day 14 expired"
+    },
     {
       "ticker": "MKC",
       "type": "pre_earnings",
