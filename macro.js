@@ -243,7 +243,6 @@ function renderSectorHeatmap(sectors, regime) {
       <span class="hm-ticker">${ticker}</span>
       <span class="hm-name">${d.sectorName || d.name}</span>
       ${tag}
-      ${renderScoreBar(score)}
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="hm-val ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
@@ -260,7 +259,7 @@ function renderSectorHeatmap(sectors, regime) {
         <div class="hm-header">
           <span class="hm-ticker">ETF</span>
           <span class="hm-name">Sector</span>
-          <span class="hm-diverge-wrap">Regime Score</span>
+          <span class="hm-tag" style="visibility:hidden"></span>
           <span class="hm-val">1D</span>
           <span class="hm-val">1W</span>
           <span class="hm-val">1M</span>
@@ -290,7 +289,6 @@ function renderFactorHeatmap(factors, regime) {
       <span class="hm-ticker">${ticker}</span>
       <span class="hm-name">${d.factorName || d.name}</span>
       ${tag}
-      ${renderScoreBar(score)}
       <span class="hm-val ${pctCls(d.change1d)}">${fmtPct(d.change1d)}</span>
       <span class="hm-val ${pctCls(d.change_1w)}">${fmtPct(d.change_1w)}</span>
       <span class="hm-val ${pctCls(d.change_1m)}">${fmtPct(d.change_1m)}</span>
@@ -307,7 +305,7 @@ function renderFactorHeatmap(factors, regime) {
         <div class="hm-header">
           <span class="hm-ticker">ETF</span>
           <span class="hm-name">Factor</span>
-          <span class="hm-diverge-wrap">Regime Score</span>
+          <span class="hm-tag" style="visibility:hidden"></span>
           <span class="hm-val">1D</span>
           <span class="hm-val">1W</span>
           <span class="hm-val">1M</span>
