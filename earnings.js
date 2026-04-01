@@ -208,6 +208,17 @@ async function openEarningsNote(ticker, date, type) {
       );
       if (match) notePath = match.path;
     }
+    // Also check active_pre_earnings / active_post_earnings
+    if (!notePath && index) {
+      const activeList = type === 'post' ? (index.active_post_earnings || []) : (index.active_pre_earnings || []);
+      const match = activeList.find(n => n.ticker === ticker && n.earnings_date === date);
+      if (match) notePath = match.note_path;
+      // Check archived
+      if (!notePath && index.archived) {
+        const archiveMatch = index.archived.find(n => n.ticker === ticker && n.earnings_date === date);
+        if (archiveMatch) notePath = archiveMatch.archive_path;
+      }
+    }
 
     // Strategy 2: Try conventional file paths
     if (!notePath) {
@@ -278,13 +289,33 @@ async function openArchive() {
   document.body.style.overflow = 'hidden';
 
   const index = await loadEarningsNotesIndex();
-  if (!index || !index.notes || index.notes.length === 0) {
+  
+  // Build a flat notes array from either format
+  let allNotes = [];
+  if (index && index.notes && index.notes.length > 0) {
+    allNotes = index.notes;
+  } else if (index) {
+    // Build from structured arrays
+    (index.active_pre_earnings || []).forEach(n => {
+      allNotes.push({ ...n, type: 'pre', status: 'active', name: n.name || n.ticker });
+    });
+    (index.active_post_earnings || []).forEach(n => {
+      allNotes.push({ ...n, type: 'post', status: 'active', name: n.name || n.ticker });
+    });
+    (index.archived || []).forEach(n => {
+      const type = (n.type || '').includes('post') ? 'post' : 'pre';
+      allNotes.push({ ...n, type, status: 'archived', name: n.name || n.ticker,
+        path: n.archive_path || n.note_path });
+    });
+  }
+
+  if (allNotes.length === 0) {
     $earningsArchiveContent.innerHTML = '<div class="earnings-empty">No archived earnings notes</div>';
     return;
   }
 
   // Get all post-earnings notes (both active and archived)
-  const postNotes = index.notes
+  const postNotes = allNotes
     .filter(n => n.type === 'post')
     .sort((a, b) => b.earnings_date.localeCompare(a.earnings_date));
 
@@ -292,7 +323,7 @@ async function openArchive() {
   const activeNotes = postNotes.filter(n => n.status === 'active');
 
   // Also get pre-earnings notes
-  const preNotes = index.notes
+  const preNotes = allNotes
     .filter(n => n.type === 'pre')
     .sort((a, b) => a.earnings_date.localeCompare(b.earnings_date));
 
@@ -408,38 +439,106 @@ async function fetchEarnings() {
     const upcoming = [];
 
     // Build recent from post-earnings notes in index
+    // Support both flat notes[] array and active_post_earnings[] structure
+    let postNotes = [];
     if (index && index.notes) {
-      index.notes.filter(n => n.type === 'post' && n.status === 'active').forEach(n => {
-        const earningsDate = new Date(n.earnings_date + 'T00:00:00');
-        const daysSince = Math.floor((now - earningsDate) / 86400000);
-        if (daysSince >= 0 && daysSince <= 14) {
-          recent.push({
-            ticker: n.ticker,
-            name: n.name,
-            earnings_date: n.earnings_date,
-            days_since: daysSince,
-            revenue_actual: n.revenue || '',
-            eps_actual: n.eps || '',
-            revenue_beat_miss: '',
-            eps_beat_miss: '',
-            stock_reaction: n.reaction || ''
-          });
+      postNotes = index.notes.filter(n => n.type === 'post' && n.status === 'active');
+    } else if (index && index.active_post_earnings) {
+      postNotes = index.active_post_earnings.map(n => ({
+        ticker: n.ticker,
+        name: n.name || n.ticker,
+        type: 'post',
+        earnings_date: n.earnings_date,
+        status: 'active',
+        revenue: n.revenue || '',
+        eps: n.eps || '',
+        reaction: n.reaction || ''
+      }));
+    }
+
+    postNotes.forEach(n => {
+      const earningsDate = new Date(n.earnings_date + 'T00:00:00');
+      const daysSince = Math.floor((now - earningsDate) / 86400000);
+      if (daysSince >= 0 && daysSince <= 14) {
+        recent.push({
+          ticker: n.ticker,
+          name: n.name,
+          earnings_date: n.earnings_date,
+          days_since: daysSince,
+          revenue_actual: n.revenue || '',
+          eps_actual: n.eps || '',
+          revenue_beat_miss: '',
+          eps_beat_miss: '',
+          stock_reaction: n.reaction || '',
+          fiscal_quarter: n.fiscal_quarter || ''
+        });
+      }
+    });
+
+    // Also pull recent from calendar post_earnings if not already added
+    if (calData && calData.post_earnings) {
+      calData.post_earnings.forEach(p => {
+        if (!recent.some(r => r.ticker === p.ticker && r.earnings_date === (p.date || p.earnings_date))) {
+          const date = p.date || p.earnings_date;
+          const earningsDate = new Date(date + 'T00:00:00');
+          const daysSince = Math.floor((now - earningsDate) / 86400000);
+          if (daysSince >= 0 && daysSince <= 14) {
+            const surprise = p.surprise_pct;
+            const epsBeat = surprise > 0 ? `Beat +${surprise.toFixed(1)}%` : surprise < 0 ? `Miss ${surprise.toFixed(1)}%` : '';
+            const revActual = p.revenue_actual ? ('$' + p.revenue_actual) : '';
+            const revBeat = p.revenue_actual && p.revenue_estimate ? 
+              (parseFloat(String(p.revenue_actual).replace(/[^0-9.]/g,'')) > parseFloat(String(p.revenue_estimate).replace(/[^0-9.]/g,'')) ? 'Beat' : 'Miss') : '';
+            recent.push({
+              ticker: p.ticker,
+              name: p.name,
+              earnings_date: date,
+              days_since: daysSince,
+              revenue_actual: revActual || (p.revenue_actual || ''),
+              eps_actual: p.eps_actual != null ? '$' + p.eps_actual : '',
+              revenue_beat_miss: revBeat,
+              eps_beat_miss: epsBeat,
+              stock_reaction: p.note || '',
+              fiscal_quarter: p.quarter || ''
+            });
+          }
         }
       });
     }
 
     // Build upcoming from calendar
-    if (calData && calData.upcoming) {
+    // Support both upcoming[] and pre_earnings[] + upcoming_notable[]
+    if (calData && calData.upcoming && calData.upcoming.length > 0) {
       calData.upcoming.forEach(u => {
-        const earningsDate = new Date(u.earnings_date + 'T00:00:00');
+        const date = u.earnings_date || u.date;
+        const earningsDate = new Date(date + 'T00:00:00');
         const daysUntil = Math.floor((earningsDate - now) / 86400000);
         if (daysUntil >= 0) {
           upcoming.push({
             ticker: u.ticker,
             name: u.name,
-            earnings_date: u.earnings_date,
+            earnings_date: date,
             days_until: daysUntil,
             status: u.status
+          });
+        }
+      });
+    } else {
+      // Fallback: combine pre_earnings + upcoming_notable
+      const combined = [...(calData.pre_earnings || []), ...(calData.upcoming_notable || [])];
+      const seen = new Set();
+      combined.forEach(u => {
+        const date = u.date || u.earnings_date;
+        if (!date || seen.has(u.ticker)) return;
+        seen.add(u.ticker);
+        const earningsDate = new Date(date + 'T00:00:00');
+        const daysUntil = Math.floor((earningsDate - now) / 86400000);
+        if (daysUntil >= 0) {
+          upcoming.push({
+            ticker: u.ticker,
+            name: u.name,
+            earnings_date: date,
+            days_until: daysUntil,
+            status: u.status || 'upcoming'
           });
         }
       });
@@ -489,9 +588,31 @@ function renderEarningsCalendarGrid() {
 
   // Build a map of date -> [{ticker, type}]
   const dateMap = {};
-  (ecalData.upcoming || []).forEach(u => {
-    if (!dateMap[u.earnings_date]) dateMap[u.earnings_date] = [];
-    dateMap[u.earnings_date].push({ ticker: u.ticker, name: u.name, type: 'pre' });
+  // Support both upcoming[] and pre_earnings[]/upcoming_notable[] + post_earnings[]
+  let calEntries = ecalData.upcoming || [];
+  if (calEntries.length === 0) {
+    // Fallback: combine pre_earnings + upcoming_notable, dedup
+    const combined = [...(ecalData.pre_earnings || []), ...(ecalData.upcoming_notable || [])];
+    const seen = new Set();
+    calEntries = combined.filter(u => {
+      const key = u.ticker + '_' + (u.date || u.earnings_date);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).map(u => ({ ...u, earnings_date: u.date || u.earnings_date }));
+  }
+  calEntries.forEach(u => {
+    const date = u.earnings_date || u.date;
+    if (!dateMap[date]) dateMap[date] = [];
+    dateMap[date].push({ ticker: u.ticker, name: u.name, type: 'pre' });
+  });
+  // Also add post_earnings to the calendar
+  (ecalData.post_earnings || []).forEach(p => {
+    const date = p.date || p.earnings_date;
+    if (!dateMap[date]) dateMap[date] = [];
+    if (!dateMap[date].some(x => x.ticker === p.ticker)) {
+      dateMap[date].push({ ticker: p.ticker, name: p.name, type: 'post' });
+    }
   });
   recentTickers.forEach(r => {
     if (!dateMap[r.earnings_date]) dateMap[r.earnings_date] = [];

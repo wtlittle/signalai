@@ -59,5 +59,14 @@
     {"ticker": "MSFT", "name": "Microsoft", "date": "2026-04-29", "note": "Q3 FY2026 -- Azure/AI growth"},
     {"ticker": "META", "name": "Meta", "date": "2026-04-30", "note": "Q1 2026 -- AI capex plans, engagement"},
     {"ticker": "AMZN", "name": "Amazon", "date": "2026-05-01", "note": "Q1 2026 -- AWS growth"}
+  ],
+  "upcoming": [
+    {"ticker": "STZ", "name": "Constellation Brands", "earnings_date": "2026-04-08", "days_until": 7, "status": "pre_earnings_active"},
+    {"ticker": "TSM", "name": "TSMC", "earnings_date": "2026-04-16", "days_until": 15, "status": "pre_earnings_active"},
+    {"ticker": "NFLX", "name": "Netflix", "earnings_date": "2026-04-17", "days_until": 16, "status": "upcoming"},
+    {"ticker": "GOOG", "name": "Alphabet", "earnings_date": "2026-04-29", "days_until": 28, "status": "upcoming"},
+    {"ticker": "MSFT", "name": "Microsoft", "earnings_date": "2026-04-29", "days_until": 28, "status": "upcoming"},
+    {"ticker": "META", "name": "Meta", "earnings_date": "2026-04-30", "days_until": 29, "status": "upcoming"},
+    {"ticker": "AMZN", "name": "Amazon", "earnings_date": "2026-05-01", "days_until": 30, "status": "upcoming"}
   ]
 }
