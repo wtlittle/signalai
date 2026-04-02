@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-01T09:10:00-04:00",
+  "updated": "2026-04-02T09:10:00-04:00",
   "pre_earnings": [
     {
       "ticker": "STZ",
@@ -9,7 +9,7 @@
       "quarter": "Q4 FY2026",
       "consensus_eps": 1.68,
       "consensus_revenue": "1.84B",
-      "days_until": 7
+      "days_until": 6
     },
     {
       "ticker": "TSM",
@@ -19,8 +19,17 @@
       "quarter": "Q1 2026",
       "consensus_eps": null,
       "consensus_revenue": "34.6-35.8B",
-      "days_until": 15,
-      "note": "Enters 14-day window April 2. Revenue guided by company."
+      "days_until": 14
+    },
+    {
+      "ticker": "NFLX",
+      "name": "Netflix",
+      "date": "2026-04-16",
+      "time": "After Close",
+      "quarter": "Q1 2026",
+      "consensus_eps": 0.76,
+      "consensus_revenue": null,
+      "days_until": 14
     }
   ],
   "post_earnings": [
@@ -34,8 +43,8 @@
       "surprise_pct": 20.7,
       "revenue_actual": "11.28B",
       "revenue_estimate": "11.24B",
-      "days_since": 1,
-      "note": "Beat on EPS/revenue but stock -10% on guidance cut. Q4 rev guide -2% to -4%, calendar year low single-digit decline. JPMorgan downgrade to Neutral."
+      "days_since": 2,
+      "note": "Beat on EPS/revenue but stock -15.5% on guidance cut. Closed $44.63 on Apr 1. JPMorgan and BofA both downgraded to Neutral."
     },
     {
       "ticker": "MKC",
@@ -47,26 +56,26 @@
       "surprise_pct": 10.9,
       "revenue_actual": "1.87B",
       "revenue_estimate": "1.79B",
-      "days_since": 1,
-      "note": "Day 1 of 14. Double beat driven by McCormick de Mexico acquisition. Stock +5.5%."
+      "days_since": 2,
+      "note": "Day 2 of 14. Double beat driven by McCormick de Mexico acquisition. Stock +5.5%."
     }
   ],
   "upcoming_notable": [
     {"ticker": "STZ", "name": "Constellation Brands", "date": "2026-04-08", "note": "Q4 FY2026 + full year -- CEO transition, beer depletions, W&S divestiture"},
     {"ticker": "TSM", "name": "TSMC", "date": "2026-04-16", "note": "Q1 2026 -- key AI demand signal, CoWoS capacity, N3/N2 ramp"},
-    {"ticker": "NFLX", "name": "Netflix", "date": "2026-04-17", "note": "Q1 2026 -- subscriber growth, ad tier adoption"},
+    {"ticker": "NFLX", "name": "Netflix", "date": "2026-04-16", "note": "Q1 2026 -- ad tier growth, margin expansion, engagement trends"},
     {"ticker": "GOOG", "name": "Alphabet", "date": "2026-04-29", "note": "Q1 2026 -- hyperscaler capex, AI monetization"},
     {"ticker": "MSFT", "name": "Microsoft", "date": "2026-04-29", "note": "Q3 FY2026 -- Azure/AI growth"},
     {"ticker": "META", "name": "Meta", "date": "2026-04-30", "note": "Q1 2026 -- AI capex plans, engagement"},
     {"ticker": "AMZN", "name": "Amazon", "date": "2026-05-01", "note": "Q1 2026 -- AWS growth"}
   ],
   "upcoming": [
-    {"ticker": "STZ", "name": "Constellation Brands", "earnings_date": "2026-04-08", "days_until": 7, "status": "pre_earnings_active"},
-    {"ticker": "TSM", "name": "TSMC", "earnings_date": "2026-04-16", "days_until": 15, "status": "pre_earnings_active"},
-    {"ticker": "NFLX", "name": "Netflix", "earnings_date": "2026-04-17", "days_until": 16, "status": "upcoming"},
-    {"ticker": "GOOG", "name": "Alphabet", "earnings_date": "2026-04-29", "days_until": 28, "status": "upcoming"},
-    {"ticker": "MSFT", "name": "Microsoft", "earnings_date": "2026-04-29", "days_until": 28, "status": "upcoming"},
-    {"ticker": "META", "name": "Meta", "earnings_date": "2026-04-30", "days_until": 29, "status": "upcoming"},
-    {"ticker": "AMZN", "name": "Amazon", "earnings_date": "2026-05-01", "days_until": 30, "status": "upcoming"}
+    {"ticker": "STZ", "name": "Constellation Brands", "earnings_date": "2026-04-08", "days_until": 6, "status": "pre_earnings_active"},
+    {"ticker": "TSM", "name": "TSMC", "earnings_date": "2026-04-16", "days_until": 14, "status": "pre_earnings_active"},
+    {"ticker": "NFLX", "name": "Netflix", "earnings_date": "2026-04-16", "days_until": 14, "status": "pre_earnings_active"},
+    {"ticker": "GOOG", "name": "Alphabet", "earnings_date": "2026-04-29", "days_until": 27, "status": "upcoming"},
+    {"ticker": "MSFT", "name": "Microsoft", "earnings_date": "2026-04-29", "days_until": 27, "status": "upcoming"},
+    {"ticker": "META", "name": "Meta", "earnings_date": "2026-04-30", "days_until": 28, "status": "upcoming"},
+    {"ticker": "AMZN", "name": "Amazon", "earnings_date": "2026-05-01", "days_until": 29, "status": "upcoming"}
   ]
 }
