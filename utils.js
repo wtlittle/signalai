@@ -110,6 +110,11 @@ const SUBSECTOR_MAP = {
   'SOFI': 'Fintech', 'HOOD': 'Fintech', 'AFRM': 'Fintech',
   'DKNG': 'Gaming', 'DASH': 'Digital Commerce',
   'PDD': 'E-Commerce', 'JD': 'E-Commerce', 'MELI': 'E-Commerce',
+  // Weekly Briefing Week 4 additions
+  'ABT': 'Health Care', 'KDP': 'Consumer Staples', 'ZTS': 'Health Care',
+  'GIS': 'Consumer Staples', 'KMB': 'Consumer Staples',
+  'VLO': 'Energy', 'FANG': 'Energy', 'BKR': 'Energy',
+  'AEM': 'Materials', 'NOC': 'Aerospace & Defense',
 };
 
 // Subsector display order
@@ -346,6 +351,9 @@ const DEFAULT_TICKERS = [
   'WIX','GDDY',
   // --- User Addition (2026-03-25) ---
   'GLBE',
+  // --- Weekly Briefing Picks (Week 4: 2026-04-05) ---
+  'ABT','KDP','ZTS','GIS','KMB',     // Value picks (defensive/staples near 52-week lows)
+  'VLO','FANG','BKR','AEM','NOC',    // Momentum picks (energy/defense/gold -- Iran war beneficiaries)
 ];
 
 // --- Default private companies ---
