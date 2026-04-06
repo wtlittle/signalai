@@ -3616,3 +3616,539 @@ mark.search-highlight {
   .note-search-modal { width: 100vw; max-height: 100vh; border-radius: 0; }
   .transcript-link { padding: 10px 12px; }
 }
+
+/* ===================================================================
+   PRIVATE COMPANY DETAIL POPUP
+   =================================================================== */
+
+/* --- Modal sizing --- */
+.private-detail-modal {
+  width: min(820px, 96vw);
+  max-height: min(700px, 92vh);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* --- Header --- */
+.private-detail-header {
+  padding: 20px 24px 0;
+  flex-shrink: 0;
+}
+
+.pd-header-top {
+  margin-bottom: 14px;
+}
+
+.pd-header-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.pd-company-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.pd-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.pd-status-private { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); }
+.pd-status-public  { background: rgba(34, 197, 94, 0.13);  color: var(--green);  border: 1px solid rgba(34, 197, 94, 0.3); }
+.pd-status-ipo     { background: rgba(234, 179, 8, 0.15);  color: var(--yellow); border: 1px solid rgba(234, 179, 8, 0.3); }
+
+.pd-stage-tag {
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 7px;
+}
+
+.pd-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pd-subsector-tag {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+}
+
+.pd-hq {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* --- Header stats bar --- */
+.pd-header-stats {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin: 0 -24px;
+  padding: 0 24px;
+  background: var(--bg-secondary);
+  flex-wrap: wrap;
+}
+
+.pd-stat {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px 10px 0;
+  min-width: 120px;
+  flex: 1;
+}
+
+.pd-stat-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+.pd-stat-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pd-stat-funding,
+.pd-stat-investors {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+/* --- Tab bar --- */
+.private-detail-tab-bar {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  flex-shrink: 0;
+  background: var(--bg-primary);
+}
+
+.pd-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 14px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+  letter-spacing: 0.02em;
+}
+.pd-tab:hover { color: var(--text-primary); }
+.pd-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* --- Body / scroll area --- */
+.private-detail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px 24px;
+  min-height: 0;
+}
+.private-detail-body::-webkit-scrollbar { width: 4px; }
+.private-detail-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* --- Sections --- */
+.pd-section {
+  margin-bottom: 24px;
+}
+
+.pd-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.pd-bull-title { color: var(--green); }
+.pd-bear-title { color: var(--red); }
+
+.pd-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* --- KV grid for context fields --- */
+.pd-kv-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pd-kv-row {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+.pd-kv-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 110px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pd-kv-value {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* --- Metric cards --- */
+.pd-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+.pd-metric-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.pd-metric-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+.pd-metric-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --- Research links --- */
+.pd-links-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pd-link-btn {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: border-color 0.12s, color 0.12s;
+}
+.pd-link-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* --- Comps table --- */
+.pd-comps-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: -6px 0 12px;
+}
+
+.pd-comps-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  margin-bottom: 20px;
+}
+.pd-comps-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.pd-comps-table thead th {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.pd-comps-table thead th.num { text-align: right; }
+.pd-comps-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+.pd-comps-table tbody tr:last-child td { border-bottom: none; }
+.pd-comps-table tbody td.num { text-align: right; font-family: var(--font-mono); font-size: 11px; }
+.pd-comp-row { cursor: pointer; transition: background 0.12s; }
+.pd-comp-row:hover { background: var(--bg-tertiary); }
+
+.pd-comp-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.pd-comp-ticker {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+.pd-comp-name {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Recommendation badge */
+.pd-rec {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+.pd-rec-buy, .pd-rec-strong-buy { background: rgba(34,197,94,.15); color: var(--green); }
+.pd-rec-hold, .pd-rec-neutral   { background: rgba(234,179,8,.12); color: var(--yellow); }
+.pd-rec-sell, .pd-rec-underperform { background: rgba(239,68,68,.12); color: var(--red); }
+
+/* Comps narrative */
+.pd-narrative { display: flex; flex-direction: column; gap: 10px; }
+.pd-narrative-para {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+.pd-narrative-label {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-right: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --- Landscape tab --- */
+.pd-landscape-group-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.pd-competitor-card {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: var(--bg-secondary);
+}
+.pd-comp-private { border-left: 3px solid var(--accent); }
+.pd-comp-public  { border-left: 3px solid var(--green); }
+
+.pd-competitor-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.pd-competitor-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.pd-comp-type-badge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.pd-comp-type-private { background: rgba(59,130,246,.12); color: var(--accent); }
+.pd-comp-type-public  { background: rgba(34,197,94,.12);  color: var(--green); }
+
+.pd-comp-ticker-btn {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(59,130,246,.1);
+  border: 1px solid rgba(59,130,246,.25);
+  border-radius: 3px;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.pd-comp-ticker-btn:hover { background: rgba(59,130,246,.2); }
+
+.pd-competitor-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Differentiator grid */
+.pd-diff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pd-diff-card {
+  border-radius: 7px;
+  padding: 12px 14px;
+  border: 1px solid;
+}
+.pd-diff-moat {
+  background: rgba(34,197,94,.05);
+  border-color: rgba(34,197,94,.2);
+}
+.pd-diff-threat {
+  background: rgba(239,68,68,.05);
+  border-color: rgba(239,68,68,.2);
+}
+.pd-diff-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 6px;
+}
+.pd-diff-moat .pd-diff-label   { color: var(--green); }
+.pd-diff-threat .pd-diff-label { color: var(--red); }
+.pd-diff-content {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* --- Thesis tab --- */
+.pd-thesis-para {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 7px;
+  border: 1px solid;
+}
+.pd-bull-para {
+  background: rgba(34,197,94,.05);
+  border-color: rgba(34,197,94,.18);
+  color: var(--text-secondary);
+}
+.pd-bear-para {
+  background: rgba(239,68,68,.05);
+  border-color: rgba(239,68,68,.18);
+  color: var(--text-secondary);
+}
+
+.pd-catalysts-risks-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.pd-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pd-list li {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  padding-left: 14px;
+  position: relative;
+}
+.pd-list li::before {
+  position: absolute;
+  left: 0;
+  font-size: 10px;
+}
+.pd-list-catalyst li::before { content: '↑'; color: var(--green); }
+.pd-list-risk li::before     { content: '⚠'; color: var(--yellow); font-size: 9px; }
+
+/* IPO callout */
+.pd-ipo-callout {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(59,130,246,.07);
+  border: 1px solid rgba(59,130,246,.2);
+  border-radius: 7px;
+  flex-wrap: wrap;
+}
+.pd-ipo-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.pd-ipo-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* --- Loading / empty states --- */
+.pd-loading, .pd-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 32px 0;
+  text-align: center;
+}
+
+/* --- Mobile --- */
+@media (max-width: 680px) {
+  .private-detail-modal { max-height: 100vh; border-radius: 0; width: 100vw; }
+  .pd-header-stats { flex-wrap: wrap; }
+  .pd-stat { min-width: 50%; }
+  .pd-diff-grid, .pd-catalysts-risks-grid { grid-template-columns: 1fr; }
+  .pd-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .pd-tab { padding: 8px 10px 9px; font-size: 11px; }
+}
