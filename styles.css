@@ -3048,3 +3048,571 @@ tbody tr:hover .comps-sticky-col {
   .macro-indices-bar { flex-direction: column; }
   .index-chip { min-width: unset; }
 }
+
+/* ===================================================================
+   NOTE ENHANCEMENT STYLES
+   1. Confidence / quality header
+   2. Note tab bar (Note | Comps | Transcript)
+   3. Peer comps panel
+   4. Transcript panel
+   5. Note search modal
+   6. Utility: .pos / .neg / .neutral
+   =================================================================== */
+
+/* --- Utility color classes --- */
+.pos  { color: var(--green);  }
+.neg  { color: var(--red);    }
+.neutral { color: var(--text-muted); }
+
+/* ===================================================================
+   1. CONFIDENCE HEADER
+   =================================================================== */
+.note-confidence-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  border: 1px solid;
+}
+.note-confidence-header.conf-tier-high {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+.note-confidence-header.conf-tier-medium {
+  background: rgba(234, 179, 8, 0.08);
+  border-color: rgba(234, 179, 8, 0.25);
+}
+.note-confidence-header.conf-tier-low {
+  background: rgba(239, 68, 68, 0.07);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+
+.conf-main {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.conf-tier-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.conf-tier-badge.conf-tier-high   { background: rgba(34, 197, 94, 0.18);  color: var(--green); }
+.conf-tier-badge.conf-tier-medium { background: rgba(234, 179, 8, 0.18);  color: var(--yellow); }
+.conf-tier-badge.conf-tier-low    { background: rgba(239, 68, 68, 0.15);  color: var(--red); }
+
+.conf-freshness {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.conf-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: auto;
+}
+.conf-pill {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.conf-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+.conf-flag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(234, 179, 8, 0.12);
+  color: var(--yellow);
+  border: 1px solid rgba(234, 179, 8, 0.25);
+}
+
+/* ===================================================================
+   2. NOTE TAB BAR
+   =================================================================== */
+.note-tab-bar {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+  padding-bottom: 0;
+}
+
+.note-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 7px 14px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+  letter-spacing: 0.02em;
+}
+.note-tab:hover {
+  color: var(--text-primary);
+}
+.note-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.note-panel {
+  display: none;
+}
+.note-panel.active {
+  display: block;
+}
+.note-panel-loading {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 24px 0;
+  text-align: center;
+}
+.note-panel-empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 24px 0;
+  text-align: center;
+}
+
+/* ===================================================================
+   3. PEER COMPS PANEL
+   =================================================================== */
+.note-comps-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.note-comps-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.note-comps-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.note-comps-subsector {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+/* Narrative paragraphs */
+.comps-narrative {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  line-height: 1.55;
+}
+.comps-para {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.comps-para-label {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-right: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.comps-para-standout {
+  border-left: 2px solid var(--accent);
+  padding-left: 10px;
+  background: rgba(59, 130, 246, 0.04);
+  border-radius: 0 4px 4px 0;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* Bar charts section */
+.comps-bars-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.comps-bars-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: -4px;
+}
+
+.comp-metric-block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.comp-metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.comp-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+}
+.comp-bar-row-target {
+  /* slightly highlighted */
+}
+.comp-bar-ticker {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  min-width: 36px;
+  flex-shrink: 0;
+}
+.comp-bar-row-target .comp-bar-ticker {
+  color: var(--accent);
+  font-weight: 700;
+}
+.comp-bar-track {
+  flex: 1;
+  height: 7px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.comp-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.comp-bar.bar-target  { background: var(--accent); }
+.comp-bar.bar-good    { background: var(--green); }
+.comp-bar.bar-neutral { background: var(--text-muted); opacity: 0.5; }
+
+.comp-bar-val {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  min-width: 42px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.comp-bar-val.target-val {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Comps reference table */
+.comps-table-details {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.comps-table-summary {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg-secondary);
+  list-style: none;
+}
+.comps-table-summary::-webkit-details-marker { display: none; }
+.comps-table-summary::before {
+  content: '▶ ';
+  font-size: 9px;
+  margin-right: 4px;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+.comps-table-details[open] .comps-table-summary::before {
+  transform: rotate(90deg);
+}
+.comps-table-summary:hover { color: var(--text-primary); }
+
+.note-comps-table-wrapper {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.comps-unavailable {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 16px 0;
+  text-align: center;
+}
+
+/* ===================================================================
+   4. TRANSCRIPT PANEL
+   =================================================================== */
+.note-transcript-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.transcript-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.transcript-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.transcript-period {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.transcript-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.transcript-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.transcript-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg-secondary);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: border-color 0.15s, background 0.15s;
+}
+.transcript-link:hover {
+  border-color: var(--accent);
+  background: var(--bg-tertiary);
+}
+.transcript-link-icon {
+  color: var(--accent);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.transcript-link-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.transcript-link-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.transcript-link-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.transcript-link-arrow {
+  color: var(--text-muted);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.transcript-qa-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  border-radius: 5px;
+  padding: 8px 12px;
+  line-height: 1.5;
+  border: 1px solid var(--border);
+}
+.transcript-qa-hint strong {
+  color: var(--text-secondary);
+}
+
+/* ===================================================================
+   5. NOTE SEARCH MODAL
+   =================================================================== */
+.note-search-modal {
+  width: min(680px, 94vw);
+  max-height: min(600px, 90vh);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+
+.note-search-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.note-search-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: var(--text-primary);
+}
+.note-search-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 12px 0;
+}
+
+.note-search-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 2px 10px 2px 4px;
+  transition: border-color 0.15s;
+}
+.note-search-input-row:focus-within {
+  border-color: var(--accent);
+}
+.note-search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--text-primary);
+  padding: 8px 6px;
+  font-family: var(--font-sans);
+}
+.note-search-input::placeholder { color: var(--text-muted); }
+.note-search-kbd {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 5px;
+  flex-shrink: 0;
+}
+
+.note-search-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px 12px;
+}
+.note-search-results::-webkit-scrollbar { width: 4px; }
+.note-search-results::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.note-search-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 24px 0;
+  text-align: center;
+}
+
+.note-search-result {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.note-search-result:hover {
+  border-color: var(--accent);
+  background: var(--bg-tertiary);
+}
+.search-result-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.search-result-ticker {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+.search-result-type {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.search-result-type.pre  { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+.search-result-type.post { background: rgba(34, 197, 94, 0.13);  color: var(--green); }
+.search-result-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.search-result-archived {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.search-result-excerpt {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+mark.search-highlight {
+  background: rgba(234, 179, 8, 0.25);
+  color: var(--yellow);
+  border-radius: 2px;
+  padding: 0 1px;
+  font-style: normal;
+}
+
+/* ===================================================================
+   NOTE BODY WRAPPER (preserves existing note content styles)
+   =================================================================== */
+.note-body-content {
+  /* Inherits whatever styles are on the note content container */
+}
+
+/* Mobile adjustments for note tabs */
+@media (max-width: 600px) {
+  .note-tab { padding: 6px 10px 7px; font-size: 11px; }
+  .comp-bar-ticker { min-width: 28px; }
+  .note-search-modal { width: 100vw; max-height: 100vh; border-radius: 0; }
+  .transcript-link { padding: 10px 12px; }
+}
