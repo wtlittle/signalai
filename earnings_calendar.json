@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-05T09:06:00-04:00",
+  "updated": "2026-04-07T09:00:00-04:00",
   "pre_earnings": [
     {
       "ticker": "STZ",
@@ -7,7 +7,7 @@
       "date": "2026-04-08",
       "time": "After Close",
       "quarter": "Q4 FY2026",
-      "days_until": 3,
+      "days_until": 2,
       "eps_estimate": "$1.68-1.73",
       "revenue_estimate": "$1.84-1.89B",
       "note_file": "notes/pre_earnings/STZ_2026-04-08.md"
@@ -18,8 +18,8 @@
       "date": "2026-04-13",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 8,
-      "eps_estimate": "$13.37",
+      "days_until": 6,
+      "eps_estimate": "$15.92-16.14",
       "revenue_estimate": "$14.79B",
       "note_file": "notes/pre_earnings/GS_2026-04-13.md"
     },
@@ -29,8 +29,8 @@
       "date": "2026-04-14",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 9,
-      "eps_estimate": "$4.56-4.63",
+      "days_until": 7,
+      "eps_estimate": "$5.43",
       "revenue_estimate": "$43.5-44.0B",
       "note_file": "notes/pre_earnings/JPM_2026-04-14.md"
     },
@@ -40,7 +40,7 @@
       "date": "2026-04-14",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 9,
+      "days_until": 7,
       "eps_estimate": "$2.60",
       "revenue_estimate": "$21.29B",
       "note_file": "notes/pre_earnings/C_2026-04-14.md"
@@ -51,7 +51,7 @@
       "date": "2026-04-14",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 9,
+      "days_until": 7,
       "eps_estimate": "$1.56",
       "revenue_estimate": "$21.6B",
       "note_file": "notes/pre_earnings/WFC_2026-04-14.md"
@@ -62,7 +62,7 @@
       "date": "2026-04-15",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 10,
+      "days_until": 8,
       "eps_estimate": "$2.96",
       "revenue_estimate": "$16.1B",
       "note_file": "notes/pre_earnings/MS_2026-04-15.md"
@@ -73,7 +73,7 @@
       "date": "2026-04-15",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 10,
+      "days_until": 8,
       "eps_estimate": "$0.88",
       "revenue_estimate": "$27.2B",
       "note_file": "notes/pre_earnings/BAC_2026-04-15.md"
@@ -84,7 +84,7 @@
       "date": "2026-04-16",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 11,
+      "days_until": 9,
       "eps_estimate": "$1.14",
       "revenue_estimate": "$11.0B",
       "note_file": "notes/pre_earnings/ABT_2026-04-16.md"
@@ -95,7 +95,7 @@
       "date": "2026-04-16",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 11,
+      "days_until": 9,
       "eps_estimate": "$3.27",
       "revenue_estimate": "$35.25B",
       "note_file": "notes/pre_earnings/TSM_2026-04-16.md"
@@ -106,10 +106,21 @@
       "date": "2026-04-16",
       "time": "After Close",
       "quarter": "Q1 FY2026",
-      "days_until": 11,
+      "days_until": 9,
       "eps_estimate": "$0.76-0.79",
       "revenue_estimate": "$12.17B",
       "note_file": "notes/pre_earnings/NFLX_2026-04-16.md"
+    },
+    {
+      "ticker": "UNH",
+      "company": "UnitedHealth Group",
+      "date": "2026-04-21",
+      "time": "Before Open",
+      "quarter": "Q1 FY2026",
+      "days_until": 14,
+      "eps_estimate": "$6.62",
+      "revenue_estimate": "$109.8B",
+      "note_file": "notes/pre_earnings/UNH_2026-04-21.md"
     }
   ],
   "post_earnings": [
@@ -118,7 +129,7 @@
       "company": "Nike",
       "date": "2026-03-31",
       "quarter": "Q3 FY2026",
-      "days_since": 5,
+      "days_since": 7,
       "eps_actual": "$0.35",
       "eps_estimate": "$0.28-0.31",
       "surprise": "Beat",
@@ -130,7 +141,7 @@
       "company": "McCormick",
       "date": "2026-03-31",
       "quarter": "Q1 FY2026",
-      "days_since": 5,
+      "days_since": 7,
       "eps_actual": "$0.60",
       "eps_estimate": "$0.55",
       "surprise": "Beat",
@@ -140,105 +151,110 @@
   ],
   "upcoming_notable": [
     {
-      "ticker": "UNH",
-      "company": "UnitedHealth",
-      "date": "2026-04-21",
-      "time": "Before Open",
-      "days_until": 16
-    },
-    {
       "ticker": "STZ",
       "company": "Constellation Brands",
       "date": "2026-04-08",
       "time": "After Close",
-      "days_until": 3
+      "days_until": 2
     },
     {
       "ticker": "GS",
       "company": "Goldman Sachs",
       "date": "2026-04-13",
       "time": "Before Open",
-      "days_until": 8
+      "days_until": 6
     },
     {
       "ticker": "JPM",
       "company": "JPMorgan Chase",
       "date": "2026-04-14",
       "time": "Before Open",
-      "days_until": 9
+      "days_until": 7
     },
     {
       "ticker": "TSM",
       "company": "Taiwan Semiconductor",
       "date": "2026-04-16",
       "time": "Before Open",
-      "days_until": 11
+      "days_until": 9
     },
     {
       "ticker": "NFLX",
       "company": "Netflix",
       "date": "2026-04-16",
       "time": "After Close",
-      "days_until": 11
+      "days_until": 9
     },
     {
       "ticker": "ABT",
       "company": "Abbott Laboratories",
       "date": "2026-04-16",
       "time": "Before Open",
-      "days_until": 11
+      "days_until": 9
+    },
+    {
+      "ticker": "UNH",
+      "company": "UnitedHealth Group",
+      "date": "2026-04-21",
+      "time": "Before Open",
+      "days_until": 14
     }
   ],
   "upcoming": [
     {
       "ticker": "STZ",
       "date": "2026-04-08",
-      "days_until": 3
+      "days_until": 2
     },
     {
       "ticker": "GS",
       "date": "2026-04-13",
-      "days_until": 8
+      "days_until": 6
     },
     {
       "ticker": "JPM",
       "date": "2026-04-14",
-      "days_until": 9
+      "days_until": 7
     },
     {
       "ticker": "C",
       "date": "2026-04-14",
-      "days_until": 9
+      "days_until": 7
     },
     {
       "ticker": "WFC",
       "date": "2026-04-14",
-      "days_until": 9
+      "days_until": 7
     },
     {
       "ticker": "MS",
       "date": "2026-04-15",
-      "days_until": 10
+      "days_until": 8
     },
     {
       "ticker": "BAC",
       "date": "2026-04-15",
-      "days_until": 10
+      "days_until": 8
     },
     {
       "ticker": "ABT",
       "date": "2026-04-16",
-      "days_until": 11
+      "days_until": 9
     },
     {
       "ticker": "TSM",
       "date": "2026-04-16",
-      "days_until": 11
+      "days_until": 9
     },
     {
       "ticker": "NFLX",
       "date": "2026-04-16",
-      "days_until": 11
+      "days_until": 9
+    },
+    {
+      "ticker": "UNH",
+      "date": "2026-04-21",
+      "days_until": 14
     }
   ]
 }
