@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-07T09:00:00-04:00",
+  "updated": "2026-04-07T09:09:00-04:00",
   "pre_earnings": [
     {
       "ticker": "STZ",
@@ -7,7 +7,7 @@
       "date": "2026-04-08",
       "time": "After Close",
       "quarter": "Q4 FY2026",
-      "days_until": 2,
+      "days_until": 1,
       "eps_estimate": "$1.68-1.73",
       "revenue_estimate": "$1.84-1.89B",
       "note_file": "notes/pre_earnings/STZ_2026-04-08.md"
@@ -126,26 +126,22 @@
   "post_earnings": [
     {
       "ticker": "NKE",
-      "company": "Nike",
+      "company": "Nike, Inc.",
       "date": "2026-03-31",
+      "time": "After Close",
       "quarter": "Q3 FY2026",
-      "days_since": 7,
-      "eps_actual": "$0.35",
-      "eps_estimate": "$0.28-0.31",
-      "surprise": "Beat",
-      "stock_reaction": "-15.5%",
+      "day_post": 8,
+      "expires": "2026-04-14",
       "note_file": "notes/post_earnings/NKE_2026-03-31.md"
     },
     {
       "ticker": "MKC",
-      "company": "McCormick",
+      "company": "McCormick & Company",
       "date": "2026-03-31",
+      "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_since": 7,
-      "eps_actual": "$0.60",
-      "eps_estimate": "$0.55",
-      "surprise": "Beat",
-      "stock_reaction": "-7%",
+      "day_post": 8,
+      "expires": "2026-04-14",
       "note_file": "notes/post_earnings/MKC_2026-03-31.md"
     }
   ],
@@ -204,7 +200,7 @@
     {
       "ticker": "STZ",
       "date": "2026-04-08",
-      "days_until": 2
+      "days_until": 1
     },
     {
       "ticker": "GS",
@@ -256,5 +252,8 @@
       "date": "2026-04-21",
       "days_until": 14
     }
-  ]
+  ],
+  "macro_regime": "Slowdown",
+  "pre_earnings_count": 11,
+  "post_earnings_count": 2
 }
