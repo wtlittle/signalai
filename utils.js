@@ -115,6 +115,10 @@ const SUBSECTOR_MAP = {
   'GIS': 'Consumer Staples', 'KMB': 'Consumer Staples',
   'VLO': 'Energy', 'FANG': 'Energy', 'BKR': 'Energy',
   'AEM': 'Materials', 'NOC': 'Aerospace & Defense',
+
+  // Banks & Financials (added 2026-04-08)
+  'GS': 'Investment Banking', 'JPM': 'Diversified Banking', 'WFC': 'Diversified Banking',
+  'MS': 'Investment Banking', 'BAC': 'Diversified Banking',
 };
 
 // Subsector display order
@@ -354,6 +358,8 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 4: 2026-04-05) ---
   'ABT','KDP','ZTS','GIS','KMB',     // Value picks (defensive/staples near 52-week lows)
   'VLO','FANG','BKR','AEM','NOC',    // Momentum picks (energy/defense/gold -- Iran war beneficiaries)
+  // --- Earnings Coverage (added 2026-04-08) ---
+  'GS','JPM','WFC','MS','BAC','NFLX',  // Major banks + mega-cap earnings season coverage
 ];
 
 // --- Default private companies ---
