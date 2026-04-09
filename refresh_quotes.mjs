@@ -16,7 +16,8 @@ const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
 // --- Parse tickers from utils.js ---
-const utilsSrc = readFileSync('/home/user/workspace/watchlist-app/utils.js', 'utf-8');
+const scriptDir = new URL('.', import.meta.url).pathname;
+const utilsSrc = readFileSync(scriptDir + 'utils.js', 'utf-8');
 function extractTickers(src) {
   const match = src.match(/const\s+DEFAULT_TICKERS\s*=\s*\[([\s\S]*?)\];/);
   if (!match) return [];
@@ -314,7 +315,7 @@ await supabase.from('metadata').upsert({
 console.log('  metadata: updated generated timestamp');
 
 // Update snapshot quotes section
-const snapshotPath = '/home/user/workspace/watchlist-app/data-snapshot.json';
+const snapshotPath = scriptDir + 'data-snapshot.json';
 if (existsSync(snapshotPath)) {
   try {
     const snapshot = JSON.parse(readFileSync(snapshotPath, 'utf-8'));

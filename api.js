@@ -101,6 +101,10 @@ function parseTickerData(ticker, chart, quote) {
     row.price = quote.price ?? row.price;
     row.currency = quote.currency || row.currency;
     row.marketCap = quote.marketCap ?? null;
+    // Derive market cap from price × shares if missing
+    if (!row.marketCap && quote.price && quote.sharesOutstanding) {
+      row.marketCap = quote.price * quote.sharesOutstanding;
+    }
     row.enterpriseValue = quote.enterpriseValue ?? null;
     row.totalRevenue = quote.totalRevenue ?? null;
     row.totalCash = quote.totalCash ?? null;
@@ -158,8 +162,12 @@ function parseTickerData(ticker, chart, quote) {
   row.evFcf = (row.ev && fcf && fcf > 0) ? row.ev / fcf : null;
 
   // Performance calculations — prefer pre-computed returns from quote data (avoids chart fetch on load)
-  if (quote && quote.change1d != null) {
-    row.d1 = quote.change1d;
+  // Assign each field independently so null in one field doesn't block others
+  const hasAnyQuotePerf = quote && (quote.change1d != null || quote.change1w != null ||
+    quote.change1m != null || quote.change3m != null || quote.change1y != null ||
+    quote.change3y != null || quote.changeYtd != null);
+  if (hasAnyQuotePerf) {
+    row.d1 = quote.change1d ?? null;
     row.w1 = quote.change1w ?? null;
     row.m1 = quote.change1m ?? null;
     row.m3 = quote.change3m ?? null;
