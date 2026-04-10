@@ -1,24 +1,13 @@
 {
-  "updated": "2026-04-08T09:02:00-04:00",
+  "updated": "2026-04-10T09:02:00-04:00",
   "pre_earnings": [
-    {
-      "ticker": "STZ",
-      "company": "Constellation Brands",
-      "date": "2026-04-08",
-      "time": "After Close",
-      "quarter": "Q4 FY2026",
-      "days_until": 0,
-      "eps_estimate": "$1.68-1.73",
-      "revenue_estimate": "$1.84-1.89B",
-      "note_file": "notes/pre_earnings/STZ_2026-04-08.md"
-    },
     {
       "ticker": "GS",
       "company": "Goldman Sachs",
       "date": "2026-04-13",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 5,
+      "days_until": 3,
       "eps_estimate": "$15.92-16.14",
       "revenue_estimate": "$14.79B",
       "note_file": "notes/pre_earnings/GS_2026-04-13.md"
@@ -29,7 +18,7 @@
       "date": "2026-04-14",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 6,
+      "days_until": 4,
       "eps_estimate": "$5.43",
       "revenue_estimate": "$43.5-44.0B",
       "note_file": "notes/pre_earnings/JPM_2026-04-14.md"
@@ -40,7 +29,7 @@
       "date": "2026-04-14",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 6,
+      "days_until": 4,
       "eps_estimate": "$2.60",
       "revenue_estimate": "$21.29B",
       "note_file": "notes/pre_earnings/C_2026-04-14.md"
@@ -51,7 +40,7 @@
       "date": "2026-04-14",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 6,
+      "days_until": 4,
       "eps_estimate": "$1.56",
       "revenue_estimate": "$21.6B",
       "note_file": "notes/pre_earnings/WFC_2026-04-14.md"
@@ -62,7 +51,7 @@
       "date": "2026-04-15",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 7,
+      "days_until": 5,
       "eps_estimate": "$2.96",
       "revenue_estimate": "$16.1B",
       "note_file": "notes/pre_earnings/MS_2026-04-15.md"
@@ -73,7 +62,7 @@
       "date": "2026-04-15",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 7,
+      "days_until": 5,
       "eps_estimate": "$0.88",
       "revenue_estimate": "$27.2B",
       "note_file": "notes/pre_earnings/BAC_2026-04-15.md"
@@ -84,7 +73,7 @@
       "date": "2026-04-16",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 8,
+      "days_until": 6,
       "eps_estimate": "$1.14",
       "revenue_estimate": "$11.0B",
       "note_file": "notes/pre_earnings/ABT_2026-04-16.md"
@@ -95,7 +84,7 @@
       "date": "2026-04-16",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 8,
+      "days_until": 6,
       "eps_estimate": "$3.27",
       "revenue_estimate": "$35.25B",
       "note_file": "notes/pre_earnings/TSM_2026-04-16.md"
@@ -106,7 +95,7 @@
       "date": "2026-04-16",
       "time": "After Close",
       "quarter": "Q1 FY2026",
-      "days_until": 8,
+      "days_until": 6,
       "eps_estimate": "$0.76-0.79",
       "revenue_estimate": "$12.17B",
       "note_file": "notes/pre_earnings/NFLX_2026-04-16.md"
@@ -117,7 +106,7 @@
       "date": "2026-04-21",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "days_until": 13,
+      "days_until": 11,
       "eps_estimate": "$6.62",
       "revenue_estimate": "$109.8B",
       "note_file": "notes/pre_earnings/UNH_2026-04-21.md"
@@ -128,10 +117,32 @@
       "date": "2026-04-22",
       "time": "After Close",
       "quarter": "Q1 FY2026",
-      "days_until": 14,
+      "days_until": 12,
       "consensus_eps": "$1.78",
       "consensus_revenue": "$16.5B",
       "note_file": "notes/pre_earnings/IBM_2026-04-22.md"
+    },
+    {
+      "ticker": "INTC",
+      "company": "Intel Corporation",
+      "date": "2026-04-23",
+      "time": "After Close",
+      "quarter": "Q1 FY2026",
+      "days_until": 13,
+      "consensus_eps": "$0.00 (guide) / -$0.11 (est)",
+      "consensus_revenue": "$11.7-12.7B",
+      "note_file": "notes/pre_earnings/INTC_2026-04-23.md"
+    },
+    {
+      "ticker": "BKR",
+      "company": "Baker Hughes",
+      "date": "2026-04-23",
+      "time": "After Close (5 PM ET)",
+      "quarter": "Q1 FY2026",
+      "days_until": 13,
+      "consensus_eps": "$0.55-0.60",
+      "consensus_revenue": "$7.5-8.0B",
+      "note_file": "notes/pre_earnings/BKR_2026-04-23.md"
     }
   ],
   "post_earnings": [
@@ -141,7 +152,7 @@
       "date": "2026-03-31",
       "time": "After Close",
       "quarter": "Q3 FY2026",
-      "day_post": 9,
+      "day_post": 11,
       "expires": "2026-04-14",
       "note_file": "notes/post_earnings/NKE_2026-03-31.md"
     },
@@ -151,9 +162,19 @@
       "date": "2026-03-31",
       "time": "Before Open",
       "quarter": "Q1 FY2026",
-      "day_post": 9,
+      "day_post": 11,
       "expires": "2026-04-14",
       "note_file": "notes/post_earnings/MKC_2026-03-31.md"
+    },
+    {
+      "ticker": "STZ",
+      "company": "Constellation Brands",
+      "date": "2026-04-08",
+      "time": "After Close",
+      "quarter": "Q4 FY2026",
+      "day_post": 3,
+      "expires": "2026-04-22",
+      "note_file": "notes/post_earnings/STZ_2026-04-08.md"
     }
   ],
   "upcoming_notable": [
@@ -264,7 +285,14 @@
       "days_until": 14
     }
   ],
-  "macro_regime": "Slowdown",
-  "pre_earnings_count": 12,
-  "post_earnings_count": 2
+  "macro_regime": "Transition",
+  "pre_earnings_count": 13,
+  "post_earnings_count": 3,
+  "cpi_march": {
+    "headline_mom": "+0.9%",
+    "headline_yoy": "+3.3%",
+    "core_mom": "+0.2%",
+    "core_yoy": "+2.6%",
+    "released": "2026-04-10"
+  }
 }
