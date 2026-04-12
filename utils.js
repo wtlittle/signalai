@@ -119,6 +119,10 @@ const SUBSECTOR_MAP = {
   // Banks & Financials (added 2026-04-08)
   'GS': 'Investment Banking', 'JPM': 'Diversified Banking', 'WFC': 'Diversified Banking',
   'MS': 'Investment Banking', 'BAC': 'Diversified Banking',
+  // Weekly Briefing Picks (Week 5: 2026-04-12)
+  'COF': 'Consumer Finance', 'SYF': 'Consumer Finance', 'UAL': 'Airlines',
+  'DVN': 'E&P Oil & Gas', 'OXY': 'E&P Oil & Gas',
+  'FCX': 'Copper & Mining', 'NUE': 'Steel & Metals', 'CRC': 'E&P Oil & Gas',
 };
 
 // Subsector display order
@@ -228,6 +232,14 @@ const COMMON_NAMES = {
   'FICO': 'FICO', 'PSTG': 'Pure Storage', 'AKAM': 'Akamai',
   'WIX': 'Wix', 'GDDY': 'GoDaddy',
   'GLBE': 'Global-E',
+  'COF': 'Capital One',
+  'SYF': 'Synchrony Financial',
+  'UAL': 'United Airlines',
+  'DVN': 'Devon Energy',
+  'OXY': 'Occidental Petroleum',
+  'FCX': 'Freeport-McMoRan',
+  'NUE': 'Nucor',
+  'CRC': 'California Resources',
 };
 
 function cleanCompanyName(name) {
@@ -360,6 +372,9 @@ const DEFAULT_TICKERS = [
   'VLO','FANG','BKR','AEM','NOC',    // Momentum picks (energy/defense/gold -- Iran war beneficiaries)
   // --- Earnings Coverage (added 2026-04-08) ---
   'GS','JPM','WFC','MS','BAC','NFLX',  // Major banks + mega-cap earnings season coverage
+  // --- Weekly Briefing Picks (Week 5: 2026-04-12) ---
+  'COF','SYF','UAL','DVN','OXY',     // Value picks (financials + energy -- Reflation regime)
+  'FCX','NUE','CRC',  // Momentum picks (materials/energy -- copper/steel/CCS)
 ];
 
 // --- Default private companies ---
