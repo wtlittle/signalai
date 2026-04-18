@@ -1,65 +1,14 @@
 {
-  "updated": "2026-04-11T09:03:00-04:00",
+  "updated": "2026-04-18T08:05:00-05:00",
   "active_pre_earnings": [
     {
-      "ticker": "GS",
-      "date": "2026-04-13",
-      "days_until": 2,
-      "file": "notes/pre_earnings/GS_2026-04-13.md"
-    },
-    {
-      "ticker": "JPM",
-      "date": "2026-04-14",
-      "days_until": 3,
-      "file": "notes/pre_earnings/JPM_2026-04-14.md"
-    },
-    {
-      "ticker": "C",
-      "date": "2026-04-14",
-      "days_until": 3,
-      "file": "notes/pre_earnings/C_2026-04-14.md"
-    },
-    {
-      "ticker": "WFC",
-      "date": "2026-04-14",
-      "days_until": 3,
-      "file": "notes/pre_earnings/WFC_2026-04-14.md"
-    },
-    {
-      "ticker": "MS",
-      "date": "2026-04-15",
-      "days_until": 4,
-      "file": "notes/pre_earnings/MS_2026-04-15.md"
-    },
-    {
-      "ticker": "BAC",
-      "date": "2026-04-15",
-      "days_until": 4,
-      "file": "notes/pre_earnings/BAC_2026-04-15.md"
-    },
-    {
-      "ticker": "ABT",
-      "date": "2026-04-16",
-      "days_until": 5,
-      "file": "notes/pre_earnings/ABT_2026-04-16.md"
-    },
-    {
-      "ticker": "TSM",
-      "date": "2026-04-16",
-      "days_until": 5,
-      "file": "notes/pre_earnings/TSM_2026-04-16.md"
-    },
-    {
-      "ticker": "NFLX",
-      "date": "2026-04-16",
-      "days_until": 5,
-      "file": "notes/pre_earnings/NFLX_2026-04-16.md"
-    },
-    {
       "ticker": "UNH",
+      "company": "UnitedHealth Group",
       "date": "2026-04-21",
-      "days_until": 10,
-      "file": "notes/pre_earnings/UNH_2026-04-21.md"
+      "time": "Before Open",
+      "quarter": "Q1 FY2026",
+      "days_until": 3,
+      "note_file": "notes/pre_earnings/UNH_2026-04-21.md"
     },
     {
       "ticker": "IBM",
@@ -67,7 +16,7 @@
       "date": "2026-04-22",
       "time": "After Close",
       "quarter": "Q1 FY2026",
-      "days_until": 11,
+      "days_until": 4,
       "note_file": "notes/pre_earnings/IBM_2026-04-22.md"
     },
     {
@@ -76,46 +25,205 @@
       "date": "2026-04-23",
       "time": "After Close",
       "quarter": "Q1 FY2026",
-      "days_until": 12,
+      "days_until": 5,
       "note_file": "notes/pre_earnings/INTC_2026-04-23.md"
     },
     {
       "ticker": "BKR",
       "company": "Baker Hughes",
       "date": "2026-04-23",
-      "time": "After Close (5 PM ET)",
+      "time": "After Close",
       "quarter": "Q1 FY2026",
-      "days_until": 12,
+      "days_until": 5,
       "note_file": "notes/pre_earnings/BKR_2026-04-23.md"
+    },
+    {
+      "ticker": "AMZN",
+      "company": "Amazon.com",
+      "date": "2026-04-29",
+      "time": "After Close",
+      "quarter": "Q1 FY2026",
+      "days_until": 11,
+      "note_file": "notes/pre_earnings/AMZN_2026-04-29.md"
+    },
+    {
+      "ticker": "GOOG",
+      "company": "Alphabet / Google",
+      "date": "2026-04-29",
+      "time": "After Close",
+      "quarter": "Q1 FY2026",
+      "days_until": 11,
+      "note_file": "notes/pre_earnings/GOOG_2026-04-29.md"
+    },
+    {
+      "ticker": "META",
+      "company": "Meta Platforms",
+      "date": "2026-04-29",
+      "time": "After Close",
+      "quarter": "Q1 FY2026",
+      "days_until": 11,
+      "note_file": "notes/pre_earnings/META_2026-04-29.md"
     }
   ],
   "active_post_earnings": [
     {
-      "ticker": "NKE",
-      "date": "2026-03-31",
-      "days_since": 7,
-      "file": "notes/post_earnings/NKE_2026-03-31.md",
-      "day_post": 12
-    },
-    {
-      "ticker": "MKC",
-      "date": "2026-03-31",
-      "days_since": 7,
-      "file": "notes/post_earnings/MKC_2026-03-31.md",
-      "day_post": 12
-    },
-    {
       "ticker": "STZ",
       "company": "Constellation Brands",
       "date": "2026-04-08",
-      "time": "After Close",
       "quarter": "Q4 FY2026",
-      "day_post": 4,
+      "day_post": 10,
       "expires": "2026-04-22",
       "note_file": "notes/post_earnings/STZ_2026-04-08.md"
+    },
+    {
+      "ticker": "GS",
+      "company": "Goldman Sachs",
+      "date": "2026-04-13",
+      "quarter": "Q1 FY2026",
+      "day_post": 5,
+      "expires": "2026-04-27",
+      "note_file": "notes/post_earnings/GS_2026-04-13.md"
+    },
+    {
+      "ticker": "JPM",
+      "company": "JPMorgan Chase",
+      "date": "2026-04-14",
+      "quarter": "Q1 FY2026",
+      "day_post": 4,
+      "expires": "2026-04-28",
+      "note_file": "notes/post_earnings/JPM_2026-04-14.md"
+    },
+    {
+      "ticker": "C",
+      "company": "Citigroup",
+      "date": "2026-04-14",
+      "quarter": "Q1 FY2026",
+      "day_post": 4,
+      "expires": "2026-04-28",
+      "note_file": "notes/post_earnings/C_2026-04-14.md"
+    },
+    {
+      "ticker": "WFC",
+      "company": "Wells Fargo",
+      "date": "2026-04-14",
+      "quarter": "Q1 FY2026",
+      "day_post": 4,
+      "expires": "2026-04-28",
+      "note_file": "notes/post_earnings/WFC_2026-04-14.md"
+    },
+    {
+      "ticker": "MS",
+      "company": "Morgan Stanley",
+      "date": "2026-04-15",
+      "quarter": "Q1 FY2026",
+      "day_post": 3,
+      "expires": "2026-04-29",
+      "note_file": "notes/post_earnings/MS_2026-04-15.md"
+    },
+    {
+      "ticker": "BAC",
+      "company": "Bank of America",
+      "date": "2026-04-15",
+      "quarter": "Q1 FY2026",
+      "day_post": 3,
+      "expires": "2026-04-29",
+      "note_file": "notes/post_earnings/BAC_2026-04-15.md"
+    },
+    {
+      "ticker": "ABT",
+      "company": "Abbott Laboratories",
+      "date": "2026-04-16",
+      "quarter": "Q1 FY2026",
+      "day_post": 2,
+      "expires": "2026-04-30",
+      "note_file": "notes/post_earnings/ABT_2026-04-16.md"
+    },
+    {
+      "ticker": "TSM",
+      "company": "TSMC",
+      "date": "2026-04-16",
+      "quarter": "Q1 FY2026",
+      "day_post": 2,
+      "expires": "2026-04-30",
+      "note_file": "notes/post_earnings/TSM_2026-04-16.md"
+    },
+    {
+      "ticker": "NFLX",
+      "company": "Netflix",
+      "date": "2026-04-16",
+      "quarter": "Q1 FY2026",
+      "day_post": 2,
+      "expires": "2026-04-30",
+      "note_file": "notes/post_earnings/NFLX_2026-04-16.md"
     }
   ],
   "archived": [
+    {
+      "ticker": "GS",
+      "type": "pre",
+      "date": "2026-04-13",
+      "file": "archive/pre_earnings/GS_2026-04-13.md"
+    },
+    {
+      "ticker": "JPM",
+      "type": "pre",
+      "date": "2026-04-14",
+      "file": "archive/pre_earnings/JPM_2026-04-14.md"
+    },
+    {
+      "ticker": "C",
+      "type": "pre",
+      "date": "2026-04-14",
+      "file": "archive/pre_earnings/C_2026-04-14.md"
+    },
+    {
+      "ticker": "WFC",
+      "type": "pre",
+      "date": "2026-04-14",
+      "file": "archive/pre_earnings/WFC_2026-04-14.md"
+    },
+    {
+      "ticker": "MS",
+      "type": "pre",
+      "date": "2026-04-15",
+      "file": "archive/pre_earnings/MS_2026-04-15.md"
+    },
+    {
+      "ticker": "BAC",
+      "type": "pre",
+      "date": "2026-04-15",
+      "file": "archive/pre_earnings/BAC_2026-04-15.md"
+    },
+    {
+      "ticker": "ABT",
+      "type": "pre",
+      "date": "2026-04-16",
+      "file": "archive/pre_earnings/ABT_2026-04-16.md"
+    },
+    {
+      "ticker": "TSM",
+      "type": "pre",
+      "date": "2026-04-16",
+      "file": "archive/pre_earnings/TSM_2026-04-16.md"
+    },
+    {
+      "ticker": "NFLX",
+      "type": "pre",
+      "date": "2026-04-16",
+      "file": "archive/pre_earnings/NFLX_2026-04-16.md"
+    },
+    {
+      "ticker": "NKE",
+      "type": "post",
+      "date": "2026-03-31",
+      "file": "archive/post_earnings/NKE_2026-03-31.md"
+    },
+    {
+      "ticker": "MKC",
+      "type": "post",
+      "date": "2026-03-31",
+      "file": "archive/post_earnings/MKC_2026-03-31.md"
+    },
     {
       "ticker": "NKE",
       "type": "pre",
@@ -169,170 +277,13 @@
       "type": "post",
       "date": "2026-03-05",
       "file": "archive/post_earnings/MRVL_2026-03-05.md"
-    }
-  ],
-  "notes": [
+    },
     {
       "ticker": "STZ",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-08",
-      "file": "notes/pre_earnings/STZ_2026-04-08.md",
-      "status": "active"
-    },
-    {
-      "ticker": "GS",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-13",
-      "file": "notes/pre_earnings/GS_2026-04-13.md",
-      "status": "active"
-    },
-    {
-      "ticker": "JPM",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-14",
-      "file": "notes/pre_earnings/JPM_2026-04-14.md",
-      "status": "active"
-    },
-    {
-      "ticker": "C",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-14",
-      "file": "notes/pre_earnings/C_2026-04-14.md",
-      "status": "active"
-    },
-    {
-      "ticker": "WFC",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-14",
-      "file": "notes/pre_earnings/WFC_2026-04-14.md",
-      "status": "active"
-    },
-    {
-      "ticker": "MS",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-15",
-      "file": "notes/pre_earnings/MS_2026-04-15.md",
-      "status": "active"
-    },
-    {
-      "ticker": "BAC",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-15",
-      "file": "notes/pre_earnings/BAC_2026-04-15.md",
-      "status": "active"
-    },
-    {
-      "ticker": "ABT",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-16",
-      "file": "notes/pre_earnings/ABT_2026-04-16.md",
-      "status": "active"
-    },
-    {
-      "ticker": "TSM",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-16",
-      "file": "notes/pre_earnings/TSM_2026-04-16.md",
-      "status": "active"
-    },
-    {
-      "ticker": "NFLX",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-16",
-      "file": "notes/pre_earnings/NFLX_2026-04-16.md",
-      "status": "active"
-    },
-    {
-      "ticker": "UNH",
-      "type": "pre_earnings",
-      "earnings_date": "2026-04-21",
-      "file": "notes/pre_earnings/UNH_2026-04-21.md",
-      "status": "active"
-    },
-    {
-      "ticker": "NKE",
-      "type": "post_earnings",
-      "earnings_date": "2026-03-31",
-      "file": "notes/post_earnings/NKE_2026-03-31.md",
-      "status": "active"
-    },
-    {
-      "ticker": "MKC",
-      "type": "post_earnings",
-      "earnings_date": "2026-03-31",
-      "file": "notes/post_earnings/MKC_2026-03-31.md",
-      "status": "active"
-    },
-    {
-      "ticker": "NKE",
-      "type": "pre_earnings",
-      "earnings_date": "2026-03-31",
-      "file": "archive/pre_earnings/NKE_2026-03-31.md",
-      "status": "archived"
-    },
-    {
-      "ticker": "MKC",
-      "type": "pre_earnings",
-      "earnings_date": "2026-03-31",
-      "file": "archive/pre_earnings/MKC_2026-03-31.md",
-      "status": "archived"
-    },
-    {
-      "ticker": "MU",
-      "type": "post_earnings",
-      "earnings_date": "2026-03-18",
-      "file": "archive/post_earnings/MU_2026-03-18.md",
-      "status": "archived"
-    },
-    {
-      "ticker": "ADBE",
-      "type": "post_earnings",
-      "earnings_date": "2026-03-12",
-      "file": "archive/post_earnings/ADBE_2026-03-12.md",
-      "status": "archived"
-    },
-    {
-      "ticker": "RBRK",
-      "type": "post_earnings",
-      "earnings_date": "2026-03-12",
-      "file": "archive/post_earnings/RBRK_2026-03-12.md",
-      "status": "archived"
-    },
-    {
-      "ticker": "S",
-      "type": "post_earnings",
-      "earnings_date": "2026-03-12",
-      "file": "archive/post_earnings/S_2026-03-12.md",
-      "status": "archived"
-    },
-    {
-      "ticker": "PATH",
-      "type": "post_earnings",
-      "earnings_date": "2026-03-11",
-      "file": "archive/post_earnings/PATH_2026-03-11.md",
-      "status": "archived"
-    },
-    {
-      "ticker": "IOT",
-      "type": "post_earnings",
-      "earnings_date": "2026-03-05",
-      "file": "archive/post_earnings/IOT_2026-03-05.md",
-      "status": "archived"
-    },
-    {
-      "ticker": "MRVL",
-      "type": "post_earnings",
-      "earnings_date": "2026-03-05",
-      "file": "archive/post_earnings/MRVL_2026-03-05.md",
-      "status": "archived"
-    }
-  ],
-  "archived_pre_earnings": [
-    {
-      "ticker": "STZ",
+      "type": "pre",
       "date": "2026-04-08",
       "archived_on": "2026-04-10",
-      "file": "notes/archive/pre_earnings/STZ_2026-04-08.md"
+      "file": "archive/pre_earnings/STZ_2026-04-08.md"
     }
   ]
 }
