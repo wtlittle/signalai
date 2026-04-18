@@ -49,9 +49,8 @@ def call_perplexity(
         return load_research_cache(ticker, task)
 
     if not PERPLEXITY_API_KEY:
-        raise RuntimeError(
-            "PERPLEXITY_API_KEY not set. Export it or add to .env file."
-        )
+        print(f"  [NO KEY] {ticker} / {task} — PERPLEXITY_API_KEY not set, skipping")
+        return {"skipped": True, "reason": "no_api_key", "ticker": ticker, "task": task}
 
     # --- Rate limit ---
     elapsed = time.time() - _last_call_time

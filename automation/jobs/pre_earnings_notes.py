@@ -182,10 +182,12 @@ def run():
         )
         result = call_perplexity(ticker, "pre_earnings", prompt, max_tokens=1800)
 
-        if result and not result.get("dry_run"):
+        if result and not result.get("dry_run") and not result.get("skipped"):
             write_pre_earnings_note(ticker, company, earnings_date, days_until, result)
             update_index(ticker, company, earnings_date, days_until)
             generated += 1
+        elif result and result.get("skipped"):
+            skipped += 1
 
     print(f"\nPre-earnings complete: {generated} generated, {skipped} skipped")
     return generated
