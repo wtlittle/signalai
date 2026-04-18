@@ -116,6 +116,11 @@ const SUBSECTOR_MAP = {
   'VLO': 'Energy', 'FANG': 'Energy', 'BKR': 'Energy',
   'AEM': 'Materials', 'NOC': 'Aerospace & Defense',
 
+  // Weekly Briefing Picks (Week 6: 2026-04-18)
+  'ADP': 'HCM & Payroll', 'ACN': 'IT Services', 'ZBH': 'Medical Devices',
+  'DHR': 'Life Sciences', 'PAYX': 'HCM & Payroll',
+  'ALAB': 'Semiconductors', 'FIVE': 'Retail', 'CAT': 'Industrials',
+  'GNRC': 'Power & Utilities', 'NEM': 'Materials',
   // Banks & Financials (added 2026-04-08)
   'GS': 'Investment Banking', 'JPM': 'Diversified Banking', 'WFC': 'Diversified Banking',
   'MS': 'Investment Banking', 'BAC': 'Diversified Banking',
@@ -161,6 +166,9 @@ const SUBSECTOR_ORDER = [
   'Pharmaceuticals',
   'Power & Utilities',
   'Industrials',
+  'HCM & Payroll',
+  'IT Services',
+  'Medical Devices',
   'Specialty Materials',
   // Private company subsectors
   'AI Models & Agents',
@@ -240,6 +248,9 @@ const COMMON_NAMES = {
   'FCX': 'Freeport-McMoRan',
   'NUE': 'Nucor',
   'CRC': 'California Resources',
+  // Week 6 additions (2026-04-18)
+  'ADP': 'ADP', 'ACN': 'Accenture', 'ZBH': 'Zimmer Biomet', 'DHR': 'Danaher', 'PAYX': 'Paychex',
+  'ALAB': 'Astera Labs', 'FIVE': 'Five Below', 'CAT': 'Caterpillar', 'GNRC': 'Generac', 'NEM': 'Newmont',
 };
 
 function cleanCompanyName(name) {
@@ -375,6 +386,9 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 5: 2026-04-12) ---
   'COF','SYF','UAL','DVN','OXY',     // Value picks (financials + energy -- Reflation regime)
   'FCX','NUE','CRC',  // Momentum picks (materials/energy -- copper/steel/CCS)
+  // --- Weekly Briefing Picks (Week 6: 2026-04-18) ---
+  'ADP','ACN','ZBH','DHR','PAYX',     // Value picks (HCM/IT services/medtech/life sciences near 52-week lows)
+  'ALAB','FIVE','CAT','GNRC','NEM',   // Momentum picks (AI connectivity/retail/industrial/power/gold)
 ];
 
 // --- Default private companies ---

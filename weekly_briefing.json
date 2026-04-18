@@ -1,27 +1,27 @@
 {
-  "week_ending": "2026-04-11",
-  "generated": "2026-04-12T08:15:00-04:00",
+  "week_ending": "2026-04-18",
+  "generated": "2026-04-18T08:15:00-05:00",
   "market_summary": {
-    "narrative": "Markets staged a powerful 3-day rally from April 7-9 driven by the surprise U.S.-Iran two-week ceasefire agreement, sending the S&P 500 up +3.57% for the week to close at 6,817.89\u2014its best week of 2026. The Nasdaq Composite surged +4.73% to 22,907.95 and the Russell 2000 gained +3.96% to 2,630.64, with Industrials leading all sectors (+5.6%) as oil volatility eased and growth expectations firmed. The ceasefire triggered WTI crude's largest single-day decline since 2020 (falling 16% on April 7), while the March CPI print (+3.3% YoY headline, +2.6% core\u2014below the feared +3.4% consensus) delivered a second catalyst, confirming the macro regime shift from Slowdown through Transition to Reflation in just three days. Friday's slight S&P 500 pull-back (-0.11%) reflected lingering Strait of Hormuz uncertainty and renewed AI software sector pressure from enterprise SaaS downgrades.",
+    "narrative": "U.S. equities surged to all-time highs this week, with the S&P 500 topping 7,100 for the first time and the Nasdaq logging its best week since May 2025, as geopolitical de-escalation in the Middle East combined with a blowout bank earnings season to fuel a powerful risk-on rally. The primary catalyst was Iran's announcement that it would reopen the Strait of Hormuz during the ceasefire, sending WTI crude plunging toward $80/bbl from its recent $110 peak and sharply alleviating the inflation fears that had gripped markets through March. Q1 earnings season kicked off on an exceptional note \u2014 all five major Wall Street banks (JPM, GS, MS, BAC, C) beat estimates on record or near-record trading revenues, with 78% of the 32 S&P 500 companies reporting so far beating expectations against a blended growth estimate of ~13% YoY. Software and mega-cap tech led the charge, with the IGV software ETF logging 13 straight days of gains and Oracle surging ~27% on the week following a Bloom Energy power deal; however, Netflix shed ~10% on soft Q2 guidance, reminding investors that the earnings bar remains high. Sentiment has rapidly shifted from 'peak pessimism' to cautious optimism, with VIX retreating below 20 and the 10-year yield dipping to 4.25% as oil shock fears recede \u2014 though market technicians warn the 12-day, 7%+ rip from oversold to overbought leaves little margin for disappointment.",
     "index_returns": {
-      "sp500_weekly": "+3.57% (6,582.69 \u2192 6,817.89)",
-      "nasdaq_weekly": "+4.73% (21,874.19 \u2192 22,907.95)",
-      "russell_weekly": "+3.96% (2,530.37 \u2192 2,630.64)"
+      "sp500_weekly": "+4.54% (7,126.06)",
+      "nasdaq_weekly": "+6.84% (24,468.48)",
+      "russell_weekly": "+5.5% (2,776.90)"
     },
     "macro_regime": "Reflation",
     "regime_description": "Growth accelerating with rising inflation. Favors cyclicals, value, energy, financials.",
     "regime_pillars": {
       "growth": {
-        "score": 0.5,
+        "score": 0.875,
         "label": "Expanding"
       },
       "inflation": {
-        "score": 0.34,
+        "score": 0.429,
         "label": "Rising"
       },
       "policy": {
-        "score": -0.056,
-        "label": "Neutral"
+        "score": 0.722,
+        "label": "Accommodative"
       },
       "sentiment": {
         "score": 0.5,
@@ -31,813 +31,549 @@
   },
   "value_picks": [
     {
-      "ticker": "COF",
-      "name": "Capital One Financial Corporation",
-      "current_price": 193.0,
-      "fifty_two_week_high": 259.64,
-      "fifty_two_week_low": 157.89,
-      "pct_off_high": "-25.7%",
-      "market_cap": 120032876000,
-      "pe_ratio": 57.27,
-      "ev_ebitda": "N/A (financial company; normalized PE ~9-10x ex-merger costs)",
-      "revenue_growth": "+36.6% YoY (total revenues before provisions: $53.4B FY2025 vs $39.1B FY2024; Discover acquisition added scale)",
-      "fcf_yield": "21.8%",
-      "fcf_ttm": 26140000000,
-      "debt_equity": 0.449,
-      "analyst_target": 265.17,
-      "analyst_consensus": {
-        "buy": 12,
-        "hold": 0,
-        "sell": 0
-      },
-      "why_undervalued": "COF's trailing P/E of 57x appears inflated solely due to ~$5B in one-time Discover Financial acquisition and integration charges booked in FY2025; on a normalized basis, the combined entity trades at approximately 9-10x earnings. The stock is 25.7% below its 52-week high despite the company generating $26.1B in free cash flow in FY2025 and $27.7B in operating cash flow. Markets are applying a merger-uncertainty discount that is rapidly dissipating as integration milestones are met.",
-      "bull_case": "The Discover acquisition creates the largest U.S. credit card network by receivables, with management guiding to $1.5B+ in annual synergies from network cost savings and cross-sell opportunities. As one-time charges roll off and synergy benefits materialize through 2026-2027, reported EPS will dramatically re-rate upward; analysts at JPMorgan (upgraded Overweight April 9, target $213), Wells Fargo, and Goldman Sachs all have $260+ targets, implying 37% upside from current levels. The 100% bullish analyst consensus with zero neutral or bearish ratings is exceptionally rare for a $120B financial company.",
-      "data_sources": [
-        "https://perplexity.ai/finance/COF"
-      ]
+      "ticker": "ADP",
+      "name": "Automatic Data Processing, Inc.",
+      "current_price": 200.47,
+      "fifty_two_week_high": 329.93,
+      "fifty_two_week_low": 188.16,
+      "pct_off_high": "-39.2%",
+      "market_cap": "$81.1B",
+      "pe_ratio": 19.28,
+      "ev_ebitda": 17.68,
+      "revenue_growth": "+7.1%",
+      "fcf_yield": "5.9%",
+      "fcf_ttm": "$4.8B",
+      "debt_equity": 1.47,
+      "analyst_target": 251.33,
+      "analyst_consensus": "Hold",
+      "why_undervalued": "ADP hit a fresh 52-week low in April 2026 after an ~18.5% post-earnings plunge driven by macro fears, data-privacy concerns, and insider selling \u2014 not a deterioration in business fundamentals. The stock now trades at 19x trailing earnings versus a 5-year average closer to 28x, despite the company generating $4.8B in free cash flow in FY2025 and growing revenue 7.1% year-over-year. The selloff has created a rare entry point into one of the most durable HCM platforms in the world, now pricing in a worst-case macro scenario that the underlying business does not support.",
+      "bull_case": "ADP's payroll and HR SaaS platform serves over 1 million clients and benefits from high switching costs and recurring subscription revenues, which provide exceptional earnings visibility. As interest rates normalize, ADP's float income \u2014 which contributes meaningfully to revenue \u2014 could stabilize or recover. With $4.8B in annual FCF, a 5.9% FCF yield, and analysts maintaining consensus targets around $251 (implying 25% upside), patient investors are compensated handsomely to wait for sentiment to recover."
     },
     {
-      "ticker": "SYF",
-      "name": "Synchrony Financial",
-      "current_price": 72.41,
-      "fifty_two_week_high": 88.77,
-      "fifty_two_week_low": 46.08,
-      "pct_off_high": "-18.4%",
-      "market_cap": 26080000000,
-      "pe_ratio": 7.46,
-      "ev_ebitda": "N/A (financial company; EV/EBITDA metric not comparable for consumer finance)",
-      "revenue_growth": "+1.4% YoY (net income FY2025 $3.55B vs FY2024 $3.50B; stabilizing credit losses in H2 2025)",
-      "fcf_yield": "37.8%",
-      "fcf_ttm": 9850000000,
-      "debt_equity": 1.811,
-      "analyst_target": 84.87,
-      "analyst_consensus": {
-        "buy": 10,
-        "hold": 5,
-        "sell": 0
-      },
-      "why_undervalued": "SYF trades at 7.46x trailing earnings \u2014 roughly half the multiple of major bank peers \u2014 despite generating $9.85B in free cash flow and demonstrating credit loss normalization through H2 2025 after elevated charge-off rates in 2024 depressed sentiment. The stock sits 18.4% below its 52-week high with a forthcoming earnings catalyst on April 21, 2026 that could unlock re-rating. At its current price, the implied FCF yield of 37.8% prices in a recessionary credit scenario that appears inconsistent with improving macroeconomic data.",
-      "bull_case": "The recently closed Ally Financial credit card partnership acquisition adds a substantial new receivables base and diversifies SYF's partnerships beyond legacy retail. As consumer credit normalization continues into 2026 \u2014 with charge-off rates declining sequentially in each of the last three quarters \u2014 the overhang that compressed the multiple should lift. Street consensus shows zero bearish analysts with a 17.2% implied upside to the $84.87 average target; a reversion to even 10x earnings implies a $100+ share price.",
-      "data_sources": [
-        "https://perplexity.ai/finance/SYF"
-      ]
+      "ticker": "ACN",
+      "name": "Accenture plc",
+      "current_price": 197.65,
+      "fifty_two_week_high": 325.71,
+      "fifty_two_week_low": 177.5,
+      "pct_off_high": "-39.3%",
+      "market_cap": "$121.6B",
+      "pe_ratio": 16.2,
+      "ev_ebitda": 12.52,
+      "revenue_growth": "+7.4%",
+      "fcf_yield": "8.9%",
+      "fcf_ttm": "$10.9B",
+      "debt_equity": 0.23,
+      "analyst_target": 254.44,
+      "analyst_consensus": "Buy",
+      "why_undervalued": "Accenture has dropped 39% from its 52-week high and trades just 11% above its 52-week low, yet the business is generating a near-record $10.9B in free cash flow \u2014 an 8.9% FCF yield \u2014 with revenue growing 7.4% year-over-year and expanding AI-driven consulting bookings. The stock's P/E of 16.2x represents a multi-year valuation trough for a company with minimal debt (D/E of 0.23x), dominant global IT services market position, and a management team actively deploying capital into AI and GenAI service lines. Selling pressure appears macro- and sentiment-driven rather than reflective of any business impairment.",
+      "bull_case": "Accenture is uniquely positioned at the center of enterprise AI adoption, acting as both a strategic advisor and implementation partner for global Fortune 500 clients accelerating digital transformation. With 8 out of 9 analysts rating the stock Buy/Overweight at an average price target of $254 (implying ~29% upside), the setup combines a deep value entry point with a strong buy-side conviction. A normalization of IT spending sentiment or continued AI-driven deal acceleration could catalyze a re-rating toward historical EV/EBITDA multiples of 17-18x."
     },
     {
-      "ticker": "UAL",
-      "name": "United Airlines Holdings, Inc.",
-      "current_price": 96.4,
-      "fifty_two_week_high": 119.21,
-      "fifty_two_week_low": 63.23,
-      "pct_off_high": "-19.1%",
-      "market_cap": 31180000000,
-      "pe_ratio": 9.45,
-      "ev_ebitda": 6.52,
-      "revenue_growth": "+3.5% YoY ($59.1B FY2025 vs $57.1B FY2024)",
-      "fcf_yield": "8.2%",
-      "fcf_ttm": 2557000000,
-      "debt_equity": 1.7,
-      "analyst_target": 134.14,
-      "analyst_consensus": {
-        "buy": 14,
-        "hold": 0,
-        "sell": 0
-      },
-      "why_undervalued": "UAL trades at 9.45x trailing earnings and 6.52x EV/EBITDA, a dramatic discount to legacy airline peer multiples of 15-20x P/E and the broader S&P 500. The stock is 19.1% below its 52-week high despite consistently beating earnings estimates and generating $2.6B in free cash flow in FY2025. Macro uncertainty around jet fuel costs from the Iran conflict has created an overhang, yet UAL's hedging program and revenue yield improvements have more than offset fuel cost pressures in recent quarters.",
-      "bull_case": "Every single sell-side analyst covering UAL rates it a buy (14/0/0), a distinction shared by almost no S&P 500 large-cap, with a consensus target of $134.14 implying 39.1% upside from current levels. United's premium cabin expansion (United Polaris and Premium Plus), international route ramp, and loyalty program monetization are structural earnings drivers that justify a higher multiple. In a reflation environment with rising consumer spending on experiences and travel, UAL's revenue per available seat mile continues to expand; management's own 2026 guidance targets $4B+ in adjusted pre-tax income.",
-      "data_sources": [
-        "https://perplexity.ai/finance/UAL"
-      ]
+      "ticker": "ZBH",
+      "name": "Zimmer Biomet Holdings, Inc.",
+      "current_price": 94.78,
+      "fifty_two_week_high": 108.29,
+      "fifty_two_week_low": 84.59,
+      "pct_off_high": "-12.5%",
+      "market_cap": "$18.5B",
+      "pe_ratio": 26.7,
+      "ev_ebitda": 11.02,
+      "revenue_growth": "+7.2%",
+      "fcf_yield": "6.3%",
+      "fcf_ttm": "$1.2B",
+      "debt_equity": 0.55,
+      "analyst_target": 98.83,
+      "analyst_consensus": "Hold",
+      "why_undervalued": "Zimmer Biomet trades just 12% above its 52-week low despite delivering 7.2% revenue growth in FY2025 and generating $1.17B in free cash flow \u2014 a 6.3% yield that is historically attractive for a medical device company. The elevated GAAP P/E of 26.7x is misleading; it is inflated by high amortization charges from past acquisitions, and on an adjusted EBITDA basis the company trades at just 11x EV/EBITDA versus orthopedic device peer medians closer to 14-15x. Near-term headwinds from CMS reimbursement uncertainty and tariff-related cost concerns have weighed on the stock, creating a valuation disconnect with the company's durable volume-driven demand from aging demographics.",
+      "bull_case": "Aging baby boomers in the U.S. and Europe continue to drive secular demand for hip, knee, and shoulder replacement procedures, providing Zimmer Biomet with a predictable long-term growth runway. The company's ZBEdge robotic surgery platform positions it to capture procedure volume as robotics penetration in orthopedics moves from ~10% today toward a projected 40%+ by 2030. A re-rating toward peer EV/EBITDA multiples of 14x would imply a stock price near $130, representing over 37% upside from current levels."
     },
     {
-      "ticker": "DVN",
-      "name": "Devon Energy Corporation",
-      "current_price": 47.79,
-      "fifty_two_week_high": 52.71,
-      "fifty_two_week_low": 28.09,
-      "pct_off_high": "-9.3%",
-      "market_cap": 29700000000,
-      "pe_ratio": 11.46,
-      "ev_ebitda": 4.21,
-      "revenue_growth": "+7.8% YoY ($17.2B FY2025 vs $15.9B FY2024)",
-      "fcf_yield": "9.4%",
-      "fcf_ttm": 2797000000,
-      "debt_equity": 0.553,
-      "analyst_target": 52.23,
-      "analyst_consensus": {
-        "buy": 11,
-        "hold": 2,
-        "sell": 0
-      },
-      "why_undervalued": "DVN trades at only 4.21x EV/EBITDA \u2014 a deep discount to E&P peers averaging 6-7x \u2014 despite strong Permian and Delaware Basin production growth and a $2.8B FCF profile. The pending all-stock merger with Coterra Energy announced in early 2026 creates uncertainty-driven selling pressure among index-rebalancing funds, compressing the stock even as the combined entity would become one of the largest diversified U.S. energy producers. Activist Kimmeridge's stake underscores the view that management must either deliver superior returns or execute the merger accretively. Note: at -9.3% below the 52-week high, DVN does not fully meet the 15-20% threshold but is included due to its superior energy-sector setup and pending re-rating event.",
-      "bull_case": "The Coterra-Devon merger, if completed, creates a ~$50B+ enterprise value combined E&P with diversified multi-basin assets (Permian, Anadarko, Marcellus), superior cost structure, and a high variable dividend policy that should attract income-oriented investors. In a reflation macro regime with crude above $90, Devon's capital-efficient Permian drilling program generates material per-share FCF growth; Raymond James recently raised its target to $52. Strong Buy consensus (11/2/0) and the merger optionality provide a floor, while energy's tailwinds in 2026 amid ongoing Middle East supply disruptions support the commodity price deck.",
-      "data_sources": [
-        "https://perplexity.ai/finance/DVN"
-      ]
+      "ticker": "DHR",
+      "name": "Danaher Corporation",
+      "current_price": 194.75,
+      "fifty_two_week_high": 242.8,
+      "fifty_two_week_low": 180.03,
+      "pct_off_high": "-19.8%",
+      "market_cap": "$137.8B",
+      "pe_ratio": 38.72,
+      "ev_ebitda": 24.61,
+      "revenue_growth": "+2.9%",
+      "fcf_yield": "3.8%",
+      "fcf_ttm": "$5.3B",
+      "debt_equity": 0.35,
+      "analyst_target": 251.0,
+      "analyst_consensus": "Buy",
+      "why_undervalued": "Danaher trades 8.2% above its 52-week low as biopharma capital spending normalization has weighed on the life science tools and diagnostics segments following the post-COVID inventory unwind. However, the company still generated $5.3B in free cash flow in FY2025 and maintains its exceptional Danaher Business System operating discipline, which has historically produced industry-leading margin expansion through cycles. At 24.6x EV/EBITDA, the valuation appears elevated on a trailing basis, but biopharma R&D budgets are beginning to recover, and consensus revenue growth expectations for 2026-2027 accelerate meaningfully as the headwinds abate.",
+      "bull_case": "Danaher's portfolio of bioprocessing, genomics, and water quality businesses are exposed to multi-decade secular megatrends including biologics manufacturing, mRNA therapeutics, and clean water infrastructure \u2014 areas where demand is structurally non-discretionary. With 8 out of 9 analysts rating DHR a Buy/Outperform with a consensus target of $251 (implying ~29% upside), the Street is pricing in an eventual recovery in biopharma capex. The company's track record of value-creating M&A and bolt-on acquisitions, combined with its balance sheet strength (D/E of 0.35x), positions it to compound intrinsic value through the cycle."
     },
     {
-      "ticker": "OXY",
-      "name": "Occidental Petroleum Corporation",
-      "current_price": 57.97,
-      "fifty_two_week_high": 67.45,
-      "fifty_two_week_low": 37.41,
-      "pct_off_high": "-14.0%",
-      "market_cap": 57170000000,
-      "pe_ratio": 42.94,
-      "ev_ebitda": 5.83,
-      "revenue_growth": "-0.5% YoY ($22.1B FY2025 vs $22.2B FY2024; stable production volumes offset by oil price mix)",
-      "fcf_yield": "7.2%",
-      "fcf_ttm": 4105000000,
-      "debt_equity": 0.564,
-      "analyst_target": 59.31,
-      "analyst_consensus": {
-        "buy": 6,
-        "hold": 5,
-        "sell": 2
-      },
-      "why_undervalued": "OXY trades at 5.83x EV/EBITDA, a meaningful discount to integrated energy major peers, despite owning some of the highest-quality Permian Basin acreage in the U.S. and generating $4.1B in free cash flow. The elevated trailing P/E of 43x reflects the CrownRock acquisition cost amortization and higher depreciation charges, not underlying earnings weakness. Berkshire Hathaway \u2014 which holds approximately 28% of OXY's shares outstanding \u2014 continues to add to its position, providing both a valuation floor and governance credibility that the market has not fully priced in.",
-      "bull_case": "Warren Buffett's active accumulation of OXY shares at prices between $55-65 per share constitutes the most visible 'smart money' endorsement in the energy sector; Berkshire's SEC filings confirm continued buying into April 2026. OXY's low-sulfur, light crude from the Permian commands premium pricing amid Middle East supply disruptions, and the company's carbon capture subsidiary (OxyChem's direct air capture facility in Texas) positions it favorably for energy transition capital flows. Debt reduction following the CrownRock deal completion reduces interest burden and improves per-share FCF meaningfully through 2026-2027, with Wells Fargo maintaining Overweight with a $72 target.",
-      "data_sources": [
-        "https://perplexity.ai/finance/OXY"
-      ]
+      "ticker": "PAYX",
+      "name": "Paychex, Inc.",
+      "current_price": 91.96,
+      "fifty_two_week_high": 161.24,
+      "fifty_two_week_low": 85.45,
+      "pct_off_high": "-43.0%",
+      "market_cap": "$32.9B",
+      "pe_ratio": 20.3,
+      "ev_ebitda": 22.37,
+      "revenue_growth": "+5.6%",
+      "fcf_yield": "5.2%",
+      "fcf_ttm": "$1.7B",
+      "debt_equity": 1.12,
+      "analyst_target": 101.43,
+      "analyst_consensus": "Hold",
+      "why_undervalued": "Paychex has been cut nearly in half from its 52-week high of $161.24, now trading just 7.6% above its 52-week low despite a fundamentally sound business that grew revenue 5.6% to $5.57B in FY2025 while generating $1.71B in free cash flow (5.2% yield). The stock's decline reflects macro concerns about small business hiring trends and payroll sensitivity \u2014 but Paychex's client base is sticky, attrition is structurally low, and the company pays a 5% dividend yield, providing income support while waiting for business conditions to normalize. The 1.12x D/E ratio is primarily from lease obligations and remains well within comfort zone for a subscription-based business of this quality.",
+      "bull_case": "Paychex is one of the best-positioned beneficiaries of a U.S. labor market stabilization, with earnings highly levered to a recovery in small and mid-sized business payroll volumes. The company's HR outsourcing and benefits administration platform faces minimal competitive threat at the SMB segment from technology disruptors, maintaining 72%+ gross margins and 30% FCF margins through multiple economic cycles. At current levels, investors receive a 5% dividend yield plus meaningful upside optionality \u2014 the 20x trailing P/E represents the cheapest entry in over five years for this steady compounder."
     }
   ],
   "momentum_picks": [
     {
-      "ticker": "GEV",
-      "name": "GE Vernova Inc.",
-      "price": "$991.32",
-      "performance_1w": "+10.32%",
-      "performance_1m": "+18.13%",
-      "performance_3m": "+59.25%",
-      "revenue_growth": "+9.0% (FY2025 vs FY2024; $34.9B \u2192 $38.1B)",
-      "catalyst": "GE Vernova entered 2026 with a $150 billion equipment and services backlog, and in January raised its 2026 revenue guidance to $44\u2013$45 billion (from $41\u2013$42 billion) while lifting free cash flow guidance to $5\u2013$5.5 billion and doubling its dividend. The Power segment is guiding for 16\u201318% organic revenue growth in 2026, with the Electrification segment targeting $13.5\u2013$14 billion in revenue as direct data center orders tripled year-over-year in 2025 and Goldman Sachs raised its price target to $1,000 in April 2026. Upcoming Q1 2026 earnings (April 22) are expected to show 91% EPS growth year-over-year, providing a near-term catalyst for the stock.",
-      "risk_reward": "At $991, GEV trades at a significant premium to its 52-week low of $252 and approaching the $1,000 psychological level with Goldman Sachs' recently raised target, suggesting the near-term upside is increasingly priced in. The primary risk is the Wind segment, which is expected to generate ~$400 million in EBITDA losses in 2026, and any broader tariff escalation on imported components could compress margins on new orders. The risk/reward is skewed moderately positive for patient holders, as the $64 billion equipment backlog already carrying 6 incremental margin points versus current earnings is not fully reflected in consensus estimates, with the 2028 EBITDA margin target of 20% representing substantial upside to the current 9% level."
+      "ticker": "ALAB",
+      "name": "Astera Labs, Inc.",
+      "current_price": 174.05,
+      "perf_1w": "+16.8%",
+      "perf_1m": "+36.4%",
+      "perf_3m": "-4.4%",
+      "revenue_growth": "+91.8%",
+      "catalyst": "Astera Labs reported Q4 2025 revenue of $270.6M, up 91.8% YoY, smashing consensus estimates of $249.5M, with EPS of $0.58 beating the $0.51 estimate. The stock collapsed to ~$100 in late March on margin concerns from Amazon's custom silicon push, then staged a powerful +73% recovery driven by renewed AI infrastructure demand headlines following GTC 2026, where ALAB's CXL and PCIe 6 connectivity products were highlighted as critical rack-scale AI infrastructure components. Multiple analysts hold price targets of $200\u2013$250 (Citigroup $200, RBC $225, Loop Capital $250), reflecting ALAB's positioning as a key AI data center enabler beyond the largest chip players.",
+      "risk_reward": "The risk is steep: ALAB trades at ~102x P/E and 25x price-to-sales \u2014 a valuation that demands flawless execution and leaves no room for guidance misses or margin compression. Insider selling (183K shares at $107 in early April) adds caution. The reward is compelling if AI infrastructure capex holds: ALAB has 75%+ gross margins, $1.19B in cash, zero debt, and a current ratio of 10.2, making it one of the most financially durable plays in AI connectivity; a return toward the $200+ analyst consensus would represent 15\u201340%+ upside from current levels."
     },
     {
-      "ticker": "FIX",
-      "name": "Comfort Systems USA, Inc.",
-      "price": "$1,592.84",
-      "performance_1w": "+12.39%",
-      "performance_1m": "+15.12%",
-      "performance_3m": "+57.64%",
-      "revenue_growth": "+29.5% (FY2025 vs FY2024; $7.0B \u2192 $9.1B)",
-      "catalyst": "Comfort Systems reported a blowout Q4 2025, with EPS of $9.37 versus $6.75 expected (38% beat) and revenue up 41.7% year-over-year, while its construction backlog nearly doubled to $11.94 billion by year-end 2025 \u2014 more than its entire FY2025 revenue \u2014 driven by hyperscaler data center demand that grew from 33% to 45% of total revenue in a single year. The company is expanding modular manufacturing capacity from 3 to 4 million square feet in 2026 and guided for mid-to-high-teen same-store revenue growth, with consensus projecting $36.60 EPS in FY2026 (+26.7%). DA Davidson raised its price target to $1,800, and FIX hit a new 52-week high of $1,547 in early April as energy-infrastructure spending accelerated.",
-      "risk_reward": "FIX trades at approximately 43x forward earnings, well above its 5-year median of 22x, implying the market is pricing in sustained above-market execution \u2014 any miss on backlog conversion pace or gross margin (the critical 25%+ threshold breached in Q4 2025) would likely cause rapid multiple compression. Labor cost inflation and project delays remain the primary execution risks, particularly as the company scales rapidly across new geographies through recent acquisitions. On the positive side, $11.94 billion in legally committed, priced backlog essentially locks in FY2026 revenues without requiring new contract wins, and the analysts' mean target of $1,645 implies ~3% upside from the current price with DA Davidson's $1,800 bull case representing a more compelling 13% upside."
+      "ticker": "FIVE",
+      "name": "Five Below, Inc.",
+      "current_price": 236.26,
+      "perf_1w": "+8.7%",
+      "perf_1m": "+10.4%",
+      "perf_3m": "+20.1%",
+      "revenue_growth": "+24.3%",
+      "catalyst": "Five Below delivered a blowout Q4 FY2025 earnings report (March 18, 2026), posting Q4 comparable sales growth of 15.4% YoY, EPS of $4.31 vs $4.00 expected, and revenue of $1.73B (+24.3% YoY). Management guided Q1 FY2026 comparable sales growth of 14\u201316% and issued full-year FY2026 guidance of $7.74\u2013$8.25 EPS and $5.2\u2013$5.3B revenue, both well above the consensus estimates of $6.57 EPS and $4.9B revenue. Institutional buying surged to $12B vs ~$484M in selling in Q1, and analysts at Bank of America raised their target to $305 while Wells Fargo went to $260, reflecting conviction in the company's Gen Alpha/Gen Z consumer strategy and accelerating store rollout (150 net new stores planned).",
+      "risk_reward": "The primary risk is tariff exposure: Five Below sources heavily from China, and while management believes 2026 tariff headwinds are more manageable than 2025, any escalation could pressure margins at a time when the stock trades at 34x trailing P/E, well above the sector average. Execution risk on aggressive store expansion (150 new stores) is real. On the reward side, FIVE is at the top of its 52-week range ($238.40 high) with multiple catalysts ahead: Q1 earnings in June should confirm the 14\u201316% comp guide, and the discount retail positioning benefits directly from cost-conscious consumer behavior in a tariff-pressured macro environment."
     },
     {
-      "ticker": "FCX",
-      "name": "Freeport-McMoRan Inc.",
-      "price": "$67.80",
-      "performance_1w": "+10.46%",
-      "performance_1m": "+8.65%",
-      "performance_3m": "+19.94%",
-      "revenue_growth": "+1.8% (FY2025 vs FY2024; $25.5B \u2192 $25.9B)",
-      "catalyst": "FCX surged 7% on April 8 as copper prices rallied sharply, with global copper near $6.00 per pound driven by AI data center electrification demand and supply deficits from the ongoing Grasberg mine disruption \u2014 the restart of Production Blocks 2 and 3 at the Grasberg mine in Q2 2026 represents a major near-term operational catalyst that will restore production volumes and free cash flow. Bank of America raised its price target to $81 from $68 in April 2026, while Freedom Capital upgraded to Buy with a $76 target, reflecting confidence that sustained copper demand from power grid buildouts and EV charging infrastructure will underpin elevated prices through the cycle. The company's proprietary leaching technology program in North America is expected to add incremental low-capex copper output, further supporting the earnings ramp into 2026.",
-      "risk_reward": "FCX's revenue growth was modest at +1.8% in FY2025 due to the Grasberg disruption, but consensus forecasts 27.7% adjusted EPS growth for FY2026 as volumes normalize \u2014 this operational recovery story offers compelling upside if Grasberg ramps on schedule in Q2. The key risks are a reversal in copper prices (historically volatile), geopolitical complications with Indonesia's 51% ownership stake in PT Freeport Indonesia, and any recurrence of operational incidents at Grasberg. Valuation is supportive relative to history, with FCX up 42% over the past six months yet still trading at 21x forward earnings against a consensus target of $81 (BofA), implying ~19% further upside from current levels."
+      "ticker": "CAT",
+      "name": "Caterpillar Inc.",
+      "current_price": 794.65,
+      "perf_1w": "+0.5%",
+      "perf_1m": "+13.2%",
+      "perf_3m": "+22.8%",
+      "revenue_growth": "+18.0%",
+      "catalyst": "Caterpillar has been a standout S&P 500 performer in 2026, gaining 32% YTD driven by AI data center infrastructure demand (power systems, construction equipment for data center builds), a global industrial capex upcycle, and record Q4 2025 revenue of $19.1B (+18% YoY). CAT reports Q1 2026 results on April 30, where analysts expect strong construction and energy segment data; the stock staged a particularly powerful +9.8% week in April 8\u201310 as markets rotated into quality industrials. Morningstar analysts raised their fair value estimate on CAT in early 2026, citing AI-linked infrastructure tailwinds and the company's dominant position in global construction and mining equipment.",
+      "risk_reward": "Risks include tariff-related cost inflation on steel and aluminum inputs, and a potential slowdown in China construction activity. With Q1 earnings on April 30, there is meaningful binary event risk \u2014 a miss or soft guidance could trigger a sharp pullback given the stock's elevated premium. On the reward side, CAT's $371B market cap and forward earnings power from an AI-driven infrastructure supercycle provide structural support; analysts expect revenue growth of ~4% annually through 2027 on top of the 2025\u20132026 surge, and the stock carries a strong buy consensus with significant room for estimate upgrades if data center construction activity remains elevated."
     },
     {
-      "ticker": "NUE",
-      "name": "Nucor Corporation",
-      "price": "$186.12",
-      "performance_1w": "+7.92%",
-      "performance_1m": "+9.21%",
-      "performance_3m": "+13.65%",
-      "revenue_growth": "+5.7% (FY2025 vs FY2024; $30.7B \u2192 $32.5B)",
-      "catalyst": "Nucor raised its Consumer Spot Price to $1,025 per ton in March 2026, pushing hot-rolled coil prices above the $1,000 milestone for the first time in a structural shift driven by doubled import tariffs (Section 232 at 50%) and rising demand from AI data center and infrastructure construction \u2014 the company guided Q1 2026 EPS of $2.70\u2013$2.80, representing a 264% increase year-over-year and a 60% sequential jump from Q4 2025. The steel mills segment backlog entered 2026 up 40% year-over-year, management confirmed shipment volumes will grow 5% in 2026 as infrastructure capex from public and private sectors accelerates, and Wells Fargo raised its price target to $194 citing the domestic market's insulation from foreign competition. Full Q1 2026 results are due April 27.",
-      "risk_reward": "Nucor offers the strongest fundamental support among the 5 picks, with FY2026 consensus EPS of $11.76 (+52.5% from FY2025's $7.71) and an average analyst price target of $190.85 implying ~3% upside from current levels \u2014 the stock's relatively modest 3-month return of +13.65% suggests momentum is still early versus peers, making it an attractive entry point. The primary risks are a reversal in steel pricing if import tariffs are rolled back or if construction demand slows faster than expected, and the company's exposure to a potential housing slowdown. Nucor's electric arc furnace model and diversified end markets (automotive, construction, manufacturing, energy) provide downside resilience that most steel peers lack."
+      "ticker": "GNRC",
+      "name": "Generac Holdings Inc.",
+      "current_price": 212.1,
+      "perf_1w": "+2.4%",
+      "perf_1m": "+3.4%",
+      "perf_3m": "+31.9%",
+      "revenue_growth": "+15.0%",
+      "catalyst": "Generac has surged 50%+ YTD on a powerful data center momentum narrative: the company reported a $700M data center generator backlog at its March 2026 Investor Day (up from $400M in February), with deliveries ramping through 2026\u20132027. Management guided mid-teens net sales growth for FY2026 including ~30% C&I (commercial/industrial) segment growth driven by megawatt-class generator shipments to hyperscaler data centers. Analyst consensus (13 Buys) sees revenue accelerating from $4.21B in FY2025 to $4.85B in FY2026 and $5.42B in FY2027, and the company announced a new $500M share buyback, signaling confidence in free cash flow generation.",
+      "risk_reward": "The main risk is that trailing revenue declined 11.6% in Q4 2025 (residential generator weakness) and the data center thesis relies heavily on backlog-to-revenue conversion that is weighted toward late 2026 and 2027 \u2014 any delivery delays or cancellations would undercut the story. Additionally, GNRC's stock has already run 50%+ YTD, limiting near-term upside and creating vulnerability to profit-taking. The reward case: if data center generator shipments ramp as guided and residential demand recovers to mid-teens growth (as management expects from normal outage levels in H2 2026), GNRC could grow into its current valuation with the $6.2\u2013$6.6B revenue target by 2028 providing a multi-year compounding opportunity."
     },
     {
-      "ticker": "CRC",
-      "name": "California Resources Corporation",
-      "price": "$66.55",
-      "performance_1w": "-1.73%",
-      "performance_1m": "+7.97%",
-      "performance_3m": "+46.14%",
-      "revenue_growth": "+21.9% (FY2025 vs FY2024; $3.0B \u2192 $3.6B)",
-      "catalyst": "California Resources is the only oil and gas producer in California, providing it a monopolistic market position in the state's energy market with virtually no in-state competition, while its Carbon TerraVault CCS (Carbon Capture and Storage) project is advancing toward first commercial injection in early 2026 \u2014 backed by seven Class VI permits under EPA review \u2014 creating a new high-margin revenue stream that diversifies the company beyond hydrocarbons. Elevated crude oil prices (driven by Middle East geopolitical risk and Iran-related supply concerns in 2026) have turbocharged FCFs, as evidenced by a 104.3% one-year total shareholder return; management plans to increase drilling rigs to four in early 2026 as permitting stabilizes, driving production growth at historically low break-even costs. Q1 2026 results are due May 5, with the market anticipating continued cash flow outperformance.",
-      "risk_reward": "The 1-week return turned slightly negative (-1.73%) as de-escalation signals from Iran eased the geopolitical risk premium embedded in oil prices, highlighting the stock's sensitivity to crude \u2014 a sustained decline below $80/bbl Brent would pressure free cash flow and likely reverse the YTD gains. CRC's California-only operations create regulatory concentration risk, as any adverse state energy policy shift or regulatory delay on CCS permitting could impair the carbon management business case. The bull case is compelling given the CCS optionality (currently unmonetized) and monopolistic oil production position, with analysts' consensus price target of $60.75 representing modest downside from current levels but the high end target of $68 consistent with current price, suggesting the market has largely priced in the near-term fundamental thesis."
+      "ticker": "NEM",
+      "name": "Newmont Corporation",
+      "current_price": 116.5,
+      "perf_1w": "-3.6%",
+      "perf_1m": "+4.9%",
+      "perf_3m": "+2.1%",
+      "revenue_growth": "+20.6%",
+      "catalyst": "Newmont is the world's largest gold producer and has seen strong revenue growth of 20.6% YoY in Q4 2025 ($6.82B vs $5.65B), driven by gold prices hitting record highs above $3,300/oz in April 2026 amid tariff-driven macro uncertainty and safe-haven demand. The stock's 52-week low of $48.27 to current $116.50 reflects a nearly 140% recovery as gold surged. NEM recently reported record oil and gas royalty-adjacent mining productivity, and gold's structural bid \u2014 driven by central bank buying, de-dollarization trends, and geopolitical risk \u2014 provides a durable macro tailwind. Analysts at FXCM and Morningstar cite NEM as a top Q2 2026 pick given gold's breakout above $3,000/oz.",
+      "risk_reward": "The primary risk for NEM is a reversal in gold prices: if trade tensions ease or risk-on sentiment returns, gold could retreat sharply, compressing NEM's margins and multiple. The recent 1-week pullback of -3.6% shows the stock is sensitive to daily macro swings. Operational risks include cost inflation at mining sites and geopolitical exposure in jurisdictions like Ghana and Peru. On the reward side, at current gold prices (~$3,300/oz) NEM generates exceptional free cash flow; its $126.7B market cap provides institutional-grade liquidity, the company raised its dividend, and the gold/safe-haven thesis remains structurally intact as long as U.S. tariff policy stays aggressive and global central banks continue accumulating gold reserves."
     }
   ],
   "trends": [
     {
-      "title": "Iran Ceasefire Unlocks Oil and Risk-Appetite Reset",
-      "description": "President Trump's April 7 ceasefire agreement with Iran\u2014contingent on Strait of Hormuz reopening\u2014triggered WTI crude's largest single-day drop since 2020, falling 16.4% from ~$112 to ~$94 before recovering to ~$96 by week-end as Iran accused the U.S. of breaching ceasefire terms. The oil volatility collapse unlocked a massive risk-on rotation: Industrials surged 5.6%, financials and tech rallied hard, while Energy was the sole losing sector (-3.77%). With Polymarket giving only ~22.5% odds of a durable ceasefire by April 30 and ~51.5% by June 30, the situation remains fragile but the directional signal was enough to drive the regime shift."
+      "title": "Geopolitical De-escalation Unlocks Oil Relief",
+      "description": "Iran's decision to reopen the Strait of Hormuz during the ceasefire \u2014 through which ~20% of global oil flows \u2014 triggered WTI crude's sharpest weekly decline since 2022, falling from ~$110 to ~$80/bbl. This eased the dominant macro headwind of 2026, cooling inflation fears that had pushed headline CPI to +3.4% YoY in March and stalled Fed rate-cut expectations. The oil-price drop directly catalyzed the equity market rally, with rate-sensitive and consumer-facing sectors rebounding sharply.",
+      "sources": [
+        "https://www.firstmerchants.com/resources/learn/blogs/blog-detail/weekly-investment-perspectives/2026/04/14/weekly-investment-perspective-april-14--2026",
+        "https://www.cnbc.com/2026/04/17/stock-market-next-week-outlook-for-april-20-24-2026.html"
+      ]
     },
     {
-      "title": "March CPI Surprise Softens Fed Tightening Fears\u2014Briefly",
-      "description": "The March CPI print came in at +3.3% YoY headline (vs. +3.4% consensus) and +2.6% core (vs. +2.7% consensus), meaningfully below the feared acceleration. The softer-than-expected result reduced near-term rate hike fears and supported the ceasefire rally, pushing the 10-year Treasury yield down to 4.31% from prior highs. However, the Fed's dot plot still shows only one cut in 2026, and seven of 19 members projected no cuts at all\u2014with the FOMC noting it needs to remain 'nimble' given war-related inflationary tail risks. The April 28-29 FOMC meeting becomes the next critical data point."
+      "title": "Wall Street Banks Post Record Q1 Trading Revenue",
+      "description": "All five major U.S. banks \u2014 JPMorgan, Goldman Sachs, Morgan Stanley, Bank of America, and Citigroup \u2014 beat Q1 2026 earnings estimates, collectively posting the strongest trading quarter in Wall Street history. Market volatility from the Iran conflict proved a windfall for trading desks: JPM reported $11.6B in total trading revenue, MS hit a record $20.6B in net revenue (+16% YoY), and GS equities revenue reached a record $5.33B (+27% YoY). Investment banking also bounced back strongly, with M&A and underwriting fees well above expectations across the group.",
+      "sources": [
+        "https://www.cnbc.com/2026/04/14/jpmorgan-chase-jpm-earnings-1q-2026.html",
+        "https://www.heygotrade.com/en/news/wall-street-bank-earnings-record-trading/",
+        "https://www.investing.com/news/transcripts/earnings-call-transcript-morgan-stanley-q1-2026-beats-forecasts-stock-rises-93CH-4616134"
+      ]
     },
     {
-      "title": "Bank Earnings Season Opens Monday with High Expectations",
-      "description": "Q1 2026 bank earnings begin April 13 (GS), with JPM, C, WFC on April 14 and MS, BAC on April 15. Consensus expects Goldman at $16.48 EPS (+16.7% YoY, revenue +12.9% to $17.0B), JPMorgan at $5.49 EPS (+8% YoY), and Bank of America at $1.01 EPS (+12% YoY). All six banks rallied into earnings this week\u2014JPM +5.1%, GS +5.2%, MS +7.1%, BAC +6.5%, WFC +6.0%\u2014with the street expecting strong trading revenues from the Iran volatility and elevated M&A pipelines. The key risk is whether management teams guide cautiously given geopolitical uncertainty and credit reserve build expectations."
+      "title": "Mega-Cap Tech and Software Roar Back",
+      "description": "The week saw an extraordinary rebound in large-cap technology, with Microsoft gaining +14% (its best week since April 2015), AMD surging +13% to an all-time high on a 12-day winning streak, NVIDIA adding +7% on continued AI demand, and Oracle spiking ~27% on a landmark 2.8 GW power agreement with Bloom Energy and solid Q3 earnings. Software led all sectors: the IGV ETF logged 13 consecutive days of gains, its longest streak in years, as investors rotated back into high-multiple growth names with renewed conviction about AI infrastructure spending. The Magnificent Seven collectively gained +8.6% on the week.",
+      "sources": [
+        "https://www.cnbc.com/2026/04/17/big-tech-stocks-winning-streaks-oracle-amd-microsoft-igv-.html",
+        "https://finance.yahoo.com/video/dow-jumps-800-points-sp-500-at-new-record-nasdaq-gains-68-this-week-201120267.html"
+      ]
     },
     {
-      "title": "AI Semiconductor Boom Accelerates; Storage Stocks Surge",
-      "description": "The AI semiconductor theme dominated the week's gainers, with INTC (+23.9%), SNDK (+21.3%), MRVL (+19.9%), TER (+18.9%), AVGO (+18.2%), STX (+17.7%), and WDC (+16.5%) all surging. Bank of America raised its 2026 global semiconductor forecast to $1.3 trillion (+$300B revision) and identified NVDA, AVGO, MRVL, and AMD as top drivers. Intel's 18A node entering high-volume manufacturing and NVIDIA's $5B strategic equity stake validated the domestic foundry thesis. Hyperscaler AI capex commitments for 2026 now exceed $650B across MSFT, AMZN, GOOG, and META."
+      "title": "TSMC Validates AI Semiconductor Super-Cycle",
+      "description": "Taiwan Semiconductor reported Q1 2026 revenue of $35.9B (+35.1% YoY, +40.6% in USD) and net income of $572.5B NTD (+58.3% YoY), with gross margins reaching 66.2%. Management guided Q2 2026 revenue to $39.0\u2013$40.2B and reaffirmed full-year 2026 growth of >30% in USD, cementing the AI-driven semiconductor capex super-cycle narrative. Advanced nodes (\u22647nm) contributed 74% of wafer revenue, underscoring the pricing power of leading-edge technology as hyperscaler AI spending shows no signs of abating.",
+      "sources": [
+        "https://www.stocktitan.net/sec-filings/TSM/6-k-taiwan-semiconductor-manufacturing-co-ltd-current-report-foreign--0f919b4a4e07.html"
+      ]
     },
     {
-      "title": "Enterprise SaaS Under Siege from AI 'Seat Compression' Narrative",
-      "description": "A UBS downgrade of ServiceNow on April 10 on 'seat compression' fears\u2014AI automation reducing human users of per-seat licensed software\u2014triggered one of the sharpest SaaS sector selloffs of 2026. NOW fell -18.6%, HUBS -21.4%, SNOW -20.3%, NET -21.0%, GWRE -21.8%, OKTA -21.5%, INTU -16.9%, and WDAY -14.9% for the week. Michael Burry's (since-deleted) social media post about Anthropic competition amplified PLTR's -13.7% drop. The bifurcation between AI infrastructure winners and incumbent SaaS losers is the defining intra-market dynamic of the Reflation regime."
+      "title": "Earnings Season Beats at High Rate, Q1 Bar Clears Easily",
+      "description": "With 32 S&P 500 companies having reported as of Friday, 78% beat EPS estimates against a blended Q1 YoY growth expectation of ~13%. Analysts have revised full-year 2026 S&P 500 earnings growth to ~18% from ~14% at year-end 2025, suggesting Q1 consensus was too conservative. The strong beat rate \u2014 led by Financials, Technology, and Healthcare \u2014 has provided a fundamental anchor for the equity market's recovery from the March lows, counterbalancing lingering macro uncertainty.",
+      "sources": [
+        "https://www.cnbc.com/2026/04/17/stock-market-next-week-outlook-for-april-20-24-2026.html",
+        "https://finance.yahoo.com/markets/stocks/articles/stock-market-news-apr-14-085500787.html"
+      ]
     }
   ],
   "risks": [
     {
-      "title": "Ceasefire Fragility and Strait of Hormuz Reopening Uncertainty",
-      "description": "Iran publicly accused the U.S. of ceasefire breaches by Thursday (April 9), and Strait of Hormuz maritime traffic remains restricted despite the ceasefire. Prediction markets assign only 22.5% probability to a durable deal by April 30. Any breakdown in negotiations\u2014or reports of 'ghost mines' and continued blockade activity\u2014could reverse the oil rally and trigger an abrupt risk-off episode. WTI is still $29/barrel above pre-conflict levels ($67), meaning the war risk premium has not been fully unwound."
+      "title": "Ceasefire Fragility and Geopolitical Relapse Risk",
+      "description": "The ceasefire between the U.S. and Iran remains fragile \u2014 weekend talks broke down initially when the U.S. said Iran rejected its best offer, and Iran has conditioned the Strait of Hormuz reopening on a final peace deal rather than a permanent agreement. Vessels must still coordinate passage with Iranian military forces and the U.S. naval blockade remains in effect. Any renewed escalation or breakdown in negotiations could quickly reverse the oil price decline and reignite inflation fears, unwinding much of this week's equity gains.",
+      "sources": [
+        "https://www.firstmerchants.com/resources/learn/blogs/blog-detail/weekly-investment-perspectives/2026/04/14/weekly-investment-perspective-april-14--2026",
+        "https://www.cnbc.com/2026/04/17/stock-market-next-week-outlook-for-april-20-24-2026.html"
+      ]
     },
     {
-      "title": "Persistent Inflation Could Force Fed to Flip Hawkish",
-      "description": "Despite the softer March CPI, inflation at +3.3% YoY remains 165bps above the Fed's 2% target, and the Fed's own revised projections now show PCE inflation ending 2026 at 2.7%. Seven of 19 FOMC members project zero cuts in 2026, and CME data shows 70% probability rates hold at 3.50-3.75% through January 2027. If April/May CPI data re-accelerate\u2014particularly if the Strait of Hormuz remains partially restricted\u2014markets could rapidly price out the remaining single cut, compressing equity multiples that assume gradual easing."
+      "title": "Overbought Technicals After 12-Day, 7%+ Sprint",
+      "description": "The S&P 500 has moved from oversold to overbought in just 12 trading days, an unusually compressed recovery that Piper Sandler's chief market technician Craig Johnson described as creating a 'highly vulnerable technical foundation.' Short-term momentum metrics are stretched, and the rapid run-up conceals a complex macro backdrop \u2014 WTI has only retreated to ~$80/bbl versus the ~$70 pre-conflict level, and the 10-year yield at 4.25% is still historically elevated. Any negative catalyst from earnings disappointments or renewed geopolitical tensions could trigger sharp profit-taking.",
+      "sources": [
+        "https://www.cnbc.com/2026/04/17/stock-market-next-week-outlook-for-april-20-24-2026.html"
+      ]
     },
     {
-      "title": "Weak U.S. Growth Signal (GDPNow 1.3%) Contradicts Reflation Thesis",
-      "description": "The Atlanta Fed GDPNow estimate as of week-end stands at approximately 1.3% for Q1 2026, well below the Reflation regime's implied growth expansion. If Q1 GDP data (due late April) confirms a significant growth slowdown while inflation remains elevated, the market could face a stagflationary re-pricing\u2014particularly dangerous given the S&P 500 Shiller CAPE of ~38.9x (historically associated with severe drawdowns when inflation rises). This risk was flagged Friday by late-session profit-taking."
+      "title": "Sticky Inflation and Delayed Fed Rate Cuts",
+      "description": "March headline CPI surged to +3.4% YoY (up from 2.4% in February) driven by energy prices, and markets have fully priced out near-term Fed rate cuts \u2014 CME FedWatch now shows 'no hike by December' as the base case, reversing the rate-cut expectations priced at the start of 2026. Core CPI remains more contained at +2.6% YoY, but Fed Chair Powell faces a stagflationary dilemma: slowing growth (GDPNow at ~1.3%) alongside re-emerging energy inflation. A 'higher for longer' rate environment continues to pressure rate-sensitive sectors and leveraged companies.",
+      "sources": [
+        "https://www.mutualofamerica.com/insights-and-tools/learning-center/emp/economic--market-perspective-april-2026",
+        "https://www.cmegroup.com/newsletters/rates-recap/2026-04-rates-recap.html"
+      ]
     },
     {
-      "title": "AI 'Seat Compression' Threatens High-Multiple SaaS Valuations",
-      "description": "The UBS ServiceNow downgrade catalyzed a violent sector rotation that wiped 15-22% off leading enterprise SaaS names in a single week. If the Anthropic 'Claude Mythos' model and similar AI agents genuinely compress software seat counts, the $2T+ SaaS industry faces structural multiple compression. Many watchlist names\u2014NOW, HUBS, SNOW, NET, OKTA, INTU\u2014remain at elevated forward multiples despite the selloff, and Q1 earnings commentary from these companies (due May) will be critical for validating or invalidating the thesis."
+      "title": "AI Monetization Gap: Software vs. Hardware Divergence",
+      "description": "While semiconductor and infrastructure names are rallying on surging AI capex (TSMC, NVDA, AMD, MRVL), enterprise software companies face a more complex narrative \u2014 Anthropic and Meta released more powerful models this month, raising pressure on software vendors to justify their value proposition against increasingly capable AI substitutes. The week showed early signs of this divergence, with Netflix dropping ~10% on soft guidance and broader software stocks requiring proof of AI-driven revenue acceleration. Investors are increasingly distinguishing between 'AI enablers' (chips, cloud infra) and 'AI disrupted' (legacy SaaS), making sector selection critical.",
+      "sources": [
+        "https://www.firstmerchants.com/resources/learn/blogs/blog-detail/weekly-investment-perspectives/2026/04/14/weekly-investment-perspective-april-14--2026",
+        "https://www.loomissayles.com/insights/april-2026-investment-outlook/"
+      ]
     },
     {
-      "title": "Bank Earnings Guidance Risk and Credit Reserve Build",
-      "description": "While consensus bank EPS estimates for Q1 are strong (+8-17% YoY), the key risk is management guidance. JPMorgan's Jamie Dimon has consistently flagged geopolitical and credit risks, and JPM's $103B NII guidance for full-year 2026 implies limited upside. War-related loan reserve builds, energy sector credit exposure, and potential softening in consumer credit quality (post-inflation squeeze) could drive downside guidance surprises. Any negative guidance from GS or JPM on April 13-14 could reverse the financial sector's +5-7% weekly gains."
+      "title": "Private Credit Stress and Supply Chain Disruption Lag",
+      "description": "Private credit markets are experiencing liquidity stress, with managers unable to meet redemption requests and concerns about sector concentration in leveraged borrowers growing. While not yet systemic, tighter credit conditions at the margin could weigh on growth-stage companies and M&A activity. Additionally, the Iran conflict's disruption of global supply chains has not yet fully worked its way into reported corporate margins \u2014 Q2 guidance season will provide the first real read-through of higher input costs, freight delays, and inventory disruptions that are not captured in the strong Q1 data.",
+      "sources": [
+        "https://www.mutualofamerica.com/insights-and-tools/learning-center/emp/economic--market-perspective-april-2026",
+        "https://www.loomissayles.com/insights/april-2026-investment-outlook/"
+      ]
     }
   ],
   "watchlist_movers": [
     {
-      "ticker": "FSLY",
-      "update": "Fastly crashed -31.2% on massive insider selling ($40M+ sold in past 90 days by CEO/CTO), weak consensus outlook (Hold, $13 avg target vs ~$30 stock), and broader CDN/edge sector de-rating from AI competition concerns.",
-      "weekly_change": "-31.17%",
-      "significance": "high"
-    },
-    {
-      "ticker": "INTC",
-      "update": "Intel surged on commencement of high-volume 18A node shipments and finalization of $5B strategic investment from NVIDIA, validating its IDM 2.0 turnaround. Stock roughly doubled over the past 30 days.",
-      "weekly_change": "+23.85%",
-      "significance": "high"
-    },
-    {
-      "ticker": "AKAM",
-      "update": "Akamai fell -22.5% as stock dropped 12.4% on Friday alone and 7.1% Thursday; soft FY2026 guidance (EPS miss vs consensus) and concerns about AI edge competition weighed heavily on the CDN incumbent.",
-      "weekly_change": "-22.51%",
-      "significance": "high"
-    },
-    {
-      "ticker": "GWRE",
-      "update": "Guidewire Software fell -21.8% on UBS downgrade of ServiceNow that triggered sector-wide enterprise software selloff; \"seat compression\" narrative\u2014AI reducing per-seat software users\u2014hit high-multiple SaaS names hard.",
-      "weekly_change": "-21.80%",
-      "significance": "high"
-    },
-    {
-      "ticker": "OKTA",
-      "update": "Okta fell -21.5% on AI cybersecurity fears (Anthropic \"Claude Mythos\" model concerns) and broader enterprise software de-rating; down -22% over week despite no company-specific fundamental deterioration.",
-      "weekly_change": "-21.54%",
-      "significance": "high"
-    },
-    {
-      "ticker": "HUBS",
-      "update": "HubSpot crashed -21.4%; down -50.3% YTD. UBS's ServiceNow downgrade on April 10 triggered broad CRM/marketing software rout on AI seat compression fears. Trading 71.7% below 52-week high of $672.24.",
-      "weekly_change": "-21.39%",
-      "significance": "high"
-    },
-    {
-      "ticker": "SNDK",
-      "update": "SanDisk (recently spun off from Western Digital) surged on AI storage demand wave; storage sector re-rating as hyperscaler HDD demand tightens dramatically.",
-      "weekly_change": "+21.33%",
-      "significance": "high"
-    },
-    {
-      "ticker": "NET",
-      "update": "Cloudflare fell -21.0% on AI competition fears in CDN/security space; Anthropic \"Project Glasswing\" cyber AI narrative hurt sector broadly alongside AKAM and FSLY.",
-      "weekly_change": "-21.03%",
-      "significance": "high"
-    },
-    {
-      "ticker": "WIX",
-      "update": "WIX fell 20.5% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-20.49%",
-      "significance": "high"
-    },
-    {
-      "ticker": "SNOW",
-      "update": "Snowflake fell -20.3% on broader SaaS de-rating; AI platform competition concerns and \"seat compression\" narrative hit data cloud stocks alongside the enterprise software sector rout.",
-      "weekly_change": "-20.28%",
-      "significance": "high"
-    },
-    {
-      "ticker": "MRVL",
-      "update": "Marvell surged on BofA semiconductor upgrade raising 2026 chip forecast to $1.3T and naming MRVL as top AI data-center custom silicon driver. Up ~20% on the week.",
-      "weekly_change": "+19.94%",
-      "significance": "high"
-    },
-    {
-      "ticker": "BRZE",
-      "update": "BRZE fell 19.9% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-19.89%",
-      "significance": "high"
-    },
-    {
-      "ticker": "IOT",
-      "update": "IOT fell 19.9% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-19.86%",
-      "significance": "high"
-    },
-    {
-      "ticker": "TER",
-      "update": "Teradyne surged as semiconductor test equipment demand surged alongside chip sector re-rating; beneficiary of Intel 18A ramp and broader AI chip capex cycle.",
-      "weekly_change": "+18.87%",
-      "significance": "high"
-    },
-    {
-      "ticker": "PCOR",
-      "update": "PCOR fell 18.7% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-18.67%",
-      "significance": "high"
-    },
-    {
-      "ticker": "NOW",
-      "update": "ServiceNow fell -18.6%; UBS downgraded NOW on April 10 citing \"seat compression\" from AI automation, triggering sector-wide enterprise software selloff. This was the catalyst for the week's software rout.",
-      "weekly_change": "-18.61%",
-      "significance": "high"
-    },
-    {
-      "ticker": "AVGO",
-      "update": "Broadcom rallied strongly on AI chip tailwinds; BofA named AVGO as a top driver in upgraded $1.3T semiconductor forecast. Stock up ~18% on the week.",
-      "weekly_change": "+18.18%",
-      "significance": "high"
-    },
-    {
-      "ticker": "AMPL",
-      "update": "AMPL fell 17.9% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-17.86%",
-      "significance": "high"
-    },
-    {
-      "ticker": "STX",
-      "update": "Seagate hit new 52-week high after analyst named it top IT hardware pick; non-GAAP operating income +67.5% YoY; stock up 17.7% on week, +582% over 52 weeks on AI nearline HDD demand.",
-      "weekly_change": "+17.66%",
-      "significance": "high"
-    },
-    {
-      "ticker": "INTU",
-      "update": "Intuit fell -16.9% on enterprise SaaS de-rating following NOW downgrade; concerns about AI disruption to SMB software incumbents. Stock down -17% week.",
-      "weekly_change": "-16.89%",
-      "significance": "high"
-    },
-    {
-      "ticker": "PATH",
-      "update": "PATH fell 16.7% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-16.71%",
-      "significance": "high"
-    },
-    {
-      "ticker": "BL",
-      "update": "BL fell 16.6% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-16.65%",
-      "significance": "high"
-    },
-    {
-      "ticker": "WDC",
-      "update": "Western Digital surged on AI storage demand; firm purchase orders through calendar 2026 from top hyperscalers. Stock up +16.5% on week, +540% over prior 52 weeks. Analysts see further upside.",
-      "weekly_change": "+16.50%",
-      "significance": "high"
-    },
-    {
-      "ticker": "ANET",
-      "update": "Arista Networks surged +16.3% on ceasefire-driven tech rally and continued AI networking demand; stock benefited from hyperscaler capex cycle and strong Q1 order momentum.",
-      "weekly_change": "+16.34%",
-      "significance": "high"
-    },
-    {
-      "ticker": "NTNX",
-      "update": "NTNX fell 16.3% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-16.30%",
-      "significance": "high"
-    },
-    {
-      "ticker": "TEAM",
-      "update": "TEAM fell 16.3% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-16.29%",
-      "significance": "high"
-    },
-    {
-      "ticker": "DOCN",
-      "update": "DOCN fell 16.0% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-16.04%",
-      "significance": "high"
-    },
-    {
-      "ticker": "GLW",
-      "update": "Corning surged +15.8% on the week; up ~57% YTD driven by $6B Meta fiber optic supply deal for AI data centers and plant expansion announcement in North Carolina.",
-      "weekly_change": "+15.80%",
-      "significance": "high"
-    },
-    {
-      "ticker": "WDAY",
-      "update": "WDAY fell 14.9% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-14.92%",
-      "significance": "high"
-    },
-    {
-      "ticker": "ZS",
-      "update": "ZS fell 14.9% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-14.88%",
-      "significance": "high"
-    },
-    {
-      "ticker": "MU",
-      "update": "Micron surged +14.9% on AI storage demand wave alongside Seagate and Western Digital; BofA chip upgrade and tightening HBM/DRAM supply drove sector re-rating.",
-      "weekly_change": "+14.86%",
-      "significance": "high"
-    },
-    {
-      "ticker": "RBRK",
-      "update": "RBRK fell 14.8% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-14.78%",
-      "significance": "high"
-    },
-    {
-      "ticker": "ESTC",
-      "update": "ESTC fell 14.6% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-14.57%",
-      "significance": "high"
-    },
-    {
-      "ticker": "SOC",
-      "update": "SOC fell 14.6% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-14.56%",
-      "significance": "high"
-    },
-    {
-      "ticker": "ASAN",
-      "update": "ASAN fell 14.4% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-14.42%",
-      "significance": "high"
-    },
-    {
-      "ticker": "KVYO",
-      "update": "KVYO fell 14.4% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-14.36%",
-      "significance": "high"
-    },
-    {
-      "ticker": "DT",
-      "update": "DT fell 14.2% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-14.16%",
-      "significance": "high"
-    },
-    {
-      "ticker": "GTLB",
-      "update": "GTLB fell 13.9% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-13.91%",
-      "significance": "high"
-    },
-    {
-      "ticker": "MNDY",
-      "update": "MNDY fell 13.9% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-13.90%",
-      "significance": "high"
-    },
-    {
-      "ticker": "QLYS",
-      "update": "QLYS fell 13.8% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-13.77%",
-      "significance": "high"
-    },
-    {
-      "ticker": "PLTR",
-      "update": "Palantir fell -13.7% despite Trump Truth Social endorsement (\"great war fighting capabilities\"); Michael Burry deleted post claiming Anthropic competition, broad AI multiple compression, and -30% YTD context drove selling pressure.",
-      "weekly_change": "-13.72%",
-      "significance": "high"
-    },
-    {
-      "ticker": "AMZN",
-      "update": "Amazon surged +13.7% on broad tech rally post-ceasefire; beneficiary of hyperscaler AI capex cycle with ~$100B+ planned capex for 2026; consumer unit also buoyed by ceasefire-driven macro optimism.",
-      "weekly_change": "+13.66%",
-      "significance": "high"
-    },
-    {
-      "ticker": "VEEV",
-      "update": "VEEV fell 13.0% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-13.01%",
-      "significance": "high"
-    },
-    {
-      "ticker": "VRT",
-      "update": "Vertiv surged +13.0% on power/cooling infrastructure demand for AI data centers; GE Vernova upgrade and energy infrastructure sector re-rating drove the week's industrials leadership.",
-      "weekly_change": "+12.99%",
-      "significance": "high"
-    },
-    {
-      "ticker": "AMD",
-      "update": "AMD surged +12.6% on BofA chip sector upgrade and AI GPU/data center momentum; named alongside NVDA and AVGO as key AI beneficiary in revised $1.3T semiconductor forecast.",
-      "weekly_change": "+12.62%",
-      "significance": "high"
-    },
-    {
-      "ticker": "DDOG",
-      "update": "DDOG fell 12.4% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-12.42%",
-      "significance": "high"
-    },
-    {
-      "ticker": "TTAN",
-      "update": "TTAN fell 12.1% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-12.12%",
-      "significance": "high"
-    },
-    {
-      "ticker": "CRM",
-      "update": "CRM fell 11.9% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-11.86%",
-      "significance": "high"
-    },
-    {
-      "ticker": "DOCU",
-      "update": "DOCU fell 11.4% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-11.37%",
-      "significance": "high"
-    },
-    {
-      "ticker": "RNG",
-      "update": "RNG fell 11.3% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-11.33%",
-      "significance": "high"
-    },
-    {
-      "ticker": "MDB",
-      "update": "MDB fell 10.8% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-10.79%",
-      "significance": "high"
-    },
-    {
-      "ticker": "CIEN",
-      "update": "Ciena surged +10.7% on optical networking demand tied to AI buildout; beneficiary of same fiber/connectivity themes as Corning (GLW).",
-      "weekly_change": "+10.73%",
-      "significance": "high"
-    },
-    {
-      "ticker": "CXM",
-      "update": "CXM fell 10.7% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-10.71%",
-      "significance": "high"
-    },
-    {
-      "ticker": "S",
-      "update": "S fell 10.6% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-10.56%",
-      "significance": "high"
-    },
-    {
-      "ticker": "GEV",
-      "update": "GE Vernova hit new 52-week high (~$991), up +10.4% on the week; Susquehanna raised PT to $1,080; stock up ~199% over 12 months on AI data center power demand for gas turbines. Earns April 22.",
-      "weekly_change": "+10.35%",
-      "significance": "high"
-    },
-    {
-      "ticker": "VRNS",
-      "update": "VRNS fell 10.3% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-10.30%",
-      "significance": "high"
-    },
-    {
-      "ticker": "BILL",
-      "update": "BILL fell 10.2% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-10.22%",
-      "significance": "high"
-    },
-    {
-      "ticker": "MANH",
-      "update": "MANH fell 10.2% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-10.21%",
-      "significance": "high"
-    },
-    {
-      "ticker": "TWLO",
-      "update": "TWLO fell 10.2% on the week, likely driven by enterprise SaaS/software de-rating on AI seat compression fears and Anthropic threat narrative.",
-      "weekly_change": "-10.21%",
-      "significance": "high"
-    },
-    {
-      "ticker": "STZ",
-      "update": "Constellation Brands gained +10.0%; consumer staples rotation on ceasefire-driven macro confidence combined with deeply oversold valuation.",
-      "weekly_change": "+9.99%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "MKC",
-      "update": "MKC gained 10.0% on the week, driven by broader sector dynamics.",
-      "weekly_change": "+9.97%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "UNH",
-      "update": "UnitedHealth surged +9.9% after April 6 release of final Medicare Advantage rate notice showed improvement vs. preliminary rates, lifting managed care stocks broadly. Stock remains deeply oversold vs. 52-week highs.",
-      "weekly_change": "+9.87%",
-      "significance": "high"
-    },
-    {
-      "ticker": "BSY",
-      "update": "BSY fell 9.6% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-9.59%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "META",
-      "update": "Meta surged +9.6% on AI ad revenue momentum and planned $115-135B capex for 2026; Zuckerberg commentary on AI integration driving advertising conversion growth. Strong earnings expected Q2.",
-      "weekly_change": "+9.57%",
-      "significance": "high"
-    },
-    {
-      "ticker": "FRSH",
-      "update": "FRSH fell 9.4% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-9.38%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "TSM",
-      "update": "TSMC surged +9.3% on broad semiconductor re-rating; BofA chip forecast upgrade, continued AI chip demand and NVIDIA partnership validation of advanced node demand.",
-      "weekly_change": "+9.32%",
-      "significance": "high"
-    },
-    {
-      "ticker": "TENB",
-      "update": "TENB fell 8.9% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-8.93%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "TTD",
-      "update": "TTD fell 8.9% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-8.89%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "CHKP",
-      "update": "CHKP fell 8.7% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-8.72%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "ADSK",
-      "update": "ADSK fell 8.2% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-8.23%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "ZETA",
-      "update": "ZETA fell 7.4% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-7.41%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "ADBE",
-      "update": "ADBE fell 7.2% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-7.23%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "GOOG",
-      "update": "Alphabet surged +7.2% as tech rally broadened post-ceasefire; hyperscaler capex commitment of $75B+ for 2026 affirmed AI infrastructure spending thesis. Strong search ad revenue outlook for Q1.",
-      "weekly_change": "+7.23%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "MS",
-      "update": "Morgan Stanley rose +7.1% ahead of Q1 2026 earnings (April 15); consensus at $3.01 EPS (+16% YoY). Beneficiary of strong M&A pipeline and elevated trading revenues.",
-      "weekly_change": "+7.14%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "FTNT",
-      "update": "FTNT fell 7.1% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-7.09%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "IBM",
-      "update": "IBM fell 7.0% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-7.02%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "BWXT",
-      "update": "BWX Technologies gained +6.8% as nuclear/defense sector benefited from Iran ceasefire framework; defense posture remains elevated with Strait of Hormuz concerns and BWRX-300 nuclear SMR advancing in Canada.",
-      "weekly_change": "+6.81%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "CF",
-      "update": "CF fell 6.7% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-6.65%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "BAC",
-      "update": "Bank of America gained +6.5% on financial sector rally; Q1 2026 earnings due April 15 with consensus at $1.01 EPS (+12% YoY) and $29.96B revenue (+9% YoY).",
-      "weekly_change": "+6.48%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "PTC",
-      "update": "PTC fell 6.5% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-6.46%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "NVDA",
-      "update": "NVIDIA gained +6.3% on the week; finalized $5B strategic equity stake in Intel as part of foundry partnership, co-opetition shift validating 18A node. BofA named NVDA top AI chip driver in upgraded sector forecast.",
-      "weekly_change": "+6.34%",
-      "significance": "high"
-    },
-    {
-      "ticker": "LPLA",
-      "update": "LPL Financial gained +6.3% as financial advisor stocks rallied with broader market; beneficiary of reflation regime with higher equity AUM valuations and strong retail investor activity.",
-      "weekly_change": "+6.32%",
-      "significance": "low"
-    },
-    {
-      "ticker": "SHOP",
-      "update": "SHOP fell 6.3% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-6.28%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "TYL",
-      "update": "TYL fell 6.2% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-6.20%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "WFC",
-      "update": "Wells Fargo gained +6.0% ahead of Q1 2026 earnings (April 14); consensus at $1.58 EPS (+14% YoY) and $21.79B revenue (+8% YoY). Zacks upgraded to Buy on April 6.",
-      "weekly_change": "+5.97%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "RPD",
-      "update": "RPD fell 5.8% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-5.76%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "ORCL",
-      "update": "ORCL fell 5.6% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-5.62%",
-      "significance": "medium"
-    },
-    {
-      "ticker": "RAMP",
-      "update": "RAMP fell 5.2% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-5.23%",
-      "significance": "medium"
+      "ticker": "JPM",
+      "event_type": "earnings",
+      "summary": "JPMorgan Chase reported Q1 2026 EPS of $5.94 vs. $5.45 estimate (+9% beat) and revenue of $50.54B vs. $49.17B estimate, with net income rising 13% to $16.49B. Fixed income trading revenue surged 21% to $7.08B and investment banking fees jumped 28% to $2.88B, both well ahead of expectations. CEO Jamie Dimon called the economy resilient but flagged 'an increasingly complex set of risks' including geopolitical tensions and fiscal deficits, and trimmed full-year NII guidance to ~$103B from $104.5B.",
+      "weekly_move": "+2.5%",
+      "sources": [
+        "https://www.cnbc.com/2026/04/14/jpmorgan-chase-jpm-earnings-1q-2026.html"
+      ]
     },
     {
       "ticker": "GS",
-      "update": "Goldman Sachs rose +5.2% into Q1 2026 earnings (April 13); consensus expects EPS of $16.48 (+16.7% YoY) and $17.0B revenue (+12.9% YoY). Jefferies PT at $1,049, Wells Fargo at $1,050. Strong trading revenue expected.",
-      "weekly_change": "+5.19%",
-      "significance": "high"
+      "event_type": "earnings",
+      "summary": "Goldman Sachs reported its second-highest quarterly revenues in company history, with EPS of $17.55 (vs. $16.47 est., +6.6% beat) and net revenues of $17.23B (+14% YoY). Global Banking & Markets delivered record revenues of $12.74B, while equities trading set a new record at $5.33B (+27% YoY). Despite the earnings beat, shares fell ~3% on the announcement day as geopolitical headlines overshadowed results, before recovering later in the week.",
+      "weekly_move": "+4.0%",
+      "sources": [
+        "https://www.investing.com/news/company-news/goldman-sachs-q1-2026-slides-record-revenues-stock-falls-on-results-93CH-4610799",
+        "https://finance.yahoo.com/markets/stocks/articles/goldman-sachs-shows-strength-despite-173000181.html"
+      ]
     },
     {
-      "ticker": "UL",
-      "update": "UL gained 5.2% on the week, driven by broader sector dynamics.",
-      "weekly_change": "+5.19%",
-      "significance": "medium"
+      "ticker": "MS",
+      "event_type": "earnings",
+      "summary": "Morgan Stanley delivered record Q1 2026 results with EPS of $3.43 (vs. $3.02 est., +13.6% beat) and record revenue of $20.58B (+16% YoY). The bank's equity trading generated $5.15B in revenue \u2014 a record \u2014 while fixed income rose 29% to $3.B on commodities volatility from the Iran conflict. Investment banking soared 36% to $2.12B. The stock rose 4.3% in pre-market trading on the announcement.",
+      "weekly_move": "+5.1%",
+      "sources": [
+        "https://www.investing.com/news/transcripts/earnings-call-transcript-morgan-stanley-q1-2026-beats-forecasts-stock-rises-93CH-4616134",
+        "https://www.cnbc.com/2026/04/15/morgan-stanley-ms-earnings-1q-2026.html"
+      ]
     },
     {
-      "ticker": "JPM",
-      "update": "JPMorgan rallied +5.1% into Q1 earnings (April 14); analysts expect $5.49 EPS (+8% YoY) and $48.9B revenue (+8% YoY). Goldman Sachs raised PT to $365. Stock up on ceasefire-driven financial sector rally.",
-      "weekly_change": "+5.14%",
-      "significance": "high"
+      "ticker": "BAC",
+      "event_type": "earnings",
+      "summary": "Bank of America reported Q1 2026 EPS of $1.11 vs. $1.01 estimate (9.9% beat) and revenue of $30.3B vs. $29.92B estimate, with EPS rising 25% YoY \u2014 its highest in roughly two decades. Equities trading revenue surged 30% and total revenue grew 7% YoY, driven by strong investment banking and consumer banking. Shares rose ~2% in pre-market trading following the beat.",
+      "weekly_move": "+3.8%",
+      "sources": [
+        "https://www.investing.com/news/transcripts/earnings-call-transcript-bank-of-america-beats-q1-2026-earnings-estimates-93CH-4616137",
+        "https://www.heygotrade.com/en/news/wall-street-bank-earnings-record-trading/"
+      ]
     },
     {
-      "ticker": "CRWD",
-      "update": "CRWD fell 5.0% on the week, driven by broader sector dynamics.",
-      "weekly_change": "-5.01%",
-      "significance": "medium"
+      "ticker": "WFC",
+      "event_type": "earnings",
+      "summary": "Wells Fargo posted Q1 2026 EPS of $1.60 (vs. $1.58 est., slight beat) but missed on revenue at $21.45B vs. $21.76B expected. EPS rose 15% YoY and loans grew 11% YoY, though net interest margin compressed 20bps YoY to 2.47%. Management warned that higher energy prices could curb consumer spending in the second half of 2026, and the stock dipped modestly after the report given the revenue miss and NIM headwinds.",
+      "weekly_move": "+1.5%",
+      "sources": [
+        "https://www.investing.com/news/transcripts/earnings-call-transcript-wells-fargo-q1-2026-beats-eps-forecasts-stock-dips-93CH-4613351",
+        "https://finance.yahoo.com/markets/stocks/articles/wells-fargo-co-wfc-q1-070110876.html"
+      ]
     },
     {
-      "ticker": "AEM",
-      "update": "Agnico Eagle Mines gained +4.9%; gold miner benefited from CPI surprise (+3.3% YoY) driving gold safe-haven and inflation-hedge demand despite broader equity rally.",
-      "weekly_change": "+4.89%",
-      "significance": "medium"
+      "ticker": "C",
+      "event_type": "earnings",
+      "summary": "Citigroup reported Q1 2026 EPS of $3.06, surpassing estimates by 16%, with revenue of $24.6B \u2014 up 14% YoY and the highest quarterly revenue in over a decade. Fixed income trading gains were a key driver, capitalizing on Middle East-driven commodity volatility. The strong beat reinforced the thesis that Wall Street banks have structurally benefited from elevated volatility environments.",
+      "weekly_move": "+3.2%",
+      "sources": [
+        "https://www.quiverquant.com/news/Citigroup+Stock+(C)+Opinions+on+Q1+Earnings+Beat"
+      ]
     },
     {
-      "ticker": "PANW",
-      "update": "Palo Alto Networks fell -4.6% for the week but had intraday swings; dropped -8.2% on Friday on Anthropic \"Claude Mythos\" AI threat fears. CEO Nikesh Arora made large insider buy (+25% of direct ownership), a bullish signal.",
-      "weekly_change": "-4.58%",
-      "significance": "medium"
+      "ticker": "NFLX",
+      "event_type": "earnings",
+      "summary": "Netflix beat Q1 2026 earnings with EPS of $1.23 vs. $0.76 expected and revenue of $12.25B vs. $12.17B estimate, but issued disappointing Q2 guidance: revenue of $12.57B (below $12.64B est.) and EPS of $0.78 (below $0.84 est.). Co-founder and Chairman Reed Hastings announced he would not seek board reelection in June, signaling a generational transition. Shares fell ~10% intraday Friday, though they recovered some losses by close on very heavy volume (125M shares, more than double average).",
+      "weekly_move": "-9.5%",
+      "sources": [
+        "https://finance.yahoo.com/news/netflix-stock-slides-as-forecast-misses-co-founder-reed-hastings-announces-departure-from-board-215534384.html",
+        "https://www.cnbc.com/2026/04/17/stocks-making-the-biggest-moves-premarket-nflx-orcl-afrm-and-more.html"
+      ]
     },
     {
-      "ticker": "FANG",
-      "update": "Diamondback Energy fell -3.0% as oil volatility dominated; WTI crashed from $115 to ~$92 on ceasefire news then recovered to ~$96. Q1 2026 earnings expected May 4; EPS consensus $3.14 vs $4.54 prior year on lower oil.",
-      "weekly_change": "-2.99%",
-      "significance": "medium"
+      "ticker": "TSM",
+      "event_type": "earnings",
+      "summary": "TSMC reported Q1 2026 revenue of $35.9B (+35.1% YoY, +40.6% in USD) with net income rising 58.3% and gross margin expanding to 66.2%. Advanced nodes (\u22647nm) drove 74% of wafer revenue, led by 5nm (36%) and 3nm (25%). Management guided Q2 2026 revenue to $39.0\u2013$40.2B and reiterated full-year 2026 USD revenue growth of >30%, affirming AI-driven demand for leading-edge semiconductor capacity is accelerating rather than plateauing.",
+      "weekly_move": "+5.3%",
+      "sources": [
+        "https://www.stocktitan.net/sec-filings/TSM/6-k-taiwan-semiconductor-manufacturing-co-ltd-current-report-foreign--0f919b4a4e07.html"
+      ]
     },
     {
-      "ticker": "VLO",
-      "update": "Valero Energy fell -2.1% on WTI crude price collapse from $115 to $92 post-ceasefire; Zacks upgraded to Buy on April 6 on earnings estimate upward revisions (+22% over 3 months). Benicia refinery idling by April.",
-      "weekly_change": "-2.13%",
-      "significance": "medium"
+      "ticker": "ABT",
+      "event_type": "earnings",
+      "summary": "Abbott narrowly beat Q1 2026 EPS at $1.15 vs. $1.14 estimate, but cut its 2026 full-year adjusted EPS guidance to $5.38\u2013$5.50 from $5.55\u2013$5.75, citing a 20-cent-per-share dilution impact from its $23B Exact Sciences acquisition. Respiratory and FreeStyle Libre products came in below plan in Q1. Shares fell ~5\u20136% on guidance cut, prompting TD Cowen to lower its price target to $115 from $137 (maintained Buy) and a slew of additional downgrades from other analysts.",
+      "weekly_move": "-6.2%",
+      "sources": [
+        "https://www.reuters.com/business/healthcare-pharmaceuticals/abbott-first-quarter-results-beat-cancer-diagnostics-medical-device-strength-2026-04-16/",
+        "https://www.investing.com/news/analyst-ratings/td-cowen-lowers-abbott-stock-price-target-to-115-on-guidance-cut-93CH-4621017"
+      ]
+    },
+    {
+      "ticker": "UNH",
+      "event_type": "news",
+      "summary": "UnitedHealth Group has not yet reported \u2014 Q1 2026 earnings are scheduled for Tuesday April 21, 2026, before market open. Analyst consensus expects EPS of $6.76 and revenue of $109.84B, with full-year guidance of $17.75 EPS. The stock remains a key watch item for the coming week as one of the largest S&P 500 constituents by weight and a bellwether for healthcare cost trends, particularly managed care margin pressure from elevated utilization.",
+      "weekly_move": "+1.8%",
+      "sources": [
+        "https://www.marketbeat.com/instant-alerts/unitedhealth-group-unh-projected-to-post-quarterly-earnings-on-tuesday-2026-04-14/"
+      ]
+    },
+    {
+      "ticker": "ORCL",
+      "event_type": "price_move",
+      "summary": "Oracle surged approximately 27% on the week \u2014 its best weekly performance in years \u2014 driven by two catalysts: (1) a major power agreement with Bloom Energy to supply up to 2.8 GW of fuel-cell capacity, underscoring the massive infrastructure buildout for its AI data centers, and (2) strong Q3 FY2026 results with EPS of $1.79 (vs. $1.71 est.) and revenue of $17.19B (+21.7% YoY). Oracle's cloud infrastructure segment continues to accelerate and its $553B remaining performance obligations backlog reflects unprecedented AI contract demand. CNBC noted charts remain constructive even after the spike.",
+      "weekly_move": "+27.0%",
+      "sources": [
+        "https://www.cnbc.com/2026/04/16/oracles-stock-has-rallied-nearly-30percent-this-week-but-charts-show-its-not-too-late-to-buy.html",
+        "https://www.marketbeat.com/instant-alerts/oracle-nyseorcl-shares-up-43-heres-why-2026-04-15/"
+      ]
+    },
+    {
+      "ticker": "MSFT",
+      "event_type": "price_move",
+      "summary": "Microsoft gained approximately 14% this week, its best weekly performance since April 2015, as the geopolitical relief rally and AI infrastructure excitement lifted mega-cap tech broadly. Microsoft also launched the Fairweather data center in Wisconsin ahead of schedule, which will integrate hundreds of thousands of GB200s at 3.3 GW capacity by late 2027. Analysts at TD Cowen and Baird trimmed price targets (to $540 and $500 respectively) ahead of Q3 earnings, citing Azure growth conservatism, but both maintained Buy/Outperform ratings.",
+      "weekly_move": "+14.0%",
+      "sources": [
+        "https://www.cnbc.com/2026/04/17/big-tech-stocks-winning-streaks-oracle-amd-microsoft-igv-.html",
+        "https://intellectia.ai/news/stock/microsoft-shares-rise-14-but-face-competitive-challenges"
+      ]
+    },
+    {
+      "ticker": "AMD",
+      "event_type": "price_move",
+      "summary": "Advanced Micro Devices surged approximately 13% this week, hitting an all-time high on Thursday during a remarkable 12-day winning streak \u2014 its longest in nearly two decades. AMD's rally was fueled by Bernstein analyst expectations of strong AI server demand, combined with broader sector rotation into semiconductor names. The stock traded in a weekly range of $234.80\u2013$279.98 and broke above the $267 prior 52-week high.",
+      "weekly_move": "+13.0%",
+      "sources": [
+        "https://www.cnbc.com/2026/04/17/big-tech-stocks-winning-streaks-oracle-amd-microsoft-igv-.html",
+        "https://economictimes.com/news/international/us/unstoppable-surge-amd-hits-all-time-high-in-best-run-in-nearly-two-decades-whats-fueling-the-drive/articleshow/130313216.cms"
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "event_type": "price_move",
+      "summary": "NVIDIA gained approximately 7% on the week and has now been on a 10-day winning streak totaling +18% over that stretch. The stock benefited from TSMC's blowout earnings confirming AI chip demand, continued hyperscaler capex commentary, and NVIDIA's own AI-quantum model launch referenced in pre-market volume data. Shares remain ~8% below the all-time high of $212.19 (post 10:1 split in 2024). The Nvidia-Marvell investment relationship also received renewed attention this week.",
+      "weekly_move": "+7.0%",
+      "sources": [
+        "https://www.cnbc.com/2026/04/14/nvidia-stock-nvda-ai-streak.html"
+      ]
+    },
+    {
+      "ticker": "MRVL",
+      "event_type": "analyst_change",
+      "summary": "Marvell Technology received multiple analyst upgrades this week: Benchmark upgraded to Buy with a $130 target, BofA upgraded from Neutral to Buy (target raised to $110 from $90), and B. Riley raised its target to $156 (maintained Buy). The wave of upgrades followed NVIDIA's reported $2B strategic investment in Marvell and growing focus on the company's optical networking and custom ASIC business for AWS and hyperscalers. Shares rose ~1.8% on Monday alone and were up approximately 8\u201310% on the week.",
+      "weekly_move": "+9.0%",
+      "sources": [
+        "https://finance.yahoo.com/news/marvell-upgraded-trade-desk-downgraded-143122342.html",
+        "https://www.marketbeat.com/instant-alerts/marvell-technology-nasdaqmrvl-trading-up-18-after-analyst-upgrade-2026-04-14/"
+      ]
+    },
+    {
+      "ticker": "HIMS",
+      "event_type": "news",
+      "summary": "Hims & Hers Health surged approximately 25% on the week after the FDA announced it would hold advisory committee meetings to evaluate several wellness peptides currently restricted under existing guidance. Shares jumped 13.72% on April 16 alone on the news, with investors interpreting the FDA's reconsideration of peptide regulations as a potential expansion of Hims' addressable market for peptide-based therapies. The stock has been a high-volatility name in 2026 given its GLP-1 and compounding pharmacy exposure.",
+      "weekly_move": "+25.0%",
+      "sources": [
+        "https://www.mexc.com/news/1031408"
+      ]
+    },
+    {
+      "ticker": "INTU",
+      "event_type": "analyst_change",
+      "summary": "Northcoast Research upgraded Intuit from Neutral to Buy with a price target of $575, citing valuation as the key driver \u2014 the stock has declined nearly 30% in 2026 and now trades at a significant discount to historical multiples. Intuit's AI-powered tax and accounting platform remains a strong secular franchise, and the firm sees the pullback as a compelling entry point ahead of fiscal Q3 earnings. The upgrade sparked a mid-week move higher.",
+      "weekly_move": "+5.5%",
+      "sources": [
+        "https://finance.yahoo.com/news/marvell-upgraded-trade-desk-downgraded-143122342.html"
+      ]
+    },
+    {
+      "ticker": "TTD",
+      "event_type": "analyst_change",
+      "summary": "Wedbush downgraded The Trade Desk from Neutral to Underperform with a price target of $23, stating that the added value from a rumored AI-GPT inventory monetization deal does not justify the current stock price. The stock had surged approximately 18% earlier in the week on speculation about a potential partnership with OpenAI to monetize AI-generated inventory, and Wedbush's downgrade provided a contrarian counterweight. TTD finished the week with elevated volatility.",
+      "weekly_move": "+12.0%",
+      "sources": [
+        "https://finance.yahoo.com/news/marvell-upgraded-trade-desk-downgraded-143122342.html"
+      ]
+    },
+    {
+      "ticker": "FOUR",
+      "event_type": "analyst_change",
+      "summary": "Shift4 Payments was downgraded by both Seaport Global (Buy to Neutral) on April 16 and Wolfe Research (Outperform to Peer Perform) on April 15, citing valuation concerns after recent stock appreciation. Both firms see the current risk/reward as less compelling following the run-up. No Q1 earnings scheduled this week \u2014 Shift4 is a watch for upcoming fintech earnings season.",
+      "weekly_move": "-3.0%",
+      "sources": [
+        "https://www.benzinga.com/analyst-stock-ratings/downgrades"
+      ]
+    },
+    {
+      "ticker": "CHKP",
+      "event_type": "analyst_change",
+      "summary": "Check Point Software was downgraded by BWG Global from Mixed to Negative on April 14. The move reflects concerns about competitive pressure in the enterprise security space from next-generation platforms with deeper AI integration. Check Point reports Q1 2026 earnings on April 22, which will be a key test of whether the legacy firewall-centric model continues to show durable growth.",
+      "weekly_move": "-2.5%",
+      "sources": [
+        "https://www.benzinga.com/analyst-stock-ratings/downgrades"
+      ]
+    },
+    {
+      "ticker": "TEAM",
+      "event_type": "analyst_change",
+      "summary": "Atlassian was downgraded by BWG Global from Positive to Mixed on April 17, signaling reduced conviction in the stock's near-term trajectory. The downgrade reflects concerns about enterprise software spending normalization and competitive pressure in project management tools. Atlassian's next earnings report will be closely watched for signs of cloud seat expansion velocity and AI feature monetization.",
+      "weekly_move": "-1.5%",
+      "sources": [
+        "https://www.benzinga.com/analyst-stock-ratings/downgrades"
+      ]
+    },
+    {
+      "ticker": "AFRM",
+      "event_type": "price_move",
+      "summary": "Affirm jumped ~7.4% on April 14 as fintech stocks rebounded broadly, driven by improving sentiment around consumer finance amid geopolitical de-escalation and broader risk-on appetite. The stock remains rangebound between $42\u2013$52 after a 45% decline from its November 2025 high, but its Amazon 2031 partnership extension and first GAAP-profitable quarter ($130M net income on $1.1B revenue in Q2 FY2026) provide fundamental support. Earnings are due May 7, 2026.",
+      "weekly_move": "+8.0%",
+      "sources": [
+        "https://www.quiverquant.com/news/Affirm+jumps+as+fintech+stocks+rebound+and+investors+refocus+on+key+partnerships"
+      ]
+    },
+    {
+      "ticker": "AVGO",
+      "event_type": "price_move",
+      "summary": "Broadcom gained approximately 9% on the week, consistent with the broader semiconductor and AI infrastructure rally. Yahoo Finance noted Broadcom was among the top weekly gainers in mega-cap tech, benefiting from the AI hardware cycle optimism reinforced by TSMC's blowout Q1 results and strong hyperscaler capex commentary. No earnings or major news this week \u2014 next report expected in Q2.",
+      "weekly_move": "+9.0%",
+      "sources": [
+        "https://finance.yahoo.com/video/dow-jumps-800-points-sp-500-at-new-record-nasdaq-gains-68-this-week-201120267.html"
+      ]
+    },
+    {
+      "ticker": "META",
+      "event_type": "price_move",
+      "summary": "Meta Platforms gained approximately 9% on the week, ranking among the Magnificent Seven's best performers. The rally was supported by the broader tech recovery and additional confidence in Meta's AI platform strategy \u2014 Anthropic and Meta each released more powerful AI models this week, with Meta's updates reinforcing the company's position as an open-source AI leader. Separately, Last week Meta added $21B in market cap in a single day.",
+      "weekly_move": "+9.0%",
+      "sources": [
+        "https://www.cnbc.com/2026/04/14/nvidia-stock-nvda-ai-streak.html",
+        "https://finance.yahoo.com/video/dow-jumps-800-points-sp-500-at-new-record-nasdaq-gains-68-this-week-201120267.html"
+      ]
+    },
+    {
+      "ticker": "AMZN",
+      "event_type": "price_move",
+      "summary": "Amazon gained approximately 5% on the week, as e-commerce and cloud optimism returned alongside the geopolitical de-escalation. AWS remains a key beneficiary of AI infrastructure spending, and Marvell's AWS partnership upgrades indirectly reinforced Amazon's cloud capex commitment. Amazon Q1 2026 earnings are expected in early May.",
+      "weekly_move": "+5.0%",
+      "sources": [
+        "https://finance.yahoo.com/video/dow-jumps-800-points-sp-500-at-new-record-nasdaq-gains-68-this-week-201120267.html"
+      ]
+    },
+    {
+      "ticker": "PLTR",
+      "event_type": "price_move",
+      "summary": "Palantir rose modestly on the week, with shares near $146 by Friday. The stock is a key beneficiary of the defense AI theme given its $10B U.S. Army framework agreement and $448M Navy ShipOS deal, but has lagged the broader Nasdaq's 6.84% weekly surge. PLTR trades at ~$146 vs. a 52-week range of approximately $126\u2013$225. No new material catalysts this week, but the ongoing U.S.-Iran conflict continues to underpin Palantir's government contract pipeline thesis.",
+      "weekly_move": "+3.5%",
+      "sources": [
+        "https://stockinvest.us/stock-news/green-day-on-thursday-for-palantir-stock-after-gaining-0429-2026-04-16"
+      ]
+    },
+    {
+      "ticker": "GEV",
+      "event_type": "news",
+      "summary": "GE Vernova stock has already surged 50% YTD ahead of its Q1 2026 earnings report (scheduled for April 22), making it one of the strongest performing S&P 500 names in 2026. Investors are 'clamoring to buy one of the most surefire names' for the energy infrastructure/AI data center power buildout theme. Upcoming earnings will be the first major test of whether GEV can validate its premium valuation with execution on grid and gas turbine orders.",
+      "weekly_move": "+6.0%",
+      "sources": [
+        "https://finance.yahoo.com/markets/stocks/articles/best-stocks-buy-now-earnings-211000376.html"
+      ]
+    },
+    {
+      "ticker": "VRT",
+      "event_type": "news",
+      "summary": "Vertiv is also scheduled to report Q1 2026 earnings on April 22 alongside GE Vernova. VRT is a critical data center power/cooling infrastructure play that has benefited from the AI buildout, and the upcoming print will be scrutinized for order book trends and margin trajectory given hyperscaler capex acceleration. Both GEV and VRT are key watch names for the next week.",
+      "weekly_move": "+5.5%",
+      "sources": [
+        "https://finance.yahoo.com/markets/stocks/articles/best-stocks-buy-now-earnings-211000376.html"
+      ]
+    },
+    {
+      "ticker": "GLW",
+      "event_type": "analyst_change",
+      "summary": "Corning was downgraded by JPMorgan from Overweight to Neutral with a target raised to $175 from $115 on April 16. Despite the downgrade in rating, JPMorgan significantly raised its price target, suggesting the stock has largely reached fair value after a strong run \u2014 GLW was up ~6.67% on the week. Corning's optical fiber and data center connectivity business is a key beneficiary of AI infrastructure buildout, but JPMorgan sees the risk/reward as balanced at current levels.",
+      "weekly_move": "+6.7%",
+      "sources": [
+        "https://www.benzinga.com/analyst-stock-ratings/downgrades"
+      ]
+    },
+    {
+      "ticker": "SNDK",
+      "event_type": "price_move",
+      "summary": "SanDisk (formerly Western Digital's flash storage spinoff) gained approximately 8% on the week alongside the broader semiconductor rally. Yahoo Finance's weekly recap specifically called out SanDisk and Western Digital as beneficiaries of the AI storage buildout, with both gaining 8% for the week. The AI data center demand for high-capacity flash storage continues to drive storage semiconductor names higher.",
+      "weekly_move": "+8.0%",
+      "sources": [
+        "https://finance.yahoo.com/video/dow-jumps-800-points-sp-500-at-new-record-nasdaq-gains-68-this-week-201120267.html"
+      ]
+    },
+    {
+      "ticker": "WDC",
+      "event_type": "price_move",
+      "summary": "Western Digital gained approximately 8% on the week alongside SanDisk (its flash storage spinoff), benefiting from AI data center storage demand narratives. Both WDC and SNDK were cited in Yahoo Finance's weekly technology sector recap as notable outperformers in the broader AI infrastructure trade. WDC's HDD business also benefits from hyperscaler data storage capacity expansion.",
+      "weekly_move": "+8.0%",
+      "sources": [
+        "https://finance.yahoo.com/video/dow-jumps-800-points-sp-500-at-new-record-nasdaq-gains-68-this-week-201120267.html"
+      ]
+    },
+    {
+      "ticker": "ZTS",
+      "event_type": "analyst_change",
+      "summary": "Zoetis was downgraded by Nephron Research from Buy to Hold with a price target of $131, citing insufficient organic growth as the primary concern. The animal health sector has faced headwinds from rising pet healthcare cost sensitivity and slower-than-expected new product uptake. The downgrade adds to ZTS's near-term headwinds, though the long-term structural growth story in companion animal health remains intact.",
+      "weekly_move": "-2.0%",
+      "sources": [
+        "https://finance.yahoo.com/news/marvell-upgraded-trade-desk-downgraded-143122342.html"
+      ]
+    },
+    {
+      "ticker": "CIEN",
+      "event_type": "analyst_change",
+      "summary": "Ciena was upgraded by BofA from Neutral to Buy with a revised target of $355 from $X, following BofA's analysis of anticipated data center network expansions and updated spending outlooks from major cloud providers. The firm reversed its earlier cautious stance on the networking sector, now viewing 'significant capacity additions expected from key players including hyperscalers, Tier-2 cloud, and Neoclouds over the next three years' as a substantial tailwind. Shares responded positively to the upgrade.",
+      "weekly_move": "+7.5%",
+      "sources": [
+        "https://finance.yahoo.com/news/marvell-upgraded-trade-desk-downgraded-143122342.html"
+      ]
     }
   ]
 }
