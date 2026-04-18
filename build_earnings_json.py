@@ -10,13 +10,15 @@ from datetime import datetime
 TODAY = datetime(2026, 3, 19)
 
 # Load yfinance earnings dates
-with open('/home/user/workspace/watchlist-app/earnings_data.json') as f:
+import os as _os
+_SCRIPT_DIR = _os.path.dirname(_os.path.abspath(__file__))
+with open(_os.path.join(_SCRIPT_DIR, 'earnings_data.json')) as f:
     yf_data = json.load(f)
 
 # Load research results for post-earnings tickers
 research = {}
 try:
-    with open('/home/user/workspace/wide/research_results_mmwxnm08.csv') as f:
+    with open(_os.path.join(_SCRIPT_DIR, 'data', 'research', 'post_earnings_results.csv')) as f:
         reader = csv.DictReader(f)
         for row in reader:
             ticker = row.get('Ticker', '').strip()
@@ -106,7 +108,7 @@ calendar = {
     }
 }
 
-with open('/home/user/workspace/watchlist-app/earnings_calendar.json', 'w') as f:
+with open(_os.path.join(_SCRIPT_DIR, 'earnings_calendar.json'), 'w') as f:
     json.dump(calendar, f, indent=2)
 
 print(f"Upcoming: {len(upcoming)} tickers")

@@ -13,10 +13,12 @@
  */
 
 import { readFileSync, writeFileSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const UTILS_PATH = resolve('/home/user/workspace/watchlist-app/utils.js');
-const SNAPSHOT_PATH = resolve('/home/user/workspace/watchlist-app/data-snapshot.json');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const UTILS_PATH = resolve(__dirname, 'utils.js');
+const SNAPSHOT_PATH = resolve(__dirname, 'data-snapshot.json');
 
 // ─── Industry-to-subsector mapping (mirrors the one in utils.js) ───
 const INDUSTRY_TO_SUBSECTOR = {

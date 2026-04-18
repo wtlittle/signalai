@@ -146,7 +146,9 @@ output = {
 }
 
 # Write to file
-with open('/home/user/workspace/watchlist-app/earnings_data.json', 'w') as f:
+import os
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(_SCRIPT_DIR, 'earnings_data.json'), 'w') as f:
     json.dump(output, f, indent=2)
 
 print(json.dumps(output['summary'], indent=2), file=sys.stderr)

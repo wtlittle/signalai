@@ -11,7 +11,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 
-const SUPABASE_URL = 'https://wcyirdvvuetzodiedzss.supabase.co';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://wcyirdvvuetzodiedzss.supabase.co';
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 

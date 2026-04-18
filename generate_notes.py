@@ -3,11 +3,13 @@
 import csv
 import os
 
-NOTES_DIR = '/home/user/workspace/watchlist-app/notes/post_earnings'
+import os as _os
+_SCRIPT_DIR = _os.path.dirname(_os.path.abspath(__file__))
+NOTES_DIR = _os.path.join(_SCRIPT_DIR, 'notes', 'post_earnings')
 
 # Read research results
 rows = []
-with open('/home/user/workspace/wide/research_results_mmwxnm08.csv') as f:
+with open(_os.path.join(_SCRIPT_DIR, 'data', 'research', 'post_earnings_results.csv')) as f:
     reader = csv.DictReader(f)
     for row in reader:
         rows.append(row)

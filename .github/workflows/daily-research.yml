@@ -1,0 +1,78 @@
+name: Daily Research Refresh
+
+on:
+  schedule:
+    - cron: '0 11 * * 1-5'   # 7am ET weekdays (11 UTC)
+  workflow_dispatch:
+    inputs:
+      force_regenerate:
+        description: 'Regenerate all notes even if they exist'
+        required: false
+        default: 'false'
+      dry_run:
+        description: 'Print actions without writing files or calling APIs'
+        required: false
+        default: 'false'
+      notes_only:
+        description: 'Run only note generation (skip market data refresh)'
+        required: false
+        default: 'false'
+
+env:
+  PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  FORCE_REGENERATE: ${{ github.event.inputs.force_regenerate || 'false' }}
+  DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+  MAX_PRE_EARNINGS_DAYS: '14'
+  MAX_POST_EARNINGS_DAYS: '14'
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Python dependencies
+        run: pip install requests yfinance python-dotenv
+
+      - name: Install Node dependencies
+        run: npm install @supabase/supabase-js
+
+      - name: Run daily refresh
+        if: ${{ github.event.inputs.notes_only != 'true' }}
+        run: python -m automation.jobs.daily_refresh
+
+      - name: Run notes only
+        if: ${{ github.event.inputs.notes_only == 'true' }}
+        run: |
+          python -m automation.jobs.earnings_events
+          python -m automation.jobs.pre_earnings_notes
+          python -m automation.jobs.post_earnings_notes
+
+      - name: Commit generated notes and data
+        run: |
+          git config user.name "signalai-bot"
+          git config user.email "bot@signalai"
+          git add notes/ data/ archive/ \
+            earnings_notes_index.json \
+            earnings_calendar.json \
+            earnings_data.json \
+            weekly_briefing.json \
+            macro_data.json \
+            data-snapshot.json
+          git diff --staged --quiet || git commit -m "chore: daily refresh $(date -u +%Y-%m-%d)"
+          git push

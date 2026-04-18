@@ -6,16 +6,20 @@
  */
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync, writeFileSync } from 'fs';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
-const SUPABASE_URL = 'https://wcyirdvvuetzodiedzss.supabase.co';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://wcyirdvvuetzodiedzss.supabase.co';
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
-const snapshotPath = '/home/user/workspace/watchlist-app/data-snapshot.json';
+const snapshotPath = resolve(__dirname, 'data-snapshot.json');
 const snapshot = JSON.parse(readFileSync(snapshotPath, 'utf-8'));
 
 // Find missing tickers
-const utilsSrc = readFileSync('/home/user/workspace/watchlist-app/utils.js', 'utf-8');
+const utilsSrc = readFileSync(resolve(__dirname, 'utils.js'), 'utf-8');
 const match = utilsSrc.match(/const\s+DEFAULT_TICKERS\s*=\s*\[([\s\S]*?)\];/);
 const allTickers = [...new Set([...match[1].matchAll(/'([A-Z.^]+)'/g)].map(m => m[1]))];
 const existingCharts = new Set(Object.keys(snapshot.tickers || {}));
