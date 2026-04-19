@@ -1,161 +1,38 @@
 {
-  "updated": "2026-04-18T08:05:00-05:00",
+  "last_updated": "2026-04-19T08:00:00-05:00",
   "pre_earnings": [
-    {
-      "ticker": "UNH",
-      "company": "UnitedHealth Group",
-      "date": "2026-04-21",
-      "days_until": 3,
-      "time": "BMO",
-      "eps_est": "$6.76",
-      "rev_est": "$109.84B"
-    },
-    {
-      "ticker": "IBM",
-      "company": "IBM",
-      "date": "2026-04-22",
-      "days_until": 4,
-      "time": "AMC"
-    },
-    {
-      "ticker": "INTC",
-      "company": "Intel",
-      "date": "2026-04-23",
-      "days_until": 5,
-      "time": "AMC"
-    },
-    {
-      "ticker": "BKR",
-      "company": "Baker Hughes",
-      "date": "2026-04-23",
-      "days_until": 5,
-      "time": "AMC"
-    },
-    {
-      "ticker": "AMZN",
-      "company": "Amazon",
-      "date": "2026-04-29",
-      "days_until": 11,
-      "time": "AMC",
-      "eps_est": "$1.55",
-      "rev_est": "$173.5-178.5B"
-    },
-    {
-      "ticker": "GOOG",
-      "company": "Alphabet",
-      "date": "2026-04-29",
-      "days_until": 11,
-      "time": "AMC",
-      "eps_est": "$2.63"
-    },
-    {
-      "ticker": "META",
-      "company": "Meta Platforms",
-      "date": "2026-04-29",
-      "days_until": 11,
-      "time": "AMC",
-      "eps_est": "$6.59"
-    }
+    {"ticker": "UNH", "date": "2026-04-21", "time": "BMO", "days_until": 2, "eps_estimate": "$6.76", "rev_estimate": "$109.84B"},
+    {"ticker": "DHR", "date": "2026-04-21", "time": "BMO", "days_until": 2, "eps_estimate": "$1.94", "rev_estimate": "$6.00B"},
+    {"ticker": "COF", "date": "2026-04-21", "time": "AMC", "days_until": 2, "eps_estimate": "$5.08", "rev_estimate": "$15.68B"},
+    {"ticker": "SYF", "date": "2026-04-21", "time": "BMO", "days_until": 2, "eps_estimate": "$2.14", "rev_estimate": "$3.81B"},
+    {"ticker": "IBM", "date": "2026-04-22", "time": "AMC", "days_until": 3, "eps_estimate": "$1.41", "rev_estimate": "$15.55B"},
+    {"ticker": "NEM", "date": "2026-04-23", "time": "AMC", "days_until": 4, "eps_estimate": "$2.07", "rev_estimate": "$6.83B"},
+    {"ticker": "INTC", "date": "2026-04-23", "time": "AMC", "days_until": 4, "eps_estimate": "$0.01", "rev_estimate": "$12.30B"},
+    {"ticker": "BKR", "date": "2026-04-23", "time": "AMC", "days_until": 4, "eps_estimate": "$0.54", "rev_estimate": "$7.20B"},
+    {"ticker": "ZBH", "date": "2026-04-28", "time": "BMO", "days_until": 9, "eps_estimate": "$1.88", "rev_estimate": "$1.88B"},
+    {"ticker": "ADP", "date": "2026-04-29", "time": "BMO", "days_until": 10, "eps_estimate": "$3.30", "rev_estimate": "$5.50B"},
+    {"ticker": "GNRC", "date": "2026-04-29", "time": "BMO", "days_until": 10, "eps_estimate": "$2.10", "rev_estimate": "$1.08B"},
+    {"ticker": "AMZN", "date": "2026-04-29", "time": "AMC", "days_until": 10, "eps_estimate": "$1.55", "rev_estimate": "$176.00B"},
+    {"ticker": "GOOG", "date": "2026-04-29", "time": "AMC", "days_until": 10, "eps_estimate": "$2.63", "rev_estimate": "$96.00B"},
+    {"ticker": "META", "date": "2026-04-29", "time": "AMC", "days_until": 10, "eps_estimate": "$6.59", "rev_estimate": "$45.50B"},
+    {"ticker": "MSFT", "date": "2026-04-29", "time": "AMC", "days_until": 10, "eps_estimate": "$4.07", "rev_estimate": "$72.50B"},
+    {"ticker": "CAT", "date": "2026-04-30", "time": "BMO", "days_until": 11, "eps_estimate": "$4.60", "rev_estimate": "$17.50B"}
   ],
   "post_earnings": [
-    {
-      "ticker": "STZ",
-      "company": "Constellation Brands",
-      "date": "2026-04-08",
-      "days_since": 10
-    },
-    {
-      "ticker": "GS",
-      "company": "Goldman Sachs",
-      "date": "2026-04-13",
-      "days_since": 5,
-      "eps_actual": "$17.55",
-      "eps_est": "$16.47",
-      "rev_actual": "$17.23B",
-      "surprise": "+6.6% beat"
-    },
-    {
-      "ticker": "JPM",
-      "company": "JPMorgan Chase",
-      "date": "2026-04-14",
-      "days_since": 4,
-      "eps_actual": "$5.94",
-      "rev_actual": "$50.5B",
-      "surprise": "~10% EPS beat"
-    },
-    {
-      "ticker": "C",
-      "company": "Citigroup",
-      "date": "2026-04-14",
-      "days_since": 4,
-      "eps_actual": "$3.06",
-      "eps_est": "$2.63",
-      "rev_actual": "$24.6B",
-      "surprise": "+16.3% beat"
-    },
-    {
-      "ticker": "WFC",
-      "company": "Wells Fargo",
-      "date": "2026-04-14",
-      "days_since": 4,
-      "eps_actual": "$1.60",
-      "eps_est": "$1.58",
-      "rev_actual": "$21.45B",
-      "surprise": "EPS beat, rev miss"
-    },
-    {
-      "ticker": "MS",
-      "company": "Morgan Stanley",
-      "date": "2026-04-15",
-      "days_since": 3,
-      "eps_actual": "$3.43",
-      "rev_actual": "$20.6B",
-      "surprise": "~14% beat"
-    },
-    {
-      "ticker": "BAC",
-      "company": "Bank of America",
-      "date": "2026-04-15",
-      "days_since": 3,
-      "eps_actual": "$1.11",
-      "eps_est": "$1.01",
-      "rev_actual": "$30.3B",
-      "surprise": "+9.9% beat"
-    },
-    {
-      "ticker": "ABT",
-      "company": "Abbott Labs",
-      "date": "2026-04-16",
-      "days_since": 2,
-      "eps_actual": "$1.15",
-      "rev_actual": "$11.16B",
-      "surprise": "Rev beat, EPS in-line, guidance cut"
-    },
-    {
-      "ticker": "TSM",
-      "company": "TSMC",
-      "date": "2026-04-16",
-      "days_since": 2,
-      "profit_growth": "+58% YoY",
-      "rev_actual": "$35.9B",
-      "surprise": "Record quarter, massive beat"
-    },
-    {
-      "ticker": "NFLX",
-      "company": "Netflix",
-      "date": "2026-04-16",
-      "days_since": 2,
-      "eps_actual": "$1.23",
-      "eps_est": "$0.76",
-      "rev_actual": "$12.25B",
-      "surprise": "EPS beat (WBD fee inflated), stock -9%"
-    }
+    {"ticker": "STZ", "date": "2026-04-08", "day_post": 11, "expires": "2026-04-22"},
+    {"ticker": "GS", "date": "2026-04-13", "day_post": 6, "expires": "2026-04-27"},
+    {"ticker": "JPM", "date": "2026-04-14", "day_post": 5, "expires": "2026-04-28"},
+    {"ticker": "C", "date": "2026-04-14", "day_post": 5, "expires": "2026-04-28"},
+    {"ticker": "WFC", "date": "2026-04-14", "day_post": 5, "expires": "2026-04-28"},
+    {"ticker": "MS", "date": "2026-04-15", "day_post": 4, "expires": "2026-04-29"},
+    {"ticker": "BAC", "date": "2026-04-15", "day_post": 4, "expires": "2026-04-29"},
+    {"ticker": "ABT", "date": "2026-04-16", "day_post": 3, "expires": "2026-04-30"},
+    {"ticker": "TSM", "date": "2026-04-16", "day_post": 3, "expires": "2026-04-30"},
+    {"ticker": "NFLX", "date": "2026-04-16", "day_post": 3, "expires": "2026-04-30"}
   ],
-  "summary": {
-    "total_pre": 7,
-    "total_post": 10,
-    "next_report": "UNH on 2026-04-21 BMO (3 days)",
-    "bank_earnings_complete": true,
-    "theme": "Bank earnings week delivered strong beats across the board. GS, C, MS, BAC all significantly beat expectations. WFC was the laggard with a revenue miss. TSMC blowout (+58% profit) confirmed AI demand acceleration. NFLX beat on EPS but stock fell 9% on soft guidance and WBD fee distortion."
-  }
+  "upcoming_outside_window": [
+    {"ticker": "VRTX", "date": "2026-05-04", "time": "AMC", "days_until": 15},
+    {"ticker": "ALAB", "date": "2026-05-05", "time": "AMC", "days_until": 16},
+    {"ticker": "COIN", "date": "2026-05-07", "time": "AMC", "days_until": 18}
+  ]
 }
