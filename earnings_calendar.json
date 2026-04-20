@@ -1,38 +1,409 @@
 {
-  "last_updated": "2026-04-19T08:00:00-05:00",
+  "updated": "2026-04-20T11:17:17.040291",
   "pre_earnings": [
-    {"ticker": "UNH", "date": "2026-04-21", "time": "BMO", "days_until": 2, "eps_estimate": "$6.76", "rev_estimate": "$109.84B"},
-    {"ticker": "DHR", "date": "2026-04-21", "time": "BMO", "days_until": 2, "eps_estimate": "$1.94", "rev_estimate": "$6.00B"},
-    {"ticker": "COF", "date": "2026-04-21", "time": "AMC", "days_until": 2, "eps_estimate": "$5.08", "rev_estimate": "$15.68B"},
-    {"ticker": "SYF", "date": "2026-04-21", "time": "BMO", "days_until": 2, "eps_estimate": "$2.14", "rev_estimate": "$3.81B"},
-    {"ticker": "IBM", "date": "2026-04-22", "time": "AMC", "days_until": 3, "eps_estimate": "$1.41", "rev_estimate": "$15.55B"},
-    {"ticker": "NEM", "date": "2026-04-23", "time": "AMC", "days_until": 4, "eps_estimate": "$2.07", "rev_estimate": "$6.83B"},
-    {"ticker": "INTC", "date": "2026-04-23", "time": "AMC", "days_until": 4, "eps_estimate": "$0.01", "rev_estimate": "$12.30B"},
-    {"ticker": "BKR", "date": "2026-04-23", "time": "AMC", "days_until": 4, "eps_estimate": "$0.54", "rev_estimate": "$7.20B"},
-    {"ticker": "ZBH", "date": "2026-04-28", "time": "BMO", "days_until": 9, "eps_estimate": "$1.88", "rev_estimate": "$1.88B"},
-    {"ticker": "ADP", "date": "2026-04-29", "time": "BMO", "days_until": 10, "eps_estimate": "$3.30", "rev_estimate": "$5.50B"},
-    {"ticker": "GNRC", "date": "2026-04-29", "time": "BMO", "days_until": 10, "eps_estimate": "$2.10", "rev_estimate": "$1.08B"},
-    {"ticker": "AMZN", "date": "2026-04-29", "time": "AMC", "days_until": 10, "eps_estimate": "$1.55", "rev_estimate": "$176.00B"},
-    {"ticker": "GOOG", "date": "2026-04-29", "time": "AMC", "days_until": 10, "eps_estimate": "$2.63", "rev_estimate": "$96.00B"},
-    {"ticker": "META", "date": "2026-04-29", "time": "AMC", "days_until": 10, "eps_estimate": "$6.59", "rev_estimate": "$45.50B"},
-    {"ticker": "MSFT", "date": "2026-04-29", "time": "AMC", "days_until": 10, "eps_estimate": "$4.07", "rev_estimate": "$72.50B"},
-    {"ticker": "CAT", "date": "2026-04-30", "time": "BMO", "days_until": 11, "eps_estimate": "$4.60", "rev_estimate": "$17.50B"}
+    {
+      "ticker": "UNH",
+      "company": "UnitedHealth",
+      "date": "2026-04-21",
+      "days_until": 1
+    },
+    {
+      "ticker": "MANH",
+      "company": "Manhattan Associates",
+      "date": "2026-04-21",
+      "days_until": 1
+    },
+    {
+      "ticker": "NOC",
+      "company": "NOC",
+      "date": "2026-04-21",
+      "days_until": 1
+    },
+    {
+      "ticker": "COF",
+      "company": "Capital One",
+      "date": "2026-04-21",
+      "days_until": 1
+    },
+    {
+      "ticker": "SYF",
+      "company": "Synchrony Financial",
+      "date": "2026-04-21",
+      "days_until": 1
+    },
+    {
+      "ticker": "UAL",
+      "company": "United Airlines",
+      "date": "2026-04-21",
+      "days_until": 1
+    },
+    {
+      "ticker": "DHR",
+      "company": "Danaher",
+      "date": "2026-04-21",
+      "days_until": 1
+    },
+    {
+      "ticker": "NOW",
+      "company": "ServiceNow",
+      "date": "2026-04-22",
+      "days_until": 2
+    },
+    {
+      "ticker": "ELV",
+      "company": "Elevance Health",
+      "date": "2026-04-22",
+      "days_until": 2
+    },
+    {
+      "ticker": "GEV",
+      "company": "GE Vernova",
+      "date": "2026-04-22",
+      "days_until": 2
+    },
+    {
+      "ticker": "VRT",
+      "company": "VRT",
+      "date": "2026-04-22",
+      "days_until": 2
+    },
+    {
+      "ticker": "IBM",
+      "company": "IBM",
+      "date": "2026-04-22",
+      "days_until": 2
+    },
+    {
+      "ticker": "TMO",
+      "company": "Thermo Fisher",
+      "date": "2026-04-23",
+      "days_until": 3
+    },
+    {
+      "ticker": "CMCSA",
+      "company": "Comcast",
+      "date": "2026-04-23",
+      "days_until": 3
+    },
+    {
+      "ticker": "FIX",
+      "company": "Comfort Systems",
+      "date": "2026-04-23",
+      "days_until": 3
+    },
+    {
+      "ticker": "INTC",
+      "company": "Intel",
+      "date": "2026-04-23",
+      "days_until": 3
+    },
+    {
+      "ticker": "ROP",
+      "company": "Roper Technologies",
+      "date": "2026-04-23",
+      "days_until": 3
+    },
+    {
+      "ticker": "KDP",
+      "company": "KDP",
+      "date": "2026-04-23",
+      "days_until": 3
+    },
+    {
+      "ticker": "BKR",
+      "company": "BKR",
+      "date": "2026-04-23",
+      "days_until": 3
+    },
+    {
+      "ticker": "FCX",
+      "company": "Freeport-McMoRan",
+      "date": "2026-04-23",
+      "days_until": 3
+    },
+    {
+      "ticker": "NEM",
+      "company": "Newmont",
+      "date": "2026-04-23",
+      "days_until": 3
+    },
+    {
+      "ticker": "CDNS",
+      "company": "Cadence",
+      "date": "2026-04-27",
+      "days_until": 7
+    },
+    {
+      "ticker": "NUE",
+      "company": "Nucor",
+      "date": "2026-04-27",
+      "days_until": 7
+    },
+    {
+      "ticker": "VRNS",
+      "company": "Varonis",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "FOUR",
+      "company": "Shift4 Payments",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "ACGL",
+      "company": "Arch Capital",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "MDLZ",
+      "company": "Mondelez",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "STX",
+      "company": "Seagate",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "TER",
+      "company": "Teradyne",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "GLW",
+      "company": "Corning",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "FICO",
+      "company": "FICO",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "KMB",
+      "company": "KMB",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "ZBH",
+      "company": "Zimmer Biomet",
+      "date": "2026-04-28",
+      "days_until": 8
+    },
+    {
+      "ticker": "AMZN",
+      "company": "Amazon",
+      "date": "2026-04-29",
+      "days_until": 9
+    },
+    {
+      "ticker": "GOOG",
+      "company": "Google",
+      "date": "2026-04-29",
+      "days_until": 9
+    },
+    {
+      "ticker": "META",
+      "company": "Meta",
+      "date": "2026-04-29",
+      "days_until": 9
+    },
+    {
+      "ticker": "MSFT",
+      "company": "Microsoft",
+      "date": "2026-04-29",
+      "days_until": 9
+    },
+    {
+      "ticker": "TENB",
+      "company": "Tenable",
+      "date": "2026-04-29",
+      "days_until": 9
+    },
+    {
+      "ticker": "CFLT",
+      "company": "Confluent",
+      "date": "2026-04-29",
+      "days_until": 9
+    },
+    {
+      "ticker": "TYL",
+      "company": "Tyler Technologies",
+      "date": "2026-04-29",
+      "days_until": 9
+    },
+    {
+      "ticker": "ADP",
+      "company": "ADP",
+      "date": "2026-04-29",
+      "days_until": 9
+    },
+    {
+      "ticker": "GNRC",
+      "company": "Generac",
+      "date": "2026-04-29",
+      "days_until": 9
+    },
+    {
+      "ticker": "TEAM",
+      "company": "Atlassian",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "LPLA",
+      "company": "LPL Financial",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "SNDK",
+      "company": "SanDisk",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "WDC",
+      "company": "Western Digital",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "ZETA",
+      "company": "Zeta Global",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "TWLO",
+      "company": "Twilio",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "CHKP",
+      "company": "Check Point",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "GDDY",
+      "company": "GoDaddy",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "VLO",
+      "company": "VLO",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "AEM",
+      "company": "AEM",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "CAT",
+      "company": "Caterpillar",
+      "date": "2026-04-30",
+      "days_until": 10
+    },
+    {
+      "ticker": "PLTR",
+      "company": "Palantir",
+      "date": "2026-05-04",
+      "days_until": 14
+    },
+    {
+      "ticker": "PINS",
+      "company": "Pinterest",
+      "date": "2026-05-04",
+      "days_until": 14
+    },
+    {
+      "ticker": "BWXT",
+      "company": "BWX Technologies",
+      "date": "2026-05-04",
+      "days_until": 14
+    },
+    {
+      "ticker": "VRTX",
+      "company": "VRTX",
+      "date": "2026-05-04",
+      "days_until": 14
+    },
+    {
+      "ticker": "FANG",
+      "company": "FANG",
+      "date": "2026-05-04",
+      "days_until": 14
+    }
   ],
   "post_earnings": [
-    {"ticker": "STZ", "date": "2026-04-08", "day_post": 11, "expires": "2026-04-22"},
-    {"ticker": "GS", "date": "2026-04-13", "day_post": 6, "expires": "2026-04-27"},
-    {"ticker": "JPM", "date": "2026-04-14", "day_post": 5, "expires": "2026-04-28"},
-    {"ticker": "C", "date": "2026-04-14", "day_post": 5, "expires": "2026-04-28"},
-    {"ticker": "WFC", "date": "2026-04-14", "day_post": 5, "expires": "2026-04-28"},
-    {"ticker": "MS", "date": "2026-04-15", "day_post": 4, "expires": "2026-04-29"},
-    {"ticker": "BAC", "date": "2026-04-15", "day_post": 4, "expires": "2026-04-29"},
-    {"ticker": "ABT", "date": "2026-04-16", "day_post": 3, "expires": "2026-04-30"},
-    {"ticker": "TSM", "date": "2026-04-16", "day_post": 3, "expires": "2026-04-30"},
-    {"ticker": "NFLX", "date": "2026-04-16", "day_post": 3, "expires": "2026-04-30"}
-  ],
-  "upcoming_outside_window": [
-    {"ticker": "VRTX", "date": "2026-05-04", "time": "AMC", "days_until": 15},
-    {"ticker": "ALAB", "date": "2026-05-05", "time": "AMC", "days_until": 16},
-    {"ticker": "COIN", "date": "2026-05-07", "time": "AMC", "days_until": 18}
+    {
+      "ticker": "ABT",
+      "company": "ABT",
+      "date": "2026-04-16",
+      "days_since": 4
+    },
+    {
+      "ticker": "NFLX",
+      "company": "Netflix",
+      "date": "2026-04-16",
+      "days_since": 4
+    },
+    {
+      "ticker": "TSM",
+      "company": "TSMC",
+      "date": "2026-04-15",
+      "days_since": 5
+    },
+    {
+      "ticker": "MS",
+      "company": "Morgan Stanley",
+      "date": "2026-04-15",
+      "days_since": 5
+    },
+    {
+      "ticker": "BAC",
+      "company": "Bank of America",
+      "date": "2026-04-15",
+      "days_since": 5
+    },
+    {
+      "ticker": "JPM",
+      "company": "JPMorgan Chase",
+      "date": "2026-04-14",
+      "days_since": 6
+    },
+    {
+      "ticker": "WFC",
+      "company": "Wells Fargo",
+      "date": "2026-04-14",
+      "days_since": 6
+    },
+    {
+      "ticker": "GS",
+      "company": "Goldman Sachs",
+      "date": "2026-04-13",
+      "days_since": 7
+    },
+    {
+      "ticker": "STZ",
+      "company": "Constellation Brands",
+      "date": "2026-04-08",
+      "days_since": 12
+    }
   ]
 }
