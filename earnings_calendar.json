@@ -348,6 +348,14 @@
       "company": "FANG",
       "date": "2026-05-04",
       "days_until": 14
+    },
+    {
+      "ticker": "VRTX",
+      "date": "2026-05-04",
+      "time": "AMC",
+      "days_until": 14,
+      "eps_estimate": "$4.34",
+      "rev_estimate": "$3.01B"
     }
   ],
   "post_earnings": [
@@ -355,55 +363,79 @@
       "ticker": "ABT",
       "company": "ABT",
       "date": "2026-04-16",
-      "days_since": 4
+      "days_since": 4,
+      "day_post": 4
     },
     {
       "ticker": "NFLX",
       "company": "Netflix",
       "date": "2026-04-16",
-      "days_since": 4
+      "days_since": 4,
+      "day_post": 4
     },
     {
       "ticker": "TSM",
       "company": "TSMC",
       "date": "2026-04-15",
-      "days_since": 5
+      "days_since": 5,
+      "day_post": 5
     },
     {
       "ticker": "MS",
       "company": "Morgan Stanley",
       "date": "2026-04-15",
-      "days_since": 5
+      "days_since": 5,
+      "day_post": 5
     },
     {
       "ticker": "BAC",
       "company": "Bank of America",
       "date": "2026-04-15",
-      "days_since": 5
+      "days_since": 5,
+      "day_post": 5
     },
     {
       "ticker": "JPM",
       "company": "JPMorgan Chase",
       "date": "2026-04-14",
-      "days_since": 6
+      "days_since": 6,
+      "day_post": 6
     },
     {
       "ticker": "WFC",
       "company": "Wells Fargo",
       "date": "2026-04-14",
-      "days_since": 6
+      "days_since": 6,
+      "day_post": 6
     },
     {
       "ticker": "GS",
       "company": "Goldman Sachs",
       "date": "2026-04-13",
-      "days_since": 7
+      "days_since": 7,
+      "day_post": 7
     },
     {
       "ticker": "STZ",
       "company": "Constellation Brands",
       "date": "2026-04-08",
-      "days_since": 12
+      "days_since": 12,
+      "day_post": 12
+    }
+  ],
+  "last_updated": "2026-04-20T08:00:00-05:00",
+  "upcoming_outside_window": [
+    {
+      "ticker": "ALAB",
+      "date": "2026-05-05",
+      "time": "AMC",
+      "days_until": 15
+    },
+    {
+      "ticker": "COIN",
+      "date": "2026-05-07",
+      "time": "AMC",
+      "days_until": 17
     }
   ]
 }

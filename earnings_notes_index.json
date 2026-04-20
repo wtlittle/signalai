@@ -1,37 +1,195 @@
 {
-  "last_updated": "2026-04-19T08:00:00-05:00",
+  "last_updated": "2026-04-20T08:00:00-05:00",
   "pre_earnings": [
-    {"ticker": "UNH", "earnings_date": "2026-04-21", "file": "notes/pre_earnings/UNH_2026-04-21.md", "days_until": 2},
-    {"ticker": "DHR", "earnings_date": "2026-04-21", "file": "notes/pre_earnings/DHR_2026-04-21.md", "days_until": 2},
-    {"ticker": "COF", "earnings_date": "2026-04-21", "file": "notes/pre_earnings/COF_2026-04-21.md", "days_until": 2},
-    {"ticker": "SYF", "earnings_date": "2026-04-21", "file": "notes/pre_earnings/SYF_2026-04-21.md", "days_until": 2},
-    {"ticker": "IBM", "earnings_date": "2026-04-22", "file": "notes/pre_earnings/IBM_2026-04-22.md", "days_until": 3},
-    {"ticker": "NEM", "earnings_date": "2026-04-23", "file": "notes/pre_earnings/NEM_2026-04-23.md", "days_until": 4},
-    {"ticker": "INTC", "earnings_date": "2026-04-23", "file": "notes/pre_earnings/INTC_2026-04-23.md", "days_until": 4},
-    {"ticker": "BKR", "earnings_date": "2026-04-23", "file": "notes/pre_earnings/BKR_2026-04-23.md", "days_until": 4},
-    {"ticker": "ZBH", "earnings_date": "2026-04-28", "file": "notes/pre_earnings/ZBH_2026-04-28.md", "days_until": 9},
-    {"ticker": "ADP", "earnings_date": "2026-04-29", "file": "notes/pre_earnings/ADP_2026-04-29.md", "days_until": 10},
-    {"ticker": "GNRC", "earnings_date": "2026-04-29", "file": "notes/pre_earnings/GNRC_2026-04-29.md", "days_until": 10},
-    {"ticker": "AMZN", "earnings_date": "2026-04-29", "file": "notes/pre_earnings/AMZN_2026-04-29.md", "days_until": 10},
-    {"ticker": "GOOG", "earnings_date": "2026-04-29", "file": "notes/pre_earnings/GOOG_2026-04-29.md", "days_until": 10},
-    {"ticker": "META", "earnings_date": "2026-04-29", "file": "notes/pre_earnings/META_2026-04-29.md", "days_until": 10},
-    {"ticker": "MSFT", "earnings_date": "2026-04-29", "file": "notes/pre_earnings/MSFT_2026-04-29.md", "days_until": 10},
-    {"ticker": "CAT", "earnings_date": "2026-04-30", "file": "notes/pre_earnings/CAT_2026-04-30.md", "days_until": 11}
+    {
+      "ticker": "UNH",
+      "earnings_date": "2026-04-21",
+      "file": "notes/pre_earnings/UNH_2026-04-21.md",
+      "days_until": 1
+    },
+    {
+      "ticker": "DHR",
+      "earnings_date": "2026-04-21",
+      "file": "notes/pre_earnings/DHR_2026-04-21.md",
+      "days_until": 1
+    },
+    {
+      "ticker": "COF",
+      "earnings_date": "2026-04-21",
+      "file": "notes/pre_earnings/COF_2026-04-21.md",
+      "days_until": 1
+    },
+    {
+      "ticker": "SYF",
+      "earnings_date": "2026-04-21",
+      "file": "notes/pre_earnings/SYF_2026-04-21.md",
+      "days_until": 1
+    },
+    {
+      "ticker": "IBM",
+      "earnings_date": "2026-04-22",
+      "file": "notes/pre_earnings/IBM_2026-04-22.md",
+      "days_until": 2
+    },
+    {
+      "ticker": "NEM",
+      "earnings_date": "2026-04-23",
+      "file": "notes/pre_earnings/NEM_2026-04-23.md",
+      "days_until": 3
+    },
+    {
+      "ticker": "INTC",
+      "earnings_date": "2026-04-23",
+      "file": "notes/pre_earnings/INTC_2026-04-23.md",
+      "days_until": 3
+    },
+    {
+      "ticker": "BKR",
+      "earnings_date": "2026-04-23",
+      "file": "notes/pre_earnings/BKR_2026-04-23.md",
+      "days_until": 3
+    },
+    {
+      "ticker": "ZBH",
+      "earnings_date": "2026-04-28",
+      "file": "notes/pre_earnings/ZBH_2026-04-28.md",
+      "days_until": 8
+    },
+    {
+      "ticker": "ADP",
+      "earnings_date": "2026-04-29",
+      "file": "notes/pre_earnings/ADP_2026-04-29.md",
+      "days_until": 9
+    },
+    {
+      "ticker": "GNRC",
+      "earnings_date": "2026-04-29",
+      "file": "notes/pre_earnings/GNRC_2026-04-29.md",
+      "days_until": 9
+    },
+    {
+      "ticker": "AMZN",
+      "earnings_date": "2026-04-29",
+      "file": "notes/pre_earnings/AMZN_2026-04-29.md",
+      "days_until": 9
+    },
+    {
+      "ticker": "GOOG",
+      "earnings_date": "2026-04-29",
+      "file": "notes/pre_earnings/GOOG_2026-04-29.md",
+      "days_until": 9
+    },
+    {
+      "ticker": "META",
+      "earnings_date": "2026-04-29",
+      "file": "notes/pre_earnings/META_2026-04-29.md",
+      "days_until": 9
+    },
+    {
+      "ticker": "MSFT",
+      "earnings_date": "2026-04-29",
+      "file": "notes/pre_earnings/MSFT_2026-04-29.md",
+      "days_until": 9
+    },
+    {
+      "ticker": "CAT",
+      "earnings_date": "2026-04-30",
+      "file": "notes/pre_earnings/CAT_2026-04-30.md",
+      "days_until": 10
+    },
+    {
+      "ticker": "VRTX",
+      "earnings_date": "2026-05-04",
+      "file": "notes/pre_earnings/VRTX_2026-05-04.md",
+      "days_until": 14
+    }
   ],
   "post_earnings": [
-    {"ticker": "STZ", "earnings_date": "2026-04-08", "file": "notes/post_earnings/STZ_2026-04-08.md", "day_post": 11},
-    {"ticker": "GS", "earnings_date": "2026-04-13", "file": "notes/post_earnings/GS_2026-04-13.md", "day_post": 6},
-    {"ticker": "JPM", "earnings_date": "2026-04-14", "file": "notes/post_earnings/JPM_2026-04-14.md", "day_post": 5},
-    {"ticker": "C", "earnings_date": "2026-04-14", "file": "notes/post_earnings/C_2026-04-14.md", "day_post": 5},
-    {"ticker": "WFC", "earnings_date": "2026-04-14", "file": "notes/post_earnings/WFC_2026-04-14.md", "day_post": 5},
-    {"ticker": "MS", "earnings_date": "2026-04-15", "file": "notes/post_earnings/MS_2026-04-15.md", "day_post": 4},
-    {"ticker": "BAC", "earnings_date": "2026-04-15", "file": "notes/post_earnings/BAC_2026-04-15.md", "day_post": 4},
-    {"ticker": "ABT", "earnings_date": "2026-04-16", "file": "notes/post_earnings/ABT_2026-04-16.md", "day_post": 3},
-    {"ticker": "TSM", "earnings_date": "2026-04-16", "file": "notes/post_earnings/TSM_2026-04-16.md", "day_post": 3},
-    {"ticker": "NFLX", "earnings_date": "2026-04-16", "file": "notes/post_earnings/NFLX_2026-04-16.md", "day_post": 3}
+    {
+      "ticker": "STZ",
+      "earnings_date": "2026-04-08",
+      "file": "notes/post_earnings/STZ_2026-04-08.md",
+      "day_post": 12
+    },
+    {
+      "ticker": "GS",
+      "earnings_date": "2026-04-13",
+      "file": "notes/post_earnings/GS_2026-04-13.md",
+      "day_post": 7
+    },
+    {
+      "ticker": "JPM",
+      "earnings_date": "2026-04-14",
+      "file": "notes/post_earnings/JPM_2026-04-14.md",
+      "day_post": 6
+    },
+    {
+      "ticker": "C",
+      "earnings_date": "2026-04-14",
+      "file": "notes/post_earnings/C_2026-04-14.md",
+      "day_post": 6
+    },
+    {
+      "ticker": "WFC",
+      "earnings_date": "2026-04-14",
+      "file": "notes/post_earnings/WFC_2026-04-14.md",
+      "day_post": 6
+    },
+    {
+      "ticker": "MS",
+      "earnings_date": "2026-04-15",
+      "file": "notes/post_earnings/MS_2026-04-15.md",
+      "day_post": 5
+    },
+    {
+      "ticker": "BAC",
+      "earnings_date": "2026-04-15",
+      "file": "notes/post_earnings/BAC_2026-04-15.md",
+      "day_post": 5
+    },
+    {
+      "ticker": "ABT",
+      "earnings_date": "2026-04-16",
+      "file": "notes/post_earnings/ABT_2026-04-16.md",
+      "day_post": 4
+    },
+    {
+      "ticker": "TSM",
+      "earnings_date": "2026-04-16",
+      "file": "notes/post_earnings/TSM_2026-04-16.md",
+      "day_post": 4
+    },
+    {
+      "ticker": "NFLX",
+      "earnings_date": "2026-04-16",
+      "file": "notes/post_earnings/NFLX_2026-04-16.md",
+      "day_post": 4
+    }
   ],
   "archive": {
-    "pre_earnings": ["GS_2026-04-13", "JPM_2026-04-14", "C_2026-04-14", "WFC_2026-04-14", "MS_2026-04-15", "BAC_2026-04-15", "ABT_2026-04-16", "TSM_2026-04-16", "NFLX_2026-04-16", "NKE_2026-03-31", "MKC_2026-03-31"],
-    "post_earnings": ["NKE_2026-03-31", "MKC_2026-03-31", "MU_2026-03-18", "S_2026-03-12", "ADBE_2026-03-12", "RBRK_2026-03-12", "PATH_2026-03-11", "IOT_2026-03-05", "MRVL_2026-03-05"]
+    "pre_earnings": [
+      "GS_2026-04-13",
+      "JPM_2026-04-14",
+      "C_2026-04-14",
+      "WFC_2026-04-14",
+      "MS_2026-04-15",
+      "BAC_2026-04-15",
+      "ABT_2026-04-16",
+      "TSM_2026-04-16",
+      "NFLX_2026-04-16",
+      "NKE_2026-03-31",
+      "MKC_2026-03-31"
+    ],
+    "post_earnings": [
+      "NKE_2026-03-31",
+      "MKC_2026-03-31",
+      "MU_2026-03-18",
+      "S_2026-03-12",
+      "ADBE_2026-03-12",
+      "RBRK_2026-03-12",
+      "PATH_2026-03-11",
+      "IOT_2026-03-05",
+      "MRVL_2026-03-05"
+    ]
   }
 }
