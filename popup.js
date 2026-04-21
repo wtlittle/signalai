@@ -6,6 +6,9 @@ const $popupContent = document.getElementById('popup-content');
 const $popupClose = document.getElementById('popup-close');
 
 let currentPopupTicker = null;
+let currentPopupInitialTab = 'overview';
+let popupCachedOverviewHtml = null;
+let popupCachedTicker = null;
 
 // Close popup
 $popupClose.addEventListener('click', closePopup);
@@ -28,8 +31,12 @@ function closePopup() {
   destroyDeepDiveCharts();
 }
 
-async function openPopup(ticker) {
+async function openPopup(ticker, options) {
+  const initialTab = (options && options.initialTab) || 'overview';
   currentPopupTicker = ticker;
+  currentPopupInitialTab = initialTab;
+  popupCachedOverviewHtml = null;
+  popupCachedTicker = ticker;
   $popupOverlay.classList.add('active');
   $popupContent.innerHTML = '<div class="popup-loading">Loading data</div>';
 
@@ -100,14 +107,14 @@ async function openPopup(ticker) {
     data.calendarEvents = calendarData;
     data.earningsHistory = earningsHistoryData;
     const summary = null; // We use backend data instead
-    renderPopupContent(ticker, data, summary, chart, estimatesData);
+    await renderPopupContent(ticker, data, summary, chart, estimatesData);
   } catch (e) {
     console.error('Popup load error:', e);
     $popupContent.innerHTML = `<div style="color:var(--red);padding:40px;text-align:center;">Failed to load data for ${ticker}</div>`;
   }
 }
 
-function renderPopupContent(ticker, data, summary, chart, estimatesData) {
+async function renderPopupContent(ticker, data, summary, chart, estimatesData) {
   // Data is now primarily from backend
   const cal = data.calendarEvents || {};
   const earningsHistory = data.earningsHistory || [];
@@ -338,7 +345,64 @@ function renderPopupContent(ticker, data, summary, chart, estimatesData) {
   // Add See More button
   html += createSeeMoreButton();
 
-  $popupContent.innerHTML = html;
+  // Cache the overview HTML and wrap in tab structure
+  popupCachedOverviewHtml = html;
+
+  // Determine if an Earnings Intel record exists so we can show a badge on the tab
+  let intelBadgeHtml = '';
+  let hasIntel = false;
+  try {
+    if (typeof getEarningsIntel === 'function') {
+      const intel = await getEarningsIntel(ticker);
+      if (intel) {
+        hasIntel = true;
+        const state = intel.state;
+        const badge = (typeof inflectionBadge === 'function') ? inflectionBadge(intel.inflection_status || 'NONE') : null;
+        if (state === 'pre_earnings') intelBadgeHtml = '<span class="popup-tab-pill popup-tab-pill-pre">PRE</span>';
+        else if (state === 'post_earnings') intelBadgeHtml = '<span class="popup-tab-pill popup-tab-pill-post">POST</span>';
+      }
+    }
+  } catch (e) { /* ignore */ }
+
+  const initialTab = currentPopupInitialTab || 'overview';
+  const wrappedHtml = `
+    <div class="popup-tabs" role="tablist">
+      <button class="popup-tab ${initialTab === 'overview' ? 'active' : ''}" data-popup-tab="overview" role="tab">Overview</button>
+      <button class="popup-tab ${initialTab === 'earnings-intel' ? 'active' : ''}" data-popup-tab="earnings-intel" role="tab">
+        Earnings Intel${intelBadgeHtml}
+      </button>
+    </div>
+    <div class="popup-tab-panel ${initialTab === 'overview' ? 'active' : ''}" id="popup-panel-overview">${html}</div>
+    <div class="popup-tab-panel ${initialTab === 'earnings-intel' ? 'active' : ''}" id="popup-panel-earnings-intel"><div class="ei-loading">Loading Earnings Intel...</div></div>
+  `;
+
+  $popupContent.innerHTML = wrappedHtml;
+
+  // Wire up tab switching
+  const tabBtns = $popupContent.querySelectorAll('.popup-tab');
+  let intelRendered = false;
+  const activatePopupTab = async (tabName) => {
+    tabBtns.forEach(b => b.classList.toggle('active', b.dataset.popupTab === tabName));
+    document.getElementById('popup-panel-overview').classList.toggle('active', tabName === 'overview');
+    const intelPanel = document.getElementById('popup-panel-earnings-intel');
+    intelPanel.classList.toggle('active', tabName === 'earnings-intel');
+    if (tabName === 'earnings-intel' && !intelRendered) {
+      intelRendered = true;
+      if (typeof renderEarningsIntelTab === 'function') {
+        await renderEarningsIntelTab(intelPanel, ticker);
+      }
+    }
+  };
+  tabBtns.forEach(btn => btn.addEventListener('click', () => activatePopupTab(btn.dataset.popupTab)));
+
+  // If the popup opened directly on the Earnings Intel tab, render it now
+  if (initialTab === 'earnings-intel') {
+    intelRendered = true;
+    const intelPanel = document.getElementById('popup-panel-earnings-intel');
+    if (typeof renderEarningsIntelTab === 'function' && intelPanel) {
+      await renderEarningsIntelTab(intelPanel, ticker);
+    }
+  }
 
   // Initialize chart
   const chartArea = document.getElementById('popup-chart-area');

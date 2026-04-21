@@ -121,17 +121,26 @@ function renderRecentEarnings(recent) {
       </div>
       ${r.fiscal_quarter ? `<div class="earnings-card-fq">${r.fiscal_quarter}</div>` : ''}
       <div class="earnings-card-reaction ${stockClass}">${stockRx || 'No data'}</div>
-      <button class="earnings-note-btn" title="View post-earnings note">View Note →</button>
+      <div class="earnings-card-footer">
+        <span class="earnings-card-inflection-slot" data-ticker="${r.ticker}"></span>
+        <button class="earnings-intel-btn" title="Open Earnings Intel">Open Earnings Intel →</button>
+      </div>
     </div>`;
   }).join('');
 
   // Attach click handlers
   $recentCards.querySelectorAll('.earnings-card').forEach(card => {
-    card.querySelector('.earnings-note-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      openEarningsNote(card.dataset.ticker, card.dataset.date, card.dataset.type);
-    });
+    const intelBtn = card.querySelector('.earnings-intel-btn');
+    if (intelBtn) {
+      intelBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (typeof openPopup === 'function') openPopup(card.dataset.ticker, { initialTab: 'earnings-intel' });
+      });
+    }
   });
+
+  // Hydrate inflection slots from earnings_intel.json
+  hydrateEarningsCardInflections();
 }
 
 function renderUpcomingEarnings(upcoming) {
@@ -155,7 +164,10 @@ function renderUpcomingEarnings(upcoming) {
           <span class="earnings-card-date">${u.earnings_date} · in ${u.days_until}d</span>
         </div>
         <div class="earnings-card-countdown">Reports in <strong>${u.days_until}</strong> day${u.days_until !== 1 ? 's' : ''}</div>
-        <button class="earnings-note-btn" title="View pre-earnings note">View Note →</button>
+        <div class="earnings-card-footer">
+          <span class="earnings-card-inflection-slot" data-ticker="${u.ticker}"></span>
+          <button class="earnings-intel-btn" title="Open Earnings Intel">Open Earnings Intel →</button>
+        </div>
       </div>`;
     }).join('');
   }
@@ -179,16 +191,47 @@ function renderUpcomingEarnings(upcoming) {
 
   $upcomingCards.innerHTML = html;
 
-  // Attach note handlers for soon cards
+  // Attach Earnings Intel handlers for soon cards
   $upcomingCards.querySelectorAll('.earnings-card').forEach(card => {
-    const btn = card.querySelector('.earnings-note-btn');
+    const btn = card.querySelector('.earnings-intel-btn');
     if (btn) {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        openEarningsNote(card.dataset.ticker, card.dataset.date, card.dataset.type);
+        if (typeof openPopup === 'function') openPopup(card.dataset.ticker, { initialTab: 'earnings-intel' });
       });
     }
   });
+
+  // Hydrate inflection + signal summary slots
+  hydrateEarningsCardInflections();
+}
+
+// Hydrate inflection badges and signal summaries on earnings cards from earnings_intel.json
+async function hydrateEarningsCardInflections() {
+  if (typeof loadEarningsIntel !== 'function') return;
+  try {
+    const intelData = await loadEarningsIntel();
+    if (!intelData || !intelData.tickers) return;
+    document.querySelectorAll('.earnings-card-inflection-slot').forEach(slot => {
+      const ticker = slot.dataset.ticker;
+      const intel = intelData.tickers[ticker];
+      if (!intel) return;
+      const badgeMap = {
+        PRE: { label: 'PRE', cls: 'inflection-pre' },
+        MID: { label: 'MID', cls: 'inflection-mid' },
+        POST: { label: 'POST', cls: 'inflection-post' },
+        NONE: { label: '—', cls: 'inflection-none' },
+      };
+      const inf = badgeMap[intel.inflection_status] || badgeMap.NONE;
+      const summary = (typeof signalSummary === 'function') ? signalSummary(intel.signal_scorecard) : '';
+      const updated = intel.intel_updated_at ? 'Updated' : '';
+      slot.innerHTML = `
+        <span class="ei-inflection ${inf.cls}">${inf.label}</span>
+        ${summary ? `<span class="earnings-card-signals">${summary}</span>` : ''}
+        ${updated ? `<span class="earnings-card-updated">${updated}</span>` : ''}
+      `;
+    });
+  } catch (e) { /* ignore */ }
 }
 
 // --- Open earnings note in modal ---
