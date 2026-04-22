@@ -93,7 +93,7 @@
 
 .topbar-search {
   position: relative;
-  width: 240px;
+  width: 180px;
 }
 .topbar-search input {
   width: 100%;
@@ -512,6 +512,13 @@
 .more-pane.active { display: block; }
 
 /* ----- Responsive ------------------------------------------------ */
+@media (max-width: 1400px) {
+  .topbar-meta { display: none; }
+}
+@media (max-width: 1280px) {
+  .topbar-action { padding: 6px 8px; font-size: 11px; }
+  .topbar-search { width: 140px; }
+}
 @media (max-width: 1200px) {
   .coverage-layout { grid-template-columns: minmax(0, 1fr) 260px; }
   .summary-strip { grid-template-columns: repeat(5, 1fr); }
