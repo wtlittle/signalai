@@ -205,10 +205,35 @@ def run():
     # Step 7: Supabase (no LLM)
     step_supabase_push()
 
+    # --- Queue summary: tasks written to automation/queue/pending_tasks.json ---
+    queue_file = ROOT_DIR / "automation" / "queue" / "pending_tasks.json"
+    queued_entries = []
+    if queue_file.exists():
+        try:
+            with open(queue_file, "r") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    queued_entries = data
+        except (json.JSONDecodeError, OSError):
+            queued_entries = []
+
     print(f"\n{'='*60}")
     print(f"Daily refresh complete.")
     print(f"  Pre-earnings tickers: {len(pre)}")
     print(f"  Post-earnings tickers: {len(post)}")
+    print(f"{'='*60}")
+
+    print(f"\n=== {len(queued_entries)} tasks queued for Computer review ===")
+    if queued_entries:
+        for entry in queued_entries:
+            ticker = entry.get("ticker", "?")
+            task = entry.get("task", "?")
+            queued_at = entry.get("queued_at", "")
+            print(f"  • {ticker:<6} {task:<24} queued_at={queued_at}")
+        print(f"\n  Queue file: {queue_file}")
+        print(f"  Open this file in Perplexity Computer to process the pending tasks.")
+    else:
+        print("  (No LLM tasks queued this run.)")
     print(f"{'='*60}")
 
 

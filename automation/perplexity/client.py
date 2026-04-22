@@ -1,10 +1,20 @@
 """
-Single Perplexity API wrapper for ALL research tasks.
-Every call goes through here — caching, rate limiting, and error handling in one place.
+Single Perplexity research-task wrapper for ALL LLM work.
+
+By default, LLM tasks are NOT sent to the Perplexity REST API anymore.
+Instead, each call is queued to automation/queue/pending_tasks.json so that
+Perplexity Computer can pick them up and process them manually or via its
+own agent loop. This keeps all LLM work under a single, auditable handoff
+point and removes dependency on api.perplexity.ai.
+
+To preserve the old direct-API behavior as a fallback, set the environment
+variable USE_API_FALLBACK=true. Otherwise every call is queued.
 """
 import os
 import json
 import time
+import datetime as _dt
+from pathlib import Path
 import requests
 from automation.shared.cache import (
     research_cache_exists,
@@ -16,9 +26,56 @@ PERPLEXITY_API_KEY = os.environ.get("PERPLEXITY_API_KEY", "")
 MODEL = os.environ.get("PERPLEXITY_MODEL", "sonar-pro")
 BASE_URL = "https://api.perplexity.ai/chat/completions"
 
+# --- Queue location (Computer handoff) ---
+_QUEUE_DIR = Path(__file__).resolve().parent.parent / "queue"
+QUEUE_FILE = _QUEUE_DIR / "pending_tasks.json"
+
 # --- Rate limiter state ---
 _last_call_time = 0.0
 MIN_CALL_INTERVAL = 0.6  # seconds between calls
+
+
+def _use_api_fallback() -> bool:
+    """Return True only if USE_API_FALLBACK is explicitly enabled."""
+    return os.environ.get("USE_API_FALLBACK", "false").lower() == "true"
+
+
+def _queue_task(ticker: str, task: str, prompt: str, system: str, max_tokens: int) -> dict:
+    """Append a task to automation/queue/pending_tasks.json for Computer to process.
+
+    Read-modify-write pattern: loads the existing queue (empty array if missing
+    or corrupt), appends the new entry, and writes it back atomically.
+    Returns a status dict indicating the task was queued.
+    """
+    _QUEUE_DIR.mkdir(parents=True, exist_ok=True)
+    existing = []
+    if QUEUE_FILE.exists():
+        try:
+            with open(QUEUE_FILE, "r") as f:
+                loaded = json.load(f)
+                if isinstance(loaded, list):
+                    existing = loaded
+        except (json.JSONDecodeError, OSError):
+            existing = []
+
+    entry = {
+        "ticker": ticker,
+        "task": task,
+        "prompt": prompt,
+        "system": system,
+        "max_tokens": max_tokens,
+        "queued_at": _dt.datetime.now().astimezone().isoformat(timespec="seconds"),
+    }
+    existing.append(entry)
+
+    # Write atomically: write to tmp then replace
+    tmp = QUEUE_FILE.with_suffix(".json.tmp")
+    with open(tmp, "w") as f:
+        json.dump(existing, f, indent=2)
+    tmp.replace(QUEUE_FILE)
+
+    print(f"  [QUEUED] {ticker} / {task} \u2192 {QUEUE_FILE.name} (total pending: {len(existing)})")
+    return {"queued": True, "ticker": ticker, "task": task}
 
 
 def call_perplexity(
@@ -48,8 +105,12 @@ def call_perplexity(
         print(f"  [CACHE HIT] {ticker} / {task} — skipping Perplexity call")
         return load_research_cache(ticker, task)
 
+    # --- Route to Computer queue by default (no direct API calls) ---
+    if not _use_api_fallback():
+        return _queue_task(ticker, task, prompt, system, max_tokens)
+
     if not PERPLEXITY_API_KEY:
-        print(f"  [NO KEY] {ticker} / {task} — PERPLEXITY_API_KEY not set, skipping")
+        print(f"  [NO KEY] {ticker} / {task} \u2014 PERPLEXITY_API_KEY not set, skipping")
         return {"skipped": True, "reason": "no_api_key", "ticker": ticker, "task": task}
 
     # --- Rate limit ---
@@ -90,6 +151,11 @@ def call_perplexity(
             time.sleep(30)
             resp = requests.post(BASE_URL, headers=headers, json=body, timeout=90)
             resp.raise_for_status()
+        elif resp.status_code == 401:
+            print(f"  [AUTH ERROR] PERPLEXITY_API_KEY is invalid or expired — skipping all Perplexity calls")
+            os.environ["PERPLEXITY_API_KEY"] = ""
+            globals()["PERPLEXITY_API_KEY"] = ""
+            return {"skipped": True, "reason": "invalid_api_key", "ticker": ticker, "task": task}
         else:
             raise
 
