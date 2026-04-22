@@ -170,7 +170,7 @@ You can force the front-end to read snapshots from the local checkout instead of
 Manual uploads can be performed locally with:
 
 ```bash
-wrangler r2 object put signalai-data/data-snapshot.json --file=data-snapshot.json --content-type=application/json
+wrangler r2 object put signalai-data/data-snapshot.json --file=data-snapshot.json --content-type=application/json --remote
 ```
 
 ## License
