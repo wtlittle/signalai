@@ -12,7 +12,15 @@ async function loadWeeklyBriefing(path = 'weekly_briefing.json') {
       renderBriefingSkeletonOverlay();
     }
     weeklyBriefingInFlight = path;
-    const resp = await fetch(path + (path.includes('?') ? '&' : '?') + 'v=' + Date.now());
+    // Route the canonical briefing file through the snapshot host (R2 in prod),
+    // but preserve full local-path fetches for archived / path-qualified briefings.
+    let url;
+    if (path === 'weekly_briefing.json' && window.SignalSnapshot) {
+      url = window.SignalSnapshot.getSnapshotUrl('weekly_briefing.json', { cacheBust: true });
+    } else {
+      url = path + (path.includes('?') ? '&' : '?') + 'v=' + Date.now();
+    }
+    const resp = await fetch(url);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const data = await resp.json();
     if (weeklyBriefingInFlight !== path) return; // stale
@@ -20,6 +28,7 @@ async function loadWeeklyBriefing(path = 'weekly_briefing.json') {
     renderWeeklyBriefing();
   } catch (e) {
     console.error('Failed to load weekly briefing:', e);
+    if (window.SignalSnapshot && path === 'weekly_briefing.json') window.SignalSnapshot.markFailure('weekly_briefing.json', e);
     const $content = document.getElementById('weekly-briefing-content');
     if ($content) {
       $content.innerHTML = '<div class="wb-empty">No saved briefing for this week. <button class="btn-sm btn-ghost" onclick="loadLatestBriefing()">Load latest briefing</button></div>';

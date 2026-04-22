@@ -17,14 +17,19 @@ async function loadMacroData() {
       console.warn('Supabase macro fetch failed:', e.message);
     }
   }
-  // Fall back to local JSON
+  // Fall back to the snapshot host (R2 in prod, local in dev)
   try {
-    const resp = await fetch('macro_data.json', { signal: AbortSignal.timeout(8000) });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    macroDataCache = await resp.json();
+    if (window.SignalSnapshot) {
+      macroDataCache = await window.SignalSnapshot.fetchSnapshot('macro_data.json', { timeoutMs: 10000 });
+    } else {
+      const resp = await fetch('macro_data.json', { signal: AbortSignal.timeout(8000) });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      macroDataCache = await resp.json();
+    }
     return macroDataCache;
   } catch (e) {
-    console.warn('Local macro_data.json not found:', e.message);
+    console.warn('macro_data.json fetch failed:', e.message);
+    if (window.SignalSnapshot) window.SignalSnapshot.markFailure('macro_data.json', e);
     return null;
   }
 }

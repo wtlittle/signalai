@@ -129,6 +129,50 @@ Private company data is sourced from PitchBook Company Profiles and includes:
 
 Data is embedded in `utils.js` as `DEFAULT_PRIVATE_COMPANIES` and can be updated manually or via the PitchBook API.
 
+## Snapshot hosting (Cloudflare R2)
+
+The terminal no longer relies on committed JSON files for its runtime data. Seven snapshot files are published to the `signalai-data` Cloudflare R2 bucket and fetched by the front-end at page load:
+
+- `data-snapshot.json`
+- `earnings_data.json`
+- `earnings_intel.json`
+- `earnings_calendar.json`
+- `macro_data.json`
+- `weekly_briefing.json`
+- `earnings_notes_index.json`
+
+### How it works
+
+- `snapshot-config.js` exports a single `window.SignalSnapshot` facade. Every network call for a snapshot goes through `SignalSnapshot.getSnapshotUrl(file)` / `SignalSnapshot.fetchSnapshot(file)`.
+- `R2_BASE` is the public R2 URL: `https://pub-2e23479367774577a65757b8f638478a.r2.dev`.
+- When a fetch fails the helper records the failure via `SignalSnapshot.markFailure(...)`. The global `#snapshot-banner` subscribes to those status updates via `snapshot-banner.js` and shows a red "Data source degraded" banner with Retry / Dismiss actions.
+
+### Local vs R2 toggle
+
+You can force the front-end to read snapshots from the local checkout instead of R2 using any of:
+
+- URL param: `?local=1`
+- Console: `window.SIGNALAI_USE_LOCAL = true` before page load
+- When serving from `localhost` / `127.0.0.1` the module defaults to local unless `window.SIGNALAI_PREFER_LOCAL = false` is set
+
+### Regenerate + upload flow
+
+1. Run the daily automation job (`automation/jobs/daily_refresh`) — it writes the seven files back to the repo root.
+2. Commit and push to `main`.
+3. The `Upload snapshots to Cloudflare R2` GitHub Actions workflow (`.github/workflows/r2-upload.yml`) triggers automatically and runs `wrangler r2 object put` for each file. It also runs after the `SignalAI Daily Research` workflow completes.
+
+**Required repo secrets:**
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN` (R2 read/write)
+- `CLOUDFLARE_R2_BUCKET` (optional; defaults to `signalai-data`)
+
+Manual uploads can be performed locally with:
+
+```bash
+wrangler r2 object put signalai-data/data-snapshot.json --file=data-snapshot.json --remote
+```
+
 ## License
 
 MIT

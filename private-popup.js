@@ -31,7 +31,10 @@ function getOrCreatePrivatePopupDOM() {
       <button class="popup-close" id="private-detail-close">&times;</button>
       <div class="private-detail-header" id="private-detail-header"></div>
       <div class="private-detail-tab-bar" id="private-detail-tabs">
-        <button class="pd-tab active" data-tab="overview">Overview</button>
+        <button class="pd-tab active" data-tab="funding">Funding History</button>
+        <button class="pd-tab" data-tab="peer-trajectory">Peer Trajectory</button>
+        <button class="pd-tab" data-tab="returns">Returns</button>
+        <button class="pd-tab" data-tab="overview">Overview</button>
         <button class="pd-tab" data-tab="comps">Public Comps</button>
         <button class="pd-tab" data-tab="landscape">Landscape</button>
         <button class="pd-tab" data-tab="thesis">Thesis</button>
@@ -87,15 +90,15 @@ async function openPrivatePopup(companyName) {
 
   const { overlay } = getOrCreatePrivatePopupDOM();
 
-  // Reset to Overview tab
+  // Reset to Funding History (new default)
   overlay.querySelectorAll('.pd-tab').forEach(b => b.classList.remove('active'));
-  overlay.querySelector('[data-tab="overview"]').classList.add('active');
+  overlay.querySelector('[data-tab="funding"]').classList.add('active');
 
   // Render header
   renderPrivateHeader(co, intel);
 
   // Render default tab
-  renderPrivateDetailTab('overview');
+  renderPrivateDetailTab('funding');
 
   overlay.classList.add('active');
 }
@@ -158,11 +161,229 @@ function renderPrivateDetailTab(tab) {
   const { co, intel } = _currentPrivateCo;
 
   switch (tab) {
-    case 'overview':   $body.innerHTML = renderOverviewTab(co, intel); break;
-    case 'comps':      renderCompsTab(co, intel, $body); break;
-    case 'landscape':  $body.innerHTML = renderLandscapeTab(co, intel); break;
-    case 'thesis':     $body.innerHTML = renderThesisTab(co, intel); break;
+    case 'funding':          $body.innerHTML = renderFundingHistoryTab(co, intel); wirePeerTrajectory($body, co); break;
+    case 'peer-trajectory':  $body.innerHTML = renderPeerTrajectoryTab(co, intel); wirePeerTrajectory($body, co); break;
+    case 'returns':          $body.innerHTML = renderReturnsTab(co, intel); break;
+    case 'overview':         $body.innerHTML = renderOverviewTab(co, intel); break;
+    case 'comps':            renderCompsTab(co, intel, $body); break;
+    case 'landscape':        $body.innerHTML = renderLandscapeTab(co, intel); break;
+    case 'thesis':           $body.innerHTML = renderThesisTab(co, intel); break;
   }
+}
+
+/* ------------------------------------------------------------------
+   TAB — FUNDING HISTORY
+------------------------------------------------------------------ */
+function renderFundingHistoryTab(co, intel) {
+  const traj = window.SignalPrivateTrajectory;
+  if (!traj) return '<div class="pd-section">Trajectory module unavailable.</div>';
+
+  const fh = traj.getFundingHistory(co);
+  const vh = traj.getValuationHistory(co);
+  if (!fh.length && !vh.length) {
+    return '<div class="pd-section"><div class="pd-empty">No funding history available for this company yet.</div></div>';
+  }
+
+  // Compute cumulative returns vs first tracked round
+  const firstVal = vh.length ? vh[0].valuation_usd : null;
+  let html = '<div class="pd-section"><div class="pd-section-title">Round-by-Round History</div>';
+  html += '<table class="pd-funding-table"><thead><tr>' +
+    '<th>Date</th><th>Round</th><th class="num">Raised</th><th class="num">Post-money</th>' +
+    '<th>Lead Investors</th><th class="num">Δ Prior</th><th class="num">Cum. vs First</th>' +
+    '</tr></thead><tbody>';
+  let priorVal = null;
+  fh.forEach((r, i) => {
+    const delta = priorVal && r.valuation_usd ? traj.formatReturn(priorVal, r.valuation_usd) : '—';
+    const cum = firstVal && r.valuation_usd ? traj.formatReturn(firstVal, r.valuation_usd) : '—';
+    html += `<tr>` +
+      `<td>${r.date || '—'}</td>` +
+      `<td>${r.round || '—'}</td>` +
+      `<td class="num">${traj.formatUsd(r.amount_usd)}</td>` +
+      `<td class="num">${traj.formatUsd(r.valuation_usd)}</td>` +
+      `<td>${r.lead_investors || '—'}</td>` +
+      `<td class="num ${_returnClass(priorVal, r.valuation_usd)}">${delta}</td>` +
+      `<td class="num ${_returnClass(firstVal, r.valuation_usd)}">${cum}</td>` +
+      `</tr>`;
+    if (r.valuation_usd) priorVal = r.valuation_usd;
+  });
+  html += '</tbody></table></div>';
+
+  // Inline peer trajectory preview
+  html += '<div class="pd-section"><div class="pd-section-title">Valuation Trajectory</div>' +
+          '<div class="pd-peer-chart-wrap"><canvas id="pd-peer-chart"></canvas></div>' +
+          '<div class="pd-peer-mode-row">' +
+          '  <label>Mode <select id="pd-peer-mode">' +
+          '    <option value="valuation">Valuation over time</option>' +
+          '    <option value="rev_mult">Valuation / revenue</option>' +
+          '    <option value="return_first">Return since first tracked round</option>' +
+          '    <option value="return_prior">Return since prior round</option>' +
+          '  </select></label>' +
+          '</div></div>';
+  return html;
+}
+
+function _returnClass(fromVal, toVal) {
+  if (!fromVal || !toVal) return '';
+  const r = toVal / fromVal;
+  return r > 1.02 ? 'positive' : r < 0.98 ? 'negative' : '';
+}
+
+/* ------------------------------------------------------------------
+   TAB — PEER TRAJECTORY
+------------------------------------------------------------------ */
+function renderPeerTrajectoryTab(co, intel) {
+  return '<div class="pd-section"><div class="pd-section-title">Peer Trajectory</div>' +
+         '<div class="pd-peer-hint">Anchored on valuation trajectory. Revenue / ARR is contextual where available.</div>' +
+         '<div class="pd-peer-chart-wrap pd-peer-chart-wrap-large"><canvas id="pd-peer-chart"></canvas></div>' +
+         '<div class="pd-peer-mode-row">' +
+         '  <label>Mode <select id="pd-peer-mode">' +
+         '    <option value="valuation">Valuation over time</option>' +
+         '    <option value="rev_mult">Valuation / revenue</option>' +
+         '    <option value="return_first">Return since first tracked round</option>' +
+         '    <option value="return_prior">Return since prior round</option>' +
+         '  </select></label>' +
+         '</div>' +
+         '<div id="pd-peer-summary" class="pd-peer-summary"></div>' +
+         '</div>';
+}
+
+/* ------------------------------------------------------------------
+   TAB — RETURNS
+------------------------------------------------------------------ */
+function renderReturnsTab(co, intel) {
+  const traj = window.SignalPrivateTrajectory;
+  if (!traj) return '<div class="pd-section">Trajectory module unavailable.</div>';
+  const vh = traj.getValuationHistory(co);
+  if (!vh.length) return '<div class="pd-section"><div class="pd-empty">No valuation history tracked.</div></div>';
+  const latest = vh[vh.length - 1];
+  const first = vh[0];
+  const prior = vh.length >= 2 ? vh[vh.length - 2] : null;
+  const latestDate = new Date(latest.date || Date.now());
+  const firstDate = new Date(first.date || latest.date);
+  const years = Math.max(0.1, (latestDate - firstDate) / (365.25 * 24 * 3600 * 1000));
+  const annualized = (latest.valuation_usd && first.valuation_usd && years > 0.5)
+    ? ((Math.pow(latest.valuation_usd / first.valuation_usd, 1 / years) - 1) * 100).toFixed(1) + '%'
+    : '—';
+
+  const cardsHtml = [
+    { label: 'Since prior round', from: prior ? prior.valuation_usd : null, to: latest.valuation_usd, note: prior ? (prior.round + ' → ' + latest.round) : 'No prior round tracked' },
+    { label: 'Since first tracked round', from: first.valuation_usd, to: latest.valuation_usd, note: first.round + ' → ' + latest.round },
+    { label: 'Since earliest valuation', from: first.valuation_usd, to: latest.valuation_usd, note: first.date + ' → ' + latest.date },
+    { label: 'Annualized', custom: annualized, note: years.toFixed(1) + 'y tracked' }
+  ].map(c => {
+    const val = c.custom || (c.from && c.to ? traj.formatReturn(c.from, c.to) : '—');
+    const cls = c.custom ? '' : _returnClass(c.from, c.to);
+    return `<div class="pd-return-card"><div class="pd-return-label">${c.label}</div>` +
+           `<div class="pd-return-value ${cls}">${val}</div>` +
+           `<div class="pd-return-note">${c.note}</div></div>`;
+  }).join('');
+
+  return '<div class="pd-section"><div class="pd-section-title">Returns Summary</div>' +
+         '<div class="pd-return-grid">' + cardsHtml + '</div></div>';
+}
+
+/* Wire peer-trajectory chart */
+function wirePeerTrajectory($body, co) {
+  const canvas = $body.querySelector('#pd-peer-chart');
+  const modeEl = $body.querySelector('#pd-peer-mode');
+  if (!canvas || !window.Chart) return;
+  const traj = window.SignalPrivateTrajectory;
+  if (!traj) return;
+
+  // Peer set: same subsector
+  const peers = (privateCompanies || []).filter(c => c.subsector === co.subsector && c.name !== co.name).slice(0, 6);
+  const allCos = [co].concat(peers);
+
+  let chart = null;
+  function draw() {
+    const mode = (modeEl && modeEl.value) || 'valuation';
+    const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#a855f7', '#14b8a6', '#f43f5e'];
+    const datasets = allCos.map((c, i) => {
+      const vh = traj.getValuationHistory(c);
+      if (!vh.length) return null;
+      let points = [];
+      if (mode === 'valuation') {
+        points = vh.map(v => ({ x: new Date(v.date), y: v.valuation_usd }));
+      } else if (mode === 'rev_mult') {
+        const rev = traj.parseValuation(c.revenue) || null;
+        if (!rev) return null;
+        points = vh.map(v => ({ x: new Date(v.date), y: v.valuation_usd / rev }));
+      } else if (mode === 'return_first' || mode === 'return_prior') {
+        const base = mode === 'return_first' ? vh[0].valuation_usd : null;
+        let prior = null;
+        points = vh.map(v => {
+          let pct;
+          if (mode === 'return_first') {
+            pct = base ? ((v.valuation_usd / base) - 1) * 100 : 0;
+          } else {
+            pct = prior ? ((v.valuation_usd / prior) - 1) * 100 : 0;
+          }
+          prior = v.valuation_usd;
+          return { x: new Date(v.date), y: pct };
+        });
+      }
+      if (!points.length) return null;
+      const isSelected = c.name === co.name;
+      return {
+        label: c.name,
+        data: points,
+        borderColor: COLORS[i % COLORS.length],
+        backgroundColor: 'transparent',
+        borderWidth: isSelected ? 3 : 1.2,
+        borderDash: isSelected ? [] : [4, 3],
+        pointRadius: isSelected ? 4 : 2,
+        tension: 0.15
+      };
+    }).filter(Boolean);
+
+    if (chart) { chart.destroy(); chart = null; }
+    chart = new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: { datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', font: { size: 11 } } },
+          tooltip: {
+            backgroundColor: '#0f172a', titleColor: '#e5e7eb', bodyColor: '#cbd5e1', borderColor: '#334155', borderWidth: 1,
+            callbacks: {
+              label: (ctx) => {
+                const v = ctx.parsed.y;
+                if (mode === 'valuation') return ctx.dataset.label + ': ' + traj.formatUsd(v);
+                if (mode === 'rev_mult') return ctx.dataset.label + ': ' + v.toFixed(1) + 'x rev';
+                return ctx.dataset.label + ': ' + (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { type: 'time', ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(148,163,184,0.08)' } },
+          y: {
+            type: mode === 'valuation' ? 'logarithmic' : 'linear',
+            ticks: { color: '#64748b', font: { size: 10 }, callback: (v) => mode === 'valuation' ? traj.formatUsd(v) : (mode === 'rev_mult' ? v.toFixed(0) + 'x' : v.toFixed(0) + '%') },
+            grid: { color: 'rgba(148,163,184,0.08)' }
+          }
+        }
+      }
+    });
+
+    // Side summary
+    const summary = $body.querySelector('#pd-peer-summary');
+    if (summary) {
+      const coVh = traj.getValuationHistory(co);
+      const rev = traj.parseValuation(co.revenue);
+      let txt = co.name + ' valuation: ' + (coVh.length ? traj.formatUsd(coVh[coVh.length - 1].valuation_usd) : '—');
+      if (rev) txt += '  ·  Est. revenue: ' + traj.formatUsd(rev);
+      if (rev && coVh.length) txt += '  ·  Implied multiple: ' + (coVh[coVh.length - 1].valuation_usd / rev).toFixed(1) + 'x';
+      summary.textContent = txt;
+    }
+  }
+
+  draw();
+  if (modeEl) modeEl.addEventListener('change', draw);
 }
 
 /* ------------------------------------------------------------------

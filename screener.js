@@ -382,6 +382,43 @@
   // Expose for re-application after renders
   window._applyScreenerFilters = applyFilters;
 
+  // Public API for the preset save/load bar (screener-presets.js)
+  window.SignalScreener = window.SignalScreener || {};
+  window.SignalScreener.FILTER_COLUMNS = FILTER_COLUMNS;
+  window.SignalScreener.getFilters = function () {
+    // Return a deep-cloned snapshot of the currently active filters
+    return activeFilters.map(function (f) {
+      return {
+        key: f.key, type: f.type, format: f.format, label: f.label,
+        min: f.min, max: f.max,
+        values: Array.isArray(f.values) ? f.values.slice() : undefined
+      };
+    });
+  };
+  window.SignalScreener.loadFilters = function (preset) {
+    // Replace the active filter set with the given preset and re-render.
+    activeFilters = [];
+    renderFilterRows();
+    (preset || []).forEach(function (sf) {
+      var col = FILTER_COLUMNS.find(function (c) { return c.key === sf.key; });
+      if (col) addFilterRow(col, sf);
+    });
+    applyFilters();
+    // Ensure panel is visible so the user sees what got loaded
+    var panel = document.getElementById('screener-panel');
+    if (panel) {
+      panel.style.display = 'block';
+      screenerOpen = true;
+      var toggle = document.getElementById('screener-toggle');
+      if (toggle) toggle.classList.add('active');
+    }
+  };
+  window.SignalScreener.clearFilters = function () {
+    activeFilters = [];
+    renderFilterRows();
+    applyFilters();
+  };
+
   // Load saved filters
   const saved = Storage.get('screener_filters');
   if (saved && saved.length > 0) {

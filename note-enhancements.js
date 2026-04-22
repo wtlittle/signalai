@@ -515,7 +515,9 @@ let noteSearchIndex = null; // flat list of { ticker, type, date, file, title }
 async function buildNoteSearchIndex() {
   if (noteSearchIndex) return noteSearchIndex;
   try {
-    const resp = await fetch('earnings_notes_index.json?v=' + Date.now());
+    const url = (window.SignalSnapshot ? window.SignalSnapshot.getSnapshotUrl('earnings_notes_index.json', { cacheBust: true }) : 'earnings_notes_index.json?v=' + Date.now());
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const idx = await resp.json();
     const all = [];
     if (idx.notes) {

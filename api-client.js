@@ -79,13 +79,18 @@ async function loadSnapshot() {
   if (_snapshotLoading) return _snapshotLoading;
   _snapshotLoading = (async () => {
     try {
-      const resp = await fetch('data-snapshot.json', { signal: AbortSignal.timeout(10000) });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      _snapshotData = await resp.json();
+      if (window.SignalSnapshot) {
+        _snapshotData = await window.SignalSnapshot.fetchSnapshot('data-snapshot.json', { timeoutMs: 15000 });
+      } else {
+        const resp = await fetch('data-snapshot.json', { signal: AbortSignal.timeout(10000) });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        _snapshotData = await resp.json();
+      }
       console.log(`Loaded snapshot: ${Object.keys(_snapshotData.tickers || {}).length} tickers, generated ${_snapshotData.generated}`);
       return _snapshotData;
     } catch (e) {
       console.warn('Failed to load data snapshot:', e.message);
+      if (window.SignalSnapshot) window.SignalSnapshot.markFailure('data-snapshot.json', e);
       return null;
     }
   })();

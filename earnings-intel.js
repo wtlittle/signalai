@@ -13,12 +13,14 @@ async function loadEarningsIntel() {
   if (earningsIntelLoading) return earningsIntelLoading;
   earningsIntelLoading = (async () => {
     try {
-      const resp = await fetch('earnings_intel.json?v=' + Date.now());
+      const url = (window.SignalSnapshot ? window.SignalSnapshot.getSnapshotUrl('earnings_intel.json', { cacheBust: true }) : 'earnings_intel.json?v=' + Date.now());
+      const resp = await fetch(url);
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       earningsIntelData = await resp.json();
       return earningsIntelData;
     } catch (e) {
       console.warn('Failed to load earnings_intel.json:', e);
+      if (window.SignalSnapshot) window.SignalSnapshot.markFailure('earnings_intel.json', e);
       earningsIntelData = { tickers: {}, last_updated: null };
       return earningsIntelData;
     } finally {

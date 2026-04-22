@@ -97,6 +97,22 @@ function groupPrivateBySubsector(companies) {
   return ordered;
 }
 
+// --- Heat-cell magnitude encoding helpers ---
+// Maps absolute return to an opacity 0..0.5. 0% => 0, 10% => 0.22, 25%+ => 0.5.
+function _heatOpacity(absPct) {
+  if (absPct == null || Number.isNaN(absPct)) return 0;
+  const mag = Math.abs(absPct);
+  if (mag < 0.3) return 0;
+  // Soft square-root ramp, capped at 0.5 for 25%+.
+  return Math.min(0.5, Math.sqrt(Math.min(mag, 50) / 50) * 0.5);
+}
+function heatStyle(v) {
+  if (typeof v !== 'number' || Number.isNaN(v)) return '';
+  const o = _heatOpacity(v).toFixed(3);
+  if (o === '0.000') return '';
+  return v >= 0 ? `style="background: rgba(34,197,94,${o});"` : `style="background: rgba(239,68,68,${o});"`;
+}
+
 // --- Render main table ---
 function renderTable() {
   $body.innerHTML = '';
@@ -129,7 +145,10 @@ function renderTable() {
     // Subsector header row
     const headerRow = document.createElement('tr');
     headerRow.className = 'subsector-header';
+    const _cmpLead = (window.SignalCompare && window.SignalCompare.isModeOn && window.SignalCompare.isModeOn()) ? '<td class="col-compare subsector-fill-cell"></td>' : '';
+    const _colspan = (window.SignalCompare && window.SignalCompare.isModeOn && window.SignalCompare.isModeOn()) ? 15 : 15;
     headerRow.innerHTML = `
+      ${_cmpLead}
       <td class="subsector-label-cell">
         <button class="subsector-toggle" data-subsector="${subsector}">
           <span class="chevron ${isCollapsed ? 'collapsed' : ''}">▼</span>
@@ -137,7 +156,7 @@ function renderTable() {
           <span class="subsector-count">(${tickers.length})</span>
         </button>
       </td>
-      <td colspan="15" class="subsector-fill-cell"></td>
+      <td colspan="${_colspan}" class="subsector-fill-cell"></td>
     `;
     headerRow.querySelector('.subsector-toggle').addEventListener('click', () => {
       collapsedGroups[subsector] = !collapsedGroups[subsector];
@@ -155,25 +174,27 @@ function renderTable() {
       const hq = d.headquarters || COMPANY_HQ[ticker] || '';
       const hqHtml = hq ? `<span class="public-hq">${hq}</span>` : '';
 
+      const cmpCell = (window.SignalCompare && typeof window.SignalCompare.rowCheckboxHtml === 'function') ? window.SignalCompare.rowCheckboxHtml(ticker) : '';
       tr.innerHTML = `
-        <td class="cell-ticker" data-ticker="${ticker}">${ticker}</td>
-        <td class="cell-name" title="${getCommonName(ticker, d.name)}">
+        ${cmpCell}
+        <td class="cell-ticker pin-col pin-col-1" data-ticker="${ticker}">${ticker}</td>
+        <td class="cell-name pin-col pin-col-2" title="${getCommonName(ticker, d.name)}">
           <span class="cell-name-text">${getCommonName(ticker, d.name)}</span>
           ${hqHtml}
         </td>
         <td><span class="subsector-badge" data-ticker="${ticker}">${d.subsector || getSubsector(ticker)}</span></td>
-        <td class="num">${formatPrice(d.price)}</td>
+        <td class="num pin-col pin-col-3">${formatPrice(d.price)}</td>
         <td class="num">${formatLargeNumber(d.marketCap)}</td>
         <td class="num">${formatLargeNumber(d.ev)}</td>
         <td class="num">${formatMultiple(d.evSales)}</td>
         <td class="num">${formatMultiple(d.evFcf)}</td>
-        <td class="num ${percentClass(d.ytd)}">${formatPercent(d.ytd)}</td>
-        <td class="num ${percentClass(d.d1)}">${formatPercent(d.d1)}</td>
-        <td class="num ${percentClass(d.w1)}">${formatPercent(d.w1)}</td>
-        <td class="num ${percentClass(d.m1)}">${formatPercent(d.m1)}</td>
-        <td class="num ${percentClass(d.m3)}">${formatPercent(d.m3)}</td>
-        <td class="num ${percentClass(d.y1)}">${formatPercent(d.y1)}</td>
-        <td class="num ${percentClass(d.y3)}">${formatPercent(d.y3)}</td>
+        <td class="num heat-cell ${percentClass(d.ytd)}" ${heatStyle(d.ytd)}>${formatPercent(d.ytd)}</td>
+        <td class="num heat-cell ${percentClass(d.d1)}" ${heatStyle(d.d1)}>${formatPercent(d.d1)}</td>
+        <td class="num heat-cell ${percentClass(d.w1)}" ${heatStyle(d.w1)}>${formatPercent(d.w1)}</td>
+        <td class="num heat-cell ${percentClass(d.m1)}" ${heatStyle(d.m1)}>${formatPercent(d.m1)}</td>
+        <td class="num heat-cell ${percentClass(d.m3)}" ${heatStyle(d.m3)}>${formatPercent(d.m3)}</td>
+        <td class="num heat-cell ${percentClass(d.y1)}" ${heatStyle(d.y1)}>${formatPercent(d.y1)}</td>
+        <td class="num heat-cell ${percentClass(d.y3)}" ${heatStyle(d.y3)}>${formatPercent(d.y3)}</td>
         <td><button class="remove-btn" data-ticker="${ticker}" title="Remove">&times;</button></td>
       `;
 
@@ -215,6 +236,26 @@ function renderTable() {
       th.appendChild(span);
     }
   });
+
+  // Inject/remove a leading compare header cell based on compare mode.
+  const _hdrRow = document.querySelector('.watchlist-table thead tr');
+  if (_hdrRow) {
+    const existing = _hdrRow.querySelector('.col-compare');
+    const cmpOn = window.SignalCompare && window.SignalCompare.isModeOn && window.SignalCompare.isModeOn();
+    if (cmpOn && !existing) {
+      const th = document.createElement('th');
+      th.className = 'col-compare';
+      th.innerHTML = '<span class="compare-th-label">Cmp</span>';
+      _hdrRow.insertBefore(th, _hdrRow.firstChild);
+    } else if (!cmpOn && existing) {
+      existing.remove();
+    }
+  }
+
+  // Wire compare checkboxes for the newly rendered rows.
+  if (window.SignalCompare && typeof window.SignalCompare.wireRowCheckboxes === 'function') {
+    window.SignalCompare.wireRowCheckboxes($body);
+  }
 }
 
 // --- Render private companies (grouped by subsector) ---
@@ -229,7 +270,7 @@ function renderPrivateTable() {
     const headerRow = document.createElement('tr');
     headerRow.className = 'subsector-header';
     headerRow.innerHTML = `
-      <td colspan="8">
+      <td colspan="9">
         <button class="subsector-toggle" data-subsector="${subsector}">
           <span class="chevron ${isCollapsed ? 'collapsed' : ''}">▼</span>
           ${subsector}
@@ -261,6 +302,9 @@ function renderPrivateTable() {
       // HQ as subtle line under company name
       const hqLine = co.headquarters ? `<span class="private-hq">${co.headquarters}</span>` : '';
 
+      const trajSignal = (window.SignalPrivateTrajectory && window.SignalPrivateTrajectory.compactReturnSignal)
+        ? window.SignalPrivateTrajectory.compactReturnSignal(co)
+        : { label: '—', tone: 'flat' };
       tr.innerHTML = `
         <td class="private-name-cell">
           <div class="private-name-wrapper">
@@ -271,6 +315,7 @@ function renderPrivateTable() {
         </td>
         <td><span class="subsector-badge" data-private-idx="${idx}">${co.subsector}</span></td>
         <td class="num" style="font-family:var(--font-mono);">${co.valuation}</td>
+        <td class="num pd-trajectory-cell pd-tone-${trajSignal.tone}" title="Valuation trajectory">${trajSignal.label}</td>
         <td style="color:var(--text-secondary);font-size:11px;">${co.funding}</td>
         <td class="private-investors">${co.lead_investors || '—'}</td>
         <td class="num" style="font-family:var(--font-mono);">${co.revenue}</td>
@@ -1284,6 +1329,14 @@ async function fetchNews() {
     if (tabId === 'alerts' && !window._alertsLoaded) {
       window._alertsLoaded = true;
       if (typeof renderAlertsTab === 'function') renderAlertsTab();
+    }
+    // Hide the floating Compare tray when user leaves the Watchlist tab —
+    // the tray is only meaningful against watchlist rows.
+    if (tabId !== 'watchlist') {
+      var tray = document.getElementById('compare-tray');
+      if (tray) tray.classList.remove('visible');
+    } else if (window.SignalCompare && typeof window.SignalCompare.refreshTrayVisibility === 'function') {
+      window.SignalCompare.refreshTrayVisibility();
     }
   }
 

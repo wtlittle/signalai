@@ -77,11 +77,14 @@ function mdToHtml(md) {
 async function loadEarningsNotesIndex() {
   if (earningsNotesIndex) return earningsNotesIndex;
   try {
-    const resp = await fetch('earnings_notes_index.json?v=' + Date.now());
+    const url = (window.SignalSnapshot ? window.SignalSnapshot.getSnapshotUrl('earnings_notes_index.json', { cacheBust: true }) : 'earnings_notes_index.json?v=' + Date.now());
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
     earningsNotesIndex = await resp.json();
     return earningsNotesIndex;
   } catch (e) {
     console.warn('Failed to load earnings notes index:', e);
+    if (window.SignalSnapshot) window.SignalSnapshot.markFailure('earnings_notes_index.json', e);
     return null;
   }
 }
@@ -143,6 +146,27 @@ function renderRecentEarnings(recent) {
   hydrateEarningsCardInflections();
 }
 
+// Build an urgency badge comparing implied move (from options) to historical
+// average absolute earnings move. Returns HTML or empty string.
+function _impliedVsHistoricalBadge(ticker) {
+  const intel = (window.earningsIntelData && window.earningsIntelData.tickers && window.earningsIntelData.tickers[ticker]) || null;
+  if (!intel) return '';
+  const implied = intel.implied_move_pct;
+  const hist = intel.historical_avg_abs_move_pct;
+  if (typeof implied !== 'number' && typeof hist !== 'number') return '';
+  if (typeof implied === 'number' && typeof hist === 'number') {
+    const ratio = implied / Math.max(hist, 0.1);
+    let tone = 'flat';
+    let label;
+    if (ratio > 1.25) { tone = 'hot'; label = `Implied ${implied.toFixed(1)}% > hist ${hist.toFixed(1)}%`; }
+    else if (ratio < 0.8) { tone = 'cold'; label = `Implied ${implied.toFixed(1)}% < hist ${hist.toFixed(1)}%`; }
+    else { label = `Implied ${implied.toFixed(1)}% ≈ hist ${hist.toFixed(1)}%`; }
+    return `<span class="earnings-urgency-badge urg-${tone}" title="Options-implied vs historical avg">${label}</span>`;
+  }
+  if (typeof implied === 'number') return `<span class="earnings-urgency-badge urg-flat">Implied ${implied.toFixed(1)}%</span>`;
+  return `<span class="earnings-urgency-badge urg-flat">Hist ${hist.toFixed(1)}%</span>`;
+}
+
 function renderUpcomingEarnings(upcoming) {
   const soon = (upcoming || []).filter(u => u.days_until <= 14);
   const nextUp = (upcoming || []).filter(u => u.days_until > 14 && u.days_until <= 45);
@@ -157,11 +181,15 @@ function renderUpcomingEarnings(upcoming) {
   if (soon.length > 0) {
     html += soon.map(u => {
       const name = (COMMON_NAMES && COMMON_NAMES[u.ticker]) || u.name || u.ticker;
-      return `<div class="earnings-card upcoming" data-ticker="${u.ticker}" data-date="${u.earnings_date}" data-type="pre">
+      const isWatch = (typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.indexOf(u.ticker) !== -1);
+      const starHtml = isWatch ? '<span class="earnings-watch-star" title="In your watchlist">★</span>' : '';
+      const urg = _impliedVsHistoricalBadge(u.ticker);
+      return `<div class="earnings-card upcoming${isWatch ? ' is-watchlist' : ''}" data-ticker="${u.ticker}" data-date="${u.earnings_date}" data-type="pre">
         <div class="earnings-card-header">
-          <span class="earnings-card-ticker">${u.ticker}</span>
+          <span class="earnings-card-ticker">${starHtml}${u.ticker}</span>
           <span class="earnings-card-name">${name}</span>
           <span class="earnings-card-date">${u.earnings_date} · in ${u.days_until}d</span>
+          ${urg}
         </div>
         <div class="earnings-card-countdown">Reports in <strong>${u.days_until}</strong> day${u.days_until !== 1 ? 's' : ''}</div>
         <div class="earnings-card-footer">
@@ -474,7 +502,9 @@ async function fetchEarnings() {
   try {
     $earningsStatus.textContent = 'loading...';
     const index = await loadEarningsNotesIndex();
-    const calResp = await fetch('earnings_calendar.json?v=' + Date.now());
+    const calUrl = (window.SignalSnapshot ? window.SignalSnapshot.getSnapshotUrl('earnings_calendar.json', { cacheBust: true }) : 'earnings_calendar.json?v=' + Date.now());
+    const calResp = await fetch(calUrl);
+    if (!calResp.ok) throw new Error('HTTP ' + calResp.status);
     const calData = await calResp.json();
 
     const now = new Date();
@@ -604,9 +634,12 @@ let ecalViewMonth = null;
 
 async function loadEarningsCalendarData() {
   try {
-    const resp = await fetch('earnings_calendar.json?v=' + Date.now());
+    const url = (window.SignalSnapshot ? window.SignalSnapshot.getSnapshotUrl('earnings_calendar.json', { cacheBust: true }) : 'earnings_calendar.json?v=' + Date.now());
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
     ecalData = await resp.json();
   } catch (e) {
+    if (window.SignalSnapshot) window.SignalSnapshot.markFailure('earnings_calendar.json', e);
     console.warn('Calendar data load failed:', e);
     ecalData = { upcoming: [] };
   }

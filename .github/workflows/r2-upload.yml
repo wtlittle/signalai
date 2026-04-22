@@ -1,0 +1,113 @@
+name: Upload snapshots to Cloudflare R2
+
+# Publishes the 7 canonical snapshot JSON files from this repo to the
+# `signalai-data` R2 bucket so the front-end at the R2 public URL stays fresh.
+#
+# Fires on:
+#   * direct pushes to main that modify any snapshot file
+#   * manual dispatch (workflow_dispatch)
+#   * completion of the "daily-research" workflow (so the cron-driven refresh
+#     automatically syncs R2 after it commits fresh snapshots)
+#
+# Secrets required:
+#   * CLOUDFLARE_ACCOUNT_ID   — R2 account id
+#   * CLOUDFLARE_API_TOKEN    — token with R2 read/write scope
+#   * CLOUDFLARE_R2_BUCKET    — optional, defaults to `signalai-data`
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data-snapshot.json'
+      - 'earnings_data.json'
+      - 'earnings_intel.json'
+      - 'earnings_calendar.json'
+      - 'macro_data.json'
+      - 'weekly_briefing.json'
+      - 'earnings_notes_index.json'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["SignalAI Daily Research"]
+    types:
+      - completed
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    # Avoid a chain of failed uploads following a failed daily job
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET || 'signalai-data' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install wrangler
+        run: npm install --global wrangler@3
+
+      - name: Verify required secrets
+        run: |
+          set -e
+          : "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID secret is required}"
+          : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN secret is required}"
+          echo "R2 bucket: $R2_BUCKET"
+
+      - name: Verify snapshot files exist
+        run: |
+          set -e
+          MISSING=0
+          for f in data-snapshot.json earnings_data.json earnings_intel.json \
+                   earnings_calendar.json macro_data.json weekly_briefing.json \
+                   earnings_notes_index.json; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Missing required snapshot file: $f"
+              MISSING=1
+            fi
+          done
+          if [ $MISSING -eq 1 ]; then
+            exit 1
+          fi
+
+      - name: Upload data-snapshot.json
+        run: wrangler r2 object put "$R2_BUCKET/data-snapshot.json" --file=data-snapshot.json --remote --content-type=application/json
+
+      - name: Upload earnings_data.json
+        run: wrangler r2 object put "$R2_BUCKET/earnings_data.json" --file=earnings_data.json --remote --content-type=application/json
+
+      - name: Upload earnings_intel.json
+        run: wrangler r2 object put "$R2_BUCKET/earnings_intel.json" --file=earnings_intel.json --remote --content-type=application/json
+
+      - name: Upload earnings_calendar.json
+        run: wrangler r2 object put "$R2_BUCKET/earnings_calendar.json" --file=earnings_calendar.json --remote --content-type=application/json
+
+      - name: Upload macro_data.json
+        run: wrangler r2 object put "$R2_BUCKET/macro_data.json" --file=macro_data.json --remote --content-type=application/json
+
+      - name: Upload weekly_briefing.json
+        run: wrangler r2 object put "$R2_BUCKET/weekly_briefing.json" --file=weekly_briefing.json --remote --content-type=application/json
+
+      - name: Upload earnings_notes_index.json
+        run: wrangler r2 object put "$R2_BUCKET/earnings_notes_index.json" --file=earnings_notes_index.json --remote --content-type=application/json
+
+      - name: Summary
+        run: |
+          echo "### R2 snapshot upload complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Bucket: \`$R2_BUCKET\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Files uploaded:" >> $GITHUB_STEP_SUMMARY
+          for f in data-snapshot.json earnings_data.json earnings_intel.json \
+                   earnings_calendar.json macro_data.json weekly_briefing.json \
+                   earnings_notes_index.json; do
+            size=$(stat -c%s "$f" 2>/dev/null || echo "?")
+            echo "- $f ($size bytes)" >> $GITHUB_STEP_SUMMARY
+          done

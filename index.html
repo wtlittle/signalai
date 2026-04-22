@@ -24,9 +24,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260422">
+<link rel="stylesheet" href="styles.css?v=20260422d">
+<script src="snapshot-config.js?v=20260422"></script>
+<script src="snapshot-banner.js?v=20260422"></script>
 </head>
 <body>
+  <!-- Global snapshot-host banner (hidden unless a fetch fails) -->
+  <div id="snapshot-banner" class="snapshot-banner" hidden>
+    <span class="snapshot-banner-dot" aria-hidden="true"></span>
+    <span id="snapshot-banner-text">Data source degraded — some panels may be stale.</span>
+    <button type="button" id="snapshot-banner-retry" class="snapshot-banner-retry">Retry</button>
+    <button type="button" id="snapshot-banner-dismiss" class="snapshot-banner-dismiss" aria-label="Dismiss">&times;</button>
+  </div>
   <!-- Header -->
   <header class="app-header">
     <div class="header-left">
@@ -88,6 +97,7 @@
               <div class="search-dropdown" id="search-dropdown"></div>
             </div>
             <button id="add-ticker-btn" class="btn-sm">+ Add Company</button>
+            <button id="compare-toggle-btn" class="btn-sm btn-ghost" title="Compare 2–4 companies head-to-head">Compare</button>
           </div>
         </div>
       </section>
@@ -150,6 +160,7 @@
                 <th class="col-company">Company Name</th>
                 <th>Subsector</th>
                 <th class="num">Last Valuation</th>
+                <th class="num" title="Valuation trajectory vs prior round">Return</th>
                 <th>Last Funding Round</th>
                 <th>Lead Investors</th>
                 <th class="num">Est. Revenue</th>
@@ -376,12 +387,15 @@
   <script src="popup.js?v=20260421"></script>
   <script src="earnings.js?v=20260421"></script>
   <script src="private-intel.js?v=20260406"></script>
-  <script src="private-popup.js?v=20260406"></script>
+  <script src="private-trajectory.js?v=20260422"></script>
+  <script src="private-popup.js?v=20260422"></script>
   <script src="note-enhancements.js?v=20260406"></script>
   <script src="weekly-briefing.js?v=20260422b"></script>
   <script src="macro.js?v=20260422"></script>
   <script src="alerts.js?v=20260422"></script>
-  <script src="app.js?v=20260422"></script>
-  <script src="screener.js?v=20260407"></script>
+  <script src="compare.js?v=20260422b"></script>
+  <script src="app.js?v=20260422c"></script>
+  <script src="screener.js?v=20260422"></script>
+  <script src="screener-presets.js?v=20260422"></script>
 </body>
 </html>
