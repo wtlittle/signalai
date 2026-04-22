@@ -22,6 +22,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="styles.css?v=20260422">
 </head>
 <body>
@@ -229,7 +231,13 @@
       <section class="weekly-briefing-section" id="weekly-briefing-section">
         <div class="section-header-bar">
           <h2>Weekly Briefing</h2>
-          <span class="wb-status" id="wb-status">Updated weekly</span>
+          <div class="wb-header-controls">
+            <button class="btn-sm wb-export-pdf" id="wb-export-pdf" title="Export current briefing as a print-quality PDF">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 1.5h5.5L11 4v8.5H3V1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8.5 1.5V4H11" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 6.5v3.5M5.5 8.5L7 10l1.5-1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Export PDF
+            </button>
+            <span class="wb-status" id="wb-status">Updated weekly</span>
+          </div>
         </div>
         <div class="weekly-briefing-content" id="weekly-briefing-content">
           <div class="wb-empty">Loading weekly briefing...</div>
@@ -370,7 +378,7 @@
   <script src="private-intel.js?v=20260406"></script>
   <script src="private-popup.js?v=20260406"></script>
   <script src="note-enhancements.js?v=20260406"></script>
-  <script src="weekly-briefing.js?v=20260422"></script>
+  <script src="weekly-briefing.js?v=20260422b"></script>
   <script src="macro.js?v=20260422"></script>
   <script src="alerts.js?v=20260422"></script>
   <script src="app.js?v=20260422"></script>

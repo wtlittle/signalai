@@ -402,3 +402,377 @@ function initWeeklyBriefing() {
 
 window.loadLatestBriefing = loadLatestBriefing;
 window.jumpToWeek = jumpToWeek;
+
+// ───────────────────────────────────────────────────────────
+// PDF EXPORT
+// ───────────────────────────────────────────────────────────
+
+// Lightweight toast (no new libraries)
+function showBriefingToast(msg, opts = {}) {
+  const existing = document.getElementById('wb-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'wb-toast';
+  toast.className = 'wb-toast' + (opts.type ? ' wb-toast-' + opts.type : '');
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('visible'));
+  if (opts.autoHide !== false) {
+    setTimeout(() => {
+      toast.classList.remove('visible');
+      setTimeout(() => toast.remove(), 300);
+    }, opts.duration || 2200);
+  }
+  return toast;
+}
+function hideBriefingToast() {
+  const t = document.getElementById('wb-toast');
+  if (t) {
+    t.classList.remove('visible');
+    setTimeout(() => t.remove(), 250);
+  }
+}
+
+async function exportBriefingPDF() {
+  if (!weeklyBriefingData) {
+    showBriefingToast('No briefing loaded yet', { type: 'error' });
+    return;
+  }
+  if (typeof window.jspdf === 'undefined' && typeof window.jsPDF === 'undefined') {
+    showBriefingToast('PDF library failed to load', { type: 'error' });
+    return;
+  }
+
+  const processingToast = showBriefingToast('Generating PDF…', { autoHide: false });
+
+  try {
+    const { jsPDF } = window.jspdf || window;
+    // Letter 8.5" x 11" in points (72 pt/in): 612 x 792
+    const doc = new jsPDF({ unit: 'pt', format: 'letter', compress: true });
+    const PAGE_W = 612, PAGE_H = 792;
+    const MARGIN = 54; // 0.75"
+    const CONTENT_W = PAGE_W - MARGIN * 2;
+    const FOOTER_RESERVE = 28;
+
+    // Colors (match app accents)
+    const ACCENT_GREEN = [34, 197, 94];    // --green
+    const ACCENT_BLUE  = [59, 130, 246];   // --accent
+    const TEXT_PRIMARY = [31, 41, 55];
+    const TEXT_MUTED   = [107, 114, 128];
+    const RED          = [239, 68, 68];
+    const BORDER       = [229, 231, 235];
+
+    let y = MARGIN;
+
+    const d = weeklyBriefingData;
+    const weekEnd = d.week_ending || new Date().toISOString().slice(0, 10);
+
+    // ── Helpers ──
+    function setFont(size, style = 'normal') {
+      doc.setFont('helvetica', style);
+      doc.setFontSize(size);
+    }
+    function setColor(rgb) { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
+    function ensureSpace(needed) {
+      if (y + needed > PAGE_H - MARGIN - FOOTER_RESERVE) {
+        doc.addPage();
+        y = MARGIN;
+      }
+    }
+    function drawSectionHeader(label, rgb = ACCENT_GREEN) {
+      ensureSpace(30);
+      // Accent left bar
+      doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+      doc.rect(MARGIN, y - 10, 3, 18, 'F');
+      setFont(13, 'bold');
+      setColor(rgb);
+      doc.text(label, MARGIN + 10, y + 3);
+      y += 14;
+      doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
+      doc.setLineWidth(0.5);
+      doc.line(MARGIN, y, PAGE_W - MARGIN, y);
+      y += 12;
+    }
+    function writeParagraph(text, size = 11, style = 'normal', color = TEXT_PRIMARY, maxW) {
+      if (!text) return;
+      setFont(size, style);
+      setColor(color);
+      const lines = doc.splitTextToSize(String(text), maxW || CONTENT_W);
+      const lineH = size * 1.35;
+      lines.forEach(line => {
+        ensureSpace(lineH);
+        doc.text(line, MARGIN, y);
+        y += lineH;
+      });
+    }
+    function writeBullet(text, size = 11) {
+      if (!text) return;
+      setFont(size, 'normal');
+      setColor(TEXT_PRIMARY);
+      const indent = 14;
+      const lines = doc.splitTextToSize(String(text), CONTENT_W - indent);
+      const lineH = size * 1.4;
+      lines.forEach((line, i) => {
+        ensureSpace(lineH);
+        if (i === 0) {
+          setColor(ACCENT_GREEN);
+          doc.text('•', MARGIN, y);
+          setColor(TEXT_PRIMARY);
+        }
+        doc.text(line, MARGIN + indent, y);
+        y += lineH;
+      });
+    }
+    function writeLabelValue(label, value) {
+      setFont(9, 'bold');
+      setColor(TEXT_MUTED);
+      const labelText = String(label).toUpperCase();
+      doc.text(labelText, MARGIN, y);
+      const labelW = doc.getTextWidth(labelText) + 8;
+      setFont(10, 'normal');
+      setColor(TEXT_PRIMARY);
+      const valueLines = doc.splitTextToSize(String(value || '—'), CONTENT_W - labelW);
+      doc.text(valueLines[0], MARGIN + labelW, y);
+      y += 13;
+      valueLines.slice(1).forEach(l => {
+        ensureSpace(13);
+        doc.text(l, MARGIN + labelW, y);
+        y += 13;
+      });
+    }
+
+    // ── HEADER BAND ──
+    doc.setFillColor(17, 24, 39); // dark band
+    doc.rect(0, 0, PAGE_W, MARGIN - 10, 'F');
+    // Logo squircle
+    doc.setFillColor(ACCENT_BLUE[0], ACCENT_BLUE[1], ACCENT_BLUE[2]);
+    doc.roundedRect(MARGIN, 16, 20, 20, 3, 3, 'F');
+    doc.setDrawColor(ACCENT_GREEN[0], ACCENT_GREEN[1], ACCENT_GREEN[2]);
+    doc.setLineWidth(1.4);
+    doc.line(MARGIN + 5, 30, MARGIN + 9, 24);
+    doc.line(MARGIN + 9, 24, MARGIN + 12, 27);
+    doc.line(MARGIN + 12, 27, MARGIN + 16, 21);
+    setFont(14, 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text('SignalStack AI — Weekly Briefing', MARGIN + 28, 30);
+    setFont(10, 'normal');
+    doc.setTextColor(156, 163, 175);
+    const dateLabel = `Week ending ${weekEnd}`;
+    const dateW = doc.getTextWidth(dateLabel);
+    doc.text(dateLabel, PAGE_W - MARGIN - dateW, 30);
+
+    y = MARGIN + 18;
+
+    // ── TL;DR ──
+    const tldr = synthesizeTldr(d);
+    if (tldr.bullets.length) {
+      drawSectionHeader('TL;DR', ACCENT_BLUE);
+      if (tldr.chips && tldr.chips.length) {
+        setFont(9, 'bold');
+        setColor(ACCENT_BLUE);
+        let cx = MARGIN;
+        tldr.chips.forEach(chip => {
+          const w = doc.getTextWidth(chip) + 12;
+          if (cx + w > PAGE_W - MARGIN) { y += 16; cx = MARGIN; ensureSpace(16); }
+          doc.setDrawColor(ACCENT_BLUE[0], ACCENT_BLUE[1], ACCENT_BLUE[2]);
+          doc.setLineWidth(0.6);
+          doc.roundedRect(cx, y - 8, w, 13, 6, 6, 'S');
+          doc.text(chip.toUpperCase(), cx + 6, y + 1);
+          cx += w + 4;
+        });
+        y += 14;
+      }
+      tldr.bullets.forEach(b => writeBullet(b, 11));
+      y += 6;
+    }
+
+    // ── MACRO OVERVIEW ──
+    const ms = d.market_summary || {};
+    drawSectionHeader('Macro Overview', ACCENT_GREEN);
+    const ir = ms.index_returns || {};
+    const sp = ms.sp500_weekly || ir.sp500_weekly || '—';
+    const nq = ms.nasdaq_weekly || ir.nasdaq_weekly || '—';
+    const ru = ms.russell_weekly || ir.russell_weekly || '—';
+    writeLabelValue('S&P 500', sp);
+    writeLabelValue('Nasdaq', nq);
+    writeLabelValue('Russell 2000', ru);
+    if (ms.macro_regime) writeLabelValue('Regime', `${ms.macro_regime}${ms.regime_description ? ' — ' + ms.regime_description : ''}`);
+    y += 4;
+    if (ms.narrative) {
+      writeParagraph(ms.narrative, 10.5, 'normal', TEXT_PRIMARY);
+      y += 6;
+    }
+
+    // Trends
+    if (Array.isArray(d.trends) && d.trends.length) {
+      drawSectionHeader('Key Trends', ACCENT_GREEN);
+      d.trends.forEach(t => {
+        const title = t.title || t.name || '';
+        const detail = t.detail || t.description || '';
+        if (title) { writeParagraph(title, 11, 'bold'); }
+        if (detail) { writeParagraph(detail, 10.5); y += 2; }
+      });
+    }
+
+    // Risks
+    if (Array.isArray(d.risks) && d.risks.length) {
+      drawSectionHeader('Risks to Watch', RED);
+      d.risks.forEach(r => {
+        const title = r.title || r.name || '';
+        const detail = r.detail || r.description || '';
+        if (title) { writeParagraph(title, 11, 'bold'); }
+        if (detail) { writeParagraph(detail, 10.5); y += 2; }
+      });
+    }
+
+    // Value Picks
+    if (Array.isArray(d.value_picks) && d.value_picks.length) {
+      drawSectionHeader('Top Value Stocks', ACCENT_GREEN);
+      d.value_picks.forEach((v, i) => {
+        ensureSpace(40);
+        setFont(12, 'bold');
+        setColor(TEXT_PRIMARY);
+        const head = `#${i + 1}  ${v.ticker}  —  ${v.name || ''}`;
+        doc.text(head, MARGIN, y);
+        // price right-aligned
+        const price = v.price || v.current_price || '';
+        if (price) {
+          setFont(11, 'bold');
+          setColor(ACCENT_BLUE);
+          const pStr = String(price);
+          doc.text(pStr, PAGE_W - MARGIN - doc.getTextWidth(pStr), y);
+        }
+        y += 14;
+        setFont(9, 'normal');
+        setColor(TEXT_MUTED);
+        const stats = [
+          `${v.off_high_pct || v.pct_off_high || ''} off 52w high`,
+          `P/E ${v.pe_ratio || 'N/A'}`,
+          `EV/EBITDA ${v.ev_ebitda || 'N/A'}`,
+          `Rev Gr ${v.rev_growth || v.revenue_growth || 'N/A'}`,
+          `FCF Yld ${v.fcf_yield || 'N/A'}`,
+        ].filter(s => s && !s.startsWith(' off')).join('   ·   ');
+        if (stats) { doc.text(stats, MARGIN, y); y += 12; }
+        if (v.why_undervalued) {
+          setFont(9, 'bold'); setColor(ACCENT_GREEN);
+          doc.text('WHY UNDERVALUED', MARGIN, y); y += 11;
+          writeParagraph(v.why_undervalued, 10, 'normal', TEXT_PRIMARY);
+        }
+        if (v.bull_case) {
+          setFont(9, 'bold'); setColor(ACCENT_GREEN);
+          doc.text('BULL CASE', MARGIN, y); y += 11;
+          writeParagraph(v.bull_case, 10, 'normal', TEXT_PRIMARY);
+        }
+        y += 6;
+      });
+    }
+
+    // Momentum Picks
+    if (Array.isArray(d.momentum_picks) && d.momentum_picks.length) {
+      drawSectionHeader('Top Momentum Stocks', ACCENT_BLUE);
+      d.momentum_picks.forEach((m, i) => {
+        ensureSpace(40);
+        setFont(12, 'bold');
+        setColor(TEXT_PRIMARY);
+        const head = `#${i + 1}  ${m.ticker}  —  ${m.name || ''}`;
+        doc.text(head, MARGIN, y);
+        y += 14;
+        setFont(9, 'normal'); setColor(TEXT_MUTED);
+        const stats = [
+          `1W ${m.perf_1w || m.one_week || '—'}`,
+          `1M ${m.perf_1m || m.one_month || '—'}`,
+          `3M ${m.perf_3m || m.three_month || '—'}`,
+          `Rev Gr ${m.rev_growth || m.revenue_growth || 'N/A'}`,
+        ].join('   ·   ');
+        doc.text(stats, MARGIN, y); y += 12;
+        if (m.catalyst) {
+          setFont(9, 'bold'); setColor(ACCENT_BLUE);
+          doc.text('CATALYST', MARGIN, y); y += 11;
+          writeParagraph(m.catalyst, 10, 'normal', TEXT_PRIMARY);
+        }
+        if (m.risk_reward) {
+          setFont(9, 'bold'); setColor(ACCENT_BLUE);
+          doc.text('RISK / REWARD', MARGIN, y); y += 11;
+          writeParagraph(m.risk_reward, 10, 'normal', TEXT_PRIMARY);
+        }
+        y += 6;
+      });
+    }
+
+    // Earnings highlights (from watchlist updates if present)
+    const updates = d.watchlist_updates || d.watchlist_movers || d.earnings_highlights || [];
+    if (updates.length) {
+      drawSectionHeader('Earnings & Watchlist Highlights', ACCENT_GREEN);
+      updates.forEach(u => {
+        ensureSpace(30);
+        // Beat / miss / move signal
+        let signalLabel = '';
+        let signalColor = TEXT_MUTED;
+        if (u.result) {
+          const r = String(u.result).toLowerCase();
+          if (r.includes('beat')) { signalLabel = 'BEAT'; signalColor = ACCENT_GREEN; }
+          else if (r.includes('miss')) { signalLabel = 'MISS'; signalColor = RED; }
+          else { signalLabel = r.toUpperCase(); }
+        } else if (u.price_change_30d) {
+          const pct = parseFloat(String(u.price_change_30d).replace('%', '').replace('+', ''));
+          if (!isNaN(pct)) {
+            signalLabel = `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}% 30D`;
+            signalColor = pct >= 0 ? ACCENT_GREEN : RED;
+          }
+        }
+        setFont(11, 'bold'); setColor(TEXT_PRIMARY);
+        doc.text(`${u.ticker || ''}  —  ${u.company_name || u.name || ''}`, MARGIN, y);
+        if (signalLabel) {
+          setFont(9, 'bold'); setColor(signalColor);
+          const lw = doc.getTextWidth(signalLabel) + 10;
+          doc.setDrawColor(signalColor[0], signalColor[1], signalColor[2]);
+          doc.setLineWidth(0.6);
+          doc.roundedRect(PAGE_W - MARGIN - lw, y - 9, lw, 13, 3, 3, 'S');
+          doc.text(signalLabel, PAGE_W - MARGIN - lw + 5, y + 1);
+        }
+        y += 14;
+        if (u.headline) { writeParagraph(u.headline, 10.5, 'bold', TEXT_PRIMARY); }
+        if (u.detail) { writeParagraph(u.detail, 10, 'normal', TEXT_PRIMARY); y += 2; }
+        y += 4;
+      });
+    }
+
+    // ── FOOTER: page numbers (Page X of Y) ──
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let p = 1; p <= pageCount; p++) {
+      doc.setPage(p);
+      setFont(9, 'normal');
+      setColor(TEXT_MUTED);
+      const footerY = PAGE_H - 28;
+      // left: app name
+      doc.text('SignalStack AI', MARGIN, footerY);
+      // center: week ending
+      const centerLabel = `Week ending ${weekEnd}`;
+      doc.text(centerLabel, PAGE_W / 2 - doc.getTextWidth(centerLabel) / 2, footerY);
+      // right: page X of Y
+      const pageLabel = `Page ${p} of ${pageCount}`;
+      doc.text(pageLabel, PAGE_W - MARGIN - doc.getTextWidth(pageLabel), footerY);
+      doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
+      doc.setLineWidth(0.3);
+      doc.line(MARGIN, footerY - 8, PAGE_W - MARGIN, footerY - 8);
+    }
+
+    const filename = `SignalStack_Briefing_${weekEnd}.pdf`;
+    doc.save(filename);
+
+    hideBriefingToast();
+    showBriefingToast('PDF ready', { type: 'success', duration: 2200 });
+  } catch (err) {
+    console.error('PDF export failed:', err);
+    hideBriefingToast();
+    showBriefingToast('Failed to generate PDF', { type: 'error' });
+  }
+}
+
+// Wire up the Export PDF button
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('wb-export-pdf');
+  if (btn) btn.addEventListener('click', exportBriefingPDF);
+});
+
+window.exportBriefingPDF = exportBriefingPDF;
