@@ -1,153 +1,354 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-<!--
-   ______                            __
-  / ____/___  ____ ___  ____  __  __/ /____  _____
- / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
-/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
-\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
-                    /_/
-        Created with Perplexity Computer
-        https://www.perplexity.ai/computer
--->
-<meta name="generator" content="Perplexity Computer">
-<meta name="author" content="Perplexity Computer">
-<meta property="og:see_also" content="https://www.perplexity.ai/computer">
-<link rel="author" href="https://www.perplexity.ai/computer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SignalStack AI</title>
+<title>SignalStack AI — Institutional Coverage Intelligence</title>
+<meta name="description" content="Institutional coverage intelligence workspace: monitor broad universes, rank what matters, compare names, prepare for catalysts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="styles.css?v=20260422d">
+<link rel="stylesheet" href="redesign.css?v=20260422f">
 <script src="snapshot-config.js?v=20260422e"></script>
 <script src="snapshot-banner.js?v=20260422"></script>
+<script src="mode.js?v=20260422f"></script>
+<script src="router.js?v=20260422f"></script>
 </head>
 <body>
   <!-- Global snapshot-host banner (hidden unless a fetch fails) -->
-  <div id="snapshot-banner" class="snapshot-banner" hidden>
-    <span class="snapshot-banner-dot" aria-hidden="true"></span>
+  <div class="snapshot-banner" id="snapshot-banner" hidden>
     <span id="snapshot-banner-text">Data source degraded — some panels may be stale.</span>
     <button type="button" id="snapshot-banner-retry" class="snapshot-banner-retry">Retry</button>
     <button type="button" id="snapshot-banner-dismiss" class="snapshot-banner-dismiss" aria-label="Dismiss">&times;</button>
   </div>
-  <!-- Header -->
-  <header class="app-header">
-    <div class="header-left">
-      <svg class="logo" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="SignalStack AI Logo">
+
+  <!-- ============================================================
+       GLOBAL TOP BAR — universal search, actions, mode toggle
+       ============================================================ -->
+  <header class="global-topbar" id="global-topbar">
+    <div class="topbar-brand">
+      <svg class="logo" width="22" height="22" viewBox="0 0 28 28" fill="none" aria-label="SignalStack AI Logo">
         <rect x="2" y="2" width="24" height="24" rx="4" stroke="#3b82f6" stroke-width="2"/>
         <path d="M7 18L11 10L15 14L21 7" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="21" cy="7" r="2" fill="#3b82f6"/>
       </svg>
-      <span class="logo-text">SignalStack AI</span>
+      <span class="brand-text">SignalStack AI</span>
     </div>
-    <div class="header-right">
-      <div class="header-meta">
-        <span class="total-mcap" id="total-mcap">Total MCap: —</span>
+
+    <nav class="surface-nav" role="navigation" aria-label="Primary">
+      <button type="button" class="surface-btn" data-nav-surface="coverage">Coverage</button>
+      <button type="button" class="surface-btn" data-nav-surface="compare">Compare</button>
+      <button type="button" class="surface-btn" data-nav-surface="screener">Screener</button>
+      <button type="button" class="surface-btn" data-nav-surface="earnings">Earnings</button>
+      <button type="button" class="surface-btn" data-nav-surface="private">Private Markets</button>
+      <button type="button" class="surface-btn" data-nav-surface="drilldown">Drilldown</button>
+      <button type="button" class="surface-btn surface-btn-muted" data-nav-surface="more" title="Briefing, Macro, News, Alerts">More</button>
+    </nav>
+
+    <div class="topbar-actions">
+      <div class="topbar-search">
+        <input type="text" id="global-search" placeholder="Search ticker or company…" autocomplete="off" spellcheck="false" aria-label="Universal search">
+        <div class="search-dropdown" id="global-search-dropdown"></div>
+      </div>
+      <button type="button" class="topbar-action" id="topbar-add" title="Add company to coverage">+ Add</button>
+      <button type="button" class="topbar-action" id="topbar-compare" title="Compare 2–4 names">Compare</button>
+      <button type="button" class="topbar-action" id="topbar-save-view" title="Save current view">Save view</button>
+      <div class="topbar-mode" role="group" aria-label="Analyst mode">
+        <button type="button" class="mode-btn" data-mode="hf" title="Hedge Fund mode: triage, positioning, catalysts">HF</button>
+        <button type="button" class="mode-btn" data-mode="lo" title="Long Only mode: valuation, quality, underwriting">LO</button>
+      </div>
+      <span class="topbar-meta">
         <span class="last-updated" id="last-updated">Updated: —</span>
         <span class="refresh-timer" id="refresh-timer">↻ 60s</span>
-      </div>
+        <span class="total-mcap" id="total-mcap" hidden>Total MCap: —</span>
+      </span>
     </div>
   </header>
 
-  <!-- Tab Navigation -->
-  <nav class="tab-bar" id="tab-bar">
-    <button class="tab-btn active" data-tab="watchlist">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 9L5.5 5L7.5 7L10.5 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Watchlist
-    </button>
-    <button class="tab-btn" data-tab="research">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 11.5V2.5H8.5L11.5 5.5V11.5H2.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8.5 2.5V5.5H11.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><line x1="5" y1="7.5" x2="9" y2="7.5" stroke="currentColor" stroke-width="1.1"/><line x1="5" y1="9.5" x2="8" y2="9.5" stroke="currentColor" stroke-width="1.1"/></svg>
-      Earnings
-    </button>
-    <button class="tab-btn" data-tab="briefing">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 3.5V7L9 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Briefing
-    </button>
-    <button class="tab-btn" data-tab="macro">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 7h8M7 3v8" stroke="currentColor" stroke-width="1" opacity=".4"/><path d="M4.5 9.5L6 6l2 2 1.5-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Macro
-    </button>
-    <button class="tab-btn" data-tab="news">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><line x1="4" y1="5.5" x2="10" y2="5.5" stroke="currentColor" stroke-width="1.1"/><line x1="4" y1="7.5" x2="9" y2="7.5" stroke="currentColor" stroke-width="1.1"/><line x1="4" y1="9.5" x2="7" y2="9.5" stroke="currentColor" stroke-width="1.1"/></svg>
-      News
-    </button>
-    <button class="tab-btn" data-tab="alerts">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 10V6.5a4 4 0 118 0V10l1 1H2l1-1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.5 12a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      Alerts
-    </button>
+  <!-- Legacy tab-bar — kept in DOM (hidden) so any remaining code paths that
+       query .tab-btn / #tab-bar don't crash. The new router owns navigation. -->
+  <nav class="tab-bar legacy-hidden" id="tab-bar" hidden aria-hidden="true">
+    <button class="tab-btn active" data-tab="watchlist">Watchlist</button>
+    <button class="tab-btn" data-tab="research">Earnings</button>
+    <button class="tab-btn" data-tab="briefing">Briefing</button>
+    <button class="tab-btn" data-tab="macro">Macro</button>
+    <button class="tab-btn" data-tab="news">News</button>
+    <button class="tab-btn" data-tab="alerts">Alerts</button>
   </nav>
 
-  <!-- Main Content -->
+  <!-- ============================================================
+       MAIN — surface containers (shown one at a time by router)
+       ============================================================ -->
   <main class="main-content">
 
-    <!-- === TAB: WATCHLIST === -->
-    <div class="tab-pane active" id="tab-watchlist">
-      <section class="public-section">
-        <div class="section-header-bar">
-          <h2>Public Companies</h2>
-          <div class="add-ticker-group">
-            <div class="search-wrapper">
-              <input type="text" id="ticker-input" placeholder="Search company or ticker..." autocomplete="off" spellcheck="false">
-              <div class="search-dropdown" id="search-dropdown"></div>
+    <!-- === SURFACE: COVERAGE (home) ========================== -->
+    <section class="surface surface-coverage" data-surface="coverage" hidden>
+
+      <!-- Persistent coverage ribbon (M2 will make it functional) -->
+      <div class="coverage-ribbon" id="coverage-ribbon">
+        <div class="ribbon-row">
+          <div class="ribbon-group ribbon-group-views" aria-label="Saved views">
+            <span class="ribbon-label">View</span>
+            <div class="ribbon-chips" id="ribbon-view-chips">
+              <!-- populated by coverage.js in M2 -->
             </div>
-            <button id="add-ticker-btn" class="btn-sm">+ Add Company</button>
-            <button id="compare-toggle-btn" class="btn-sm btn-ghost" title="Compare 2–4 companies head-to-head">Compare</button>
+          </div>
+          <div class="ribbon-group" aria-label="Universe">
+            <span class="ribbon-label">Universe</span>
+            <select class="ribbon-select" id="ribbon-universe">
+              <option value="default_v1">Default Coverage</option>
+              <option value="full_legacy">Full Legacy</option>
+              <option value="custom">Custom Basket…</option>
+            </select>
+          </div>
+          <div class="ribbon-group" aria-label="Time frame">
+            <span class="ribbon-label">Time</span>
+            <div class="ribbon-pills" id="ribbon-timeframe" role="tablist">
+              <button type="button" class="ribbon-pill" data-time="1d">1D</button>
+              <button type="button" class="ribbon-pill" data-time="1w">1W</button>
+              <button type="button" class="ribbon-pill active" data-time="1m">1M</button>
+              <button type="button" class="ribbon-pill" data-time="3m">3M</button>
+              <button type="button" class="ribbon-pill" data-time="ytd">YTD</button>
+              <button type="button" class="ribbon-pill" data-time="1y">1Y</button>
+            </div>
+          </div>
+          <div class="ribbon-group" aria-label="Sort regime">
+            <span class="ribbon-label">Sort</span>
+            <select class="ribbon-select" id="ribbon-sort-regime">
+              <option value="default">Default</option>
+              <option value="biggest_movers">Biggest movers</option>
+              <option value="cheapest_fy1">Cheapest FY1 EV/Sales</option>
+              <option value="revisions_up">Revisions up</option>
+              <option value="revisions_down">Revisions down</option>
+              <option value="most_crowded_short">Most crowded short</option>
+              <option value="next_earnings">Next earnings</option>
+            </select>
+          </div>
+          <div class="ribbon-group ribbon-group-flags" aria-label="Quick flags">
+            <span class="ribbon-label">Flags</span>
+            <button type="button" class="ribbon-flag" data-flag="earnings_7d">Earnings 7D</button>
+            <button type="button" class="ribbon-flag" data-flag="revision_up">Rev up</button>
+            <button type="button" class="ribbon-flag" data-flag="revision_dn">Rev down</button>
+            <button type="button" class="ribbon-flag" data-flag="crowded_short">Crowded short</button>
+            <button type="button" class="ribbon-flag" data-flag="insider_buy">Insider buy</button>
+          </div>
+          <div class="ribbon-group ribbon-group-end">
+            <button type="button" class="ribbon-btn" id="ribbon-customize-cols" title="Add, remove, reorder columns">Customize columns</button>
           </div>
         </div>
-      </section>
-      <div class="table-wrapper" id="table-wrapper">
-        <table class="watchlist-table" id="watchlist-table">
-          <thead>
-            <tr>
-              <th class="col-ticker sortable" data-col="ticker">Ticker</th>
-              <th class="col-name sortable" data-col="name">Company</th>
-              <th class="col-subsector sortable" data-col="subsector">Subsector</th>
-              <th class="col-price sortable num" data-col="price">Price</th>
-              <th class="col-mcap sortable num" data-col="marketCap">Mkt Cap</th>
-              <th class="col-ev sortable num" data-col="ev">EV</th>
-              <th class="col-ev-sales sortable num" data-col="evSales">FY1 EV/Sales</th>
-              <th class="col-ev-fcf sortable num" data-col="evFcf">FY1 EV/FCF</th>
-              <th class="col-perf sortable num" data-col="ytd">YTD%</th>
-              <th class="col-perf sortable num" data-col="d1">1D%</th>
-              <th class="col-perf sortable num" data-col="w1">1W%</th>
-              <th class="col-perf sortable num" data-col="m1">1M%</th>
-              <th class="col-perf sortable num" data-col="m3">3M%</th>
-              <th class="col-perf sortable num" data-col="y1">1Y%</th>
-              <th class="col-perf sortable num" data-col="y3">3Y%</th>
-              <th class="col-remove"></th>
-            </tr>
-          </thead>
-          <tbody id="watchlist-body">
-          </tbody>
-        </table>
       </div>
 
-      <!-- Loading Skeleton -->
-      <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-skeleton">
-          <div class="skeleton-row" style="--i:0"></div>
-          <div class="skeleton-row" style="--i:1"></div>
-          <div class="skeleton-row" style="--i:2"></div>
-          <div class="skeleton-row" style="--i:3"></div>
-          <div class="skeleton-row" style="--i:4"></div>
-          <div class="skeleton-row" style="--i:5"></div>
-          <div class="skeleton-row" style="--i:6"></div>
-          <div class="skeleton-row" style="--i:7"></div>
-          <div class="skeleton-row" style="--i:8"></div>
-          <div class="skeleton-row" style="--i:9"></div>
+      <!-- Summary strip (M2 will populate the real values) -->
+      <div class="summary-strip" id="summary-strip">
+        <div class="summary-tile">
+          <div class="summary-label">Universe</div>
+          <div class="summary-value" id="stat-universe-count">—</div>
+          <div class="summary-sub">names</div>
+        </div>
+        <div class="summary-tile">
+          <div class="summary-label">Median FY1 EV/Sales</div>
+          <div class="summary-value" id="stat-median-valuation">—</div>
+          <div class="summary-sub">current universe</div>
+        </div>
+        <div class="summary-tile">
+          <div class="summary-label">Avg 1M move</div>
+          <div class="summary-value" id="stat-avg-move">—</div>
+          <div class="summary-sub">price performance</div>
+        </div>
+        <div class="summary-tile">
+          <div class="summary-label">Earnings next 7D</div>
+          <div class="summary-value" id="stat-earnings-7d">—</div>
+          <div class="summary-sub">names reporting</div>
+        </div>
+        <div class="summary-tile summary-tile-mode">
+          <div class="summary-label" id="stat-mode-label">Debate intensity</div>
+          <div class="summary-value" id="stat-mode-value">—</div>
+          <div class="summary-sub" id="stat-mode-sub">HF mode</div>
         </div>
       </div>
 
-      <!-- Private Companies Section -->
+      <!-- Main coverage layout: table + right context panel -->
+      <div class="coverage-layout">
+        <div class="coverage-main">
+          <!-- Existing public table — preserved so app.js continues to work.
+               Columns are still fixed in this milestone; M2 replaces with
+               configurable column system. -->
+          <div class="section-header-bar coverage-header-bar">
+            <h2>Coverage</h2>
+            <div class="add-ticker-group">
+              <div class="search-wrapper">
+                <input type="text" id="ticker-input" placeholder="Search company or ticker..." autocomplete="off" spellcheck="false">
+                <div class="search-dropdown" id="search-dropdown"></div>
+              </div>
+              <button id="add-ticker-btn" class="btn-sm">+ Add Company</button>
+              <button id="compare-toggle-btn" class="btn-sm btn-ghost" title="Compare 2–4 companies head-to-head">Compare</button>
+            </div>
+          </div>
+          <div class="table-wrapper" id="table-wrapper">
+            <table class="watchlist-table" id="watchlist-table">
+              <thead>
+                <tr>
+                  <th class="col-ticker sortable" data-col="ticker">Ticker</th>
+                  <th class="col-name sortable" data-col="name">Company</th>
+                  <th class="col-subsector sortable" data-col="subsector">Sector</th>
+                  <th class="col-price sortable num" data-col="price">Price</th>
+                  <th class="col-mcap sortable num" data-col="marketCap">Mkt Cap</th>
+                  <th class="col-ev sortable num" data-col="ev">EV</th>
+                  <th class="col-ev-sales sortable num" data-col="evSales">FY1 EV/Sales</th>
+                  <th class="col-ev-fcf sortable num" data-col="evFcf">FY1 EV/FCF</th>
+                  <th class="col-perf sortable num" data-col="ytd">YTD%</th>
+                  <th class="col-perf sortable num" data-col="d1">1D%</th>
+                  <th class="col-perf sortable num" data-col="w1">1W%</th>
+                  <th class="col-perf sortable num" data-col="m1">1M%</th>
+                  <th class="col-perf sortable num" data-col="m3">3M%</th>
+                  <th class="col-perf sortable num" data-col="y1">1Y%</th>
+                  <th class="col-perf sortable num" data-col="y3">3Y%</th>
+                  <th class="col-remove"></th>
+                </tr>
+              </thead>
+              <tbody id="watchlist-body"></tbody>
+            </table>
+          </div>
+
+          <!-- Loading Skeleton -->
+          <div class="loading-overlay" id="loading-overlay">
+            <div class="loading-skeleton">
+              <div class="skeleton-row" style="--i:0"></div>
+              <div class="skeleton-row" style="--i:1"></div>
+              <div class="skeleton-row" style="--i:2"></div>
+              <div class="skeleton-row" style="--i:3"></div>
+              <div class="skeleton-row" style="--i:4"></div>
+              <div class="skeleton-row" style="--i:5"></div>
+              <div class="skeleton-row" style="--i:6"></div>
+              <div class="skeleton-row" style="--i:7"></div>
+              <div class="skeleton-row" style="--i:8"></div>
+              <div class="skeleton-row" style="--i:9"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right context panel (M2 will wire the live content) -->
+        <aside class="coverage-context" id="coverage-context" aria-label="Selected company context">
+          <div class="ctx-empty" id="ctx-empty">
+            <div class="ctx-empty-title">Select a row</div>
+            <div class="ctx-empty-body">Click any row in Coverage to see snapshot, comp-relative spreads, recent notes, and the next catalyst.</div>
+          </div>
+          <div class="ctx-content" id="ctx-content" hidden>
+            <div class="ctx-header">
+              <div class="ctx-ticker" id="ctx-ticker">—</div>
+              <div class="ctx-name" id="ctx-name">—</div>
+              <button class="ctx-drilldown-btn" id="ctx-drilldown-btn" type="button">Open drilldown</button>
+            </div>
+            <div class="ctx-section" id="ctx-snapshot">
+              <div class="ctx-section-title">Snapshot</div>
+              <div class="ctx-section-body" id="ctx-snapshot-body">—</div>
+            </div>
+            <div class="ctx-section" id="ctx-comps">
+              <div class="ctx-section-title">Comp-relative</div>
+              <div class="ctx-section-body" id="ctx-comps-body">—</div>
+            </div>
+            <div class="ctx-section" id="ctx-notes">
+              <div class="ctx-section-title">Recent notes</div>
+              <div class="ctx-section-body" id="ctx-notes-body">—</div>
+            </div>
+            <div class="ctx-section" id="ctx-catalyst">
+              <div class="ctx-section-title">Next catalyst</div>
+              <div class="ctx-section-body" id="ctx-catalyst-body">—</div>
+            </div>
+            <div class="ctx-section" id="ctx-why">
+              <div class="ctx-section-title">Why this matters now</div>
+              <div class="ctx-section-body" id="ctx-why-body">—</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    </section>
+
+    <!-- === SURFACE: COMPARE (M4 upgrade) ====================== -->
+    <section class="surface surface-compare" data-surface="compare" hidden>
+      <div class="surface-header">
+        <h2>Compare</h2>
+        <p class="surface-sub">Compare 2–4 names head-to-head across valuation, growth, quality, positioning, and earnings setup.</p>
+      </div>
+      <div class="surface-placeholder" id="compare-placeholder">
+        <div class="placeholder-title">Pick names from Coverage</div>
+        <div class="placeholder-body">
+          Toggle <strong>Compare</strong> in Coverage to select 2–4 tickers. The Compare workspace will open here with preset modes,
+          comp medians, delta columns, and a synthesis panel for the biggest differences.
+        </div>
+        <button type="button" class="btn-sm" id="compare-go-coverage">Go to Coverage</button>
+      </div>
+    </section>
+
+    <!-- === SURFACE: SCREENER (M4 refactor) ==================== -->
+    <section class="surface surface-screener" data-surface="screener" hidden>
+      <div class="surface-header">
+        <h2>Screener</h2>
+        <p class="surface-sub">Start from sector-aware templates. Save outputs as Coverage views or custom baskets.</p>
+      </div>
+      <div class="surface-placeholder" id="screener-placeholder">
+        <div class="placeholder-title">Screener runs inline for now</div>
+        <div class="placeholder-body">
+          Screener templates, formula filters, and save-as-view integration land in the next milestone.
+          For now you can open the existing Screener from Coverage (press the Screener toggle in the table header).
+        </div>
+        <button type="button" class="btn-sm" id="screener-go-coverage">Open Coverage</button>
+      </div>
+    </section>
+
+    <!-- === SURFACE: EARNINGS — wraps legacy research tab ====== -->
+    <section class="surface surface-earnings" data-surface="earnings" hidden>
+      <div class="tab-pane active" id="tab-research">
+        <section class="earnings-section" id="earnings-section">
+          <div class="section-header-bar">
+            <h2>Earnings</h2>
+            <div class="earnings-header-controls">
+              <span class="earnings-status" id="earnings-status"></span>
+              <button class="btn-sm btn-ghost" id="earnings-archive-btn">Archive</button>
+            </div>
+          </div>
+          <div class="earnings-panels">
+            <div class="earnings-panel" id="recent-earnings-panel">
+              <h3 class="earnings-panel-title">Recent Reports</h3>
+              <div class="earnings-cards" id="recent-earnings-cards">
+                <div class="earnings-empty">No recent earnings</div>
+              </div>
+            </div>
+            <div class="earnings-panel" id="upcoming-earnings-panel">
+              <h3 class="earnings-panel-title">Upcoming Earnings</h3>
+              <div class="earnings-cards" id="upcoming-earnings-cards">
+                <div class="earnings-empty">No upcoming earnings in the next 14 days</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="earnings-calendar-section" id="earnings-calendar-section">
+          <div class="section-header-bar">
+            <h2>Earnings Calendar</h2>
+            <span class="calendar-status" id="calendar-status"></span>
+          </div>
+          <div class="earnings-calendar-grid" id="earnings-calendar-grid">
+            <!-- Populated by earnings.js -->
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- === SURFACE: PRIVATE MARKETS ========================== -->
+    <section class="surface surface-private" data-surface="private" hidden>
+      <div class="surface-header">
+        <h2>Private Markets</h2>
+        <p class="surface-sub">Pre-IPO intelligence: valuation changes, new rounds, public/private comp mapping, IPO pipeline, AI + private software tracking.</p>
+      </div>
       <section class="private-section">
         <div class="section-header-bar">
-          <h2>Private Companies</h2>
+          <h3>Private Companies</h3>
           <div class="add-private-group">
             <input type="text" id="private-input" placeholder="Search private company..." autocomplete="off" spellcheck="false">
             <button id="add-private-btn" class="btn-sm">+ Add Private Company</button>
@@ -168,55 +369,99 @@
                 <th class="col-remove"></th>
               </tr>
             </thead>
-            <tbody id="private-body">
-            </tbody>
+            <tbody id="private-body"></tbody>
           </table>
         </div>
       </section>
-    </div>
+    </section>
 
-    <!-- === TAB: RESEARCH === -->
-    <div class="tab-pane" id="tab-research">
-      <!-- Earnings Section -->
-      <section class="earnings-section" id="earnings-section">
-        <div class="section-header-bar">
-          <h2>Earnings</h2>
-          <div class="earnings-header-controls">
-            <span class="earnings-status" id="earnings-status"></span>
-            <button class="btn-sm btn-ghost" id="earnings-archive-btn">Archive</button>
-          </div>
+    <!-- === SURFACE: DRILLDOWN (M3/M4) ========================= -->
+    <section class="surface surface-drilldown" data-surface="drilldown" hidden>
+      <div class="surface-header">
+        <h2>Company Drilldown</h2>
+        <p class="surface-sub">Deep page for a single name.</p>
+      </div>
+      <div class="surface-placeholder" id="drilldown-placeholder">
+        <div class="placeholder-title">Drilldown opens per-company</div>
+        <div class="placeholder-body">
+          For now, click a ticker in Coverage to open the existing deep-dive popup. A dedicated full-page drilldown lands in the next milestone.
         </div>
-        <div class="earnings-panels">
-          <!-- Recent Earnings (post-earnings) -->
-          <div class="earnings-panel" id="recent-earnings-panel">
-            <h3 class="earnings-panel-title">Recent Reports</h3>
-            <div class="earnings-cards" id="recent-earnings-cards">
-              <div class="earnings-empty">No recent earnings</div>
+      </div>
+    </section>
+
+    <!-- === SURFACE: MORE (legacy-preserved briefing/macro/news/alerts) === -->
+    <section class="surface surface-more" data-surface="more" hidden>
+      <div class="surface-header">
+        <h2>More</h2>
+        <p class="surface-sub">Briefing, macro context, news, and alerts.</p>
+      </div>
+      <nav class="more-subtabs" id="more-subtabs" role="tablist">
+        <button type="button" class="more-subtab active" data-more="briefing">Briefing</button>
+        <button type="button" class="more-subtab" data-more="macro">Macro</button>
+        <button type="button" class="more-subtab" data-more="news">News</button>
+        <button type="button" class="more-subtab" data-more="alerts">Alerts</button>
+      </nav>
+
+      <div class="more-pane active" data-more-pane="briefing">
+        <div class="tab-pane active" id="tab-briefing">
+          <section class="weekly-briefing-section" id="weekly-briefing-section">
+            <div class="section-header-bar">
+              <h2>Weekly Briefing</h2>
+              <div class="wb-header-controls">
+                <button class="btn-sm wb-export-pdf" id="wb-export-pdf" title="Export current briefing as a print-quality PDF">
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 1.5h5.5L11 4v8.5H3V1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8.5 1.5V4H11" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 6.5v3.5M5.5 8.5L7 10l1.5-1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Export PDF
+                </button>
+                <span class="wb-status" id="wb-status">Updated weekly</span>
+              </div>
             </div>
-          </div>
-          <!-- Upcoming Earnings (pre-earnings) -->
-          <div class="earnings-panel" id="upcoming-earnings-panel">
-            <h3 class="earnings-panel-title">Upcoming Earnings</h3>
-            <div class="earnings-cards" id="upcoming-earnings-cards">
-              <div class="earnings-empty">No upcoming earnings in the next 14 days</div>
+            <div class="weekly-briefing-content" id="weekly-briefing-content">
+              <div class="wb-empty">Loading weekly briefing...</div>
             </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="more-pane" data-more-pane="macro">
+        <div class="tab-pane active" id="tab-macro">
+          <div id="macro-content" class="macro-content">
+            <div class="macro-loading">Loading macro data...</div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- Earnings Calendar -->
-      <section class="earnings-calendar-section" id="earnings-calendar-section">
-        <div class="section-header-bar">
-          <h2>Earnings Calendar</h2>
-          <span class="calendar-status" id="calendar-status"></span>
+      <div class="more-pane" data-more-pane="news">
+        <div class="tab-pane active" id="tab-news">
+          <section class="news-section" id="news-section">
+            <div class="section-header-bar">
+              <h2>Market News</h2>
+              <span class="news-status" id="news-status"></span>
+            </div>
+            <div class="news-feed" id="news-feed">
+              <div class="news-loading">Loading news...</div>
+            </div>
+          </section>
         </div>
-        <div class="earnings-calendar-grid" id="earnings-calendar-grid">
-          <!-- Populated by earnings.js -->
-        </div>
-      </section>
-    </div>
+      </div>
 
-    <!-- Earnings Note Modal (outside tabs -- modals are global) -->
+      <div class="more-pane" data-more-pane="alerts">
+        <div class="tab-pane active" id="tab-alerts">
+          <section class="alerts-section" id="alerts-section">
+            <div class="section-header-bar">
+              <h2>Alerts</h2>
+              <div class="alerts-header-controls">
+                <button class="btn-sm" id="alerts-new-btn">+ New Alert</button>
+              </div>
+            </div>
+            <div class="alerts-content" id="alerts-content">
+              <div class="alerts-loading">Loading alerts...</div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- Earnings Note Modal (global — moved outside tabs so every surface can open) -->
     <div class="popup-overlay" id="earnings-note-overlay">
       <div class="popup-modal earnings-note-modal" id="earnings-note-modal">
         <button class="popup-close" id="earnings-note-close">&times;</button>
@@ -235,60 +480,6 @@
           Loading archive...
         </div>
       </div>
-    </div>
-
-    <!-- === TAB: BRIEFING === -->
-    <div class="tab-pane" id="tab-briefing">
-      <section class="weekly-briefing-section" id="weekly-briefing-section">
-        <div class="section-header-bar">
-          <h2>Weekly Briefing</h2>
-          <div class="wb-header-controls">
-            <button class="btn-sm wb-export-pdf" id="wb-export-pdf" title="Export current briefing as a print-quality PDF">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 1.5h5.5L11 4v8.5H3V1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8.5 1.5V4H11" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 6.5v3.5M5.5 8.5L7 10l1.5-1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Export PDF
-            </button>
-            <span class="wb-status" id="wb-status">Updated weekly</span>
-          </div>
-        </div>
-        <div class="weekly-briefing-content" id="weekly-briefing-content">
-          <div class="wb-empty">Loading weekly briefing...</div>
-        </div>
-      </section>
-    </div>
-
-    <!-- === TAB: MACRO === -->
-    <div class="tab-pane" id="tab-macro">
-      <div id="macro-content" class="macro-content">
-        <div class="macro-loading">Loading macro data...</div>
-      </div>
-    </div>
-
-    <!-- === TAB: NEWS === -->
-    <div class="tab-pane" id="tab-news">
-      <section class="news-section" id="news-section">
-        <div class="section-header-bar">
-          <h2>Market News</h2>
-          <span class="news-status" id="news-status"></span>
-        </div>
-        <div class="news-feed" id="news-feed">
-          <div class="news-loading">Loading news...</div>
-        </div>
-      </section>
-    </div>
-
-    <!-- === TAB: ALERTS === -->
-    <div class="tab-pane" id="tab-alerts">
-      <section class="alerts-section" id="alerts-section">
-        <div class="section-header-bar">
-          <h2>Alerts</h2>
-          <div class="alerts-header-controls">
-            <button class="btn-sm" id="alerts-new-btn">+ New Alert</button>
-          </div>
-        </div>
-        <div class="alerts-content" id="alerts-content">
-          <div class="alerts-loading">Loading alerts...</div>
-        </div>
-      </section>
     </div>
 
   </main>
@@ -378,7 +569,8 @@
     <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
   </footer>
 
-  <script src="utils.js?v=20260327m"></script>
+  <script src="universe-v1.js?v=20260422f"></script>
+  <script src="utils.js?v=20260422f"></script>
   <script src="api-client.js?v=20260422e"></script>
   <script src="api.js?v=20260327m"></script>
   <script src="popup-chart.js?v=20260327m"></script>
@@ -397,5 +589,6 @@
   <script src="app.js?v=20260422e"></script>
   <script src="screener.js?v=20260422e"></script>
   <script src="screener-presets.js?v=20260422"></script>
+  <script src="shell.js?v=20260422f"></script>
 </body>
 </html>
