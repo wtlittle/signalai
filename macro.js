@@ -319,9 +319,98 @@ function renderFactorHeatmap(factors, regime) {
 }
 
 // ── Stock Ideas ──
+let _macroRationaleCache = null;
+async function loadMacroRationales() {
+  if (_macroRationaleCache) return _macroRationaleCache;
+  try {
+    if (typeof checkSupabase === 'function' && await checkSupabase()) {
+      const rows = await supabaseGet('macro_stock_rationales', 'select=ticker,regime,rationale,updated_at');
+      const map = {};
+      (rows || []).forEach(r => {
+        if (!r.ticker) return;
+        map[`${r.ticker}|${(r.regime || '').toLowerCase()}`] = r;
+        map[`${r.ticker}|*`] = r; // fallback match
+      });
+      _macroRationaleCache = map;
+      return map;
+    }
+  } catch (e) {
+    console.warn('macro_stock_rationales fetch skipped:', e.message);
+  }
+  _macroRationaleCache = {};
+  return _macroRationaleCache;
+}
+
+function fallbackRationale(idea, regime) {
+  const regimeName = regime?.regime || 'current';
+  const sector = idea.subsector || idea.sector || 'its sector';
+  const name = idea.name || idea.ticker;
+  // Try to pull a watchlist-derived name-specific fact
+  let nameFact = '';
+  try {
+    const store = (typeof tickerData === 'object' && tickerData) ? tickerData[idea.ticker] : null;
+    if (store) {
+      const bits = [];
+      if (store.m1 != null && !isNaN(store.m1)) bits.push(`1M ${store.m1 > 0 ? '+' : ''}${Number(store.m1).toFixed(1)}%`);
+      if (store.evSales != null && !isNaN(store.evSales)) bits.push(`FY1 EV/Sales ${Number(store.evSales).toFixed(1)}x`);
+      if (store.ytd != null && !isNaN(store.ytd)) bits.push(`YTD ${store.ytd > 0 ? '+' : ''}${Number(store.ytd).toFixed(1)}%`);
+      if (bits.length) nameFact = ` ${name} screens ${bits.slice(0, 2).join(', ')}.`;
+    }
+  } catch (e) {}
+  if (!nameFact) nameFact = ` ${name} fits the ${sector} exposure we want in ${regimeName}.`;
+  return `${sector} leadership typically works in a ${regimeName} regime.${nameFact}`;
+}
+
+function regimeScoreBreakdownHtml(regime) {
+  if (!regime) return '';
+  // Try to find pillar scores from the cached macro snapshot
+  const pillars = (macroDataCache && macroDataCache.pillars) || regime.pillars || null;
+  if (!pillars) return '';
+  const rows = ['growth', 'inflation', 'policy', 'sentiment'].map(k => {
+    const p = pillars[k];
+    if (!p) return '';
+    const score = typeof p.score === 'number' ? p.score : 0;
+    const label = p.label || '';
+    const cls = score > 0 ? 'val-pos' : score < 0 ? 'val-neg' : 'val-neutral';
+    return `<div class="idea-pop-row">
+      <span class="idea-pop-k">${k.charAt(0).toUpperCase() + k.slice(1)}</span>
+      <span class="idea-pop-bar"><span class="idea-pop-fill ${cls}" style="width:${Math.min(100, Math.abs(score) * 100)}%"></span></span>
+      <span class="idea-pop-v ${cls}">${score > 0 ? '+' : ''}${Number(score).toFixed(2)} ${label ? '· ' + label : ''}</span>
+    </div>`;
+  }).join('');
+  return `<div class="idea-pop-body"><div class="idea-pop-title">Regime score breakdown</div>${rows}</div>`;
+}
+
+function renderIdeaRow(i, regime, rationaleMap, kind) {
+  const lookupKey = `${i.ticker}|${(regime?.regime || '').toLowerCase()}`;
+  const supaRec = rationaleMap[lookupKey] || rationaleMap[`${i.ticker}|*`];
+  const rationale = i.rationale || (supaRec && supaRec.rationale) || fallbackRationale(i, regime);
+  const popoverId = `idea-pop-${kind}-${i.ticker}`;
+  return `<div class="idea-row idea-${kind}">
+    <span class="idea-ticker">${i.ticker}</span>
+    <span class="idea-name">${i.name || ''}</span>
+    <span class="idea-subsector">${i.subsector || ''}</span>
+    <span class="idea-reason">${rationale}
+      <button class="idea-info-btn" type="button" aria-label="Regime breakdown for ${i.ticker}" data-pop="${popoverId}">&#9432;</button>
+      <span class="idea-pop" id="${popoverId}" role="tooltip">${regimeScoreBreakdownHtml(regime)}</span>
+    </span>
+  </div>`;
+}
+
 function renderStockIdeas(ideas, regime) {
   if (!ideas) return '';
   const regimeLabel = regime?.regime || 'Current Regime';
+
+  // Kick off async Supabase fetch; render template-rationale immediately and
+  // re-render the affected rows when rationale data arrives.
+  const rationaleMap = _macroRationaleCache || {};
+  if (!_macroRationaleCache) {
+    loadMacroRationales().then(() => {
+      // Re-render this card with the new data if still on Macro tab
+      const container = document.getElementById('macro-content');
+      if (container && macroDataCache) renderMacroContent(container, macroDataCache);
+    });
+  }
 
   let html = `<div class="macro-card">
     <h3 class="macro-card-title">Stock Ideas — ${regimeLabel}</h3>`;
@@ -329,24 +418,14 @@ function renderStockIdeas(ideas, regime) {
   if (ideas.own?.length > 0) {
     html += `<div class="ideas-section">
       <h4 class="ideas-heading ideas-own-heading">Stocks to Own</h4>
-      ${ideas.own.map(i => `<div class="idea-row idea-own">
-        <span class="idea-ticker">${i.ticker}</span>
-        <span class="idea-name">${i.name}</span>
-        <span class="idea-subsector">${i.subsector}</span>
-        <span class="idea-reason">${i.reason}</span>
-      </div>`).join('')}
+      ${ideas.own.map(i => renderIdeaRow(i, regime, rationaleMap, 'own')).join('')}
     </div>`;
   }
 
   if (ideas.avoid?.length > 0) {
     html += `<div class="ideas-section">
       <h4 class="ideas-heading ideas-avoid-heading">Stocks to Avoid</h4>
-      ${ideas.avoid.map(i => `<div class="idea-row idea-avoid">
-        <span class="idea-ticker">${i.ticker}</span>
-        <span class="idea-name">${i.name}</span>
-        <span class="idea-subsector">${i.subsector}</span>
-        <span class="idea-reason">${i.reason}</span>
-      </div>`).join('')}
+      ${ideas.avoid.map(i => renderIdeaRow(i, regime, rationaleMap, 'avoid')).join('')}
     </div>`;
   }
 
@@ -357,6 +436,23 @@ function renderStockIdeas(ideas, regime) {
   html += '</div>';
   return html;
 }
+
+// Delegate info-button clicks to toggle idea popovers
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.idea-info-btn');
+  if (btn) {
+    e.stopPropagation();
+    e.preventDefault();
+    const id = btn.dataset.pop;
+    document.querySelectorAll('.idea-pop.open').forEach(el => { if (el.id !== id) el.classList.remove('open'); });
+    const pop = document.getElementById(id);
+    if (pop) pop.classList.toggle('open');
+    return;
+  }
+  if (!e.target.closest('.idea-pop')) {
+    document.querySelectorAll('.idea-pop.open').forEach(el => el.classList.remove('open'));
+  }
+});
 
 // ── Commodities ──
 function renderCommodities(commodities) {

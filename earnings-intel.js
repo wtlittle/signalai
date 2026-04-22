@@ -69,6 +69,68 @@ function signalSummary(scorecard) {
   return `${c}C · ${f}F · ${w}W`;
 }
 
+/** Build only the header strip (fast, no heavy sections) from any intel record. */
+function renderEarningsIntelHeaderHtml(ticker, intel) {
+  if (!intel) {
+    return `<div class="ei-header">
+      <div class="ei-header-left">
+        <span class="ei-inflection inflection-none">—</span>
+        <div class="ei-header-meta">
+          <div class="ei-company-line"><strong>${ticker}</strong></div>
+          <div class="ei-header-sub"><span>No coverage yet</span></div>
+        </div>
+      </div>
+    </div>`;
+  }
+  const state = intel.state || 'idle';
+  const inflection = inflectionBadge(intel.inflection_status || 'NONE');
+  return `
+    <div class="ei-header">
+      <div class="ei-header-left">
+        <span class="ei-inflection ${inflection.cls}" title="${inflection.title}">${inflection.label}</span>
+        <div class="ei-header-meta">
+          <div class="ei-company-line">
+            <strong>${intel.company_name || ticker}</strong>
+            <span class="ei-state-pill ei-state-${state}">${state.replace('_', ' ')}</span>
+          </div>
+          <div class="ei-header-sub">
+            ${intel.next_earnings_date ? `<span>Next earnings: <strong>${intel.next_earnings_date}</strong></span>` : ''}
+            ${intel.last_earnings_date ? `<span>Last: ${intel.last_earnings_date}</span>` : ''}
+            <span>Signals: ${signalSummary(intel.signal_scorecard)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="ei-header-right">
+        <div class="ei-updated-label">Updated</div>
+        <div class="ei-updated-value">${relativeTime(intel.intel_updated_at) || '—'}</div>
+        ${intel.refresh_reason ? `<div class="ei-refresh-reason">${intel.refresh_reason.replace(/_/g, ' ')}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+/** Skeleton body for sections still loading */
+function renderEarningsIntelSkeletonBody() {
+  return `
+    <section class="ei-section ei-bottom-line ei-skeleton-block" data-ei-skeleton="bottom_line">
+      <div class="ei-section-label">Bottom Line</div>
+      <div class="ei-skeleton-lines">
+        <div class="ei-skeleton-line"></div>
+        <div class="ei-skeleton-line"></div>
+        <div class="ei-skeleton-line"></div>
+        <div class="ei-skeleton-line ei-skeleton-line-short"></div>
+      </div>
+    </section>
+    <section class="ei-cases ei-skeleton-block" data-ei-skeleton="cases">
+      ${['Bull Case', 'Base Case', 'Bear Case'].map(lbl => `
+        <div class="ei-case">
+          <div class="ei-case-title">${lbl}</div>
+          <div class="ei-skeleton-lines">
+            ${Array.from({length: 5}).map(() => '<div class="ei-skeleton-line"></div>').join('')}
+          </div>
+        </div>`).join('')}
+    </section>`;
+}
+
 /** Build the Earnings Intel HTML for a ticker. Returns '' if no intel exists. */
 function renderEarningsIntelHtml(ticker, intel) {
   if (!intel) {
@@ -308,16 +370,37 @@ function renderEarningsIntelHtml(ticker, intel) {
   return html;
 }
 
-/** Entry point called from popup.js when the Earnings Intel tab is activated */
+/** Entry point called from popup.js when the Earnings Intel tab is activated.
+ * Renders header synchronously from cache (non-blocking). Shows skeleton body
+ * while full intel fetches. Close X is never blocked. */
 async function renderEarningsIntelTab(container, ticker) {
   if (!container) return;
-  container.innerHTML = '<div class="ei-loading">Loading Earnings Intel...</div>';
+
+  // 1. Try to render header immediately from already-loaded cache
+  const cached = (earningsIntelData && earningsIntelData.tickers && earningsIntelData.tickers[ticker]) || null;
+  container.innerHTML = `<div class="ei-root">
+    ${renderEarningsIntelHeaderHtml(ticker, cached)}
+    <div class="ei-body-zone" id="ei-body-zone-${ticker}">
+      ${renderEarningsIntelSkeletonBody()}
+    </div>
+  </div>`;
+
+  // 2. Fetch (or re-use) full intel and replace body
   try {
     const intel = await getEarningsIntel(ticker);
+    // Header may have changed; re-render whole thing for full fidelity
     container.innerHTML = renderEarningsIntelHtml(ticker, intel);
   } catch (e) {
     console.error('Earnings Intel render error:', e);
-    container.innerHTML = `<div class="ei-error">Failed to load Earnings Intel for ${ticker}</div>`;
+    const zone = document.getElementById(`ei-body-zone-${ticker}`);
+    if (zone) {
+      zone.innerHTML = `<div class="ei-section-error">
+        <div>Failed to load Earnings Intel sections.</div>
+        <button class="btn-sm" onclick="renderEarningsIntelTab(document.getElementById('popup-panel-earnings-intel'), '${ticker}')">Retry</button>
+      </div>`;
+    } else {
+      container.innerHTML = `<div class="ei-error">Failed to load Earnings Intel for ${ticker}. <button class="btn-sm" onclick="renderEarningsIntelTab(this.closest('.popup-tab-panel, #popup-panel-earnings-intel') || document.getElementById('popup-panel-earnings-intel'), '${ticker}')">Retry</button></div>`;
+    }
   }
 }
 

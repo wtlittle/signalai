@@ -4,8 +4,11 @@
 let tickerList = Storage.get('ticker_list') || [...DEFAULT_TICKERS];
 let privateCompanies = Storage.get('private_companies') || [...DEFAULT_PRIVATE_COMPANIES];
 let tickerData = {}; // { TICKER: row object }
-let sortCol = null;
-let sortDir = 'asc';
+// Sort persistence: key 'ss_watchlist_sort' -> { col, dir }. Default: Mkt Cap desc.
+const _savedSort = Storage.get('ss_watchlist_sort') || { col: 'marketCap', dir: 'desc' };
+let sortCol = _savedSort.col || 'marketCap';
+let sortDir = _savedSort.dir || 'desc';
+function saveSort() { Storage.set('ss_watchlist_sort', { col: sortCol, dir: sortDir }); }
 let collapsedGroups = Storage.get('collapsed_groups') || {};
 let collapsedPrivateGroups = Storage.get('collapsed_private_groups') || {};
 let refreshInterval = null;
@@ -294,9 +297,23 @@ document.querySelectorAll('.watchlist-table thead th.sortable').forEach(th => {
       sortCol = col;
       sortDir = col === 'ticker' || col === 'name' || col === 'subsector' ? 'asc' : 'desc';
     }
+    saveSort();
     renderTable();
   });
 });
+
+// --- Scroll-shadow on sticky ticker column ---
+(function installScrollShadow() {
+  const wrap = document.getElementById('table-wrapper');
+  if (!wrap) return;
+  const onScroll = () => {
+    const scrolled = wrap.scrollLeft > 2;
+    wrap.classList.toggle('has-scroll-shadow', scrolled);
+  };
+  wrap.addEventListener('scroll', onScroll, { passive: true });
+  // Also observe on initial mount in case renderTable happens after
+  onScroll();
+})();
 
 // --- Add ticker (with search autocomplete) ---
 const $searchDropdown = document.getElementById('search-dropdown');
@@ -1237,7 +1254,7 @@ async function fetchNews() {
   const tabBar = document.getElementById('tab-bar');
   const tabBtns = tabBar ? tabBar.querySelectorAll('.tab-btn') : [];
   const tabPanes = document.querySelectorAll('.tab-pane');
-  const validTabs = ['watchlist', 'research', 'briefing', 'macro', 'news'];
+  const validTabs = ['watchlist', 'research', 'briefing', 'macro', 'news', 'alerts'];
 
   function activateTab(tabId) {
     if (!validTabs.includes(tabId)) tabId = 'watchlist';
@@ -1263,6 +1280,10 @@ async function fetchNews() {
     if (tabId === 'news' && !window._newsLoaded) {
       window._newsLoaded = true;
       fetchNews();
+    }
+    if (tabId === 'alerts' && !window._alertsLoaded) {
+      window._alertsLoaded = true;
+      if (typeof renderAlertsTab === 'function') renderAlertsTab();
     }
   }
 
