@@ -52,7 +52,10 @@ jobs:
           node-version: '20'
 
       - name: Install wrangler
-        run: npm install --global wrangler@3
+        # Pin to wrangler v4 so future major-version drift doesn't break uploads.
+        # `r2 object put` uploads remotely by default in v4+; the old --remote flag
+        # was removed and now errors with "Unknown argument: remote".
+        run: npm install --global wrangler@4
 
       - name: Verify required secrets
         run: |
@@ -78,25 +81,25 @@ jobs:
           fi
 
       - name: Upload data-snapshot.json
-        run: wrangler r2 object put "$R2_BUCKET/data-snapshot.json" --file=data-snapshot.json --remote --content-type=application/json
+        run: wrangler r2 object put "$R2_BUCKET/data-snapshot.json" --file=data-snapshot.json --content-type=application/json
 
       - name: Upload earnings_data.json
-        run: wrangler r2 object put "$R2_BUCKET/earnings_data.json" --file=earnings_data.json --remote --content-type=application/json
+        run: wrangler r2 object put "$R2_BUCKET/earnings_data.json" --file=earnings_data.json --content-type=application/json
 
       - name: Upload earnings_intel.json
-        run: wrangler r2 object put "$R2_BUCKET/earnings_intel.json" --file=earnings_intel.json --remote --content-type=application/json
+        run: wrangler r2 object put "$R2_BUCKET/earnings_intel.json" --file=earnings_intel.json --content-type=application/json
 
       - name: Upload earnings_calendar.json
-        run: wrangler r2 object put "$R2_BUCKET/earnings_calendar.json" --file=earnings_calendar.json --remote --content-type=application/json
+        run: wrangler r2 object put "$R2_BUCKET/earnings_calendar.json" --file=earnings_calendar.json --content-type=application/json
 
       - name: Upload macro_data.json
-        run: wrangler r2 object put "$R2_BUCKET/macro_data.json" --file=macro_data.json --remote --content-type=application/json
+        run: wrangler r2 object put "$R2_BUCKET/macro_data.json" --file=macro_data.json --content-type=application/json
 
       - name: Upload weekly_briefing.json
-        run: wrangler r2 object put "$R2_BUCKET/weekly_briefing.json" --file=weekly_briefing.json --remote --content-type=application/json
+        run: wrangler r2 object put "$R2_BUCKET/weekly_briefing.json" --file=weekly_briefing.json --content-type=application/json
 
       - name: Upload earnings_notes_index.json
-        run: wrangler r2 object put "$R2_BUCKET/earnings_notes_index.json" --file=earnings_notes_index.json --remote --content-type=application/json
+        run: wrangler r2 object put "$R2_BUCKET/earnings_notes_index.json" --file=earnings_notes_index.json --content-type=application/json
 
       - name: Summary
         run: |
