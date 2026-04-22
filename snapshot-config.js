@@ -82,6 +82,76 @@
     }
   }
 
+  /**
+   * Repo-relative fallback URL for a snapshot. Used when R2 is unreachable or
+   * returns 404 — the JSON files are also committed to the repo root and ship
+   * with GitHub Pages, so a same-origin fetch is a reliable fallback.
+   */
+  function getFallbackUrl(filename, opts) {
+    opts = opts || {};
+    var url = filename;
+    if (opts.cacheBust) {
+      url += (url.indexOf('?') === -1 ? '?' : '&') + 'v=' + Date.now();
+    }
+    return url;
+  }
+
+  /**
+   * Fetch a snapshot and transparently fall back to the repo-relative same-origin
+   * path on network error or non-ok response. Returns a Fetch Response so callers
+   * that currently do `fetch(...)` can drop this in with a one-line change.
+   *
+   * Only calls markFailure when BOTH the primary and fallback fail — so the
+   * degraded-data banner only surfaces on REAL outages, not on transient R2 404s
+   * that recover via fallback.
+   *
+   * @param {string} filename
+   * @param {object} [opts] - { cacheBust: boolean, timeoutMs: number }
+   * @returns {Promise<Response>}
+   */
+  async function fetchWithFallback(filename, opts) {
+    opts = opts || {};
+    var cacheBust = opts.cacheBust !== false;
+    var timeoutMs = opts.timeoutMs || 15000;
+    var primaryUrl = getSnapshotUrl(filename, { cacheBust: cacheBust });
+    var fallbackUrl = getFallbackUrl(filename, { cacheBust: cacheBust });
+    var primaryErr = null;
+    // If useLocal() is true the primary URL is already repo-relative — skip the
+    // duplicate attempt.
+    if (primaryUrl !== fallbackUrl) {
+      try {
+        var controller1 = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+        var timer1 = controller1 ? setTimeout(function () { controller1.abort(); }, timeoutMs) : null;
+        try {
+          var resp1 = await fetch(primaryUrl, controller1 ? { signal: controller1.signal } : undefined);
+          if (resp1.ok) return resp1;
+          primaryErr = new Error('HTTP ' + resp1.status);
+        } finally {
+          if (timer1) clearTimeout(timer1);
+        }
+      } catch (e) {
+        primaryErr = e;
+      }
+    }
+    // Fallback: same-origin
+    try {
+      var controller2 = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      var timer2 = controller2 ? setTimeout(function () { controller2.abort(); }, timeoutMs) : null;
+      try {
+        var resp2 = await fetch(fallbackUrl, controller2 ? { signal: controller2.signal } : undefined);
+        if (resp2.ok) return resp2;
+        var err = new Error('Snapshot fetch failed (both R2 and fallback): ' + filename + ' primary=' + (primaryErr && primaryErr.message || 'ok') + ' fallback=HTTP ' + resp2.status);
+        markFailure(filename, err);
+        return resp2; // caller can inspect .ok / .status
+      } finally {
+        if (timer2) clearTimeout(timer2);
+      }
+    } catch (e) {
+      markFailure(filename, e);
+      throw e;
+    }
+  }
+
   // Visible status for banner UI; readers can subscribe via onStatus().
   var _status = { ok: true, failures: [] };
   var _listeners = [];
@@ -97,7 +167,9 @@
     R2_BASE: R2_BASE,
     MIGRATED_FILES: MIGRATED_FILES,
     getSnapshotUrl: getSnapshotUrl,
+    getFallbackUrl: getFallbackUrl,
     fetchSnapshot: fetchSnapshot,
+    fetchWithFallback: fetchWithFallback,
     useLocal: useLocal,
     markFailure: markFailure,
     onStatus: onStatus,

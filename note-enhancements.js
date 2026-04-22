@@ -515,8 +515,12 @@ let noteSearchIndex = null; // flat list of { ticker, type, date, file, title }
 async function buildNoteSearchIndex() {
   if (noteSearchIndex) return noteSearchIndex;
   try {
-    const url = (window.SignalSnapshot ? window.SignalSnapshot.getSnapshotUrl('earnings_notes_index.json', { cacheBust: true }) : 'earnings_notes_index.json?v=' + Date.now());
-    const resp = await fetch(url);
+    let resp;
+    if (window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback) {
+      resp = await window.SignalSnapshot.fetchWithFallback('earnings_notes_index.json', { cacheBust: true });
+    } else {
+      resp = await fetch('earnings_notes_index.json?v=' + Date.now());
+    }
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const idx = await resp.json();
     const all = [];

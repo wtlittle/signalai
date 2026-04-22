@@ -456,6 +456,17 @@
 // ============================================================
 
 (function initAlerts() {
+  // GUARD: alerts.js is the canonical Alerts tab and index.html already ships
+  // a static `.tab-btn[data-tab="alerts"]` and `#tab-alerts` pane. This legacy
+  // IIFE used to inject a DUPLICATE Alerts tab button + pane at runtime. Short
+  // circuit when the canonical tab exists so we don't render two Alerts tabs.
+  const existingAlertBtn = document.querySelector('.tab-btn[data-tab="alerts"]');
+  const existingAlertPane = document.getElementById('tab-alerts');
+  if (existingAlertBtn || existingAlertPane) {
+    // Leave canonical alerts.js in charge; nothing to do here.
+    return;
+  }
+
   // Alerts are stored in localStorage, checked on each data refresh
   let alerts = Storage.get('signalstack_alerts') || [];
   let alertHistory = Storage.get('signalstack_alert_history') || [];

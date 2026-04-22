@@ -167,6 +167,18 @@ function renderTable() {
 
     // Data rows
     sorted.forEach(ticker => {
+      // Defensive validation — skip rows where the ticker itself is malformed.
+      // Catches edge cases like empty strings, whitespace-only values, or
+      // unexpected non-string entries that may sneak in from imports or remote
+      // snapshots (e.g. a row keyed "AMS.MC" with no data payload).
+      if (typeof ticker !== 'string' || !ticker.trim()) {
+        console.warn('[renderTable] skipping invalid ticker entry:', ticker);
+        return;
+      }
+      if (!/^[A-Z0-9.\-]{1,12}$/i.test(ticker.trim())) {
+        console.warn('[renderTable] skipping malformed ticker:', ticker);
+        return;
+      }
       const d = tickerData[ticker] || { ticker };
       const tr = document.createElement('tr');
       if (isCollapsed) tr.className = 'row-hidden';
@@ -175,7 +187,8 @@ function renderTable() {
       const hqHtml = hq ? `<span class="public-hq">${hq}</span>` : '';
 
       const cmpCell = (window.SignalCompare && typeof window.SignalCompare.rowCheckboxHtml === 'function') ? window.SignalCompare.rowCheckboxHtml(ticker) : '';
-      tr.innerHTML = `
+      try {
+        tr.innerHTML = `
         ${cmpCell}
         <td class="cell-ticker pin-col pin-col-1" data-ticker="${ticker}">${ticker}</td>
         <td class="cell-name pin-col pin-col-2" title="${getCommonName(ticker, d.name)}">
@@ -197,20 +210,35 @@ function renderTable() {
         <td class="num heat-cell ${percentClass(d.y3)}" ${heatStyle(d.y3)}>${formatPercent(d.y3)}</td>
         <td><button class="remove-btn" data-ticker="${ticker}" title="Remove">&times;</button></td>
       `;
+      } catch (renderErr) {
+        // Fail loudly in console, but show a safe fallback row so one bad
+        // ticker can't blank the entire table.
+        console.error('[renderTable] row render failed for', ticker, renderErr);
+        tr.innerHTML = `
+          ${cmpCell}
+          <td class="cell-ticker pin-col pin-col-1" data-ticker="${ticker}">${ticker}</td>
+          <td class="cell-name pin-col pin-col-2" colspan="14" style="color: var(--text-muted, #888); font-style: italic;">Data unavailable</td>
+          <td><button class="remove-btn" data-ticker="${ticker}" title="Remove">&times;</button></td>
+        `;
+      }
 
-      // Click ticker to open popup
-      tr.querySelector('.cell-ticker').addEventListener('click', () => openPopup(ticker));
+      // Click ticker to open popup (guard in case fallback row was rendered)
+      const tickerCell = tr.querySelector('.cell-ticker');
+      if (tickerCell) tickerCell.addEventListener('click', () => openPopup(ticker));
 
       // Click or long-press subsector badge to change via picker
       const badge = tr.querySelector('.subsector-badge');
-      badge.addEventListener('click', (e) => {
-        e.stopPropagation();
-        showSubsectorPicker(badge, ticker);
-      });
-      attachSubsectorLongPress(badge, ticker);
+      if (badge) {
+        badge.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showSubsectorPicker(badge, ticker);
+        });
+        attachSubsectorLongPress(badge, ticker);
+      }
 
       // Remove button
-      tr.querySelector('.remove-btn').addEventListener('click', (e) => {
+      const removeBtn = tr.querySelector('.remove-btn');
+      if (removeBtn) removeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         tickerList = tickerList.filter(t => t !== ticker);
         delete tickerData[ticker];

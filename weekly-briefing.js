@@ -13,14 +13,15 @@ async function loadWeeklyBriefing(path = 'weekly_briefing.json') {
     }
     weeklyBriefingInFlight = path;
     // Route the canonical briefing file through the snapshot host (R2 in prod),
-    // but preserve full local-path fetches for archived / path-qualified briefings.
-    let url;
-    if (path === 'weekly_briefing.json' && window.SignalSnapshot) {
-      url = window.SignalSnapshot.getSnapshotUrl('weekly_briefing.json', { cacheBust: true });
+    // with a same-origin repo-relative fallback when R2 returns 404. Preserve
+    // full local-path fetches for archived / path-qualified briefings.
+    let resp;
+    if (path === 'weekly_briefing.json' && window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback) {
+      resp = await window.SignalSnapshot.fetchWithFallback('weekly_briefing.json', { cacheBust: true });
     } else {
-      url = path + (path.includes('?') ? '&' : '?') + 'v=' + Date.now();
+      const url = path + (path.includes('?') ? '&' : '?') + 'v=' + Date.now();
+      resp = await fetch(url);
     }
-    const resp = await fetch(url);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const data = await resp.json();
     if (weeklyBriefingInFlight !== path) return; // stale
@@ -28,7 +29,8 @@ async function loadWeeklyBriefing(path = 'weekly_briefing.json') {
     renderWeeklyBriefing();
   } catch (e) {
     console.error('Failed to load weekly briefing:', e);
-    if (window.SignalSnapshot && path === 'weekly_briefing.json') window.SignalSnapshot.markFailure('weekly_briefing.json', e);
+    // NOTE: fetchWithFallback already calls markFailure when BOTH R2 and the
+    // same-origin fallback fail, so we don't need to mark it again here.
     const $content = document.getElementById('weekly-briefing-content');
     if ($content) {
       $content.innerHTML = '<div class="wb-empty">No saved briefing for this week. <button class="btn-sm btn-ghost" onclick="loadLatestBriefing()">Load latest briefing</button></div>';

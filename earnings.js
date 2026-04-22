@@ -77,14 +77,18 @@ function mdToHtml(md) {
 async function loadEarningsNotesIndex() {
   if (earningsNotesIndex) return earningsNotesIndex;
   try {
-    const url = (window.SignalSnapshot ? window.SignalSnapshot.getSnapshotUrl('earnings_notes_index.json', { cacheBust: true }) : 'earnings_notes_index.json?v=' + Date.now());
-    const resp = await fetch(url);
+    let resp;
+    if (window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback) {
+      resp = await window.SignalSnapshot.fetchWithFallback('earnings_notes_index.json', { cacheBust: true });
+    } else {
+      resp = await fetch('earnings_notes_index.json?v=' + Date.now());
+    }
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     earningsNotesIndex = await resp.json();
     return earningsNotesIndex;
   } catch (e) {
     console.warn('Failed to load earnings notes index:', e);
-    if (window.SignalSnapshot) window.SignalSnapshot.markFailure('earnings_notes_index.json', e);
+    // fetchWithFallback marks failure internally when both primary + fallback fail.
     return null;
   }
 }
@@ -502,8 +506,12 @@ async function fetchEarnings() {
   try {
     $earningsStatus.textContent = 'loading...';
     const index = await loadEarningsNotesIndex();
-    const calUrl = (window.SignalSnapshot ? window.SignalSnapshot.getSnapshotUrl('earnings_calendar.json', { cacheBust: true }) : 'earnings_calendar.json?v=' + Date.now());
-    const calResp = await fetch(calUrl);
+    let calResp;
+    if (window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback) {
+      calResp = await window.SignalSnapshot.fetchWithFallback('earnings_calendar.json', { cacheBust: true });
+    } else {
+      calResp = await fetch('earnings_calendar.json?v=' + Date.now());
+    }
     if (!calResp.ok) throw new Error('HTTP ' + calResp.status);
     const calData = await calResp.json();
 
@@ -634,12 +642,16 @@ let ecalViewMonth = null;
 
 async function loadEarningsCalendarData() {
   try {
-    const url = (window.SignalSnapshot ? window.SignalSnapshot.getSnapshotUrl('earnings_calendar.json', { cacheBust: true }) : 'earnings_calendar.json?v=' + Date.now());
-    const resp = await fetch(url);
+    let resp;
+    if (window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback) {
+      resp = await window.SignalSnapshot.fetchWithFallback('earnings_calendar.json', { cacheBust: true });
+    } else {
+      resp = await fetch('earnings_calendar.json?v=' + Date.now());
+    }
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     ecalData = await resp.json();
   } catch (e) {
-    if (window.SignalSnapshot) window.SignalSnapshot.markFailure('earnings_calendar.json', e);
+    // fetchWithFallback marks failure internally when both primary + fallback fail.
     console.warn('Calendar data load failed:', e);
     ecalData = { upcoming: [] };
   }

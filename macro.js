@@ -19,17 +19,18 @@ async function loadMacroData() {
   }
   // Fall back to the snapshot host (R2 in prod, local in dev)
   try {
-    if (window.SignalSnapshot) {
-      macroDataCache = await window.SignalSnapshot.fetchSnapshot('macro_data.json', { timeoutMs: 10000 });
+    let resp;
+    if (window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback) {
+      resp = await window.SignalSnapshot.fetchWithFallback('macro_data.json', { timeoutMs: 10000, cacheBust: true });
     } else {
-      const resp = await fetch('macro_data.json', { signal: AbortSignal.timeout(8000) });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      macroDataCache = await resp.json();
+      resp = await fetch('macro_data.json', { signal: AbortSignal.timeout(8000) });
     }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    macroDataCache = await resp.json();
     return macroDataCache;
   } catch (e) {
     console.warn('macro_data.json fetch failed:', e.message);
-    if (window.SignalSnapshot) window.SignalSnapshot.markFailure('macro_data.json', e);
+    // fetchWithFallback marks failure internally when both primary + fallback fail.
     return null;
   }
 }
