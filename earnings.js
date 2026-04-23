@@ -559,6 +559,13 @@ async function fetchEarnings() {
     const calData = await calResp.json();
 
     const now = new Date();
+    // Calendar-day "today" (local tz) — used for day-diff math so that a
+    // report dated 2026-04-23 resolves to days_until=0 throughout the whole
+    // day, not -1 the moment local time moves past midnight.
+    const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dayDiffFrom = (isoDate) => Math.floor(
+      (new Date(isoDate + 'T00:00:00') - todayLocal) / 86400000
+    );
     const recent = [];
     const upcoming = [];
 
@@ -581,8 +588,8 @@ async function fetchEarnings() {
     }
 
     postNotes.forEach(n => {
-      const earningsDate = new Date(n.earnings_date + 'T00:00:00');
-      const daysSince = Math.floor((now - earningsDate) / 86400000);
+      // Use calendar-day math so a note dated today shows days_since=0 (not 1 or -1).
+      const daysSince = -dayDiffFrom(n.earnings_date);
       if (daysSince >= 0 && daysSince <= 14) {
         recent.push({
           ticker: n.ticker,
@@ -605,8 +612,7 @@ async function fetchEarnings() {
       calData.post_earnings.forEach(p => {
         if (!recent.some(r => r.ticker === p.ticker && r.earnings_date === (p.date || p.earnings_date))) {
           const date = p.date || p.earnings_date;
-          const earningsDate = new Date(date + 'T00:00:00');
-          const daysSince = Math.floor((now - earningsDate) / 86400000);
+          const daysSince = -dayDiffFrom(date);
           if (daysSince >= 0 && daysSince <= 14) {
             const surprise = p.surprise_pct;
             const epsBeat = surprise > 0 ? `Beat +${surprise.toFixed(1)}%` : surprise < 0 ? `Miss ${surprise.toFixed(1)}%` : '';
@@ -636,8 +642,7 @@ async function fetchEarnings() {
     if (calData && calData.upcoming && calData.upcoming.length > 0) {
       calData.upcoming.forEach(u => {
         const date = u.earnings_date || u.date;
-        const earningsDate = new Date(date + 'T00:00:00');
-        const daysUntil = Math.floor((earningsDate - now) / 86400000);
+        const daysUntil = dayDiffFrom(date);
         if (daysUntil >= 0) {
           upcoming.push({
             ticker: u.ticker,
@@ -657,8 +662,7 @@ async function fetchEarnings() {
         const date = u.date || u.earnings_date;
         if (!date || seen.has(u.ticker)) return;
         seen.add(u.ticker);
-        const earningsDate = new Date(date + 'T00:00:00');
-        const daysUntil = Math.floor((earningsDate - now) / 86400000);
+        const daysUntil = dayDiffFrom(date);
         if (daysUntil >= 0) {
           upcoming.push({
             ticker: u.ticker,
