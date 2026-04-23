@@ -113,11 +113,19 @@ function renderRecentEarnings(recent) {
     const stockRx = r.stock_reaction || '';
     const stockClass = stockRx.includes('+') ? 'positive' : stockRx.includes('-') ? 'negative' : '';
 
+    // Human-friendly "days since" phrase:
+    //   0 → "Reported today", 1 → "Reported yesterday", n → "nd ago"
+    let sinceLabel;
+    if (r.days_since === 0) sinceLabel = 'Reported today';
+    else if (r.days_since === 1) sinceLabel = 'Reported yesterday';
+    else sinceLabel = `${r.days_since}d ago`;
+    const timingLabel = (r.timing && r.timing !== 'TBD') ? ` · ${r.timing}` : '';
+
     return `<div class="earnings-card reported" data-ticker="${r.ticker}" data-date="${r.earnings_date}" data-type="post">
       <div class="earnings-card-header">
         <span class="earnings-card-ticker">${r.ticker}</span>
         <span class="earnings-card-name">${name}</span>
-        <span class="earnings-card-date">${r.earnings_date} · ${r.days_since}d ago</span>
+        <span class="earnings-card-date">${r.earnings_date} · ${sinceLabel}${timingLabel}</span>
       </div>
       <div class="earnings-card-metrics">
         <div class="earnings-metric">
@@ -199,14 +207,30 @@ function renderUpcomingEarnings(upcoming) {
       const isWatch = (typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.indexOf(u.ticker) !== -1);
       const starHtml = isWatch ? '<span class="earnings-watch-star" title="In your watchlist">★</span>' : '';
       const urg = _impliedVsHistoricalBadge(u.ticker);
+
+      // Human-friendly header pill (right of company name):
+      //   0 → "today", 1 → "tomorrow", n → "in nd"
+      let headerDays;
+      if (u.days_until === 0) headerDays = 'today';
+      else if (u.days_until === 1) headerDays = 'tomorrow';
+      else headerDays = `in ${u.days_until}d`;
+
+      // Countdown line:
+      //   0 → "Reports today· BMO/AMC", 1 → "Reports tomorrow", n → "Reports in n days"
+      const timingTag = (u.timing && u.timing !== 'TBD') ? ` · ${u.timing}` : '';
+      let countdown;
+      if (u.days_until === 0) countdown = `Reports <strong>today</strong>${timingTag}`;
+      else if (u.days_until === 1) countdown = `Reports <strong>tomorrow</strong>${timingTag}`;
+      else countdown = `Reports in <strong>${u.days_until}</strong> days${timingTag}`;
+
       return `<div class="earnings-card upcoming${isWatch ? ' is-watchlist' : ''}" data-ticker="${u.ticker}" data-date="${u.earnings_date}" data-type="pre">
         <div class="earnings-card-header">
           <span class="earnings-card-ticker">${starHtml}${u.ticker}</span>
           <span class="earnings-card-name">${name}</span>
-          <span class="earnings-card-date">${u.earnings_date} · in ${u.days_until}d</span>
+          <span class="earnings-card-date">${u.earnings_date} · ${headerDays}</span>
           ${urg}
         </div>
-        <div class="earnings-card-countdown">Reports in <strong>${u.days_until}</strong> day${u.days_until !== 1 ? 's' : ''}</div>
+        <div class="earnings-card-countdown">${countdown}</div>
         <div class="earnings-card-footer">
           <span class="earnings-card-inflection-slot" data-ticker="${u.ticker}"></span>
           <button class="earnings-intel-btn" title="Open Earnings Intel">Open Earnings Intel →</button>
@@ -221,11 +245,16 @@ function renderUpcomingEarnings(upcoming) {
       <div class="earnings-next-up-list">
         ${nextUp.map(u => {
           const name = (COMMON_NAMES && COMMON_NAMES[u.ticker]) || u.name || u.ticker;
+          // Match the main card phrasing for days_until=0/1.
+          let niuDays;
+          if (u.days_until === 0) niuDays = 'today';
+          else if (u.days_until === 1) niuDays = 'tomorrow';
+          else niuDays = `${u.days_until}d`;
           return `<div class="earnings-next-up-item">
             <span class="nui-ticker">${u.ticker}</span>
             <span class="nui-name">${name}</span>
             <span class="nui-date">${u.earnings_date}</span>
-            <span class="nui-days">${u.days_until}d</span>
+            <span class="nui-days">${niuDays}</span>
           </div>`;
         }).join('')}
       </div>
@@ -565,7 +594,8 @@ async function fetchEarnings() {
           revenue_beat_miss: '',
           eps_beat_miss: '',
           stock_reaction: n.reaction || '',
-          fiscal_quarter: n.fiscal_quarter || ''
+          fiscal_quarter: n.fiscal_quarter || '',
+          timing: n.timing || 'TBD'
         });
       }
     });
@@ -585,7 +615,7 @@ async function fetchEarnings() {
               (parseFloat(String(p.revenue_actual).replace(/[^0-9.]/g,'')) > parseFloat(String(p.revenue_estimate).replace(/[^0-9.]/g,'')) ? 'Beat' : 'Miss') : '';
             recent.push({
               ticker: p.ticker,
-              name: p.name,
+              name: p.name || p.company,
               earnings_date: date,
               days_since: daysSince,
               revenue_actual: revActual || (p.revenue_actual || ''),
@@ -593,7 +623,8 @@ async function fetchEarnings() {
               revenue_beat_miss: revBeat,
               eps_beat_miss: epsBeat,
               stock_reaction: p.note || '',
-              fiscal_quarter: p.quarter || ''
+              fiscal_quarter: p.quarter || '',
+              timing: p.timing || 'TBD'
             });
           }
         }
@@ -610,9 +641,10 @@ async function fetchEarnings() {
         if (daysUntil >= 0) {
           upcoming.push({
             ticker: u.ticker,
-            name: u.name,
+            name: u.name || u.company,
             earnings_date: date,
             days_until: daysUntil,
+            timing: u.timing || 'TBD',
             status: u.status
           });
         }
@@ -630,9 +662,10 @@ async function fetchEarnings() {
         if (daysUntil >= 0) {
           upcoming.push({
             ticker: u.ticker,
-            name: u.name,
+            name: u.name || u.company,
             earnings_date: date,
             days_until: daysUntil,
+            timing: u.timing || 'TBD',
             status: u.status || 'upcoming'
           });
         }

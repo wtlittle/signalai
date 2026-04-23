@@ -15,6 +15,59 @@ _SCRIPT_DIR = _os.path.dirname(_os.path.abspath(__file__))
 with open(_os.path.join(_SCRIPT_DIR, 'earnings_data.json')) as f:
     yf_data = json.load(f)
 
+
+def _fetch_timings(tickers):
+    """Best-effort BMO/AMC lookup via yfinance. Returns {ticker: {date: tag}}.
+
+    Maps US/Eastern hour-of-day → reporting window:
+      00–08:59 ET → BMO, 16:00–22:59 ET → AMC, else TBD.
+    Silently returns {} if yfinance / zoneinfo are unavailable.
+    """
+    try:
+        import yfinance as yf
+        from zoneinfo import ZoneInfo
+    except Exception:
+        return {}
+    ET = ZoneInfo("America/New_York")
+    out = {}
+    for ticker in tickers:
+        try:
+            t = yf.Ticker(ticker)
+            per_date = {}
+            try:
+                ed = t.earnings_dates
+                if ed is not None and hasattr(ed, "index"):
+                    for idx in ed.index:
+                        ds = str(idx)[:10]
+                        try:
+                            h = idx.tz_convert(ET).hour if hasattr(idx, "tz_convert") else idx.hour
+                        except Exception:
+                            h = None
+                        if h is None:
+                            tag = "TBD"
+                        elif 0 <= h < 9:
+                            tag = "BMO"
+                        elif 16 <= h < 23:
+                            tag = "AMC"
+                        else:
+                            tag = "TBD"
+                        if per_date.get(ds, "TBD") == "TBD":
+                            per_date[ds] = tag
+            except Exception:
+                pass
+            out[ticker] = per_date
+        except Exception:
+            out[ticker] = {}
+    return out
+
+
+# Load timings (optional; proceeds with TBDs if unavailable).
+_TIMINGS = _fetch_timings(list(yf_data['all_tickers'].keys()))
+
+
+def _timing_for(ticker, date_str):
+    return (_TIMINGS.get(ticker) or {}).get(date_str, "TBD")
+
 # Load research results for post-earnings tickers
 research = {}
 try:
@@ -62,6 +115,7 @@ for ticker, info in yf_data['all_tickers'].items():
             'name': NAMES.get(ticker, ticker),
             'earnings_date': future_dates[0][0],
             'days_until': future_dates[0][1],
+            'timing': _timing_for(ticker, future_dates[0][0]),
             'status': 'upcoming'
         })
 
@@ -81,6 +135,7 @@ for ticker, info in yf_data['all_tickers'].items():
                     'name': NAMES.get(ticker, ticker),
                     'earnings_date': d,
                     'days_since': diff,
+                    'timing': _timing_for(ticker, d),
                     'status': 'reported',
                     'revenue_actual': r.get('Revenue (Actual)', ''),
                     'revenue_beat_miss': r.get('Revenue Beat/Miss', ''),
