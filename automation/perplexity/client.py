@@ -40,12 +40,23 @@ def _use_api_fallback() -> bool:
     return os.environ.get("USE_API_FALLBACK", "false").lower() == "true"
 
 
-def _queue_task(ticker: str, task: str, prompt: str, system: str, max_tokens: int) -> dict:
+def _queue_task(
+    ticker: str,
+    task: str,
+    prompt: str,
+    system: str,
+    max_tokens: int,
+    extra_meta: dict | None = None,
+) -> dict:
     """Append a task to automation/queue/pending_tasks.json for Computer to process.
 
     Read-modify-write pattern: loads the existing queue (empty array if missing
     or corrupt), appends the new entry, and writes it back atomically.
     Returns a status dict indicating the task was queued.
+
+    extra_meta: optional dict of task-specific keys (e.g. output_path,
+    articles, raw_path for news_tag tasks). Merged into the entry so the
+    Computer processor has everything it needs without touching additional files.
     """
     _QUEUE_DIR.mkdir(parents=True, exist_ok=True)
     existing = []
@@ -66,6 +77,11 @@ def _queue_task(ticker: str, task: str, prompt: str, system: str, max_tokens: in
         "max_tokens": max_tokens,
         "queued_at": _dt.datetime.now().astimezone().isoformat(timespec="seconds"),
     }
+    if extra_meta:
+        # Never let extra_meta shadow the canonical task keys.
+        safe = {k: v for k, v in extra_meta.items()
+                if k not in ("ticker", "task", "prompt", "system", "max_tokens", "queued_at")}
+        entry.update(safe)
     existing.append(entry)
 
     # Write atomically: write to tmp then replace
@@ -86,6 +102,7 @@ def call_perplexity(
     force: bool = False,
     max_tokens: int = 1500,
     temperature: float = 0.1,
+    extra_meta: dict | None = None,
 ) -> dict:
     """Single entry point for ALL Perplexity calls.
 
@@ -107,7 +124,7 @@ def call_perplexity(
 
     # --- Route to Computer queue by default (no direct API calls) ---
     if not _use_api_fallback():
-        return _queue_task(ticker, task, prompt, system, max_tokens)
+        return _queue_task(ticker, task, prompt, system, max_tokens, extra_meta=extra_meta)
 
     if not PERPLEXITY_API_KEY:
         print(f"  [NO KEY] {ticker} / {task} \u2014 PERPLEXITY_API_KEY not set, skipping")

@@ -90,6 +90,55 @@ Return ONLY this JSON. No prose. No markdown. No preamble.
 }}"""
 
 
+def build_news_tagging_prompt(ticker: str, company: str, articles: list[dict]) -> str:
+    """Buy-side news tagging brief.
+
+    Takes a batch of already-collected articles (headline + teaser) and asks
+    the LLM to classify each one with catalyst_tag, direction, priority,
+    and a specific financial-variable blurb. Output is a JSON array, one
+    object per input article, in the same order.
+
+    Each input article dict must have keys: headline, teaser. Optional:
+    source, url, published_at.
+    """
+    lines = []
+    for i, a in enumerate(articles, start=1):
+        headline = (a.get("headline") or "").strip().replace("\n", " ")
+        teaser = (a.get("teaser") or a.get("body") or "").strip().replace("\n", " ")
+        # Keep teasers compact so the prompt stays small at scale.
+        if len(teaser) > 400:
+            teaser = teaser[:397] + "..."
+        lines.append(f"[{i}] {headline} | {teaser}")
+    article_block = "\n".join(lines) if lines else "(no articles)"
+
+    return f"""You are a buy-side equity research assistant. You will receive a batch of financial news articles (headline + teaser/body) tagged to {company} ({ticker}).
+
+For each article, output ONLY a single JSON array with one object per input article, in the SAME order as the input. Each object has the following fields:
+
+{{
+  "catalyst_tag": one of [Earnings, Analyst Action, SEC Filing, M&A, Guidance, Macro, Exec Change, Legal/Regulatory, Capital Markets, Activist/Short, Other],
+  "direction": one of [Bullish, Bearish, Neutral, Mixed],
+  "blurb": a single sentence (max 25 words) answering: what specifically happened, and what financial variable does it affect (revenue, EPS, margins, guidance, competitive position, float)?,
+  "priority": one of [High, Medium, Low],
+  "duplicate": boolean (true if a higher-priority item earlier in the batch already covered this same event)
+}}
+
+Priority rules:
+- High: earnings result, rating change by bulge bracket, 8-K material event, M&A, insider buy >$500K.
+- Medium: guidance commentary, sector read-across, secondary analyst note.
+- Low: general market color, opinion piece.
+
+Hard rules:
+- Never invent numbers not present in the source text.
+- If the teaser is insufficient to determine direction, set direction to "Neutral".
+- blurb MUST name a specific financial variable (revenue, EPS, gross/op/FCF margin, guidance, share count, leverage, market share, etc.). Reject generic sentiment language like "stock could rally" or "investors concerned".
+- If two articles cover the same event, flag duplicate=true on the lower-priority item (the higher-priority one stays duplicate=false).
+- Return ONLY the JSON array. No prose. No markdown. No preamble.
+
+Article batch (one per line, format: [N] HEADLINE | TEASER):
+{article_block}"""
+
+
 def build_news_prompt(ticker: str, company: str, sector: str) -> str:
     """Daily news scan — only material updates in last 48 hours."""
     return f"""Search for material news about {company} ({ticker}, {sector}) in the last 48 hours only.

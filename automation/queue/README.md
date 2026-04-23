@@ -21,7 +21,7 @@ This directory is the handoff point between the automated SignalAI pipeline
 
 ## Queue entry schema
 
-Each entry in `pending_tasks.json` has the following shape:
+Each entry in `pending_tasks.json` has the following **base shape**:
 
 ```json
 {
@@ -34,14 +34,60 @@ Each entry in `pending_tasks.json` has the following shape:
 }
 ```
 
+Task-specific entries may carry additional fields via `extra_meta`
+(merged flat into the entry at queue time).
+
+## Supported task types
+
+| `task`               | Output path                                   | Format   | Notes |
+|----------------------|-----------------------------------------------|----------|-------|
+| `pre_earnings_note`  | `notes/pre_earnings/<TICKER>_<DATE>.md`       | Markdown | Buy-side pre-earnings preview. |
+| `post_earnings_note` | `notes/post_earnings/<TICKER>_<DATE>.md`      | Markdown | Post-print reaction + thesis check. |
+| `daily_news`         | handled in-pipeline (cached by `client.py`)   | JSON     | Initial scan: returns `has_material_update` + `items[]`. |
+| `news_tag`           | `data/news_tagged/<TICKER>.json`              | JSON     | Buy-side catalyst tagging — see below. |
+
+### `news_tag` task (buy-side catalyst tagging)
+
+Queued by `step_news_tagging` in `automation/jobs/daily_refresh.py` for every
+ticker that had a material `daily_news` update. Extra fields on the entry:
+
+| Field           | Description |
+|-----------------|-------------|
+| `article_count` | Integer — number of articles in the batch. |
+| `raw_path`      | Relative path to the raw scan JSON persisted under `data/news_raw/<TICKER>.json`. |
+| `output_path`   | Where Computer should write the tagged output (always `data/news_tagged/<TICKER>.json`). |
+| `articles`      | Array of `{headline, teaser, url, impact}` in the SAME order as the prompt's numbered list `[1]`, `[2]`, … |
+
+**Output contract:** Computer must return a **JSON array** the same length and
+same order as `articles`. Each element has the following shape:
+
+```json
+{
+  "index": 1,
+  "catalyst_tag": "Earnings" | "Analyst Action" | "SEC Filing" | "M&A" | "Guidance" | "Macro" | "Exec Change" | "Legal-Regulatory" | "Capital Markets" | "Activist-Short" | "Other",
+  "direction": "Bullish" | "Bearish" | "Neutral" | "Mixed",
+  "priority": "High" | "Medium" | "Low",
+  "blurb": "≤25 words naming the specific financial variable affected",
+  "duplicate": false
+}
+```
+
+Rules (enforced in the prompt): no invented numbers; `Neutral` when evidence is
+insufficient; reject generic sentiment; set `duplicate: true` on the
+lower-priority of any two articles covering the same event.
+
+Write the array to `data/news_tagged/<TICKER>.json` (overwrite), then remove
+the entry from `pending_tasks.json`.
+
 ## Processing a queued task in Computer
 
 Open `pending_tasks.json`, pick the top entry, and prompt Computer to:
 
 > Read `automation/queue/pending_tasks.json`. For the first entry, run the
 > `prompt` (following `system`) and save the result to the correct output
-> path based on `task`. Then remove that entry from the queue and commit the
-> result.
+> path based on `task` (see the task-type table above; `news_tag` tasks carry
+> an explicit `output_path`). Then remove that entry from the queue and
+> commit the result.
 
 ## Falling back to direct API
 

@@ -26,7 +26,7 @@ from automation.shared.cache import clear_stale_cache
 from automation.shared.tickers import load_tickers, load_common_names
 from automation.shared.io_helpers import read_json
 from automation.perplexity.client import call_perplexity
-from automation.perplexity.prompts import build_news_prompt
+from automation.perplexity.prompts import build_news_prompt, build_news_tagging_prompt
 
 TODAY = date.today()
 PRE_WINDOW = int(os.environ.get("MAX_PRE_EARNINGS_DAYS", 14))
@@ -106,14 +106,43 @@ def step_earnings_events():
     return detect_events()
 
 
-def step_news_scan(active_tickers: list[dict]):
-    """Step 4: Scan news ONLY for earnings-active tickers (Perplexity)."""
+# --- News raw + tagged output paths ---------------------------------------
+NEWS_RAW_DIR = ROOT_DIR / "data" / "news_raw"
+NEWS_TAGGED_DIR = ROOT_DIR / "data" / "news_tagged"
+
+
+def _persist_news_raw(ticker: str, payload: dict) -> Path:
+    """Write the raw news scan response to data/news_raw/<TICKER>.json.
+
+    Persisted so the subsequent tagging step has a concrete input to reference
+    (the queue entry stores only the ticker + path, not the full article
+    payload, which keeps pending_tasks.json compact).
+    """
+    NEWS_RAW_DIR.mkdir(parents=True, exist_ok=True)
+    out = NEWS_RAW_DIR / f"{ticker}.json"
+    record = {
+        "ticker": ticker,
+        "scanned_at": datetime.utcnow().isoformat() + "Z",
+        "payload": payload if isinstance(payload, dict) else {},
+    }
+    with open(out, "w") as f:
+        json.dump(record, f, indent=2)
+    return out
+
+
+def step_news_scan(active_tickers: list[dict]) -> list[dict]:
+    """Step 4: Scan news ONLY for earnings-active tickers (Perplexity).
+
+    Returns the list of tickers that had material updates, with their
+    persisted article paths so step_news_tagging can queue tagging tasks.
+    """
     print(f"\n=== Step 4: News Scan ({len(active_tickers)} active tickers) ===")
     if not active_tickers:
         print("  No earnings-active tickers — skipping news scan")
-        return
+        return []
 
     names = load_common_names()
+    with_updates: list[dict] = []
     for entry in active_tickers:
         ticker = entry["ticker"]
         company = entry.get("name", names.get(ticker, ticker))
@@ -126,10 +155,72 @@ def step_news_scan(active_tickers: list[dict]):
         )
         has_update = news.get("has_material_update", False) if isinstance(news, dict) else False
         if has_update:
-            items = news.get("items", [])
-            print(f"  [NEWS] {ticker}: {len(items)} material update(s)")
+            items = news.get("items", []) or []
+            raw_path = _persist_news_raw(ticker, news)
+            with_updates.append({
+                "ticker": ticker,
+                "company": company,
+                "articles": items,
+                "raw_path": str(raw_path.relative_to(ROOT_DIR)),
+            })
+            print(f"  [NEWS] {ticker}: {len(items)} material update(s) → {raw_path.relative_to(ROOT_DIR)}")
         else:
             print(f"  [NO NEWS] {ticker}")
+    return with_updates
+
+
+def step_news_tagging(news_updates: list[dict]) -> int:
+    """Step 4b: For each ticker with material news, queue a news_tag task.
+
+    The tagging task takes the article batch from Step 4 and asks the LLM
+    to classify each article with catalyst_tag, direction, priority, and
+    a financial-variable blurb. Output is written to
+    data/news_tagged/<TICKER>.json by Computer when it processes the queue.
+    """
+    print(f"\n=== Step 4b: News Tagging ({len(news_updates)} tickers with updates) ===")
+    if not news_updates:
+        print("  Nothing to tag — skipping")
+        return 0
+
+    NEWS_TAGGED_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Normalize article dicts: the daily_news scanner emits
+    # {headline, impact, url}. We remap to {headline, teaser} so the tagging
+    # prompt gets the shape it expects. If a teaser is missing, fall back to
+    # the headline itself (tagger will down-rank with Neutral direction).
+    queued = 0
+    for upd in news_updates:
+        ticker = upd["ticker"]
+        company = upd["company"]
+        raw_articles = upd.get("articles") or []
+        articles = []
+        for a in raw_articles:
+            if not isinstance(a, dict):
+                continue
+            articles.append({
+                "headline": a.get("headline", ""),
+                "teaser": a.get("teaser") or a.get("body") or a.get("summary") or a.get("headline", ""),
+                "url": a.get("url", ""),
+                "impact": a.get("impact", ""),
+            })
+        if not articles:
+            print(f"  [SKIP] {ticker}: no articles to tag")
+            continue
+
+        call_perplexity(
+            ticker, "news_tag",
+            build_news_tagging_prompt(ticker, company, articles),
+            max_tokens=700,
+            extra_meta={
+                "article_count": len(articles),
+                "raw_path": upd.get("raw_path", ""),
+                "output_path": f"data/news_tagged/{ticker}.json",
+                "articles": articles,
+            },
+        )
+        queued += 1
+        print(f"  [QUEUED] {ticker}: news_tag for {len(articles)} article(s)")
+    return queued
 
 
 def step_generate_notes():
@@ -194,7 +285,10 @@ def run():
     active = pre + post
 
     # Step 4: News — only for active tickers (Perplexity)
-    step_news_scan(active)
+    news_updates = step_news_scan(active)
+
+    # Step 4b: News tagging — queue buy-side catalyst tagging for updated tickers
+    step_news_tagging(news_updates)
 
     # Step 5: Notes — with skip guards (Perplexity)
     step_generate_notes()
