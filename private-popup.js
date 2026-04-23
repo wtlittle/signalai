@@ -798,9 +798,8 @@ function installPrivateClickHandlers() {
     // Don't trigger if clicking a badge (status badge)
     if (e.target.closest('.private-status-badge')) return;
 
-    // Get company name from the row
-    const nameEl = nameCell.querySelector('span[style]') || nameCell.querySelector('span:first-child');
-    const companyName = nameEl?.textContent?.trim();
+    // Get company name from the row (via data attribute set in renderPrivateTable)
+    const companyName = nameCell.dataset.companyName;
     if (companyName) {
       openPrivatePopup(companyName);
     }

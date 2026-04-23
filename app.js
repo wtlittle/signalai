@@ -337,7 +337,7 @@ function renderPrivateTable() {
         ? window.SignalPrivateTrajectory.compactReturnSignal(co)
         : { label: '—', tone: 'flat' };
       tr.innerHTML = `
-        <td class="private-name-cell">
+        <td class="private-name-cell" data-company-name="${co.name}">
           <div class="private-name-wrapper">
             <span style="color:var(--text-primary);font-weight:500;">${co.name}</span>
             ${statusBadge}
@@ -1252,6 +1252,7 @@ renderPrivateTable = function() {
     }
   });
 };
+window.renderPrivateTable = renderPrivateTable;
 
 // --- News Feed ---
 const $newsFeed = document.getElementById('news-feed');
