@@ -540,7 +540,8 @@ function buildTopLineSection(est) {
   const fmtBig = (v) => v != null ? formatLargeNumber(v) : '—';
   const fmtPct = (v) => {
     if (v == null) return '—';
-    const pct = (v * 100);
+    // backend already returns percents (e.g. 9.45 means 9.45%), so no *100.
+    const pct = v;
     return `<span class="${percentClass(pct)}">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</span>`;
   };
   const fmtEps = (v) => v != null ? (v >= 0 ? '$' + v.toFixed(2) : '-$' + Math.abs(v).toFixed(2)) : '—';
@@ -561,11 +562,11 @@ function buildTopLineSection(est) {
       </div>
       <div class="metric-card">
         <div class="metric-label">Gross Margin</div>
-        <div class="metric-value">${est.grossMargins != null ? (est.grossMargins * 100).toFixed(1) + '%' : '—'}</div>
+        <div class="metric-value">${est.grossMargins != null ? est.grossMargins.toFixed(1) + '%' : '—'}</div>
       </div>
       <div class="metric-card">
         <div class="metric-label">Op Margin</div>
-        <div class="metric-value">${est.operatingMargins != null ? (est.operatingMargins * 100).toFixed(1) + '%' : '—'}</div>
+        <div class="metric-value">${est.operatingMargins != null ? est.operatingMargins.toFixed(1) + '%' : '—'}</div>
       </div>`;
 
   // Row 2: FCF, FCF Margin, NQ Rev Est, NQ EPS Est
@@ -576,7 +577,7 @@ function buildTopLineSection(est) {
       </div>
       <div class="metric-card">
         <div class="metric-label">FCF Margin</div>
-        <div class="metric-value">${est.fcfMargin != null ? (est.fcfMargin * 100).toFixed(1) + '%' : '—'}</div>
+        <div class="metric-value">${est.fcfMargin != null ? est.fcfMargin.toFixed(1) + '%' : '—'}</div>
       </div>
       <div class="metric-card">
         <div class="metric-label">NQ Rev Est</div>
