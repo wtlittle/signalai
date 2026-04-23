@@ -51,19 +51,17 @@
     const sel = document.getElementById('ribbon-universe');
     if (!sel) return;
 
-    // If user has a saved watchlist but no explicit choice yet, detect:
+    // Never silently replace the user's coverage list on load. Earnings,
+    // Screener, and Coverage all read the shared global `tickerList`
+    // (app.js), and that is initialized from localStorage.ticker_list with
+    // a fallback to DEFAULT_TICKERS. The universe selector is a manual
+    // switch — it only mutates state when the user picks a new option.
     let hasChoice = false;
     try { hasChoice = !!localStorage.getItem(UNIVERSE_CHOICE_KEY); } catch (_) {}
-    let hasSavedTickers = false;
-    try { hasSavedTickers = !!localStorage.getItem('ticker_list'); } catch (_) {}
-
     if (!hasChoice) {
-      // First-time user in the new shell: default to 'default_v1' ONLY if they
-      // don't have a saved custom list. If they do, mark as custom so we don't
-      // clobber their work.
-      const choice = hasSavedTickers ? 'custom' : 'default_v1';
-      setUniverseChoice(choice);
-      if (choice === 'default_v1') applyUniverseChoice('default_v1', { silent: true });
+      // Default selector label to 'custom' so it reflects whatever the user
+      // has (saved list or the app.js DEFAULT_TICKERS fallback). No mutation.
+      setUniverseChoice('custom');
     }
 
     sel.value = getUniverseChoice();
@@ -220,6 +218,93 @@
     });
   }
 
+  // ----- Private input quick-select dropdown ---------------------------
+  // When the user focuses the private-companies search input, show their
+  // saved list as a dropdown so they don't have to type to see coverage.
+  function initPrivateInputDropdown() {
+    const input = document.getElementById('private-input');
+    const dd = document.getElementById('private-input-dropdown');
+    if (!input || !dd) return;
+
+    function render(query) {
+      // `privateCompanies` is a top-level `let` in app.js so it's script-scope
+      // accessible as a bare identifier (but NOT on window). Feature-detect
+      // both so we survive future refactors.
+      let companies = [];
+      try {
+        // eslint-disable-next-line no-undef
+        if (typeof privateCompanies !== 'undefined' && Array.isArray(privateCompanies)) {
+          companies = privateCompanies;
+        } else if (typeof window.privateCompanies !== 'undefined' && Array.isArray(window.privateCompanies)) {
+          companies = window.privateCompanies;
+        }
+      } catch (_) { /* swallow */ }
+      if (!companies.length) {
+        dd.innerHTML = '<div class="pid-empty">No private companies yet. Type a name and click Add.</div>';
+        return;
+      }
+      const q = (query || '').trim().toLowerCase();
+      const matches = q
+        ? companies.filter(c => (c.name || '').toLowerCase().includes(q) ||
+                                 (c.subsector || '').toLowerCase().includes(q))
+        : companies;
+      if (!matches.length) {
+        dd.innerHTML = `<div class="pid-empty">No matches in your coverage for “${q}”</div>`;
+        return;
+      }
+      // Cap at 60 to keep the dropdown sane; group by subsector for scanability.
+      const bySector = {};
+      matches.slice(0, 60).forEach(c => {
+        const key = c.subsector || 'Other';
+        (bySector[key] = bySector[key] || []).push(c);
+      });
+      dd.innerHTML = Object.keys(bySector).sort().map(sector => {
+        const rows = bySector[sector].map(c => {
+          const val = c.valuation ? ` · ${c.valuation}` : '';
+          const safeName = (c.name || '').replace(/"/g, '&quot;');
+          return `<div class="pid-row" data-name="${safeName}" role="option" tabindex="0">
+            <span class="pid-name">${c.name}</span>
+            <span class="pid-meta">${sector}${val}</span>
+          </div>`;
+        }).join('');
+        return `<div class="pid-group-label">${sector}</div>${rows}`;
+      }).join('');
+    }
+
+    function open() { render(input.value); dd.hidden = false; }
+    function close() { dd.hidden = true; }
+
+    input.addEventListener('focus', open);
+    input.addEventListener('input', () => render(input.value));
+    input.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+    // Click-outside to close
+    document.addEventListener('mousedown', (e) => {
+      if (!dd.contains(e.target) && e.target !== input) close();
+    });
+
+    // Row click -> jump the drilldown (open popup for that private co).
+    dd.addEventListener('click', (e) => {
+      const row = e.target.closest('.pid-row');
+      if (!row) return;
+      const name = row.dataset.name;
+      input.value = name;
+      close();
+      // Prefer the existing private popup if available
+      if (typeof window.openPrivatePopup === 'function') {
+        window.openPrivatePopup(name);
+      } else {
+        // Fallback: scroll the row into view in the private table
+        const table = document.getElementById('private-table');
+        if (table) {
+          const tr = [...table.querySelectorAll('tr')].find(r =>
+            (r.textContent || '').toLowerCase().includes(name.toLowerCase()));
+          if (tr) tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    });
+  }
+
   // ----- Summary strip (placeholder values until M2) --------------------
   function updateSummaryStripCounts() {
     const n = (typeof window.tickerList !== 'undefined') ? window.tickerList.length : 0;
@@ -234,12 +319,22 @@
     initNav();
     initModeToggle();
     initMoreSubtabs();
+    initPrivateInputDropdown();
     registerSurfaces();
     window.SignalRouter.start();
     updateSummaryStripCounts();
 
-    // Re-run summary counts after any watchlist mutation we can detect
-    // (app.js does not emit events, but these are the known mutation sites).
+    // Re-run summary counts after any watchlist mutation. The cleanest hook
+    // is to wrap saveTickers (called by every add/remove/import path in
+    // app.js). Falls back to button-click hooks if saveTickers isn't global.
+    if (typeof window.saveTickers === 'function') {
+      const _origSave = window.saveTickers;
+      window.saveTickers = function () {
+        const r = _origSave.apply(this, arguments);
+        try { updateSummaryStripCounts(); } catch (_) {}
+        return r;
+      };
+    }
     ['add-ticker-btn', 'compare-toggle-btn'].forEach(id => {
       document.getElementById(id)?.addEventListener('click', () => setTimeout(updateSummaryStripCounts, 400));
     });

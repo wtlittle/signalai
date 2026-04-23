@@ -75,8 +75,11 @@ const $privateModalClose = document.getElementById('private-modal-close');
 const $privateForm = document.getElementById('private-form');
 
 // --- Save state ---
-function saveTickers() { Storage.set('ticker_list', tickerList); }
-function savePrivate() { Storage.set('private_companies', privateCompanies); }
+function saveTickers() { Storage.set('ticker_list', tickerList); try { window.tickerList = tickerList; } catch (_) {} }
+function savePrivate() { Storage.set('private_companies', privateCompanies); try { window.privateCompanies = privateCompanies; } catch (_) {} }
+
+// Expose state globals for other modules (shell.js, screener.js, etc.)
+try { window.tickerList = tickerList; window.privateCompanies = privateCompanies; } catch (_) {}
 function saveCollapsed() { Storage.set('collapsed_groups', collapsedGroups); }
 function saveCollapsedPrivate() { Storage.set('collapsed_private_groups', collapsedPrivateGroups); }
 

@@ -95,11 +95,16 @@ async function loadEarningsNotesIndex() {
 
 // --- Render earnings cards ---
 function renderRecentEarnings(recent) {
-  if (!recent || recent.length === 0) {
-    $recentCards.innerHTML = '<div class="earnings-empty">No recent earnings in the last 14 days</div>';
+  const hasCoverage = typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.length > 0;
+  const filtered = hasCoverage
+    ? (recent || []).filter(r => tickerList.indexOf(r.ticker) !== -1)
+    : (recent || []);
+  if (!filtered || filtered.length === 0) {
+    const scope = hasCoverage ? ' in your coverage' : '';
+    $recentCards.innerHTML = `<div class="earnings-empty">No recent earnings in the last 14 days${scope}</div>`;
     return;
   }
-  $recentCards.innerHTML = recent.map(r => {
+  $recentCards.innerHTML = filtered.map(r => {
     const name = (COMMON_NAMES && COMMON_NAMES[r.ticker]) || r.name || r.ticker;
     const revBeat = (r.revenue_beat_miss || '').toLowerCase();
     const epsBeat = (r.eps_beat_miss || '').toLowerCase();
@@ -172,11 +177,17 @@ function _impliedVsHistoricalBadge(ticker) {
 }
 
 function renderUpcomingEarnings(upcoming) {
-  const soon = (upcoming || []).filter(u => u.days_until <= 14);
-  const nextUp = (upcoming || []).filter(u => u.days_until > 14 && u.days_until <= 45);
+  // Soft-filter to the user's coverage list when present. When tickerList is
+  // empty we show the full market; when the user has built out a watchlist
+  // they only want to see cards for names they cover.
+  const hasCoverage = typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.length > 0;
+  const inCoverage = (t) => !hasCoverage || tickerList.indexOf(t) !== -1;
+  const soon = (upcoming || []).filter(u => u.days_until <= 14 && inCoverage(u.ticker));
+  const nextUp = (upcoming || []).filter(u => u.days_until > 14 && u.days_until <= 45 && inCoverage(u.ticker));
 
   if (soon.length === 0 && nextUp.length === 0) {
-    $upcomingCards.innerHTML = '<div class="earnings-empty">No upcoming earnings in the next 14 days</div>';
+    const scope = hasCoverage ? ' in your coverage' : '';
+    $upcomingCards.innerHTML = `<div class="earnings-empty">No upcoming earnings in the next 14 days${scope}</div>`;
     return;
   }
 
@@ -493,7 +504,10 @@ async function fetchEarnings() {
         earningsData = data;
         renderRecentEarnings(data.recent || []);
         renderUpcomingEarnings(data.upcoming || []);
-        const total = (data.recent || []).length + ((data.upcoming || []).filter(u => u.days_until <= 14)).length;
+        const hasCoverage = typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.length > 0;
+        const inCov = (t) => !hasCoverage || tickerList.indexOf(t) !== -1;
+        const total = (data.recent || []).filter(r => inCov(r.ticker)).length +
+          (data.upcoming || []).filter(u => u.days_until <= 14 && inCov(u.ticker)).length;
         $earningsStatus.textContent = total > 0 ? `${total} active` : 'up to date';
         return;
       }
@@ -628,7 +642,10 @@ async function fetchEarnings() {
     earningsData = { recent, upcoming };
     renderRecentEarnings(recent);
     renderUpcomingEarnings(upcoming);
-    const total = recent.length + upcoming.filter(u => u.days_until <= 14).length;
+    const hasCoverage = typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.length > 0;
+    const inCov = (t) => !hasCoverage || tickerList.indexOf(t) !== -1;
+    const total = recent.filter(r => inCov(r.ticker)).length +
+      upcoming.filter(u => u.days_until <= 14 && inCov(u.ticker)).length;
     $earningsStatus.textContent = total > 0 ? `${total} active` : 'up to date';
   } catch (e) {
     console.warn('Earnings fallback failed:', e);

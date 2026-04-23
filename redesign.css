@@ -511,13 +511,81 @@
 .more-pane { display: none; }
 .more-pane.active { display: block; }
 
+/* ----- Private input quick-select dropdown ---------------------- */
+.private-input-wrap {
+  position: relative;
+  display: inline-block;
+}
+.private-input-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 320px;
+  max-width: 420px;
+  max-height: 420px;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  z-index: 120;
+  padding: 6px 0;
+  font-family: var(--font-sans);
+}
+.private-input-dropdown[hidden] { display: none; }
+.private-input-dropdown .pid-empty {
+  padding: 10px 14px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.private-input-dropdown .pid-group-label {
+  padding: 8px 14px 4px;
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.private-input-dropdown .pid-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.private-input-dropdown .pid-row:hover,
+.private-input-dropdown .pid-row:focus {
+  background: var(--bg-hover);
+  outline: none;
+}
+.private-input-dropdown .pid-name {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+.private-input-dropdown .pid-meta {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
 /* ----- Responsive ------------------------------------------------ */
-@media (max-width: 1400px) {
+@media (max-width: 1560px) {
   .topbar-meta { display: none; }
 }
-@media (max-width: 1280px) {
+@media (max-width: 1360px) {
   .topbar-action { padding: 6px 8px; font-size: 11px; }
   .topbar-search { width: 140px; }
+}
+@media (max-width: 1200px) {
+  .topbar-search { width: 120px; }
+  .topbar-action { padding: 6px 6px; }
 }
 @media (max-width: 1200px) {
   .coverage-layout { grid-template-columns: minmax(0, 1fr) 260px; }
