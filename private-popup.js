@@ -57,7 +57,12 @@ function getOrCreatePrivatePopupDOM() {
     btn.addEventListener('click', () => {
       overlay.querySelectorAll('.pd-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      renderPrivateDetailTab(btn.dataset.tab);
+      try { renderPrivateDetailTab(btn.dataset.tab); }
+      catch (e) {
+        console.error('[private-popup] tab render failed for', btn.dataset.tab, e);
+        const $body = overlay.querySelector('#private-detail-body');
+        if ($body) $body.innerHTML = '<div class="pd-section"><div class="pd-empty">Could not render this tab.</div></div>';
+      }
     });
   });
 
@@ -95,12 +100,22 @@ async function openPrivatePopup(companyName) {
   overlay.querySelector('[data-tab="funding"]').classList.add('active');
 
   // Render header
-  renderPrivateHeader(co, intel);
+  try { renderPrivateHeader(co, intel); }
+  catch (e) { console.error('[private-popup] header render failed:', e); }
+
+  // Show overlay BEFORE tab render so a chart/adapter failure cannot block
+  // the user from seeing the popup (fail loudly in console, silently in UX).
+  overlay.classList.add('active');
 
   // Render default tab
-  renderPrivateDetailTab('funding');
-
-  overlay.classList.add('active');
+  try { renderPrivateDetailTab('funding'); }
+  catch (e) {
+    console.error('[private-popup] default tab render failed for', companyName, e);
+    const $body = overlay.querySelector('#private-detail-body');
+    if ($body) {
+      $body.innerHTML = '<div class="pd-section"><div class="pd-empty">Could not render the default tab. Try another tab above.</div></div>';
+    }
+  }
 }
 
 /* ------------------------------------------------------------------

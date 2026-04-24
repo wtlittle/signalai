@@ -766,6 +766,52 @@ function updateTotalMcap() {
     if (d && d.marketCap) total += d.marketCap;
   });
   $totalMcap.textContent = `Total MCap: ${formatLargeNumber(total)}`;
+  updateCoverageSummaryTiles();
+}
+
+// Populate the Coverage summary-strip KPI tiles. These KPIs are computed from
+// the same visible universe used to render the coverage table, so they stay
+// in sync with filters and the current universe selection.
+function updateCoverageSummaryTiles() {
+  // Median FY1 EV/Sales
+  const evSalesVals = tickerList
+    .map(t => {
+      const raw = tickerData[t] && tickerData[t].evSales;
+      const v = typeof raw === 'string' ? parseFloat(raw) : raw;
+      return (typeof v === 'number' && Number.isFinite(v) && v > 0) ? v : null;
+    })
+    .filter(v => v != null)
+    .sort((a, b) => a - b);
+  const medianEvSales = evSalesVals.length
+    ? (evSalesVals.length % 2
+        ? evSalesVals[(evSalesVals.length - 1) / 2]
+        : (evSalesVals[evSalesVals.length / 2 - 1] + evSalesVals[evSalesVals.length / 2]) / 2)
+    : null;
+  const elMedEv = document.getElementById('stat-median-valuation');
+  if (elMedEv) elMedEv.textContent = medianEvSales != null ? medianEvSales.toFixed(1) + 'x' : '—';
+
+  // Avg 1M move (visible universe)
+  const moves = tickerList
+    .map(t => {
+      const raw = tickerData[t] && tickerData[t].m1;
+      const v = typeof raw === 'string' ? parseFloat(raw) : raw;
+      return (typeof v === 'number' && Number.isFinite(v)) ? v : null;
+    })
+    .filter(v => v != null);
+  const avgMove = moves.length ? moves.reduce((a, b) => a + b, 0) / moves.length : null;
+  const elAvgMove = document.getElementById('stat-avg-move');
+  if (elAvgMove) elAvgMove.textContent = avgMove != null ? (avgMove > 0 ? '+' : '') + avgMove.toFixed(1) + '%' : '—';
+
+  // Fail loudly if the KPI dataset is empty while the rendered table has
+  // valid row values — symptom of a state/normalization divergence.
+  if (!evSalesVals.length && tickerList.length) {
+    const tableHasEvSales = tickerList.some(t => {
+      const raw = tickerData[t] && tickerData[t].evSales;
+      const v = typeof raw === 'string' ? parseFloat(raw) : raw;
+      return typeof v === 'number' && Number.isFinite(v) && v > 0;
+    });
+    if (tableHasEvSales) console.warn('[coverage-kpi] median EV/Sales empty but table has values — possible state divergence');
+  }
 }
 
 // --- Refresh ---
