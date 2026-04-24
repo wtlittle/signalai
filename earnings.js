@@ -93,6 +93,67 @@ async function loadEarningsNotesIndex() {
   }
 }
 
+// --- Enrich post-earnings cards from earnings_intel.json ---
+// Covers the fallback path, where the notes index has ticker/date only and
+// the calendar's post_earnings lacks revenue_actual / eps_actual. Intel's
+// post_earnings_review contains what_happened_bullets in the format:
+//   "Revenue · NT$1.134T ($35.9B) · NT$1.127T ($35B)"   (label · actual · estimate)
+// We parse those to rehydrate Rev / EPS / reaction so cards stop showing "—".
+async function enrichRecentFromIntel(recent) {
+  if (!recent || !recent.length) return recent;
+  if (typeof loadEarningsIntel !== 'function') return recent;
+  let intelData;
+  try { intelData = await loadEarningsIntel(); } catch (_) { return recent; }
+  if (!intelData || !intelData.tickers) return recent;
+
+  const parseMetricBullet = (bullet, labelRegex) => {
+    if (!bullet || !labelRegex.test(bullet)) return null;
+    // Split on "·" or "|" delimiters; cards use " · ".
+    const parts = bullet.split(/\s[·|]\s/).map(s => s.trim());
+    // Expected shape: [label, actual, estimate?]
+    if (parts.length < 2) return null;
+    const actual = parts[1];
+    if (!actual || actual === '--' || actual === '—') return null;
+    return actual;
+  };
+
+  recent.forEach(r => {
+    const intel = intelData.tickers[r.ticker];
+    if (!intel || !intel.post_earnings_review || intel.post_earnings_review.active !== true) return;
+    const rev = intel.post_earnings_review;
+    const bullets = rev.what_happened_bullets || [];
+
+    // Revenue actual
+    if (!r.revenue_actual) {
+      for (const b of bullets) {
+        const v = parseMetricBullet(b, /^revenue\b/i);
+        if (v) { r.revenue_actual = v; break; }
+      }
+    }
+    // EPS actual (look for "EPS" or "Adjusted EPS" bullet)
+    if (!r.eps_actual) {
+      for (const b of bullets) {
+        const v = parseMetricBullet(b, /\beps\b/i);
+        if (v) { r.eps_actual = v; break; }
+      }
+    }
+    // Stock reaction fallback — use takeaways_headline so card body isn't "No data"
+    if (!r.stock_reaction && rev.takeaways_headline) {
+      r.stock_reaction = rev.takeaways_headline.slice(0, 180);
+    }
+    // Fiscal quarter inference from earnings_date if missing
+    if (!r.fiscal_quarter && r.earnings_date) {
+      const m = /^(\d{4})-(\d{2})/.exec(r.earnings_date);
+      if (m) {
+        const mon = +m[2];
+        const q = mon <= 3 ? 'Q4' : mon <= 6 ? 'Q1' : mon <= 9 ? 'Q2' : 'Q3';
+        r.fiscal_quarter = `${q} ${m[1]}`;
+      }
+    }
+  });
+  return recent;
+}
+
 // --- Render earnings cards ---
 function renderRecentEarnings(recent) {
   const hasCoverage = typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.length > 0;
@@ -140,7 +201,7 @@ function renderRecentEarnings(recent) {
         </div>
       </div>
       ${r.fiscal_quarter ? `<div class="earnings-card-fq">${r.fiscal_quarter}</div>` : ''}
-      <div class="earnings-card-reaction ${stockClass}">${stockRx || 'No data'}</div>
+      <div class="earnings-card-reaction ${stockClass}">${stockRx || 'Awaiting post-earnings note'}</div>
       <div class="earnings-card-footer">
         <span class="earnings-card-inflection-slot" data-ticker="${r.ticker}"></span>
         <button class="earnings-intel-btn" title="Open Earnings Intel">Open Earnings Intel →</button>
@@ -531,6 +592,7 @@ async function fetchEarnings() {
       const data = await resp.json();
       if (!data.error || data.recent) {
         earningsData = data;
+        await enrichRecentFromIntel(data.recent || []);
         renderRecentEarnings(data.recent || []);
         renderUpcomingEarnings(data.upcoming || []);
         const hasCoverage = typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.length > 0;
@@ -677,6 +739,7 @@ async function fetchEarnings() {
     }
 
     earningsData = { recent, upcoming };
+    await enrichRecentFromIntel(recent);
     renderRecentEarnings(recent);
     renderUpcomingEarnings(upcoming);
     const hasCoverage = typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.length > 0;
