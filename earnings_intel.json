@@ -13,17 +13,26 @@
       "refresh_reason": "scheduled_pre_earnings",
       "bottom_line": "ADP approaches its 2026-04-29 print with the setup defined in the linked legacy note.",
       "bull_case": {
-        "thesis_headline": "+22\u201332%",
+        "thesis_headline": "+22–32%",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "+5\u201315%",
+        "setup_headline": "+5–15%",
         "pushes_higher": [],
         "pushes_lower": []
       },
@@ -32,9 +41,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -101,9 +119,18 @@
         "thesis_headline": "Clean quarter + maintained guide re-rates AMZN.",
         "pattern": "",
         "pushes_higher": [
-          "AWS growth trajectory: Can AWS accelerate from 24% to 30%+ in Q1? The AI workload ramp is the key driver, but competitive pressure from Azure and GCP is intensifying. Some analysts (Truist) see potential for 38% growth.",
-          "$200B capex plan: Amazon's aggressive AI infrastructure spend is the largest among hyperscalers. Bulls see it as securing competitive advantage; bears worry about return on investment timeline and potential overcapacity.",
-          "Union ruling impact: Recent labor rulings could increase costs in fulfillment operations. How material is the financial impact?"
+          {
+            "signal_id": "aws_growth_trajectory_can_aws",
+            "text": "AWS growth trajectory: Can AWS accelerate from 24% to 30%+ in Q1? The AI workload ramp is the key driver, but competitive pressure from Azure and GCP is intensifying. Some analysts (Truist) see potential for 38% growth."
+          },
+          {
+            "signal_id": "200b_capex_plan_amazon_s_aggressive",
+            "text": "$200B capex plan: Amazon's aggressive AI infrastructure spend is the largest among hyperscalers. Bulls see it as securing competitive advantage; bears worry about return on investment timeline and potential overcapacity."
+          },
+          {
+            "signal_id": "union_ruling_impact_recent_labor",
+            "text": "Union ruling impact: Recent labor rulings could increase costs in fulfillment operations. How material is the financial impact?"
+          }
         ],
         "pushes_lower": []
       },
@@ -123,9 +150,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "$200B capex plan: Amazon's aggressive AI infrastructure spend is the largest among hyperscalers. Bulls see it as securing competitive advantage; bears worry about return on investment timeline and potential overcapacity.",
-          "Union ruling impact: Recent labor rulings could increase costs in fulfillment operations. How material is the financial impact?",
-          "Tariff exposure: Amazon's first-party retail and third-party marketplace both have significant China-sourced inventory. Tariff escalation could pressure margins."
+          {
+            "signal_id": "200b_capex_plan_amazon_s_aggressive",
+            "text": "$200B capex plan: Amazon's aggressive AI infrastructure spend is the largest among hyperscalers. Bulls see it as securing competitive advantage; bears worry about return on investment timeline and potential overcapacity."
+          },
+          {
+            "signal_id": "union_ruling_impact_recent_labor",
+            "text": "Union ruling impact: Recent labor rulings could increase costs in fulfillment operations. How material is the financial impact?"
+          },
+          {
+            "signal_id": null,
+            "text": "Tariff exposure: Amazon's first-party retail and third-party marketplace both have significant China-sourced inventory. Tariff escalation could pressure margins."
+          }
         ]
       },
       "signal_scorecard": [
@@ -134,21 +170,24 @@
           "label": "AWS growth trajectory: Can AWS",
           "status": "WATCHING",
           "note": "AWS growth trajectory: Can AWS accelerate from 24% to 30%+ in Q1? The AI workload ramp is the key driver, but competitive pressure from Azure and GCP is intensifying. Some analysts (Truist) see potential for 38% growth.",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "200b_capex_plan_amazon_s_aggressive",
           "label": "$200B capex plan: Amazon's aggressive",
           "status": "WATCHING",
           "note": "$200B capex plan: Amazon's aggressive AI infrastructure spend is the largest among hyperscalers. Bulls see it as securing competitive advantage; bears worry about return on investment timeline and potential overcapacity.",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "union_ruling_impact_recent_labor",
           "label": "Union ruling impact: Recent labor",
           "status": "WATCHING",
           "note": "Union ruling impact: Recent labor rulings could increase costs in fulfillment operations. How material is the financial impact?",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -181,7 +220,16 @@
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 67,
+        "conflict_ratio": 0.6667,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 2,
+        "unresolved_signals": 3,
+        "total_signals": 3,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "BKR": {
       "ticker": "BKR",
@@ -197,9 +245,18 @@
         "thesis_headline": "Prior Quarter",
         "pattern": "",
         "pushes_higher": [
-          "Iran conflict revenue upside: Did elevated commodity prices in Q1 drive incremental activity that flows through BKR's order book? International drilling activity in the Middle East (ex-Iran), offshore, and deepwater are the key vectors.",
-          "IET margins: The Industrial & Energy Technology segment has been expanding margins on the back of LNG equipment orders and service contract renewals. Can IET margins sustain 20%+ as the mix shifts toward higher-margin services?",
-          "Chart Industries acquisition integration: The proposed acquisition would add industrial gas, cryogenic equipment, and hydrogen capabilities. Watch for timing updates, regulatory approvals, and any deal-related charges."
+          {
+            "signal_id": "iran_conflict_revenue_upside_did",
+            "text": "Iran conflict revenue upside: Did elevated commodity prices in Q1 drive incremental activity that flows through BKR's order book? International drilling activity in the Middle East (ex-Iran), offshore, and deepwater are the key vectors."
+          },
+          {
+            "signal_id": "iet_margins_the_industrial",
+            "text": "IET margins: The Industrial & Energy Technology segment has been expanding margins on the back of LNG equipment orders and service contract renewals. Can IET margins sustain 20%+ as the mix shifts toward higher-margin services?"
+          },
+          {
+            "signal_id": "chart_industries_acquisition_integration",
+            "text": "Chart Industries acquisition integration: The proposed acquisition would add industrial gas, cryogenic equipment, and hydrogen capabilities. Watch for timing updates, regulatory approvals, and any deal-related charges."
+          }
         ],
         "pushes_lower": []
       },
@@ -219,9 +276,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "IET margins: The Industrial & Energy Technology segment has been expanding margins on the back of LNG equipment orders and service contract renewals. Can IET margins sustain 20%+ as the mix shifts toward higher-margin services?",
-          "Chart Industries acquisition integration: The proposed acquisition would add industrial gas, cryogenic equipment, and hydrogen capabilities. Watch for timing updates, regulatory approvals, and any deal-related charges.",
-          "Oil price sensitivity: Q1 captured a broad range -- from ~$74 to $115+. BKR has less direct commodity exposure than E&P companies, but activity levels and customer sentiment are highly correlated with oil prices. The late-quarter WTI crash could moderate Q2 outlook commentary."
+          {
+            "signal_id": "iet_margins_the_industrial",
+            "text": "IET margins: The Industrial & Energy Technology segment has been expanding margins on the back of LNG equipment orders and service contract renewals. Can IET margins sustain 20%+ as the mix shifts toward higher-margin services?"
+          },
+          {
+            "signal_id": "chart_industries_acquisition_integration",
+            "text": "Chart Industries acquisition integration: The proposed acquisition would add industrial gas, cryogenic equipment, and hydrogen capabilities. Watch for timing updates, regulatory approvals, and any deal-related charges."
+          },
+          {
+            "signal_id": null,
+            "text": "Oil price sensitivity: Q1 captured a broad range -- from ~$74 to $115+. BKR has less direct commodity exposure than E&P companies, but activity levels and customer sentiment are highly correlated with oil prices. The late-quarter WTI crash could moderate Q2 outlook commentary."
+          }
         ]
       },
       "signal_scorecard": [
@@ -230,21 +296,24 @@
           "label": "Iran conflict revenue upside: Did",
           "status": "WATCHING",
           "note": "Iran conflict revenue upside: Did elevated commodity prices in Q1 drive incremental activity that flows through BKR's order book? International drilling activity in the Middle East (ex-Iran), offshore, and deepwater are ",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "iet_margins_the_industrial",
           "label": "IET margins: The Industrial &",
           "status": "WATCHING",
           "note": "IET margins: The Industrial & Energy Technology segment has been expanding margins on the back of LNG equipment orders and service contract renewals. Can IET margins sustain 20%+ as the mix shifts toward higher-margin se",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "chart_industries_acquisition_integration",
           "label": "Chart Industries acquisition integration: The",
           "status": "WATCHING",
           "note": "Chart Industries acquisition integration: The proposed acquisition would add industrial gas, cryogenic equipment, and hydrogen capabilities. Watch for timing updates, regulatory approvals, and any deal-related charges.",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -277,7 +346,16 @@
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 67,
+        "conflict_ratio": 0.6667,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 2,
+        "unresolved_signals": 3,
+        "total_signals": 3,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "CAT": {
       "ticker": "CAT",
@@ -290,17 +368,26 @@
       "refresh_reason": "scheduled_pre_earnings",
       "bottom_line": "CAT approaches its 2026-04-30 print with the setup defined in the linked legacy note.",
       "bull_case": {
-        "thesis_headline": "+10\u201314%",
+        "thesis_headline": "+10–14%",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "-2\u20136%",
+        "setup_headline": "-2–6%",
         "pushes_higher": [],
         "pushes_lower": []
       },
@@ -309,9 +396,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -341,7 +437,7 @@
             "url": "https://www.perplexity.ai/finance/CAT/earnings"
           },
           {
-            "label": "Reuters \u2014 CAT $2.6B Tariff Warning",
+            "label": "Reuters — CAT $2.6B Tariff Warning",
             "url": "https://au.investing.com/news/stock-market-news/caterpillar-flags-26-billion-tariff-hit-in-2026-data-center-demand-powers-quarter-4229632"
           },
           {
@@ -378,9 +474,18 @@
         "thesis_headline": "NCO improvement continues; NIM stable; FY2026 adj. EPS guidance of $20+",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
@@ -394,9 +499,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -418,7 +532,7 @@
       "source_metadata": {
         "primary_sources": [
           {
-            "label": "Perplexity Finance \u2014 COF",
+            "label": "Perplexity Finance — COF",
             "url": "https://perplexity.ai/finance/COF"
           },
           {
@@ -426,11 +540,11 @@
             "url": "https://perplexity.ai/finance/COF/earnings"
           },
           {
-            "label": "Capital One Discover Success \u2014 MarketMinute",
+            "label": "Capital One Discover Success — MarketMinute",
             "url": "https://markets.financialcontent.com/wral/article/marketminute-2026-3-11-capital-one-cof-earnings-reflect-discovery-acquisition-success"
           },
           {
-            "label": "COF 10-K / Brex Acquisition Details \u2014 SEC via StockTitan",
+            "label": "COF 10-K / Brex Acquisition Details — SEC via StockTitan",
             "url": "https://www.stocktitan.net/sec-filings/COF/10-k-capital-one-financial-corp-files-annual-report-bd0203ab5893.html"
           }
         ],
@@ -460,17 +574,26 @@
       "refresh_reason": "scheduled_pre_earnings",
       "bottom_line": "DHR approaches its 2026-04-21 print with the setup defined in the linked legacy note.",
       "bull_case": {
-        "thesis_headline": "Raised/narrowed to top-half ($8.45\u2013$8.55)",
+        "thesis_headline": "Raised/narrowed to top-half ($8.45–$8.55)",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "Confirmed ($8.35\u2013$8.50); constructive China/bioprocessing commentary",
+        "setup_headline": "Confirmed ($8.35–$8.50); constructive China/bioprocessing commentary",
         "pushes_higher": [],
         "pushes_lower": []
       },
@@ -479,9 +602,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -503,7 +635,7 @@
       "source_metadata": {
         "primary_sources": [
           {
-            "label": "Perplexity Finance \u2014 DHR",
+            "label": "Perplexity Finance — DHR",
             "url": "https://perplexity.ai/finance/DHR"
           },
           {
@@ -511,11 +643,11 @@
             "url": "https://perplexity.ai/finance/DHR/earnings"
           },
           {
-            "label": "Danaher Q1 2026 Earnings Preview \u2014 Yahoo Finance",
+            "label": "Danaher Q1 2026 Earnings Preview — Yahoo Finance",
             "url": "https://finance.yahoo.com/markets/stocks/articles/danaher-gears-post-q1-earnings-144800880.html"
           },
           {
-            "label": "Danaher 2026 Recovery Analysis \u2014 AInvest",
+            "label": "Danaher 2026 Recovery Analysis — AInvest",
             "url": "https://www.ainvest.com/news/danaher-2026-recovery-structural-shift-biotech-capital-allocation-2601/"
           }
         ],
@@ -545,28 +677,46 @@
       "refresh_reason": "scheduled_pre_earnings",
       "bottom_line": "GNRC approaches its 2026-04-29 print with the setup defined in the linked legacy note.",
       "bull_case": {
-        "thesis_headline": "+23\u201342%",
+        "thesis_headline": "+23–42%",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "0\u201313%",
+        "setup_headline": "0–13%",
         "pushes_higher": [],
         "pushes_lower": []
       },
       "bear_case": {
-        "thesis_headline": "-13\u201325%",
+        "thesis_headline": "-13–25%",
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -633,9 +783,18 @@
         "thesis_headline": "Clean quarter + maintained guide re-rates GOOG.",
         "pattern": "",
         "pushes_higher": [
-          "Search disruption vs search enhancement: Is Google's AI integration (Gemini, AI Overviews) defensive or offensive? Bears argue AI reduces click-through to ads; bulls argue it increases engagement and query volume.",
-          "Cloud growth trajectory: Google Cloud has been the fastest-growing hyperscaler segment. Can it sustain 30%+ growth and path to profitability improvement?",
-          "YouTube monetization: YouTube Shorts monetization ramp and the TV/CTV advertising opportunity represent meaningful incremental revenue."
+          {
+            "signal_id": "search_disruption_vs_search_enhancement",
+            "text": "Search disruption vs search enhancement: Is Google's AI integration (Gemini, AI Overviews) defensive or offensive? Bears argue AI reduces click-through to ads; bulls argue it increases engagement and query volume."
+          },
+          {
+            "signal_id": "cloud_growth_trajectory_google_cloud",
+            "text": "Cloud growth trajectory: Google Cloud has been the fastest-growing hyperscaler segment. Can it sustain 30%+ growth and path to profitability improvement?"
+          },
+          {
+            "signal_id": "youtube_monetization_youtube_shorts_mone",
+            "text": "YouTube monetization: YouTube Shorts monetization ramp and the TV/CTV advertising opportunity represent meaningful incremental revenue."
+          }
         ],
         "pushes_lower": []
       },
@@ -655,9 +814,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Cloud growth trajectory: Google Cloud has been the fastest-growing hyperscaler segment. Can it sustain 30%+ growth and path to profitability improvement?",
-          "YouTube monetization: YouTube Shorts monetization ramp and the TV/CTV advertising opportunity represent meaningful incremental revenue.",
-          "Capex intensity: Alphabet's AI infrastructure spending is second only to Amazon. The market wants to see capex translate into revenue growth, not just cost inflation."
+          {
+            "signal_id": "cloud_growth_trajectory_google_cloud",
+            "text": "Cloud growth trajectory: Google Cloud has been the fastest-growing hyperscaler segment. Can it sustain 30%+ growth and path to profitability improvement?"
+          },
+          {
+            "signal_id": "youtube_monetization_youtube_shorts_mone",
+            "text": "YouTube monetization: YouTube Shorts monetization ramp and the TV/CTV advertising opportunity represent meaningful incremental revenue."
+          },
+          {
+            "signal_id": null,
+            "text": "Capex intensity: Alphabet's AI infrastructure spending is second only to Amazon. The market wants to see capex translate into revenue growth, not just cost inflation."
+          }
         ]
       },
       "signal_scorecard": [
@@ -666,21 +834,24 @@
           "label": "Search disruption vs search enhancement",
           "status": "WATCHING",
           "note": "Search disruption vs search enhancement: Is Google's AI integration (Gemini, AI Overviews) defensive or offensive? Bears argue AI reduces click-through to ads; bulls argue it increases engagement and query volume.",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "cloud_growth_trajectory_google_cloud",
           "label": "Cloud growth trajectory: Google Cloud",
           "status": "WATCHING",
           "note": "Cloud growth trajectory: Google Cloud has been the fastest-growing hyperscaler segment. Can it sustain 30%+ growth and path to profitability improvement?",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "youtube_monetization_youtube_shorts_mone",
           "label": "YouTube monetization: YouTube Shorts monetization",
           "status": "WATCHING",
           "note": "YouTube monetization: YouTube Shorts monetization ramp and the TV/CTV advertising opportunity represent meaningful incremental revenue.",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -713,7 +884,16 @@
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 67,
+        "conflict_ratio": 0.6667,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 2,
+        "unresolved_signals": 3,
+        "total_signals": 3,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "IBM": {
       "ticker": "IBM",
@@ -729,9 +909,18 @@
         "thesis_headline": "Prior Quarter",
         "pattern": "",
         "pushes_higher": [
-          "Software sustainability: Can software maintain 10%+ growth in Q1 after Q4's 11%? Red Hat guided mid-single-digit growth -- any deceleration below 5% would concern investors. Conversely, AI-driven demand for watsonx and automation could sustain double-digit software growth.",
-          "Consulting growth inflection: Consulting grew only ~3% in Q4. Management expects GenAI to be a consulting accelerator. Q1 will test whether the $3.6B GenAI ARR in consulting translates to revenue acceleration or whether macro headwinds are slowing enterprise spending.",
-          "Z17 mainframe cycle: Q4 infrastructure was up 17% on Z17 strength, outpacing the Z16 cycle. Q1 typically sees strong carryover from a new mainframe launch. Any deceleration below 10% would raise questions about cycle longevity."
+          {
+            "signal_id": "software_sustainability_can_software_mai",
+            "text": "Software sustainability: Can software maintain 10%+ growth in Q1 after Q4's 11%? Red Hat guided mid-single-digit growth -- any deceleration below 5% would concern investors. Conversely, AI-driven demand for watsonx and automation could sustain double-digit software growth."
+          },
+          {
+            "signal_id": "consulting_growth_inflection_consulting_",
+            "text": "Consulting growth inflection: Consulting grew only ~3% in Q4. Management expects GenAI to be a consulting accelerator. Q1 will test whether the $3.6B GenAI ARR in consulting translates to revenue acceleration or whether macro headwinds are slowing enterprise spending."
+          },
+          {
+            "signal_id": "z17_mainframe_cycle_q4_infrastructure",
+            "text": "Z17 mainframe cycle: Q4 infrastructure was up 17% on Z17 strength, outpacing the Z16 cycle. Q1 typically sees strong carryover from a new mainframe launch. Any deceleration below 10% would raise questions about cycle longevity."
+          }
         ],
         "pushes_lower": []
       },
@@ -751,9 +940,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Consulting growth inflection: Consulting grew only ~3% in Q4. Management expects GenAI to be a consulting accelerator. Q1 will test whether the $3.6B GenAI ARR in consulting translates to revenue acceleration or whether macro headwinds are slowing enterprise spending.",
-          "Z17 mainframe cycle: Q4 infrastructure was up 17% on Z17 strength, outpacing the Z16 cycle. Q1 typically sees strong carryover from a new mainframe launch. Any deceleration below 10% would raise questions about cycle longevity.",
-          "Confluent acquisition integration: IBM announced the acquisition of Confluent as a data-layer play. Integration costs and revenue contribution timing are unknowns. Market will watch for any deal-related charges or delays."
+          {
+            "signal_id": "consulting_growth_inflection_consulting_",
+            "text": "Consulting growth inflection: Consulting grew only ~3% in Q4. Management expects GenAI to be a consulting accelerator. Q1 will test whether the $3.6B GenAI ARR in consulting translates to revenue acceleration or whether macro headwinds are slowing enterprise spending."
+          },
+          {
+            "signal_id": "z17_mainframe_cycle_q4_infrastructure",
+            "text": "Z17 mainframe cycle: Q4 infrastructure was up 17% on Z17 strength, outpacing the Z16 cycle. Q1 typically sees strong carryover from a new mainframe launch. Any deceleration below 10% would raise questions about cycle longevity."
+          },
+          {
+            "signal_id": null,
+            "text": "Confluent acquisition integration: IBM announced the acquisition of Confluent as a data-layer play. Integration costs and revenue contribution timing are unknowns. Market will watch for any deal-related charges or delays."
+          }
         ]
       },
       "signal_scorecard": [
@@ -762,21 +960,24 @@
           "label": "Software sustainability: Can software maintain",
           "status": "WATCHING",
           "note": "Software sustainability: Can software maintain 10%+ growth in Q1 after Q4's 11%? Red Hat guided mid-single-digit growth -- any deceleration below 5% would concern investors. Conversely, AI-driven demand for watsonx and a",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "consulting_growth_inflection_consulting_",
           "label": "Consulting growth inflection: Consulting grew",
           "status": "WATCHING",
           "note": "Consulting growth inflection: Consulting grew only ~3% in Q4. Management expects GenAI to be a consulting accelerator. Q1 will test whether the $3.6B GenAI ARR in consulting translates to revenue acceleration or whether ",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "z17_mainframe_cycle_q4_infrastructure",
           "label": "Z17 mainframe cycle: Q4 infrastructure",
           "status": "WATCHING",
           "note": "Z17 mainframe cycle: Q4 infrastructure was up 17% on Z17 strength, outpacing the Z16 cycle. Q1 typically sees strong carryover from a new mainframe launch. Any deceleration below 10% would raise questions about cycle lon",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -809,7 +1010,16 @@
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 67,
+        "conflict_ratio": 0.6667,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 2,
+        "unresolved_signals": 3,
+        "total_signals": 3,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "INTC": {
       "ticker": "INTC",
@@ -825,9 +1035,18 @@
         "thesis_headline": "Prior Quarter",
         "pattern": "",
         "pushes_higher": [
-          "Revenue recovery vs. supply constraint: Management guided $11.7-12.7B, with supply being \"at its lowest level in Q1 before improving in Q2.\" If supply constraints ease faster than expected, there could be upside. If they persist, even guided revenue could be at risk. This is the single biggest varia",
-          "18A foundry pipeline: Intel Foundry Services (IFS) is the long-term strategic bet. Any updates on 18A customer wins, yield improvements, or foundry revenue pipeline would be catalysts. The Altera divestiture cleans up the P&L -- watch for any contribution from external foundry customers.",
-          "Client Computing Group trajectory: CCG was $7.6B in Q1 2025 (-8% YoY). PC replacement cycle dynamics and AI-PC adoption rates are key. Microsoft's Copilot+ push could drive a refresh cycle that benefits Intel's client silicon."
+          {
+            "signal_id": "revenue_recovery_vs_supply_constraint",
+            "text": "Revenue recovery vs. supply constraint: Management guided $11.7-12.7B, with supply being \"at its lowest level in Q1 before improving in Q2.\" If supply constraints ease faster than expected, there could be upside. If they persist, even guided revenue could be at risk. This is the single biggest varia"
+          },
+          {
+            "signal_id": "18a_foundry_pipeline_intel_foundry",
+            "text": "18A foundry pipeline: Intel Foundry Services (IFS) is the long-term strategic bet. Any updates on 18A customer wins, yield improvements, or foundry revenue pipeline would be catalysts. The Altera divestiture cleans up the P&L -- watch for any contribution from external foundry customers."
+          },
+          {
+            "signal_id": "client_computing_group_trajectory_ccg",
+            "text": "Client Computing Group trajectory: CCG was $7.6B in Q1 2025 (-8% YoY). PC replacement cycle dynamics and AI-PC adoption rates are key. Microsoft's Copilot+ push could drive a refresh cycle that benefits Intel's client silicon."
+          }
         ],
         "pushes_lower": []
       },
@@ -847,9 +1066,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "18A foundry pipeline: Intel Foundry Services (IFS) is the long-term strategic bet. Any updates on 18A customer wins, yield improvements, or foundry revenue pipeline would be catalysts. The Altera divestiture cleans up the P&L -- watch for any contribution from external foundry customers.",
-          "Client Computing Group trajectory: CCG was $7.6B in Q1 2025 (-8% YoY). PC replacement cycle dynamics and AI-PC adoption rates are key. Microsoft's Copilot+ push could drive a refresh cycle that benefits Intel's client silicon.",
-          "Data Center and AI: DCAI grew +8% YoY in Q1 2025 to $4.1B. The competitive pressure from AMD (EPYC) and NVIDIA (Grace) is intense. Gaudi AI accelerator performance vs. NVIDIA H100/H200/B100 is the critical benchmark."
+          {
+            "signal_id": "18a_foundry_pipeline_intel_foundry",
+            "text": "18A foundry pipeline: Intel Foundry Services (IFS) is the long-term strategic bet. Any updates on 18A customer wins, yield improvements, or foundry revenue pipeline would be catalysts. The Altera divestiture cleans up the P&L -- watch for any contribution from external foundry customers."
+          },
+          {
+            "signal_id": "client_computing_group_trajectory_ccg",
+            "text": "Client Computing Group trajectory: CCG was $7.6B in Q1 2025 (-8% YoY). PC replacement cycle dynamics and AI-PC adoption rates are key. Microsoft's Copilot+ push could drive a refresh cycle that benefits Intel's client silicon."
+          },
+          {
+            "signal_id": null,
+            "text": "Data Center and AI: DCAI grew +8% YoY in Q1 2025 to $4.1B. The competitive pressure from AMD (EPYC) and NVIDIA (Grace) is intense. Gaudi AI accelerator performance vs. NVIDIA H100/H200/B100 is the critical benchmark."
+          }
         ]
       },
       "signal_scorecard": [
@@ -858,21 +1086,24 @@
           "label": "Revenue recovery vs. supply constraint",
           "status": "WATCHING",
           "note": "Revenue recovery vs. supply constraint: Management guided $11.7-12.7B, with supply being \"at its lowest level in Q1 before improving in Q2.\" If supply constraints ease faster than expected, there could be upside. If they",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "18a_foundry_pipeline_intel_foundry",
           "label": "18A foundry pipeline: Intel Foundry",
           "status": "WATCHING",
           "note": "18A foundry pipeline: Intel Foundry Services (IFS) is the long-term strategic bet. Any updates on 18A customer wins, yield improvements, or foundry revenue pipeline would be catalysts. The Altera divestiture cleans up th",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "client_computing_group_trajectory_ccg",
           "label": "Client Computing Group trajectory: CCG",
           "status": "WATCHING",
           "note": "Client Computing Group trajectory: CCG was $7.6B in Q1 2025 (-8% YoY). PC replacement cycle dynamics and AI-PC adoption rates are key. Microsoft's Copilot+ push could drive a refresh cycle that benefits Intel's client si",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -905,7 +1136,16 @@
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 67,
+        "conflict_ratio": 0.6667,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 2,
+        "unresolved_signals": 3,
+        "total_signals": 3,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "META": {
       "ticker": "META",
@@ -921,9 +1161,18 @@
         "thesis_headline": "Clean quarter + maintained guide re-rates META.",
         "pattern": "",
         "pushes_higher": [
-          "AI ad targeting improvements: Meta's Advantage+ AI ad platform has been a game-changer for ad ROAS. Can the gains continue or are they plateauing?",
-          "Reality Labs losses: The Metaverse division continues to burn billions per quarter. When does the market stop tolerating these losses?",
-          "Capex intensity: 2026 capex guidance was $60-65B+, a massive increase driven by AI infrastructure. The market is watching for ROI signals."
+          {
+            "signal_id": "ai_ad_targeting_improvements_meta_s",
+            "text": "AI ad targeting improvements: Meta's Advantage+ AI ad platform has been a game-changer for ad ROAS. Can the gains continue or are they plateauing?"
+          },
+          {
+            "signal_id": "reality_labs_losses_the_metaverse",
+            "text": "Reality Labs losses: The Metaverse division continues to burn billions per quarter. When does the market stop tolerating these losses?"
+          },
+          {
+            "signal_id": "capex_intensity_2026_capex_guidance",
+            "text": "Capex intensity: 2026 capex guidance was $60-65B+, a massive increase driven by AI infrastructure. The market is watching for ROI signals."
+          }
         ],
         "pushes_lower": []
       },
@@ -943,9 +1192,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Reality Labs losses: The Metaverse division continues to burn billions per quarter. When does the market stop tolerating these losses?",
-          "Capex intensity: 2026 capex guidance was $60-65B+, a massive increase driven by AI infrastructure. The market is watching for ROI signals.",
-          "Threads and new surfaces: Can Threads become a meaningful ad surface? Instagram and Facebook engagement trends matter."
+          {
+            "signal_id": "reality_labs_losses_the_metaverse",
+            "text": "Reality Labs losses: The Metaverse division continues to burn billions per quarter. When does the market stop tolerating these losses?"
+          },
+          {
+            "signal_id": "capex_intensity_2026_capex_guidance",
+            "text": "Capex intensity: 2026 capex guidance was $60-65B+, a massive increase driven by AI infrastructure. The market is watching for ROI signals."
+          },
+          {
+            "signal_id": null,
+            "text": "Threads and new surfaces: Can Threads become a meaningful ad surface? Instagram and Facebook engagement trends matter."
+          }
         ]
       },
       "signal_scorecard": [
@@ -954,21 +1212,24 @@
           "label": "AI ad targeting improvements: Meta's",
           "status": "WATCHING",
           "note": "AI ad targeting improvements: Meta's Advantage+ AI ad platform has been a game-changer for ad ROAS. Can the gains continue or are they plateauing?",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "reality_labs_losses_the_metaverse",
           "label": "Reality Labs losses: The Metaverse",
           "status": "WATCHING",
           "note": "Reality Labs losses: The Metaverse division continues to burn billions per quarter. When does the market stop tolerating these losses?",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "capex_intensity_2026_capex_guidance",
           "label": "Capex intensity: 2026 capex guidance",
           "status": "WATCHING",
           "note": "Capex intensity: 2026 capex guidance was $60-65B+, a massive increase driven by AI infrastructure. The market is watching for ROI signals.",
-          "watch_quarter": "Q1 FY2026"
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -1001,7 +1262,16 @@
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 67,
+        "conflict_ratio": 0.6667,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 2,
+        "unresolved_signals": 3,
+        "total_signals": 3,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "MSFT": {
       "ticker": "MSFT",
@@ -1017,25 +1287,43 @@
         "thesis_headline": "Clean quarter + maintained guide re-rates MSFT.",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "$440\u2013$490",
+        "setup_headline": "$440–$490",
         "pushes_higher": [],
         "pushes_lower": []
       },
       "bear_case": {
-        "thesis_headline": "$370\u2013$410",
+        "thesis_headline": "$370–$410",
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -1102,25 +1390,43 @@
         "thesis_headline": "Clean quarter + maintained guide re-rates NEM.",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "$125\u2013$140",
+        "setup_headline": "$125–$140",
         "pushes_higher": [],
         "pushes_lower": []
       },
       "bear_case": {
-        "thesis_headline": "$95\u2013$110",
+        "thesis_headline": "$95–$110",
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -1184,17 +1490,26 @@
       "refresh_reason": "scheduled_pre_earnings",
       "bottom_line": "SYF approaches its 2026-04-21 print with the setup defined in the linked legacy note.",
       "bull_case": {
-        "thesis_headline": "Confirmed/tightened toward $9.40\u2013$9.50",
+        "thesis_headline": "Confirmed/tightened toward $9.40–$9.50",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "Confirmed at $9.10\u2013$9.50; volume guidance constructive",
+        "setup_headline": "Confirmed at $9.10–$9.50; volume guidance constructive",
         "pushes_higher": [],
         "pushes_lower": []
       },
@@ -1203,9 +1518,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -1227,7 +1551,7 @@
       "source_metadata": {
         "primary_sources": [
           {
-            "label": "Perplexity Finance \u2014 SYF",
+            "label": "Perplexity Finance — SYF",
             "url": "https://perplexity.ai/finance/SYF"
           },
           {
@@ -1239,7 +1563,7 @@
             "url": "https://investors.synchrony.com/filings-regulatory/sec-filings/all-sec-filings/content/0001601712-26-000003/0001601712-26-000003.pdf"
           },
           {
-            "label": "Deep Dive SYF 2026 \u2014 FinancialContent",
+            "label": "Deep Dive SYF 2026 — FinancialContent",
             "url": "https://markets.financialcontent.com/stocks/article/finterra-2026-1-28-the-frictionless-engine-a-deep-dive-into-synchrony-financial-syf-in-2026"
           }
         ],
@@ -1267,36 +1591,54 @@
       "next_earnings_date": "2026-04-21",
       "intel_updated_at": "2026-04-21T08:00:00-04:00",
       "refresh_reason": "scheduled_pre_earnings",
-      "bottom_line": "UNH closed at $277.26 on April 2 (last trading day before Easter weekend). The stock is down ~16\u201318% YTD in 2026 and down ~47\u201350% over the past 12 months, marking one of the worst performances among large-cap healthcare names. The 52-week range spans approximately $234.60 \u2013 $606.36, reflecting the catastrophic multiple compression cycle that began in mid-2024 and accelerated through 2025 into 2026. At ~$277, the stock trades at roughly 15.5x forward FY2026 EPS consensus of $17.69 \u2014 well below its historical 20\u201325x range and near a decade-low valuation floor.",
+      "bottom_line": "UNH closed at $277.26 on April 2 (last trading day before Easter weekend). The stock is down ~16–18% YTD in 2026 and down ~47–50% over the past 12 months, marking one of the worst performances among large-cap healthcare names. The 52-week range spans approximately $234.60 – $606.36, reflecting the catastrophic multiple compression cycle that began in mid-2024 and accelerated through 2025 into 2026. At ~$277, the stock trades at roughly 15.5x forward FY2026 EPS consensus of $17.69 — well below its historical 20–25x range and near a decade-low valuation floor.",
       "bull_case": {
         "thesis_headline": "Clean quarter + maintained guide re-rates UNH.",
         "pattern": "",
         "pushes_higher": [
-          "Medical Care Ratio (MCR) normalization \u2014 the single most important number. FY2026 guidance: 88.8% \u00b150bps, an improvement from 89.1% in 2025 (adjusted 88.9%). The Q1 print will be the first tangible data point on whether repricing is flowing through. Bulls argue repricing actions across commercial, M",
-          "Medicare Advantage 2027 rate environment \u2014 structural overhang. CMS's January 26 advance notice proposed only a 0.09% average rate increase for MA 2027 (vs. Street expectations of 4\u20136%, vs. 2026's 5.06% / $25B increase). The effective change per CMS's own math is ~2.54% once risk score trends are in",
-          "Optum Health restructuring \u2014 right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active right-sizing: value-based care membership guided to decline ~10% in 2026 before "
+          {
+            "signal_id": "medical_care_ratio_mcr_normalization",
+            "text": "Medical Care Ratio (MCR) normalization — the single most important number. FY2026 guidance: 88.8% ±50bps, an improvement from 89.1% in 2025 (adjusted 88.9%). The Q1 print will be the first tangible data point on whether repricing is flowing through. Bulls argue repricing actions across commercial, M"
+          },
+          {
+            "signal_id": "medicare_advantage_2027_rate_environment",
+            "text": "Medicare Advantage 2027 rate environment — structural overhang. CMS's January 26 advance notice proposed only a 0.09% average rate increase for MA 2027 (vs. Street expectations of 4–6%, vs. 2026's 5.06% / $25B increase). The effective change per CMS's own math is ~2.54% once risk score trends are in"
+          },
+          {
+            "signal_id": "optum_health_restructuring_right_sizing",
+            "text": "Optum Health restructuring — right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active right-sizing: value-based care membership guided to decline ~10% in 2026 before "
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "MCR 88.5\u201389.0%, guidance maintained at >$17.75, Optum Rx strong offsetting Health weakness, constructive Hemsley tone",
+        "setup_headline": "MCR 88.5–89.0%, guidance maintained at >$17.75, Optum Rx strong offsetting Health weakness, constructive Hemsley tone",
         "pushes_higher": [
-          "Medicare Advantage 2027 rate environment \u2014 structural overhang. CMS's January 26 advance notice proposed only a 0.09% average rate increase for MA 2027 (vs. Street expectations of 4\u20136%, vs. 2026's 5.06% / $25B increase). The effective change per CMS's own math is ~2.54% once risk score trends are in",
-          "Optum Health restructuring \u2014 right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active right-sizing: value-based care membership guided to decline ~10% in 2026 before "
+          "Medicare Advantage 2027 rate environment — structural overhang. CMS's January 26 advance notice proposed only a 0.09% average rate increase for MA 2027 (vs. Street expectations of 4–6%, vs. 2026's 5.06% / $25B increase). The effective change per CMS's own math is ~2.54% once risk score trends are in",
+          "Optum Health restructuring — right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active right-sizing: value-based care membership guided to decline ~10% in 2026 before "
         ],
         "pushes_lower": [
-          "Optum Health restructuring \u2014 right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active right-sizing: value-based care membership guided to decline ~10% in 2026 before ",
-          "DOJ investigation \u2014 civil + criminal tail risk. The DOJ's criminal division expanded its probe in August 2025 to include Optum Rx PBM practices (Bloomberg). A parallel civil investigation into Medicare Advantage diagnosis coding (risk adjustment) has been active for years. The company is cooperating"
+          "Optum Health restructuring — right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active right-sizing: value-based care membership guided to decline ~10% in 2026 before ",
+          "DOJ investigation — civil + criminal tail risk. The DOJ's criminal division expanded its probe in August 2025 to include Optum Rx PBM practices (Bloomberg). A parallel civil investigation into Medicare Advantage diagnosis coding (risk adjustment) has been active for years. The company is cooperating"
         ]
       },
       "bear_case": {
-        "thesis_headline": "MCR \u226589.5% (cost pressures persisting), guidance narrowed/lowered, MA enrollment worse than guided, Optum Health restructuring slower than expected, any DOJ development",
+        "thesis_headline": "MCR ≥89.5% (cost pressures persisting), guidance narrowed/lowered, MA enrollment worse than guided, Optum Health restructuring slower than expected, any DOJ development",
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Medicare Advantage 2027 rate environment \u2014 structural overhang. CMS's January 26 advance notice proposed only a 0.09% average rate increase for MA 2027 (vs. Street expectations of 4\u20136%, vs. 2026's 5.06% / $25B increase). The effective change per CMS's own math is ~2.54% once risk score trends are in",
-          "Optum Health restructuring \u2014 right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active right-sizing: value-based care membership guided to decline ~10% in 2026 before ",
-          "DOJ investigation \u2014 civil + criminal tail risk. The DOJ's criminal division expanded its probe in August 2025 to include Optum Rx PBM practices (Bloomberg). A parallel civil investigation into Medicare Advantage diagnosis coding (risk adjustment) has been active for years. The company is cooperating"
+          {
+            "signal_id": "medicare_advantage_2027_rate_environment",
+            "text": "Medicare Advantage 2027 rate environment — structural overhang. CMS's January 26 advance notice proposed only a 0.09% average rate increase for MA 2027 (vs. Street expectations of 4–6%, vs. 2026's 5.06% / $25B increase). The effective change per CMS's own math is ~2.54% once risk score trends are in"
+          },
+          {
+            "signal_id": "optum_health_restructuring_right_sizing",
+            "text": "Optum Health restructuring — right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active right-sizing: value-based care membership guided to decline ~10% in 2026 before "
+          },
+          {
+            "signal_id": null,
+            "text": "DOJ investigation — civil + criminal tail risk. The DOJ's criminal division expanded its probe in August 2025 to include Optum Rx PBM practices (Bloomberg). A parallel civil investigation into Medicare Advantage diagnosis coding (risk adjustment) has been active for years. The company is cooperating"
+          }
         ]
       },
       "signal_scorecard": [
@@ -1304,22 +1646,25 @@
           "signal_id": "medical_care_ratio_mcr_normalization",
           "label": "Medical Care Ratio (MCR) normalization",
           "status": "WATCHING",
-          "note": "Medical Care Ratio (MCR) normalization \u2014 the single most important number. FY2026 guidance: 88.8% \u00b150bps, an improvement from 89.1% in 2025 (adjusted 88.9%). The Q1 print will be the first tangible data point on whether ",
-          "watch_quarter": "Q1 FY2026"
+          "note": "Medical Care Ratio (MCR) normalization — the single most important number. FY2026 guidance: 88.8% ±50bps, an improvement from 89.1% in 2025 (adjusted 88.9%). The Q1 print will be the first tangible data point on whether ",
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "medicare_advantage_2027_rate_environment",
           "label": "Medicare Advantage 2027 rate environment",
           "status": "WATCHING",
-          "note": "Medicare Advantage 2027 rate environment \u2014 structural overhang. CMS's January 26 advance notice proposed only a 0.09% average rate increase for MA 2027 (vs. Street expectations of 4\u20136%, vs. 2026's 5.06% / $25B increase).",
-          "watch_quarter": "Q1 FY2026"
+          "note": "Medicare Advantage 2027 rate environment — structural overhang. CMS's January 26 advance notice proposed only a 0.09% average rate increase for MA 2027 (vs. Street expectations of 4–6%, vs. 2026's 5.06% / $25B increase).",
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         },
         {
           "signal_id": "optum_health_restructuring_right_sizing",
-          "label": "Optum Health restructuring \u2014 right-sizing",
+          "label": "Optum Health restructuring — right-sizing",
           "status": "WATCHING",
-          "note": "Optum Health restructuring \u2014 right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active ",
-          "watch_quarter": "Q1 FY2026"
+          "note": "Optum Health restructuring — right-sizing vs. value destruction. Optum Health \"strayed from the initial intent\" (CEO Conway, Q3 2025 call) after a period of rapid physician group expansion. The division is now in active ",
+          "watch_quarter": "Q1 FY2026",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -1369,7 +1714,16 @@
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 67,
+        "conflict_ratio": 0.6667,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 2,
+        "unresolved_signals": 3,
+        "total_signals": 3,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "VRTX": {
       "ticker": "VRTX",
@@ -1385,14 +1739,23 @@
         "thesis_headline": "Casgevy >$70M (Q-o-Q acceleration), Journavx gross-to-net improving, pove Phase III interim positive",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "CF beats modestly, non-CF on-track ($90\u2013110M combined), pove BLA update in-line",
+        "setup_headline": "CF beats modestly, non-CF on-track ($90–110M combined), pove BLA update in-line",
         "pushes_higher": [],
         "pushes_lower": []
       },
@@ -1401,9 +1764,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -1467,17 +1839,26 @@
       "refresh_reason": "scheduled_pre_earnings",
       "bottom_line": "ZBH approaches its 2026-04-28 print with the setup defined in the linked legacy note.",
       "bull_case": {
-        "thesis_headline": "$108\u2013$118",
+        "thesis_headline": "$108–$118",
         "pattern": "",
         "pushes_higher": [
-          "In-line-to-better print",
-          "Guidance maintained or raised",
-          "No new overhangs disclosed"
+          {
+            "signal_id": null,
+            "text": "In-line-to-better print"
+          },
+          {
+            "signal_id": null,
+            "text": "Guidance maintained or raised"
+          },
+          {
+            "signal_id": null,
+            "text": "No new overhangs disclosed"
+          }
         ],
         "pushes_lower": []
       },
       "base_case": {
-        "setup_headline": "$95\u2013$105",
+        "setup_headline": "$95–$105",
         "pushes_higher": [],
         "pushes_lower": []
       },
@@ -1486,9 +1867,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Revenue/EPS miss",
-          "Guide narrowed or lowered",
-          "New overhang disclosed"
+          {
+            "signal_id": null,
+            "text": "Revenue/EPS miss"
+          },
+          {
+            "signal_id": null,
+            "text": "Guide narrowed or lowered"
+          },
+          {
+            "signal_id": null,
+            "text": "New overhang disclosed"
+          }
         ]
       },
       "signal_scorecard": [],
@@ -1555,9 +1945,18 @@
         "thesis_headline": "The revenue beat was real -- $11.16B represented 7.8% YoY growth, driven by Medical Devices (particularly FreeStyle Libre) and the new oncology diagnostics contribution from Exact ",
         "pattern": "",
         "pushes_higher": [
-          "FreeStyle Libre installed base growth and competitive dynamics",
-          "Exact Sciences integration milestones and accretion timeline",
-          "Nutrition segment recovery trajectory"
+          {
+            "signal_id": null,
+            "text": "FreeStyle Libre installed base growth and competitive dynamics"
+          },
+          {
+            "signal_id": null,
+            "text": "Exact Sciences integration milestones and accretion timeline"
+          },
+          {
+            "signal_id": null,
+            "text": "Nutrition segment recovery trajectory"
+          }
         ],
         "pushes_lower": []
       },
@@ -1571,9 +1970,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Exact Sciences integration milestones and accretion timeline",
-          "Nutrition segment recovery trajectory",
-          "Margin expansion path as acquisition charges amortize"
+          {
+            "signal_id": null,
+            "text": "Exact Sciences integration milestones and accretion timeline"
+          },
+          {
+            "signal_id": null,
+            "text": "Nutrition segment recovery trajectory"
+          },
+          {
+            "signal_id": null,
+            "text": "Margin expansion path as acquisition charges amortize"
+          }
         ]
       },
       "signal_scorecard": [
@@ -1581,15 +1989,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "Adjusted EPS \u00b7 $1.15 \u00b7 $1.15",
-          "watch_quarter": "Q reported 2026-04-16"
+          "note": "Adjusted EPS · $1.15 · $1.15",
+          "watch_quarter": "Q reported 2026-04-16",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "FAILED",
           "note": "Management guided to full-year comparable sales growth of 6.5-7.5%, which is healthy. However, the EPS guidance reduction signals that integration will be costlier or take longer than initially commun",
-          "watch_quarter": "Q reported 2026-04-16"
+          "watch_quarter": "Q reported 2026-04-16",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -1624,14 +2034,23 @@
         ],
         "what_happened_headline": "The revenue beat was real -- $11.16B represented 7.8% YoY growth, driven by Medical Devices (particularly FreeStyle Libre) and the new oncology diagnostics contribution from Exact ",
         "what_happened_bullets": [
-          "Adjusted EPS \u00b7 $1.15 \u00b7 $1.15",
-          "Revenue \u00b7 $11.16B \u00b7 $11.03B",
-          "GAAP EPS \u00b7 $0.61 \u00b7 --"
+          "Adjusted EPS · $1.15 · $1.15",
+          "Revenue · $11.16B · $11.03B",
+          "GAAP EPS · $0.61 · --"
         ],
         "stock_reaction_pct": -4.0
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "BAC": {
       "ticker": "BAC",
@@ -1647,9 +2066,18 @@
         "thesis_headline": "The headline was trading. Sales and trading revenue rose 13% to $6.4B, with the equities desk posting record numbers. This was a common theme across all big banks in Q1, but BAC's ",
         "pattern": "",
         "pushes_higher": [
-          "NII guidance trajectory -- when does BAC expect NII inflection?",
-          "Consumer credit quality trends -- any stress in card portfolios?",
-          "Digital banking adoption metrics"
+          {
+            "signal_id": null,
+            "text": "NII guidance trajectory -- when does BAC expect NII inflection?"
+          },
+          {
+            "signal_id": null,
+            "text": "Consumer credit quality trends -- any stress in card portfolios?"
+          },
+          {
+            "signal_id": null,
+            "text": "Digital banking adoption metrics"
+          }
         ],
         "pushes_lower": []
       },
@@ -1663,9 +2091,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Consumer credit quality trends -- any stress in card portfolios?",
-          "Digital banking adoption metrics",
-          "Wealth management asset gathering pace"
+          {
+            "signal_id": null,
+            "text": "Consumer credit quality trends -- any stress in card portfolios?"
+          },
+          {
+            "signal_id": null,
+            "text": "Digital banking adoption metrics"
+          },
+          {
+            "signal_id": null,
+            "text": "Wealth management asset gathering pace"
+          }
         ]
       },
       "signal_scorecard": [
@@ -1673,15 +2110,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "EPS \u00b7 $1.11 \u00b7 $1.01",
-          "watch_quarter": "Q reported 2026-04-15"
+          "note": "EPS · $1.11 · $1.01",
+          "watch_quarter": "Q reported 2026-04-15",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "FAILED",
           "note": "Management struck a balanced tone -- highlighting the \"enduring strength of the U.S. financial system\" while acknowledging rate path uncertainty. The key message was that BAC is no longer solely depen",
-          "watch_quarter": "Q reported 2026-04-15"
+          "watch_quarter": "Q reported 2026-04-15",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -1716,15 +2155,24 @@
         ],
         "what_happened_headline": "The headline was trading. Sales and trading revenue rose 13% to $6.4B, with the equities desk posting record numbers. This was a common theme across all big banks in Q1, but BAC's ",
         "what_happened_bullets": [
-          "EPS \u00b7 $1.11 \u00b7 $1.01",
-          "Revenue \u00b7 $30.3B \u00b7 ~$28.5B",
-          "Net Income \u00b7 $8.6B \u00b7 --",
-          "Trading Revenue \u00b7 $6.4B \u00b7 --"
+          "EPS · $1.11 · $1.01",
+          "Revenue · $30.3B · ~$28.5B",
+          "Net Income · $8.6B · --",
+          "Trading Revenue · $6.4B · --"
         ],
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "C": {
       "ticker": "C",
@@ -1740,9 +2188,18 @@
         "thesis_headline": "Citi's transformation is gaining real traction. All five interconnected business segments posted revenue growth. Markets revenue surged ~19%, with equities up nearly 40% and fixed ",
         "pattern": "",
         "pushes_higher": [
-          "RoTCE trajectory toward management's 15%+ target",
-          "Transformation costs wind-down timeline",
-          "Latin America consumer banking performance"
+          {
+            "signal_id": null,
+            "text": "RoTCE trajectory toward management's 15%+ target"
+          },
+          {
+            "signal_id": null,
+            "text": "Transformation costs wind-down timeline"
+          },
+          {
+            "signal_id": null,
+            "text": "Latin America consumer banking performance"
+          }
         ],
         "pushes_lower": []
       },
@@ -1756,9 +2213,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Transformation costs wind-down timeline",
-          "Latin America consumer banking performance",
-          "Capital return capacity as CET1 builds"
+          {
+            "signal_id": null,
+            "text": "Transformation costs wind-down timeline"
+          },
+          {
+            "signal_id": null,
+            "text": "Latin America consumer banking performance"
+          },
+          {
+            "signal_id": null,
+            "text": "Capital return capacity as CET1 builds"
+          }
         ]
       },
       "signal_scorecard": [
@@ -1766,15 +2232,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "EPS \u00b7 $3.06 \u00b7 $2.63",
-          "watch_quarter": "Q reported 2026-04-14"
+          "note": "EPS · $3.06 · $2.63",
+          "watch_quarter": "Q reported 2026-04-14",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "FAILED",
           "note": "Management maintained a constructive outlook. The transformation timeline remains on track with continued expense optimization expected through 2027. Fraser highlighted \"broad-based momentum\" across a",
-          "watch_quarter": "Q reported 2026-04-14"
+          "watch_quarter": "Q reported 2026-04-14",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -1809,15 +2277,24 @@
         ],
         "what_happened_headline": "Citi's transformation is gaining real traction. All five interconnected business segments posted revenue growth. Markets revenue surged ~19%, with equities up nearly 40% and fixed ",
         "what_happened_bullets": [
-          "EPS \u00b7 $3.06 \u00b7 $2.63",
-          "Revenue \u00b7 $24.6B \u00b7 ~$23.5B",
-          "Net Income \u00b7 $5.8B \u00b7 --",
-          "RoTCE \u00b7 13.1% \u00b7 --"
+          "EPS · $3.06 · $2.63",
+          "Revenue · $24.6B · ~$23.5B",
+          "Net Income · $5.8B · --",
+          "RoTCE · 13.1% · --"
         ],
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "GS": {
       "ticker": "GS",
@@ -1833,9 +2310,18 @@
         "thesis_headline": "The quarter was defined by two engines firing simultaneously. First, the Global Banking & Markets segment delivered record revenues of $12.74B, powered by a 48% surge in investment",
         "pattern": "",
         "pushes_higher": [
-          "Watch IB fee backlog closely in Q2 -- is the slight decline a conversion signal or early pipeline softening?",
-          "Equities trading sustainability at $5B+ run-rate -- can GS sustain hedge fund prime brokerage growth?",
-          "FICC recovery potential in Q2 as rate volatility continues"
+          {
+            "signal_id": null,
+            "text": "Watch IB fee backlog closely in Q2 -- is the slight decline a conversion signal or early pipeline softening?"
+          },
+          {
+            "signal_id": null,
+            "text": "Equities trading sustainability at $5B+ run-rate -- can GS sustain hedge fund prime brokerage growth?"
+          },
+          {
+            "signal_id": null,
+            "text": "FICC recovery potential in Q2 as rate volatility continues"
+          }
         ],
         "pushes_lower": []
       },
@@ -1849,9 +2335,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Equities trading sustainability at $5B+ run-rate -- can GS sustain hedge fund prime brokerage growth?",
-          "FICC recovery potential in Q2 as rate volatility continues",
-          "M&A pipeline health: will deal-making sustain through tariff uncertainty?"
+          {
+            "signal_id": null,
+            "text": "Equities trading sustainability at $5B+ run-rate -- can GS sustain hedge fund prime brokerage growth?"
+          },
+          {
+            "signal_id": null,
+            "text": "FICC recovery potential in Q2 as rate volatility continues"
+          },
+          {
+            "signal_id": null,
+            "text": "M&A pipeline health: will deal-making sustain through tariff uncertainty?"
+          }
         ]
       },
       "signal_scorecard": [
@@ -1859,15 +2354,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "EPS \u00b7 $17.55 \u00b7 $16.47",
-          "watch_quarter": "Q reported 2026-04-13"
+          "note": "EPS · $17.55 · $16.47",
+          "watch_quarter": "Q reported 2026-04-13",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "FAILED",
           "note": "Management tone was constructive. CEO Solomon highlighted \"exceptionally strong client activity\" and the \"deepening M&A advisory pipeline.\" No explicit forward guidance was provided (GS does not give ",
-          "watch_quarter": "Q reported 2026-04-13"
+          "watch_quarter": "Q reported 2026-04-13",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -1902,15 +2399,24 @@
         ],
         "what_happened_headline": "The quarter was defined by two engines firing simultaneously. First, the Global Banking & Markets segment delivered record revenues of $12.74B, powered by a 48% surge in investment",
         "what_happened_bullets": [
-          "EPS \u00b7 $17.55 \u00b7 $16.47",
-          "Revenue \u00b7 $17.23B \u00b7 $16.95B",
-          "Net Income \u00b7 $5.63B \u00b7 --",
-          "ROE \u00b7 19.8% \u00b7 --"
+          "EPS · $17.55 · $16.47",
+          "Revenue · $17.23B · $16.95B",
+          "Net Income · $5.63B · --",
+          "ROE · 19.8% · --"
         ],
         "stock_reaction_pct": -3.06
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "JPM": {
       "ticker": "JPM",
@@ -1926,9 +2432,18 @@
         "thesis_headline": "JPMorgan delivered what may be the most balanced earnings report in the sector. The CIB segment earned $9.0B in net income on $23.4B in revenue (+19% YoY). Investment banking fees ",
         "pattern": "",
         "pushes_higher": [
-          "Credit card delinquencies trend -- any deterioration in consumer credit?",
-          "NII trajectory as rates are cut -- can JPM defend NII better than peers?",
-          "$54B AWM inflows sustainability"
+          {
+            "signal_id": null,
+            "text": "Credit card delinquencies trend -- any deterioration in consumer credit?"
+          },
+          {
+            "signal_id": null,
+            "text": "NII trajectory as rates are cut -- can JPM defend NII better than peers?"
+          },
+          {
+            "signal_id": null,
+            "text": "$54B AWM inflows sustainability"
+          }
         ],
         "pushes_lower": []
       },
@@ -1942,9 +2457,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "NII trajectory as rates are cut -- can JPM defend NII better than peers?",
-          "$54B AWM inflows sustainability",
-          "Expense growth (+14% YoY) vs revenue growth (+10%) -- negative operating leverage risk"
+          {
+            "signal_id": null,
+            "text": "NII trajectory as rates are cut -- can JPM defend NII better than peers?"
+          },
+          {
+            "signal_id": null,
+            "text": "$54B AWM inflows sustainability"
+          },
+          {
+            "signal_id": null,
+            "text": "Expense growth (+14% YoY) vs revenue growth (+10%) -- negative operating leverage risk"
+          }
         ]
       },
       "signal_scorecard": [
@@ -1952,15 +2476,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "EPS \u00b7 $5.94 \u00b7 ~$5.40",
-          "watch_quarter": "Q reported 2026-04-14"
+          "note": "EPS · $5.94 · ~$5.40",
+          "watch_quarter": "Q reported 2026-04-14",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "FAILED",
           "note": "CEO Dimon struck a characteristically cautious tone on the macro outlook, flagging \"significant uncertainties\" around trade policy, geopolitics, and inflation. NII guidance for FY2026 remains approxim",
-          "watch_quarter": "Q reported 2026-04-14"
+          "watch_quarter": "Q reported 2026-04-14",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -1995,15 +2521,24 @@
         ],
         "what_happened_headline": "JPMorgan delivered what may be the most balanced earnings report in the sector. The CIB segment earned $9.0B in net income on $23.4B in revenue (+19% YoY). Investment banking fees ",
         "what_happened_bullets": [
-          "EPS \u00b7 $5.94 \u00b7 ~$5.40",
-          "Revenue \u00b7 $50.5B \u00b7 ~$45B",
-          "Net Income \u00b7 $16.5B \u00b7 --",
-          "ROTCE \u00b7 23% \u00b7 --"
+          "EPS · $5.94 · ~$5.40",
+          "Revenue · $50.5B · ~$45B",
+          "Net Income · $16.5B · --",
+          "ROTCE · 23% · --"
         ],
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "MS": {
       "ticker": "MS",
@@ -2019,9 +2554,18 @@
         "thesis_headline": "Morgan Stanley's quarter was a clinic in franchise diversification. The firm generated nearly $1B more in trading revenue than expected, with the equities desk and IB both firing. ",
         "pattern": "",
         "pushes_higher": [
-          "Wealth management net new assets -- is MS gaining share from competitors?",
-          "IB pipeline sustainability through trade policy uncertainty",
-          "Equities trading revenue sustainability above $4B/quarter"
+          {
+            "signal_id": null,
+            "text": "Wealth management net new assets -- is MS gaining share from competitors?"
+          },
+          {
+            "signal_id": null,
+            "text": "IB pipeline sustainability through trade policy uncertainty"
+          },
+          {
+            "signal_id": null,
+            "text": "Equities trading revenue sustainability above $4B/quarter"
+          }
         ],
         "pushes_lower": []
       },
@@ -2035,9 +2579,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "IB pipeline sustainability through trade policy uncertainty",
-          "Equities trading revenue sustainability above $4B/quarter",
-          "Integration progress of recent wealth acquisitions"
+          {
+            "signal_id": null,
+            "text": "IB pipeline sustainability through trade policy uncertainty"
+          },
+          {
+            "signal_id": null,
+            "text": "Equities trading revenue sustainability above $4B/quarter"
+          },
+          {
+            "signal_id": null,
+            "text": "Integration progress of recent wealth acquisitions"
+          }
         ]
       },
       "signal_scorecard": [
@@ -2045,15 +2598,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "EPS \u00b7 $3.43 \u00b7 ~$3.00",
-          "watch_quarter": "Q reported 2026-04-15"
+          "note": "EPS · $3.43 · ~$3.00",
+          "watch_quarter": "Q reported 2026-04-15",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "CONFIRMED",
           "note": "Management was upbeat about the M&A pipeline and wealth management growth trajectory. No specific forward guidance, but the commentary suggested continued asset gathering momentum and a healthy adviso",
-          "watch_quarter": "Q reported 2026-04-15"
+          "watch_quarter": "Q reported 2026-04-15",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -2088,14 +2643,23 @@
         ],
         "what_happened_headline": "Morgan Stanley's quarter was a clinic in franchise diversification. The firm generated nearly $1B more in trading revenue than expected, with the equities desk and IB both firing. ",
         "what_happened_bullets": [
-          "EPS \u00b7 $3.43 \u00b7 ~$3.00",
-          "Revenue \u00b7 $20.6B \u00b7 ~$18B",
-          "Net Income \u00b7 $5.57B \u00b7 --"
+          "EPS · $3.43 · ~$3.00",
+          "Revenue · $20.6B · ~$18B",
+          "Net Income · $5.57B · --"
         ],
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "NFLX": {
       "ticker": "NFLX",
@@ -2111,9 +2675,18 @@
         "thesis_headline": "The headline EPS beat of $1.23 vs $0.76 was spectacular on the surface -- an 86% YoY increase. However, the quarter included a $2.8B termination fee from the Warner Bros. Discovery",
         "pattern": "",
         "pushes_higher": [
-          "Q2 revenue and margin guidance execution",
-          "Ad tier revenue ramp -- is $3B for 2026 conservative or realistic?",
-          "Content pipeline quality post-WBD deal termination"
+          {
+            "signal_id": null,
+            "text": "Q2 revenue and margin guidance execution"
+          },
+          {
+            "signal_id": null,
+            "text": "Ad tier revenue ramp -- is $3B for 2026 conservative or realistic?"
+          },
+          {
+            "signal_id": null,
+            "text": "Content pipeline quality post-WBD deal termination"
+          }
         ],
         "pushes_lower": []
       },
@@ -2127,9 +2700,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Ad tier revenue ramp -- is $3B for 2026 conservative or realistic?",
-          "Content pipeline quality post-WBD deal termination",
-          "Subscriber growth inference from revenue and ARPU trends"
+          {
+            "signal_id": null,
+            "text": "Ad tier revenue ramp -- is $3B for 2026 conservative or realistic?"
+          },
+          {
+            "signal_id": null,
+            "text": "Content pipeline quality post-WBD deal termination"
+          },
+          {
+            "signal_id": null,
+            "text": "Subscriber growth inference from revenue and ARPU trends"
+          }
         ]
       },
       "signal_scorecard": [
@@ -2137,15 +2719,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "EPS \u00b7 $1.23 \u00b7 $0.76",
-          "watch_quarter": "Q reported 2026-04-16"
+          "note": "EPS · $1.23 · $0.76",
+          "watch_quarter": "Q reported 2026-04-16",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "FAILED",
           "note": "Management maintained FY 2026 guidance: revenue $50.7-51.7B, operating margin ~31.5%. The ad business is on track for $3B in 2026. The tone was positive but not aggressive. Key concern: the absence of",
-          "watch_quarter": "Q reported 2026-04-16"
+          "watch_quarter": "Q reported 2026-04-16",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -2180,15 +2764,24 @@
         ],
         "what_happened_headline": "The headline EPS beat of $1.23 vs $0.76 was spectacular on the surface -- an 86% YoY increase. However, the quarter included a $2.8B termination fee from the Warner Bros. Discovery",
         "what_happened_bullets": [
-          "EPS \u00b7 $1.23 \u00b7 $0.76",
-          "Revenue \u00b7 $12.25B \u00b7 $12.18B",
-          "Operating Income \u00b7 ~$4.0B \u00b7 --",
-          "Operating Margin \u00b7 32.3% \u00b7 --"
+          "EPS · $1.23 · $0.76",
+          "Revenue · $12.25B · $12.18B",
+          "Operating Income · ~$4.0B · --",
+          "Operating Margin · 32.3% · --"
         ],
         "stock_reaction_pct": -9.0
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "STZ": {
       "ticker": "STZ",
@@ -2204,9 +2797,18 @@
         "thesis_headline": "The beer business remains the franchise. Modelo Especial held its position as the #1 dollar-share beer brand in the U.S., though depletions dipped just under -1% for the brand itse",
         "pattern": "",
         "pushes_higher": [
-          "Monitor Modelo Especial depletion trends in Q1 FY2027 -- any further deceleration below -1% would be a red flag",
-          "Track beer margin recovery path: does 37-38% represent a floor as Veracruz achieves scale?",
-          "Watch for any reinstatement of FY2028 guidance -- its absence creates an overhang"
+          {
+            "signal_id": null,
+            "text": "Monitor Modelo Especial depletion trends in Q1 FY2027 -- any further deceleration below -1% would be a red flag"
+          },
+          {
+            "signal_id": null,
+            "text": "Track beer margin recovery path: does 37-38% represent a floor as Veracruz achieves scale?"
+          },
+          {
+            "signal_id": null,
+            "text": "Watch for any reinstatement of FY2028 guidance -- its absence creates an overhang"
+          }
         ],
         "pushes_lower": []
       },
@@ -2220,9 +2822,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "Track beer margin recovery path: does 37-38% represent a floor as Veracruz achieves scale?",
-          "Watch for any reinstatement of FY2028 guidance -- its absence creates an overhang",
-          "Consumer health signals: track Nielsen/Circana total beer category trends for signs of broader alcohol spending softness"
+          {
+            "signal_id": null,
+            "text": "Track beer margin recovery path: does 37-38% represent a floor as Veracruz achieves scale?"
+          },
+          {
+            "signal_id": null,
+            "text": "Watch for any reinstatement of FY2028 guidance -- its absence creates an overhang"
+          },
+          {
+            "signal_id": null,
+            "text": "Consumer health signals: track Nielsen/Circana total beer category trends for signs of broader alcohol spending softness"
+          }
         ]
       },
       "signal_scorecard": [
@@ -2230,15 +2841,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "Comparable EPS \u00b7 $1.90 \u00b7 $1.73",
-          "watch_quarter": "Q reported 2026-04-08"
+          "note": "Comparable EPS · $1.90 · $1.73",
+          "watch_quarter": "Q reported 2026-04-08",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "FAILED",
           "note": "Enterprise organic net sales: -1% to +1%",
-          "watch_quarter": "Q reported 2026-04-08"
+          "watch_quarter": "Q reported 2026-04-08",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -2273,16 +2886,25 @@
         ],
         "what_happened_headline": "The beer business remains the franchise. Modelo Especial held its position as the #1 dollar-share beer brand in the U.S., though depletions dipped just under -1% for the brand itse",
         "what_happened_bullets": [
-          "Comparable EPS \u00b7 $1.90 \u00b7 $1.73",
-          "Reported EPS \u00b7 $1.16 \u00b7 --",
-          "Revenue \u00b7 $1.92B \u00b7 $1.84-1.90B",
-          "Beer Net Sales \u00b7 $1.73B \u00b7 $1.71B",
-          "Beer Depletions \u00b7 +0.6% \u00b7 Roughly flat"
+          "Comparable EPS · $1.90 · $1.73",
+          "Reported EPS · $1.16 · --",
+          "Revenue · $1.92B · $1.84-1.90B",
+          "Beer Net Sales · $1.73B · $1.71B",
+          "Beer Depletions · +0.6% · Roughly flat"
         ],
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "TSM": {
       "ticker": "TSM",
@@ -2298,9 +2920,18 @@
         "thesis_headline": "This was a definitive answer to the \"peak AI spend\" bears. High-performance computing and AI-related demand now accounts for 61% of total revenue, up from ~40% two years ago. The A",
         "pattern": "",
         "pushes_higher": [
-          "Q2 guidance execution -- can TSM sustain sequential growth above $39B?",
-          "2nm qualification timeline and initial customer allocation",
-          "Arizona fab progress and cost parity with Taiwan"
+          {
+            "signal_id": null,
+            "text": "Q2 guidance execution -- can TSM sustain sequential growth above $39B?"
+          },
+          {
+            "signal_id": null,
+            "text": "2nm qualification timeline and initial customer allocation"
+          },
+          {
+            "signal_id": null,
+            "text": "Arizona fab progress and cost parity with Taiwan"
+          }
         ],
         "pushes_lower": []
       },
@@ -2314,9 +2945,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "2nm qualification timeline and initial customer allocation",
-          "Arizona fab progress and cost parity with Taiwan",
-          "AI revenue as % of total -- tracking toward 65%+ by year-end?"
+          {
+            "signal_id": null,
+            "text": "2nm qualification timeline and initial customer allocation"
+          },
+          {
+            "signal_id": null,
+            "text": "Arizona fab progress and cost parity with Taiwan"
+          },
+          {
+            "signal_id": null,
+            "text": "AI revenue as % of total -- tracking toward 65%+ by year-end?"
+          }
         ]
       },
       "signal_scorecard": [
@@ -2324,15 +2964,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "Revenue \u00b7 NT$1.134T ($35.9B) \u00b7 NT$1.127T ($35B)",
-          "watch_quarter": "Q reported 2026-04-16"
+          "note": "Revenue · NT$1.134T ($35.9B) · NT$1.127T ($35B)",
+          "watch_quarter": "Q reported 2026-04-16",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "FAILED",
           "note": "Management guided Q2 revenue to approximately $39B (up further sequentially), maintaining the \"AI demand has no signs of slowing\" narrative. The tone was confident. Key quote: \"AI accelerator demand i",
-          "watch_quarter": "Q reported 2026-04-16"
+          "watch_quarter": "Q reported 2026-04-16",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -2367,15 +3009,24 @@
         ],
         "what_happened_headline": "This was a definitive answer to the \"peak AI spend\" bears. High-performance computing and AI-related demand now accounts for 61% of total revenue, up from ~40% two years ago. The A",
         "what_happened_bullets": [
-          "Revenue \u00b7 NT$1.134T ($35.9B) \u00b7 NT$1.127T ($35B)",
-          "Net Income \u00b7 NT$572.48B (~$17.8B) \u00b7 --",
-          "Gross Margin \u00b7 66.2% \u00b7 --",
-          "Operating Margin \u00b7 58.1% \u00b7 --"
+          "Revenue · NT$1.134T ($35.9B) · NT$1.127T ($35B)",
+          "Net Income · NT$572.48B (~$17.8B) · --",
+          "Gross Margin · 66.2% · --",
+          "Operating Margin · 58.1% · --"
         ],
         "stock_reaction_pct": null
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     },
     "WFC": {
       "ticker": "WFC",
@@ -2391,9 +3042,18 @@
         "thesis_headline": "The headline story was NII stagnation. Net interest income rose 5% YoY to $12.1B but fell short of expectations, weighed down by net interest margin compression even as loan and de",
         "pattern": "",
         "pushes_higher": [
-          "Asset cap removal timeline -- any OCC/Fed communication updates?",
-          "NII trajectory in Q2 -- will rate cuts help or hurt?",
-          "Credit quality trend as economic uncertainty rises"
+          {
+            "signal_id": null,
+            "text": "Asset cap removal timeline -- any OCC/Fed communication updates?"
+          },
+          {
+            "signal_id": null,
+            "text": "NII trajectory in Q2 -- will rate cuts help or hurt?"
+          },
+          {
+            "signal_id": null,
+            "text": "Credit quality trend as economic uncertainty rises"
+          }
         ],
         "pushes_lower": []
       },
@@ -2407,9 +3067,18 @@
         "pattern": "",
         "pushes_higher": [],
         "pushes_lower": [
-          "NII trajectory in Q2 -- will rate cuts help or hurt?",
-          "Credit quality trend as economic uncertainty rises",
-          "Buyback capacity at 10.3% CET1"
+          {
+            "signal_id": null,
+            "text": "NII trajectory in Q2 -- will rate cuts help or hurt?"
+          },
+          {
+            "signal_id": null,
+            "text": "Credit quality trend as economic uncertainty rises"
+          },
+          {
+            "signal_id": null,
+            "text": "Buyback capacity at 10.3% CET1"
+          }
         ]
       },
       "signal_scorecard": [
@@ -2417,15 +3086,17 @@
           "signal_id": "headline_results",
           "label": "Headline Results",
           "status": "CONFIRMED",
-          "note": "EPS \u00b7 $1.60 \u00b7 $1.58",
-          "watch_quarter": "Q reported 2026-04-14"
+          "note": "EPS · $1.60 · $1.58",
+          "watch_quarter": "Q reported 2026-04-14",
+          "resolved_at": null
         },
         {
           "signal_id": "guidance_trajectory",
           "label": "Guidance Trajectory",
           "status": "FAILED",
           "note": "NII guidance for FY2026 remains cautious. Management pointed to further asset cap progress, with the OCC's recent shift being a \"significant milestone.\" FY EPS consensus is $6.89 on $88.12B revenue. T",
-          "watch_quarter": "Q reported 2026-04-14"
+          "watch_quarter": "Q reported 2026-04-14",
+          "resolved_at": null
         }
       ],
       "guidance_profile": {
@@ -2460,15 +3131,29 @@
         ],
         "what_happened_headline": "The headline story was NII stagnation. Net interest income rose 5% YoY to $12.1B but fell short of expectations, weighed down by net interest margin compression even as loan and de",
         "what_happened_bullets": [
-          "EPS \u00b7 $1.60 \u00b7 $1.58",
-          "Revenue \u00b7 $21.45B \u00b7 $21.76B",
-          "Net Income \u00b7 $5.3B \u00b7 --",
-          "Credit Losses \u00b7 $1.135B \u00b7 --"
+          "EPS · $1.60 · $1.58",
+          "Revenue · $21.45B · $21.76B",
+          "Net Income · $5.3B · --",
+          "Credit Losses · $1.135B · --"
         ],
         "stock_reaction_pct": -5.0
       },
       "previous_bottom_line": null,
-      "signal_changes": []
+      "signal_changes": [],
+      "debate_score": {
+        "value": 0,
+        "conflict_ratio": 0.0,
+        "resolution_velocity": 0.0,
+        "cross_cited_signals": 0,
+        "unresolved_signals": 2,
+        "total_signals": 2,
+        "as_of": "2026-04-25T18:44:13Z"
+      }
     }
+  },
+  "debate_score_universe": {
+    "value": 28,
+    "n_tickers": 17,
+    "as_of": "2026-04-25T18:44:13Z"
   }
 }
