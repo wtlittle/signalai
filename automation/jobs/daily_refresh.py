@@ -239,6 +239,31 @@ def step_subsector_refresh():
     run_node_script("update_subsectors.mjs")
 
 
+def step_compute_debate_scores():
+    """Compute Debate Intensity (Contested Velocity) scores in earnings_intel.json.
+
+    Backfills resolved_at on signal_scorecard entries, converts pushes_higher /
+    pushes_lower to {signal_id, text} objects, and writes per-ticker +
+    universe debate_score blocks. Idempotent.
+    """
+    print("\n=== Step 6.5: Debate Scores ===")
+    intel_path = ROOT_DIR / "earnings_intel.json"
+    if not intel_path.exists():
+        print("  [WARN] earnings_intel.json not found at", intel_path)
+        return
+    try:
+        # Import lazily so the script remains a standalone tool too.
+        import sys as _sys
+        _repo_root = str(ROOT_DIR)
+        if _repo_root not in _sys.path:
+            _sys.path.insert(0, _repo_root)
+        import compute_debate_scores  # type: ignore
+        compute_debate_scores.process(str(intel_path), verbose=False)
+        print("  Debate scores updated")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARN] debate score compute failed: {exc}")
+
+
 def step_supabase_push():
     """Step 7: Push all data to Supabase."""
     print("\n=== Step 7: Supabase Push ===")
@@ -295,6 +320,10 @@ def run():
 
     # Step 6: Subsectors (no LLM)
     step_subsector_refresh()
+
+    # Step 6.5: Debate scores (derived from earnings_intel.json) — must run
+    # AFTER any step that writes earnings_intel.json and BEFORE Supabase push.
+    step_compute_debate_scores()
 
     # Step 7: Supabase (no LLM)
     step_supabase_push()

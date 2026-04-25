@@ -592,6 +592,8 @@ async function fetchEarnings() {
       const data = await resp.json();
       if (!data.error || data.recent) {
         earningsData = data;
+        window.earningsData = earningsData;
+        if (typeof updateCoverageSummaryTiles === 'function') updateCoverageSummaryTiles();
         await enrichRecentFromIntel(data.recent || []);
         renderRecentEarnings(data.recent || []);
         renderUpcomingEarnings(data.upcoming || []);
@@ -739,6 +741,8 @@ async function fetchEarnings() {
     }
 
     earningsData = { recent, upcoming };
+    window.earningsData = earningsData;
+    if (typeof updateCoverageSummaryTiles === 'function') updateCoverageSummaryTiles();
     await enrichRecentFromIntel(recent);
     renderRecentEarnings(recent);
     renderUpcomingEarnings(upcoming);

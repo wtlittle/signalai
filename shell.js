@@ -155,6 +155,10 @@
           modeSub.textContent = 'LO mode';
         }
       }
+      // Re-compute mode-sensitive tile value (Debate score in HF, TBD in LO)
+      if (typeof window.updateCoverageSummaryTiles === 'function') {
+        try { window.updateCoverageSummaryTiles(); } catch (_) {}
+      }
     }
     document.querySelectorAll('.mode-btn').forEach(btn => {
       btn.addEventListener('click', () => window.SignalMode.set(btn.dataset.mode));
@@ -310,7 +314,13 @@
     const n = (typeof window.tickerList !== 'undefined') ? window.tickerList.length : 0;
     const el = document.getElementById('stat-universe-count');
     if (el) el.textContent = n || '—';
-    // Other tiles wired in M2
+    // Median EV/Sales, avg move, earnings-7d, debate score — all derived
+    // from the same visible universe used to render the coverage table.
+    if (typeof updateCoverageSummaryTiles === 'function') {
+      try { updateCoverageSummaryTiles(); } catch (_) {}
+    } else if (typeof window.updateCoverageSummaryTiles === 'function') {
+      try { window.updateCoverageSummaryTiles(); } catch (_) {}
+    }
   }
 
   // ----- Boot ----------------------------------------------------------

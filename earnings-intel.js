@@ -21,6 +21,13 @@ async function loadEarningsIntel() {
       }
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       earningsIntelData = await resp.json();
+      window._earningsIntelData = earningsIntelData;
+      // Once intel data is in memory, refresh the coverage summary tiles
+      // so the Debate Intensity tile populates without waiting for the
+      // next universe toggle.
+      if (typeof window.updateCoverageSummaryTiles === 'function') {
+        try { window.updateCoverageSummaryTiles(); } catch (_) {}
+      }
       return earningsIntelData;
     } catch (e) {
       console.warn('Failed to load earnings_intel.json:', e);
@@ -39,6 +46,51 @@ async function getEarningsIntel(ticker) {
   const d = await loadEarningsIntel();
   return (d && d.tickers && d.tickers[ticker]) || null;
 }
+
+// ---------------------------------------------------------------------------
+// Debate Intensity — Contested Velocity Score (universe-level KPI)
+//
+// Per-ticker score = conflict_ratio * (1 - resolution_velocity)
+//   conflict_ratio       = cross_cited_signals / total_signals
+//   resolution_velocity  = resolved_with_timestamp / total_signals
+// Server pre-computes per-ticker via compute_debate_scores.py and writes it
+// onto each ticker as `debate_score.value` (0-100). The client consumes that
+// value when present; otherwise it falls back to a conflict-only client-side
+// calculation (no resolved_at means we cannot measure velocity in the browser).
+// ---------------------------------------------------------------------------
+window.SignalIntel = window.SignalIntel || {};
+window.SignalIntel.computeDebateScore = function(tickers) {
+  const data = window._earningsIntelData || earningsIntelData;
+  if (!data) return null;
+  const intel = data.tickers || {};
+  const scores = [];
+  (tickers || []).forEach(ticker => {
+    const rec = intel[ticker];
+    if (!rec) return;
+    // Prefer pre-computed server-side value
+    if (rec.debate_score && typeof rec.debate_score.value === 'number') {
+      scores.push(rec.debate_score.value / 100);
+      return;
+    }
+    // Client-side fallback: conflict_ratio only
+    const sc = rec.signal_scorecard || [];
+    if (!sc.length) return;
+    const bullIds = new Set(
+      ((rec.bull_case && rec.bull_case.pushes_higher) || [])
+        .map(p => (p && typeof p === 'object') ? p.signal_id : null)
+        .filter(Boolean)
+    );
+    const bearIds = new Set(
+      ((rec.bear_case && rec.bear_case.pushes_lower) || [])
+        .map(p => (p && typeof p === 'object') ? p.signal_id : null)
+        .filter(Boolean)
+    );
+    const cross = sc.filter(s => bullIds.has(s.signal_id) && bearIds.has(s.signal_id)).length;
+    scores.push(cross / sc.length);
+  });
+  if (!scores.length) return null;
+  return Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100);
+};
 
 /** Inflection badge classes */
 function inflectionBadge(status) {

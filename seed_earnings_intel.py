@@ -144,6 +144,7 @@ def derive_pre_earnings_record(ticker, earnings_date, md):
             'status': 'WATCHING',
             'note': bullet[:220],
             'watch_quarter': f'Q1 FY{earnings_date[:4]}',
+            'resolved_at': None,  # populated when status flips to CONFIRMED/FAILED
         })
 
     # Sources
@@ -279,22 +280,31 @@ def derive_post_earnings_record(ticker, earnings_date, md):
     neg = bool(re.search(r'(miss|fell|declined|disappointed|cut|below|weak)', (thesis_para + reaction_para).lower()))
     pos = bool(re.search(r'(beat|strong|accelerat|raised|above|confirmed|inflect)', (thesis_para + reaction_para).lower()))
 
+    # Post-earnings signals are born already-resolved (CONFIRMED/FAILED) when
+    # we can infer sentiment, so we stamp resolved_at at construction time.
+    # WATCHING entries get resolved_at=None and will be stamped if/when their
+    # status later transitions (see _stamp_signal_resolution below).
+    _resolved_now = INTEL_TIMESTAMP
     signals = []
     if story_bullets:
+        _hr_status = 'FAILED' if neg and not pos else 'CONFIRMED'
         signals.append({
             'signal_id': 'headline_results',
             'label': 'Headline Results',
-            'status': 'FAILED' if neg and not pos else 'CONFIRMED',
+            'status': _hr_status,
             'note': story_bullets[0][:220] if story_bullets else '',
             'watch_quarter': f'Q reported {earnings_date}',
+            'resolved_at': _resolved_now if _hr_status != 'WATCHING' else None,
         })
     if guide_bullets:
+        _gt_status = 'FAILED' if neg else ('CONFIRMED' if pos else 'WATCHING')
         signals.append({
             'signal_id': 'guidance_trajectory',
             'label': 'Guidance Trajectory',
-            'status': 'FAILED' if neg else ('CONFIRMED' if pos else 'WATCHING'),
+            'status': _gt_status,
             'note': guide_bullets[0][:220] if guide_bullets else '',
             'watch_quarter': f'Q reported {earnings_date}',
+            'resolved_at': _resolved_now if _gt_status != 'WATCHING' else None,
         })
 
     return {

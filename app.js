@@ -800,7 +800,42 @@ function updateCoverageSummaryTiles() {
     .filter(v => v != null);
   const avgMove = moves.length ? moves.reduce((a, b) => a + b, 0) / moves.length : null;
   const elAvgMove = document.getElementById('stat-avg-move');
-  if (elAvgMove) elAvgMove.textContent = avgMove != null ? (avgMove > 0 ? '+' : '') + avgMove.toFixed(1) + '%' : '—';
+  if (elAvgMove) {
+    elAvgMove.textContent = avgMove != null ? (avgMove > 0 ? '+' : '') + avgMove.toFixed(1) + '%' : '—';
+    elAvgMove.style.color = avgMove == null ? '' : (avgMove > 0 ? 'var(--green)' : avgMove < 0 ? 'var(--red)' : '');
+  }
+
+  // Earnings within next 7 days, restricted to visible coverage universe
+  const elEarnings7d = document.getElementById('stat-earnings-7d');
+  if (elEarnings7d) {
+    const upcoming = (typeof window.earningsData !== 'undefined' && window.earningsData)
+      ? (window.earningsData.upcoming || [])
+      : [];
+    const hasCoverage = Array.isArray(tickerList) && tickerList.length > 0;
+    const inCov = t => !hasCoverage || tickerList.indexOf(t) !== -1;
+    const count = upcoming.filter(u =>
+      inCov(u.ticker) &&
+      typeof u.days_until === 'number' &&
+      u.days_until >= 0 &&
+      u.days_until <= 7
+    ).length;
+    elEarnings7d.textContent = upcoming.length > 0 ? String(count) : '—';
+  }
+
+  // Mode-sensitive tile: HF = Debate intensity score, LO = Quality (TBD)
+  const elModeValue = document.getElementById('stat-mode-value');
+  if (elModeValue) {
+    const mode = (typeof window.SignalMode !== 'undefined') ? window.SignalMode.get() : 'hf';
+    if (mode === 'hf') {
+      const score = (window.SignalIntel && window.SignalIntel.computeDebateScore)
+        ? window.SignalIntel.computeDebateScore(tickerList)
+        : null;
+      elModeValue.textContent = score != null ? String(score) : '—';
+    } else {
+      // LO Quality score — not yet implemented
+      elModeValue.textContent = '—';
+    }
+  }
 
   // Fail loudly if the KPI dataset is empty while the rendered table has
   // valid row values — symptom of a state/normalization divergence.
@@ -813,6 +848,7 @@ function updateCoverageSummaryTiles() {
     if (tableHasEvSales) console.warn('[coverage-kpi] median EV/Sales empty but table has values — possible state divergence');
   }
 }
+try { window.updateCoverageSummaryTiles = updateCoverageSummaryTiles; } catch (_) {}
 
 // --- Refresh ---
 function updateTimestamp(snapshotDate) {
