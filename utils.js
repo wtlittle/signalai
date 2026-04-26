@@ -128,6 +128,11 @@ const SUBSECTOR_MAP = {
   'COF': 'Consumer Finance', 'SYF': 'Consumer Finance', 'UAL': 'Airlines',
   'DVN': 'E&P Oil & Gas', 'OXY': 'E&P Oil & Gas',
   'FCX': 'Copper & Mining', 'NUE': 'Steel & Metals', 'CRC': 'E&P Oil & Gas',
+  // Weekly Briefing Picks (Week 7: 2026-04-25)
+  'GPN': 'Payments', 'IQV': 'Life Sciences', 'GEHC': 'Medical Devices',
+  'CTSH': 'IT Services', 'MOS': 'Materials',
+  'CRDO': 'Semiconductors', 'KALU': 'Materials', 'VMI': 'Industrials',
+  'ONTO': 'Semiconductors', 'AVT': 'Electronics Distribution',
 };
 
 // Subsector display order
@@ -389,6 +394,9 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 6: 2026-04-18) ---
   'ADP','ACN','ZBH','DHR','PAYX',     // Value picks (HCM/IT services/medtech/life sciences near 52-week lows)
   'ALAB','FIVE','CAT','GNRC','NEM',   // Momentum picks (AI connectivity/retail/industrial/power/gold)
+  // --- Weekly Briefing Picks (Week 7: 2026-04-25) ---
+  'GPN','IQV','GEHC','CTSH','MOS',    // Value picks (payments/CRO/medical imaging/IT services/agricultural inputs)
+  'CRDO','KALU','VMI','ONTO','AVT',   // Momentum picks (AI connectivity semis/aluminum/infra industrials/semicap/electronics distribution)
 ];
 
 // --- Default private companies ---
