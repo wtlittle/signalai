@@ -258,7 +258,13 @@ async function fetchQuotesBatchClient(tickers) {
 
   // 1. Try Supabase (all quotes in one call)
   if (await checkSupabase()) {
-    const data = await supabaseGet('quotes', `select=*&ticker=in.(${tickers.map(t => encodeURIComponent(t)).join(',')})`);
+    // PostgREST in.() filter: values must be passed verbatim (commas and
+    // parens stay literal). encodeURIComponent() turns `-` into `%2D` and
+    // `.` into `%2E`, so tickers like BRK-B and AMS.MC silently matched
+    // zero rows. Quote each value with double-quotes instead, which lets
+    // PostgREST treat the contents as opaque strings and tolerates `-`,
+    // `.`, and other safe URL characters. (Bug 3)
+    const data = await supabaseGet('quotes', `select=*&ticker=in.(${tickers.map(t => '"' + t + '"').join(',')})`);
     if (data?.length) {
       data.forEach(r => { results[r.ticker] = mapQuoteRow(r); });
       // If we got all tickers, return immediately
