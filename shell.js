@@ -168,6 +168,37 @@
   }
 
   // ----- More sub-tabs (briefing / macro / news / alerts) ---------------
+  // Module-level LOADER_MAP: dispatches the appropriate data loader for
+  // each More subtab. Lazy-load flags (window._{key}Loaded) ensure each
+  // loader runs exactly once. Shared by initMoreSubtabs() (user click)
+  // and the 'more' router surface onActivate (deep-link / nav).
+  // (Bug: macro/news panes were blank because initMoreSubtabs only
+  //  toggled .active CSS, and the legacy .tab-btn click in the router
+  //  hook never fired — the legacy nav is `hidden` and its click
+  //  listeners are bound to elements that no longer drive surfaces.)
+  const MORE_LOADER_MAP = {
+    briefing: () => {
+      if (window._briefingLoaded) return;
+      window._briefingLoaded = true;
+      if (typeof loadWeeklyBriefing === 'function') loadWeeklyBriefing();
+    },
+    macro: () => {
+      if (window._macroLoaded) return;
+      window._macroLoaded = true;
+      if (typeof window.renderMacroTab === 'function') window.renderMacroTab();
+    },
+    news: () => {
+      if (window._newsLoaded) return;
+      window._newsLoaded = true;
+      if (typeof window.fetchNews === 'function') window.fetchNews();
+    },
+    alerts: () => {
+      if (window._alertsLoaded) return;
+      window._alertsLoaded = true;
+      if (typeof renderAlertsTab === 'function') renderAlertsTab();
+    },
+  };
+
   function initMoreSubtabs() {
     const panes = document.querySelectorAll('[data-more-pane]');
     document.querySelectorAll('.more-subtab').forEach(btn => {
@@ -175,6 +206,13 @@
         const target = btn.dataset.more;
         document.querySelectorAll('.more-subtab').forEach(b => b.classList.toggle('active', b === btn));
         panes.forEach(p => p.classList.toggle('active', p.dataset.morePane === target));
+        // Diagnostics (safe to remove once stable).
+        console.debug('[more] subtab ->', target);
+        console.debug('[more] renderMacroTab on window?', typeof window.renderMacroTab);
+        console.debug('[more] fetchNews on window?', typeof window.fetchNews);
+        console.debug('[more] _macroLoaded', window._macroLoaded, '_newsLoaded', window._newsLoaded);
+        // Dispatch the matching loader.
+        if (MORE_LOADER_MAP[target]) MORE_LOADER_MAP[target]();
       });
     });
   }
@@ -202,14 +240,15 @@
         if (typeof window.renderPrivateTable === 'function') window.renderPrivateTable();
       },
     });
-    // More: when activated, click the legacy tab underlying the active sub-pane
+    // More: when activated, dispatch the loader for the active sub-pane
+    // directly. Previously this synthesised a click on the legacy hidden
+    // .tab-btn, but those buttons live in a `hidden` nav and no longer
+    // drive surface state — macro and news rendered blank as a result.
     window.SignalRouter.register('more', {
       onActivate: () => {
         const active = document.querySelector('.more-subtab.active');
         const key = active ? active.dataset.more : 'briefing';
-        const map = { briefing: 'briefing', macro: 'macro', news: 'news', alerts: 'alerts' };
-        const legacyBtn = document.querySelector(`.tab-btn[data-tab="${map[key]}"]`);
-        if (legacyBtn && typeof legacyBtn.click === 'function') legacyBtn.click();
+        if (MORE_LOADER_MAP[key]) MORE_LOADER_MAP[key]();
       },
     });
     // Drilldown: ticker param -> open existing popup

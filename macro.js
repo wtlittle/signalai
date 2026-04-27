@@ -547,3 +547,9 @@ function pctCls(v) {
   if (v == null || isNaN(v) || Math.abs(v) < 0.05) return 'val-neutral';
   return v > 0 ? 'val-pos' : 'val-neg';
 }
+
+// Expose for shell.js / router dispatch (avoid relying on global hoisting
+// when this file is loaded as a deferred or async script).
+if (typeof renderMacroTab === 'function' && typeof window.renderMacroTab !== 'function') {
+  window.renderMacroTab = renderMacroTab;
+}
