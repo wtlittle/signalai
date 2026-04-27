@@ -883,8 +883,12 @@ function showDemoBanner() {
     banner.style.cssText = 'background:rgba(0,200,150,0.08);color:rgba(0,200,150,0.7);text-align:center;padding:4px 12px;font-size:11px;letter-spacing:0.5px;font-family:var(--font-mono);border-bottom:1px solid rgba(0,200,150,0.1);';
     banner.textContent = 'DEMO MODE — Showing cached market data · Run locally with Python backend for live prices';
   }
-  // Insert after the header (not before body) to avoid breaking sticky offsets
-  const header = document.querySelector('.app-header');
+  // Insert after the header (not before body) to avoid breaking sticky offsets.
+  // The header element uses class `global-topbar` (not `app-header` — that
+  // class never existed in this DOM). Querying the wrong class made every
+  // call fall through to body.prepend(), inserting the banner above the
+  // sticky topbar and corrupting the --table-top-offset CSS variable. (Bug 2)
+  const header = document.querySelector('.global-topbar');
   if (header && header.nextSibling) {
     header.parentNode.insertBefore(banner, header.nextSibling);
   } else {
@@ -934,6 +938,15 @@ async function loadAllData() {
     tickerData = results;
     renderTable();
     updateTotalMcap();
+
+    // (Bug 7) Explicitly recompute summary tiles after tickerData is
+    // populated. updateTotalMcap() already calls this, but the explicit
+    // call here documents the contract: KPIs are computed exactly once
+    // per data load, AFTER tickerData is fully populated. shell.js no
+    // longer races us at boot.
+    if (typeof window.updateCoverageSummaryTiles === 'function') {
+      try { window.updateCoverageSummaryTiles(); } catch (_) {}
+    }
 
     // Detect data source and update UI accordingly
     const dsInfo = typeof getDataSourceInfo === 'function' ? getDataSourceInfo() : { source: 'none' };
@@ -1420,8 +1433,10 @@ async function fetchNews() {
     tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
     tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === 'tab-' + tabId));
     Storage.set(TAB_KEY, tabId);
-    // Update hash without scroll
-    history.replaceState(null, '', '#' + tabId);
+    // Hash is owned by SignalRouter (router.js); legacy tab state is
+    // persisted to localStorage only. We deliberately do NOT mutate
+    // location.hash here — that would race with the router and clobber
+    // whichever surface it just activated. (Bug 1)
     // Lazy-load data for the tab
     if (tabId === 'research' && !window._earningsLoaded) {
       window._earningsLoaded = true;
@@ -1459,22 +1474,22 @@ async function fetchNews() {
     btn.addEventListener('click', () => activateTab(btn.dataset.tab));
   });
 
-  // Determine initial tab: hash > saved preference > default
+  // Determine initial tab: saved preference > default. The router
+  // (router.js) owns the URL hash, so we no longer read it here. (Bug 1)
   let initial = 'watchlist';
-  const hash = location.hash.replace('#', '');
-  if (validTabs.includes(hash)) {
-    initial = hash;
-  } else {
-    const saved = Storage.get(TAB_KEY);
-    if (validTabs.includes(saved)) initial = saved;
-  }
-  activateTab(initial);
+  const saved = Storage.get(TAB_KEY);
+  if (validTabs.includes(saved)) initial = saved;
 
-  // Listen for hash changes (e.g. from email deep links)
-  window.addEventListener('hashchange', () => {
-    const h = location.hash.replace('#', '');
-    if (validTabs.includes(h)) activateTab(h);
-  });
+  // Defer initial activation to the next macrotask so shell.js /
+  // SignalRouter.start() runs first in the current synchronous tick.
+  // Without this defer, the tab system fires before the router has
+  // shown the default surface, causing a brief flash of all-blank
+  // content on slow loads. (Bug 4)
+  setTimeout(() => activateTab(initial), 0);
+
+  // Hashchange handling moved entirely to SignalRouter. We deliberately
+  // do NOT add a hashchange listener here — two listeners that both
+  // mutate visible state on the same event is the bug we just fixed. (Bug 1)
 
   // Make activateTab globally accessible
   window.activateTab = activateTab;

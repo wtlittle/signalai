@@ -188,12 +188,18 @@
         updateSummaryStripCounts();
       },
     });
-    // Earnings: trigger legacy earnings load if not yet done
+    // Earnings: trigger legacy earnings load if not yet done. (Bug 1.3)
+    // Previously this synthetically clicked the legacy `.tab-btn[data-tab=research]`,
+    // which (pre-Bug-1) would also write `#research` to location.hash and
+    // re-enter the router. Now we call the lazy-loaders directly so the
+    // hash stays clean and the router stays in charge of it.
     window.SignalRouter.register('earnings', {
       onActivate: () => {
-        // Simulate clicking legacy 'research' tab so earnings.js loads.
-        const legacyBtn = document.querySelector('.tab-btn[data-tab="research"]');
-        if (legacyBtn && typeof legacyBtn.click === 'function') legacyBtn.click();
+        if (!window._earningsLoaded) {
+          window._earningsLoaded = true;
+          if (typeof window.fetchEarnings === 'function') window.fetchEarnings();
+          if (typeof window.renderEarningsCalendar === 'function') window.renderEarningsCalendar();
+        }
       },
     });
     // Private Markets: trigger any lazy loaders
@@ -202,14 +208,54 @@
         if (typeof window.renderPrivateTable === 'function') window.renderPrivateTable();
       },
     });
-    // More: when activated, click the legacy tab underlying the active sub-pane
+    // More: invoke each sub-pane's lazy-loader directly. (Bug 1.3)
+    // We no longer click the legacy hidden tab buttons — those used to
+    // re-write location.hash and race with the router.
     window.SignalRouter.register('more', {
       onActivate: () => {
         const active = document.querySelector('.more-subtab.active');
         const key = active ? active.dataset.more : 'briefing';
-        const map = { briefing: 'briefing', macro: 'macro', news: 'news', alerts: 'alerts' };
-        const legacyBtn = document.querySelector(`.tab-btn[data-tab="${map[key]}"]`);
-        if (legacyBtn && typeof legacyBtn.click === 'function') legacyBtn.click();
+        if (key === 'briefing' && !window._briefingLoaded) {
+          window._briefingLoaded = true;
+          if (typeof window.loadWeeklyBriefing === 'function') window.loadWeeklyBriefing();
+        } else if (key === 'macro' && !window._macroLoaded) {
+          window._macroLoaded = true;
+          if (typeof window.renderMacroTab === 'function') window.renderMacroTab();
+        } else if (key === 'news' && !window._newsLoaded) {
+          window._newsLoaded = true;
+          if (typeof window.fetchNews === 'function') window.fetchNews();
+        } else if (key === 'alerts' && !window._alertsLoaded) {
+          window._alertsLoaded = true;
+          if (typeof window.renderAlertsTab === 'function') window.renderAlertsTab();
+        }
+      },
+    });
+
+    // Screener: relocate the screener controls into the dedicated surface. (Bug 6)
+    window.SignalRouter.register('screener', {
+      onActivate: () => {
+        const el = document.querySelector('[data-surface="screener"]');
+        if (typeof window.ScreenerModule !== 'undefined' &&
+            typeof window.ScreenerModule.init === 'function') {
+          window.ScreenerModule.init(el);
+        }
+      },
+      onDeactivate: () => {
+        if (typeof window.ScreenerModule !== 'undefined' &&
+            typeof window.ScreenerModule.deactivate === 'function') {
+          window.ScreenerModule.deactivate();
+        }
+      },
+    });
+
+    // Compare: render the compare entry/empty-state into the surface. (Bug 6)
+    window.SignalRouter.register('compare', {
+      onActivate: (params) => {
+        const el = document.querySelector('[data-surface="compare"]');
+        if (typeof window.SignalCompare !== 'undefined' &&
+            typeof window.SignalCompare.init === 'function') {
+          window.SignalCompare.init(el, params);
+        }
       },
     });
     // Drilldown: ticker param -> open existing popup
@@ -325,14 +371,24 @@
 
   // ----- Boot ----------------------------------------------------------
   function boot() {
+    // (Bug 4) Register surfaces and start the router FIRST so the default
+    // surface is visible before any subsequent shell init runs. The legacy
+    // tab system in app.js also defers its initial activate via
+    // setTimeout(0), giving the router exclusive ownership of the first
+    // paint and eliminating the flash-of-blank-content on slow loads.
+    registerSurfaces();
+    window.SignalRouter.start();
+
     initUniverseSelector();
     initNav();
     initModeToggle();
     initMoreSubtabs();
     initPrivateInputDropdown();
-    registerSurfaces();
-    window.SignalRouter.start();
-    updateSummaryStripCounts();
+
+    // (Bug 7) Do NOT call updateSummaryStripCounts() here at boot. At this
+    // moment tickerData is still {} — every KPI computes to null and
+    // renders "—" with a spurious console warning. The summary tiles are
+    // now updated exactly once per data load via app.js loadAllData().
 
     // Re-run summary counts after any watchlist mutation. The cleanest hook
     // is to wrap saveTickers (called by every add/remove/import path in

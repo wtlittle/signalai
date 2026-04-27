@@ -2,8 +2,19 @@
 /* Strategy: Supabase (primary) → CORS proxy (live prices) → cached snapshot (fallback) */
 
 // --- Supabase configuration ---
+// SUPABASE_KEY is a placeholder at rest. The deploy workflow
+// (.github/workflows/deploy.yml) substitutes %%SUPABASE_ANON_KEY%% with
+// the value of the GitHub `SUPABASE_ANON_KEY` secret on every push to
+// main, then publishes to gh-pages. The deploy step fails loud if the
+// placeholder is still present after substitution.
+//
+// Local dev: either run
+//   sed -i "s|%%SUPABASE_ANON_KEY%%|<your_anon_key>|g" api-client.js
+// before serving (and `git checkout api-client.js` before committing),
+// or copy api-client.js to api-client.local.js (gitignored) and edit
+// there. See README.md "Local Dev: Supabase anon key" for details. (Bug 5)
 const SUPABASE_URL = 'https://wcyirdvvuetzodiedzss.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_VOT04H1B4O7dVBqxTOk5rw_lyYBR9SW';
+const SUPABASE_KEY = '%%SUPABASE_ANON_KEY%%';
 
 async function supabaseGet(table, params = '', maxRows = 1000) {
   try {
@@ -258,7 +269,13 @@ async function fetchQuotesBatchClient(tickers) {
 
   // 1. Try Supabase (all quotes in one call)
   if (await checkSupabase()) {
-    const data = await supabaseGet('quotes', `select=*&ticker=in.(${tickers.map(t => encodeURIComponent(t)).join(',')})`);
+    // PostgREST in.() filter: values must be passed verbatim (commas and
+    // parens stay literal). encodeURIComponent() turns `-` into `%2D` and
+    // `.` into `%2E`, so tickers like BRK-B and AMS.MC silently matched
+    // zero rows. Quote each value with double-quotes instead, which lets
+    // PostgREST treat the contents as opaque strings and tolerates `-`,
+    // `.`, and other safe URL characters. (Bug 3)
+    const data = await supabaseGet('quotes', `select=*&ticker=in.(${tickers.map(t => '"' + t + '"').join(',')})`);
     if (data?.length) {
       data.forEach(r => { results[r.ticker] = mapQuoteRow(r); });
       // If we got all tickers, return immediately
