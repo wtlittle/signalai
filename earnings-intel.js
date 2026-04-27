@@ -92,6 +92,24 @@ window.SignalIntel.computeDebateScore = function(tickers) {
   return Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100);
 };
 
+/**
+ * Normalize a Bull/Base/Bear case bullet to a plain text string.
+ * earnings_intel.json bullets may be either:
+ *   - a plain string: "MCR ≤ 88.3% in Q1"
+ *   - an object: { signal_id: "...", text: "MCR ≤ 88.3% in Q1" }
+ * The renderer was previously template-coercing the object form to
+ * "[object Object]". Both shapes flow through this helper now.
+ */
+function bulletText(b) {
+  if (b == null) return '';
+  if (typeof b === 'string') return b;
+  if (typeof b === 'object') {
+    if (typeof b.text === 'string') return b.text;
+    if (typeof b.label === 'string') return b.label;
+  }
+  return String(b);
+}
+
 /** Inflection badge classes */
 function inflectionBadge(status) {
   const map = {
@@ -288,16 +306,49 @@ function renderEarningsIntelHtml(ticker, intel) {
           <div class="ei-case-title">${c.label}</div>
           ${headline ? `<div class="ei-case-headline">${headline}</div>` : ''}
           ${d.pattern ? `<div class="ei-case-pattern">${d.pattern}</div>` : ''}
-          ${Array.isArray(d.pushes_higher) && d.pushes_higher.length ? `
+          ${Array.isArray(d.pushes_higher) && d.pushes_higher.length ? (() => {
+            // Normalize each bullet (string or {text, signal_id}) and de-dupe
+            // by normalized text so the same idea can't appear twice.
+            const seen = new Set();
+            const items = d.pushes_higher.map(bulletText).filter(t => {
+              if (!t) return false;
+              const key = t.trim().toLowerCase();
+              if (seen.has(key)) return false;
+              seen.add(key);
+              return true;
+            });
+            return items.length ? `
             <div class="ei-push-block">
               <div class="ei-push-label ei-push-higher">Pushes higher</div>
-              <ul class="ei-bullets">${d.pushes_higher.map(b => `<li>${b}</li>`).join('')}</ul>
-            </div>` : ''}
-          ${Array.isArray(d.pushes_lower) && d.pushes_lower.length ? `
+              <ul class="ei-bullets">${items.map(t => `<li>${t}</li>`).join('')}</ul>
+            </div>` : '';
+          })() : ''}
+          ${Array.isArray(d.pushes_lower) && d.pushes_lower.length ? (() => {
+            // Same normalize + de-dupe; additionally drop any bullet that is
+            // already shown under "Pushes higher" for THIS case (the Base
+            // Case in particular had the same paragraph appearing in both
+            // directions). Higher wins on conflict.
+            const higherSet = new Set(
+              (Array.isArray(d.pushes_higher) ? d.pushes_higher : [])
+                .map(bulletText)
+                .filter(Boolean)
+                .map(t => t.trim().toLowerCase())
+            );
+            const seen = new Set();
+            const items = d.pushes_lower.map(bulletText).filter(t => {
+              if (!t) return false;
+              const key = t.trim().toLowerCase();
+              if (higherSet.has(key)) return false;
+              if (seen.has(key)) return false;
+              seen.add(key);
+              return true;
+            });
+            return items.length ? `
             <div class="ei-push-block">
               <div class="ei-push-label ei-push-lower">Pushes lower</div>
-              <ul class="ei-bullets">${d.pushes_lower.map(b => `<li>${b}</li>`).join('')}</ul>
-            </div>` : ''}
+              <ul class="ei-bullets">${items.map(t => `<li>${t}</li>`).join('')}</ul>
+            </div>` : '';
+          })() : ''}
         </div>`;
     });
     html += `</section>`;

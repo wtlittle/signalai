@@ -103,6 +103,21 @@ async function openPopup(ticker, options) {
     }
 
     const data = parseTickerData(ticker, chart, quote);
+
+    // Source-of-truth alignment: the Coverage table renders from the global
+    // `tickerData` map (snapshot/Supabase). The popup header was previously
+    // showing a different price/1d-change because `parseTickerData` derives
+    // them from chart meta + backend /summary, which can lag the snapshot.
+    // The user's mental model is "the row I clicked" — so the row's price
+    // wins for the header. Other popup fields (analyst targets, 52w range,
+    // history) continue to come from backend/snapshot as before.
+    if (typeof tickerData !== 'undefined' && tickerData[ticker]) {
+      const td = tickerData[ticker];
+      if (td.price != null) data.price = td.price;
+      if (td.d1 != null) data.d1 = td.d1;
+      if (!data.name && td.name) data.name = td.name;
+    }
+
     // Add calendar and earnings data
     data.calendarEvents = calendarData;
     data.earningsHistory = earningsHistoryData;

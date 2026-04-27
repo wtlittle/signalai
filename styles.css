@@ -6436,3 +6436,12 @@ mark.search-highlight {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* "n/a" placeholder used in cells where a metric is not meaningful for the
+ * row's subsector (e.g. Enterprise Value for banks). Subdued styling so it
+ * reads as "intentionally blank" rather than "missing data". */
+.cell-na {
+  color: var(--text-muted, #888);
+  font-style: italic;
+  opacity: 0.75;
+}

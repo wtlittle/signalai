@@ -225,6 +225,19 @@ async function fetchQuoteDataClient(ticker) {
 
 // Map Supabase snake_case quote row to camelCase for app compatibility
 function mapQuoteRow(r) {
+  // Belt-and-suspenders currency-mismatch guard: when listing currency
+  // differs from financial-statement currency (ADRs like TSM), null out
+  // EV-related fields rather than mix scales. See utils.js for the list.
+  const mismatch = (typeof isCurrencyMismatchTicker === 'function')
+    && isCurrencyMismatchTicker(r.ticker);
+  const ev          = mismatch ? null : r.enterprise_value;
+  const totalRev    = mismatch ? null : r.total_revenue;
+  const totalCash   = mismatch ? null : r.total_cash;
+  const totalDebt   = mismatch ? null : r.total_debt;
+  const fcf         = mismatch ? null : r.free_cashflow;
+  const opCf        = mismatch ? null : r.operating_cashflow;
+  const evToRev     = mismatch ? null : r.enterprise_to_revenue;
+  const evToEbitda  = mismatch ? null : r.enterprise_to_ebitda;
   return {
     ticker: r.ticker, longName: r.long_name, price: r.price,
     previousClose: r.previous_close,
@@ -233,10 +246,10 @@ function mapQuoteRow(r) {
     change1d: r.change_1d, change1w: r.change_1w, change1m: r.change_1m,
     change3m: r.change_3m, change1y: r.change_1y, change3y: r.change_3y,
     changeYtd: r.change_ytd,
-    marketCap: r.market_cap, enterpriseValue: r.enterprise_value,
-    totalRevenue: r.total_revenue, totalCash: r.total_cash,
-    totalDebt: r.total_debt, freeCashflow: r.free_cashflow,
-    operatingCashflow: r.operating_cashflow,
+    marketCap: r.market_cap, enterpriseValue: ev,
+    totalRevenue: totalRev, totalCash: totalCash,
+    totalDebt: totalDebt, freeCashflow: fcf,
+    operatingCashflow: opCf,
     targetMeanPrice: r.target_mean_price, targetHighPrice: r.target_high_price,
     targetLowPrice: r.target_low_price, recommendationKey: r.recommendation_key,
     numberOfAnalystOpinions: r.number_of_analyst_opinions,
@@ -245,7 +258,7 @@ function mapQuoteRow(r) {
     sharesOutstanding: r.shares_outstanding,
     revenueGrowth: r.revenue_growth, earningsGrowth: r.earnings_growth,
     forwardEps: r.forward_eps, trailingEps: r.trailing_eps,
-    enterpriseToRevenue: r.enterprise_to_revenue, enterpriseToEbitda: r.enterprise_to_ebitda,
+    enterpriseToRevenue: evToRev, enterpriseToEbitda: evToEbitda,
     operatingMargins: r.operating_margins,
     sector: r.sector, industry: r.industry,
     city: r.city, state: r.state, country: r.country,
