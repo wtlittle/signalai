@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+# Builds a static copy of the repo with the Supabase anon key substituted
+# from a repo secret, and publishes it to the `gh-pages` branch. This keeps
+# `main` free of any live keys while still letting GitHub Pages serve the
+# app with a working Supabase connection.
+#
+# Required repo secret: SUPABASE_ANON_KEY (Supabase publishable/anon key).
+# Pages settings: Settings → Pages → Source = "Deploy from a branch",
+# Branch = `gh-pages` / root.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject Supabase anon key
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::SUPABASE_ANON_KEY secret is not set"
+            exit 1
+          fi
+          # Use a non-`/` delimiter so keys containing `/` don't break sed.
+          sed -i "s|%%SUPABASE_ANON_KEY%%|${SUPABASE_ANON_KEY}|g" api-client.js
+          # Sanity check: no placeholder should remain in the deployed bundle.
+          if grep -q "%%SUPABASE_ANON_KEY%%" api-client.js; then
+            echo "::error::Placeholder still present after substitution"
+            exit 1
+          fi
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .
+          # Exclude developer-only files from the published bundle.
+          exclude_assets: |
+            .github
+            automation
+            scripts
+            tests
+            **/*.py
+            **/*.mjs
+            populate_supabase.mjs

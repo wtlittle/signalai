@@ -2,8 +2,19 @@
 /* Strategy: Supabase (primary) → CORS proxy (live prices) → cached snapshot (fallback) */
 
 // --- Supabase configuration ---
+// SUPABASE_KEY is a placeholder at rest. The deploy workflow
+// (.github/workflows/deploy.yml) substitutes %%SUPABASE_ANON_KEY%% with
+// the value of the GitHub `SUPABASE_ANON_KEY` secret on every push to
+// main, then publishes to gh-pages. The deploy step fails loud if the
+// placeholder is still present after substitution.
+//
+// Local dev: either run
+//   sed -i "s|%%SUPABASE_ANON_KEY%%|<your_anon_key>|g" api-client.js
+// before serving (and `git checkout api-client.js` before committing),
+// or copy api-client.js to api-client.local.js (gitignored) and edit
+// there. See README.md "Local Dev: Supabase anon key" for details. (Bug 5)
 const SUPABASE_URL = 'https://wcyirdvvuetzodiedzss.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_VOT04H1B4O7dVBqxTOk5rw_lyYBR9SW';
+const SUPABASE_KEY = '%%SUPABASE_ANON_KEY%%';
 
 async function supabaseGet(table, params = '', maxRows = 1000) {
   try {

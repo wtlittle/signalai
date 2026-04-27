@@ -5,3 +5,9 @@ node_modules/
 *.log
 .env
 data/cache/
+
+# Local-dev copy of api-client.js with a real Supabase anon key substituted in.
+# The tracked api-client.js holds the %%SUPABASE_ANON_KEY%% placeholder; the
+# deploy workflow substitutes it on gh-pages. Local devs can copy it to
+# api-client.local.js and inject their own key without risking a commit.
+api-client.local.js

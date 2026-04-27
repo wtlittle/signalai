@@ -61,6 +61,28 @@ Then open [http://localhost:5000](http://localhost:5000).
 
 > **Note:** The static version provides core functionality (prices, charts, performance). Advanced features like quantitative factor analysis, short interest data, cross-sector comps, and news require the Python backend.
 
+#### Local Dev: Supabase anon key
+
+The tracked `api-client.js` ships with the placeholder `%%SUPABASE_ANON_KEY%%`
+instead of a live Supabase anon key. The GitHub Actions deploy workflow
+(`.github/workflows/deploy.yml`) substitutes it with the `SUPABASE_ANON_KEY`
+repo secret before publishing to the `gh-pages` branch.
+
+For local dev with Supabase, either:
+
+1. **Substitute the placeholder in place** (preferred for one-off local runs).
+   Do not commit the result — the snapshot fallback works without it for
+   most flows.
+   ```bash
+   sed -i "s|%%SUPABASE_ANON_KEY%%|<your-anon-key>|g" api-client.js
+   ```
+2. **Copy to `api-client.local.js`** (gitignored) and load it from a local
+   `index.local.html`. The `.gitignore` already excludes that filename so
+   you can't accidentally commit it.
+
+The deploy workflow will fail loudly if the placeholder is still present
+after substitution, so a misconfigured secret can never reach Pages.
+
 ### Option 3: Full Setup (with backend)
 
 The Python backend provides richer data, faster batch fetching, and advanced analytics.
