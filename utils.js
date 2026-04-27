@@ -730,6 +730,31 @@ function getSubsector(ticker) {
   return SUBSECTOR_MAP[ticker] || 'Other';
 }
 
+// Subsectors where Enterprise Value, EV/Sales, and EV/FCF are not meaningful
+// metrics. Banks fund themselves with deposits and short-term borrowings, so
+// the cash + debt math that produces EV doesn't carry the same meaning as for
+// non-financial corporates. We render "n/a" in these cells (with a tooltip)
+// rather than showing a misleading number, and exclude them from the
+// median FY1 EV/Sales KPI tile.
+const EV_NON_MEANINGFUL_SUBSECTORS = new Set([
+  'Diversified Banking',
+  'Investment Banking',
+  'Regional Banking',
+  'Banking',
+  'Banks - Diversified',
+  'Banks - Regional',
+]);
+
+function isEvNonMeaningfulSubsector(subsector) {
+  if (!subsector) return false;
+  return EV_NON_MEANINGFUL_SUBSECTORS.has(subsector);
+}
+
+function isEvNonMeaningfulTicker(ticker) {
+  return isEvNonMeaningfulSubsector(getSubsector(ticker));
+}
+
+
 function setSubsectorOverride(ticker, subsector) {
   // Guard: never store undefined/null/empty subsector
   if (!subsector || subsector === 'undefined' || subsector === 'null') return;

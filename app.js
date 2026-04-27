@@ -183,6 +183,12 @@ function renderTable() {
         return;
       }
       const d = tickerData[ticker] || { ticker };
+      // EV / EV/Sales / EV/FCF are non-meaningful for bank subsectors. We
+      // render "n/a" with a tooltip there instead of a misleading number.
+      const _rowSubsector = d.subsector || getSubsector(ticker);
+      const _evNotMeaningful = (typeof isEvNonMeaningfulSubsector === 'function')
+        ? isEvNonMeaningfulSubsector(_rowSubsector)
+        : false;
       const tr = document.createElement('tr');
       if (isCollapsed) tr.className = 'row-hidden';
 
@@ -201,9 +207,9 @@ function renderTable() {
         <td><span class="subsector-badge" data-ticker="${ticker}">${d.subsector || getSubsector(ticker)}</span></td>
         <td class="num pin-col pin-col-3">${formatPrice(d.price)}</td>
         <td class="num">${formatLargeNumber(d.marketCap)}</td>
-        <td class="num">${formatLargeNumber(d.ev)}</td>
-        <td class="num">${formatMultiple(d.evSales)}</td>
-        <td class="num">${formatMultiple(d.evFcf)}</td>
+        <td class="num" ${_evNotMeaningful ? 'title="EV is not a meaningful metric for banks (deposit-funded balance sheet)."' : ''}>${_evNotMeaningful ? '<span class="cell-na">n/a</span>' : formatLargeNumber(d.ev)}</td>
+        <td class="num" ${_evNotMeaningful ? 'title="EV/Sales is not a meaningful metric for banks."' : ''}>${_evNotMeaningful ? '<span class="cell-na">n/a</span>' : formatMultiple(d.evSales)}</td>
+        <td class="num" ${_evNotMeaningful ? 'title="EV/FCF is not a meaningful metric for banks."' : ''}>${_evNotMeaningful ? '<span class="cell-na">n/a</span>' : formatMultiple(d.evFcf)}</td>
         <td class="num heat-cell ${percentClass(d.ytd)}" ${heatStyle(d.ytd)}>${formatPercent(d.ytd)}</td>
         <td class="num heat-cell ${percentClass(d.d1)}" ${heatStyle(d.d1)}>${formatPercent(d.d1)}</td>
         <td class="num heat-cell ${percentClass(d.w1)}" ${heatStyle(d.w1)}>${formatPercent(d.w1)}</td>
@@ -773,8 +779,13 @@ function updateTotalMcap() {
 // the same visible universe used to render the coverage table, so they stay
 // in sync with filters and the current universe selection.
 function updateCoverageSummaryTiles() {
-  // Median FY1 EV/Sales
+  // Median FY1 EV/Sales — exclude bank subsectors (EV not meaningful for them)
+  // so the universe-level metric stays apples-to-apples.
+  const _evMeaningfulTicker = (typeof isEvNonMeaningfulTicker === 'function')
+    ? (t => !isEvNonMeaningfulTicker(t))
+    : (() => true);
   const evSalesVals = tickerList
+    .filter(_evMeaningfulTicker)
     .map(t => {
       const raw = tickerData[t] && tickerData[t].evSales;
       const v = typeof raw === 'string' ? parseFloat(raw) : raw;
