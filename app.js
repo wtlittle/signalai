@@ -1407,6 +1407,13 @@ async function fetchNews() {
   }
 }
 
+// Expose for shell.js / router dispatch (the More surface dispatches the
+// news loader directly via window.fetchNews; legacy hidden .tab-btn click
+// no longer drives this).
+if (typeof fetchNews === 'function' && typeof window.fetchNews !== 'function') {
+  window.fetchNews = fetchNews;
+}
+
 // --- Tab Navigation ---
 (function initTabs() {
   const TAB_KEY = 'active_tab';
