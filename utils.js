@@ -754,6 +754,21 @@ function isEvNonMeaningfulTicker(ticker) {
   return isEvNonMeaningfulSubsector(getSubsector(ticker));
 }
 
+// Tickers whose listing currency differs from financial-statement currency
+// (typical of ADRs and dual-listings). Yahoo Finance returns enterpriseValue,
+// totalRevenue, totalCash, totalDebt and free/operating cashflow in the
+// REPORTING currency, while marketCap and price are in the LISTING currency.
+// That mismatch makes EV-based ratios unusable (e.g. TSM EV showed $7.6T
+// because TWD figures were paired with a USD listing). Until the daily
+// refresh propagates a fix at source, we null these fields client-side so
+// the table renders "n/a" instead of a misleading number.
+const CURRENCY_MISMATCH_TICKERS = new Set([
+  'TSM',  // TWD financials, USD ADR
+]);
+
+function isCurrencyMismatchTicker(ticker) {
+  return CURRENCY_MISMATCH_TICKERS.has(ticker);
+}
 
 function setSubsectorOverride(ticker, subsector) {
   // Guard: never store undefined/null/empty subsector

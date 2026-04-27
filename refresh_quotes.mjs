@@ -95,14 +95,30 @@ async function fetchFundamentals(ticker, creds) {
     const pr = result.price || {};
     const ap = result.assetProfile || {};
 
+    // Currency unit guard for ADRs / foreign-listed tickers.
+    // Yahoo reports `marketCap` in the LISTING currency (e.g. USD for TSM
+    // ADR), but `totalDebt` / `totalCash` / `enterpriseValue` in the
+    // company's `financialCurrency` (TWD for TSM). Mixing produces a
+    // nonsense EV (TSM showed MC $2.0T but EV $7.6T because Yahoo's EV
+    // is in TWD). When the two currencies disagree we drop the unit-
+    // mismatched fields rather than ship a misleading number.
+    const listingCurrency = pr.currency || null;
+    const financialCurrency = fd.financialCurrency || null;
+    const currencyMismatch = !!(listingCurrency && financialCurrency && listingCurrency !== financialCurrency);
+    if (currencyMismatch) {
+      console.warn(`  ${ticker}: currency mismatch listing=${listingCurrency} financial=${financialCurrency} — EV/debt/cash nulled`);
+    }
+
     return {
       market_cap: pr.marketCap?.raw || null,
-      enterprise_value: ks.enterpriseValue?.raw || null,
-      total_revenue: fd.totalRevenue?.raw || null,
-      total_cash: fd.totalCash?.raw || null,
-      total_debt: fd.totalDebt?.raw || null,
-      free_cashflow: fd.freeCashflow?.raw || null,
-      operating_cashflow: fd.operatingCashflow?.raw || null,
+      enterprise_value: currencyMismatch ? null : (ks.enterpriseValue?.raw || null),
+      total_revenue: currencyMismatch ? null : (fd.totalRevenue?.raw || null),
+      total_cash: currencyMismatch ? null : (fd.totalCash?.raw || null),
+      total_debt: currencyMismatch ? null : (fd.totalDebt?.raw || null),
+      free_cashflow: currencyMismatch ? null : (fd.freeCashflow?.raw || null),
+      operating_cashflow: currencyMismatch ? null : (fd.operatingCashflow?.raw || null),
+      financial_currency: financialCurrency,
+      listing_currency: listingCurrency,
       target_mean_price: fd.targetMeanPrice?.raw || null,
       target_high_price: fd.targetHighPrice?.raw || null,
       target_low_price: fd.targetLowPrice?.raw || null,
@@ -118,8 +134,8 @@ async function fetchFundamentals(ticker, creds) {
       earnings_growth: fd.earningsGrowth?.raw ? fd.earningsGrowth.raw * 100 : null,
       forward_eps: fd.forwardEps?.raw || ks.forwardEps?.raw || null,
       trailing_eps: pr.trailingEps?.raw || ks.trailingEps?.raw || null,
-      enterprise_to_revenue: ks.enterpriseToRevenue?.raw || null,
-      enterprise_to_ebitda: ks.enterpriseToEbitda?.raw || null,
+      enterprise_to_revenue: currencyMismatch ? null : (ks.enterpriseToRevenue?.raw || null),
+      enterprise_to_ebitda: currencyMismatch ? null : (ks.enterpriseToEbitda?.raw || null),
       operating_margins: fd.operatingMargins?.raw ? fd.operatingMargins.raw * 100 : null,
       sector: ap.sector || pr.sector || null,
       industry: ap.industry || pr.industry || null,

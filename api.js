@@ -146,9 +146,13 @@ function parseTickerData(ticker, chart, quote) {
     row.headquarters = COMPANY_HQ[ticker];
   }
 
-  // EV
-  row.ev = row.enterpriseValue;
-  if (!row.ev && row.marketCap) {
+  // EV — for currency-mismatch ADRs (e.g. TSM with TWD financials), the
+  // marketCap+debt-cash fallback would mix scales, so we leave EV null and
+  // let the cell render "—" / "n/a".
+  const _currencyMismatch = (typeof isCurrencyMismatchTicker === 'function')
+    && isCurrencyMismatchTicker(ticker);
+  row.ev = _currencyMismatch ? null : row.enterpriseValue;
+  if (!_currencyMismatch && !row.ev && row.marketCap) {
     row.ev = row.marketCap + (row.totalDebt || 0) - (row.totalCash || 0);
   }
 
