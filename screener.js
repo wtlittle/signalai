@@ -29,9 +29,20 @@
     { key: 'price', label: 'Price', type: 'range', format: 'money' },
   ];
 
-  // Inject the screener toolbar into the public section header
+  // Inject the screener toolbar. Historically this anchored to
+  // `.public-section .section-header-bar`, but in the current SPA layout
+  // that selector no longer exists — the screener now lives on a
+  // dedicated [data-surface="screener"] surface. To keep this IIFE's
+  // logic untouched, we always build the bar into a hidden stash node
+  // and let `window.ScreenerModule.init(containerEl)` relocate it.
   const sectionHeader = document.querySelector('.public-section .section-header-bar');
-  if (!sectionHeader) return;
+  let screenerStash = null;
+  if (!sectionHeader) {
+    screenerStash = document.createElement('div');
+    screenerStash.id = 'screener-stash';
+    screenerStash.style.display = 'none';
+    document.body.appendChild(screenerStash);
+  }
 
   // Create screener bar
   const screenerBar = document.createElement('div');
@@ -57,8 +68,12 @@
     </div>
   `;
 
-  // Insert after section header
-  sectionHeader.parentNode.insertBefore(screenerBar, sectionHeader.nextSibling);
+  // Insert after section header, or into hidden stash for relocation by ScreenerModule.
+  if (sectionHeader) {
+    sectionHeader.parentNode.insertBefore(screenerBar, sectionHeader.nextSibling);
+  } else {
+    screenerStash.appendChild(screenerBar);
+  }
 
   // Populate column select
   const colSelect = document.getElementById('screener-col-select');
@@ -1272,4 +1287,70 @@
 
   // Initial render on delay
   setTimeout(renderViz, 3000);
+})();
+
+/* ===== ScreenerModule public API (Bug 6) =====
+ * The existing screener IIFEs (above) attach their UI to the Coverage
+ * surface's section header, so the dedicated #/screener surface used to
+ * show only the placeholder stub. This wrapper exposes a small surface
+ * the router can call to relocate the screener controls into the
+ * Screener surface container on activation, and put them back when the
+ * user navigates away. No changes to the screener business logic.
+ */
+(function () {
+  'use strict';
+
+  // Track the original parent so we can restore on deactivate.
+  let _origScreenerBarParent = null;
+  let _origScreenerBarNextSibling = null;
+
+  function moveScreenerBarTo(containerEl) {
+    const bar = document.getElementById('screener-bar');
+    if (!bar || !containerEl) return false;
+    if (_origScreenerBarParent == null) {
+      _origScreenerBarParent = bar.parentNode;
+      _origScreenerBarNextSibling = bar.nextSibling;
+    }
+    if (bar.parentNode !== containerEl) {
+      containerEl.appendChild(bar);
+    }
+    // Hide the placeholder stub once we've populated the surface.
+    const ph = document.getElementById('screener-placeholder');
+    if (ph) ph.hidden = true;
+    // Auto-open the panel on the dedicated surface so users land on the
+    // filter UI, not an empty bar.
+    const panel = document.getElementById('screener-panel');
+    const toggle = document.getElementById('screener-toggle');
+    if (panel) panel.style.display = 'block';
+    if (toggle) toggle.classList.add('active');
+    return true;
+  }
+
+  function restoreScreenerBar() {
+    const bar = document.getElementById('screener-bar');
+    if (!bar || !_origScreenerBarParent) return;
+    if (bar.parentNode !== _origScreenerBarParent) {
+      _origScreenerBarParent.insertBefore(bar, _origScreenerBarNextSibling || null);
+    }
+    // Re-show placeholder so the surface isn't blank if user navigates back.
+    const ph = document.getElementById('screener-placeholder');
+    if (ph) ph.hidden = false;
+  }
+
+  window.ScreenerModule = {
+    /**
+     * Render the screener UI into the given container.
+     * @param {Element} [containerEl] Defaults to <body> for backward compat.
+     */
+    init: function (containerEl) {
+      const target = containerEl || document.body;
+      // The screener IIFE may not yet have built #screener-bar (it returns
+      // early when `.public-section .section-header-bar` isn't found, e.g.
+      // on a deep-linked first paint). Retry once after the next frame.
+      if (!moveScreenerBarTo(target)) {
+        requestAnimationFrame(() => moveScreenerBarTo(target));
+      }
+    },
+    deactivate: restoreScreenerBar,
+  };
 })();

@@ -6436,3 +6436,31 @@ mark.search-highlight {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* Compare surface empty-state panel (Bug 6) */
+.compare-surface-panel { padding: 24px; }
+.compare-surface-panel .compare-empty-card {
+  max-width: 640px;
+  margin: 24px auto;
+  padding: 28px 32px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  font-family: var(--font-sans);
+}
+.compare-surface-panel .compare-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-strong, #f0f0f0);
+}
+.compare-surface-panel .compare-empty-body {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-muted, #aaa);
+  margin-bottom: 18px;
+}
+.compare-surface-panel .compare-empty-actions {
+  display: flex;
+  gap: 10px;
+}

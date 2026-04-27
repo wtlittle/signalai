@@ -806,7 +806,63 @@
   };
 
   // ======================= PUBLIC API =======================
+  // (Bug 6) `init(containerEl, params)` is the entry point the router
+  // calls when the #/compare surface activates. If 2+ tickers are already
+  // selected we open the comparison popup directly; otherwise we render an
+  // "empty state" panel into the surface that explains how to pick names.
+  function init(containerEl, params) {
+    const el = containerEl || document.querySelector('[data-surface="compare"]');
+    if (!el) return;
+    // Hide the static placeholder — we own this surface now.
+    const ph = el.querySelector('#compare-placeholder');
+    if (ph) ph.hidden = true;
+
+    const tickers = (params && Array.isArray(params.tickers)) ? params.tickers : Array.from(state.selected);
+    if (tickers.length >= MIN_PICK) {
+      // Selection is ready — open the popup directly. The popup overlays
+      // the entire viewport, which is fine inside the surface too.
+      try { openPopup(tickers); } catch (e) { console.error(e); }
+      return;
+    }
+
+    // Empty state: render a lightweight panel into the surface itself.
+    let panel = el.querySelector('#compare-surface-panel');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'compare-surface-panel';
+      panel.className = 'compare-surface-panel';
+      el.appendChild(panel);
+    }
+    const have = state.selected.size;
+    panel.innerHTML = `
+      <div class="compare-empty-card">
+        <div class="compare-empty-title">Pick 2–4 tickers from Coverage</div>
+        <div class="compare-empty-body">
+          You currently have <strong>${have}</strong> selected. Toggle Compare
+          mode in the Coverage table header to pick names, then return here
+          (or press the Compare tray CTA) to open the side-by-side workspace.
+        </div>
+        <div class="compare-empty-actions">
+          <button type="button" class="btn-sm" data-action="go-coverage">Go to Coverage</button>
+          <button type="button" class="btn-sm btn-ghost" data-action="toggle-mode">Toggle Compare mode</button>
+        </div>
+      </div>
+    `;
+    panel.querySelector('[data-action="go-coverage"]').addEventListener('click', () => {
+      if (window.SignalRouter && typeof window.SignalRouter.go === 'function') {
+        window.SignalRouter.go('coverage');
+      }
+    });
+    panel.querySelector('[data-action="toggle-mode"]').addEventListener('click', () => {
+      if (window.SignalRouter && typeof window.SignalRouter.go === 'function') {
+        window.SignalRouter.go('coverage');
+      }
+      setTimeout(toggleMode, 50);
+    });
+  }
+
   global.SignalCompare = {
+    init,
     toggleMode,
     isModeOn,
     isSelected,

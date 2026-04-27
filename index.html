@@ -277,11 +277,14 @@
         <h2>Compare</h2>
         <p class="surface-sub">Compare 2–4 names head-to-head across valuation, growth, quality, positioning, and earnings setup.</p>
       </div>
-      <div class="surface-placeholder" id="compare-placeholder">
+      <!-- Compare module renders into this section via SignalCompare.init() -->
+      <!-- The placeholder below is hidden by SignalCompare.init() once the -->
+      <!-- module owns the surface; it stays in markup as a fallback for -->
+      <!-- environments where the module fails to load. (Bug 6) -->
+      <div class="surface-placeholder" id="compare-placeholder" hidden>
         <div class="placeholder-title">Pick names from Coverage</div>
         <div class="placeholder-body">
-          Toggle <strong>Compare</strong> in Coverage to select 2–4 tickers. The Compare workspace will open here with preset modes,
-          comp medians, delta columns, and a synthesis panel for the biggest differences.
+          Toggle <strong>Compare</strong> in Coverage to select 2–4 tickers.
         </div>
         <button type="button" class="btn-sm" id="compare-go-coverage">Go to Coverage</button>
       </div>
@@ -293,11 +296,13 @@
         <h2>Screener</h2>
         <p class="surface-sub">Start from sector-aware templates. Save outputs as Coverage views or custom baskets.</p>
       </div>
-      <div class="surface-placeholder" id="screener-placeholder">
-        <div class="placeholder-title">Screener runs inline for now</div>
+      <!-- Screener controls relocate into this section via -->
+      <!-- ScreenerModule.init(); placeholder is hidden once the module -->
+      <!-- owns the surface. (Bug 6) -->
+      <div class="surface-placeholder" id="screener-placeholder" hidden>
+        <div class="placeholder-title">Screener loading…</div>
         <div class="placeholder-body">
-          Screener templates, formula filters, and save-as-view integration land in the next milestone.
-          For now you can open the existing Screener from Coverage (press the Screener toggle in the table header).
+          If the screener UI doesn't appear, switch to Coverage and back.
         </div>
         <button type="button" class="btn-sm" id="screener-go-coverage">Open Coverage</button>
       </div>
