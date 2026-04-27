@@ -883,8 +883,12 @@ function showDemoBanner() {
     banner.style.cssText = 'background:rgba(0,200,150,0.08);color:rgba(0,200,150,0.7);text-align:center;padding:4px 12px;font-size:11px;letter-spacing:0.5px;font-family:var(--font-mono);border-bottom:1px solid rgba(0,200,150,0.1);';
     banner.textContent = 'DEMO MODE — Showing cached market data · Run locally with Python backend for live prices';
   }
-  // Insert after the header (not before body) to avoid breaking sticky offsets
-  const header = document.querySelector('.app-header');
+  // Insert after the header (not before body) to avoid breaking sticky offsets.
+  // The header element uses class `global-topbar` (not `app-header` — that
+  // class never existed in this DOM). Querying the wrong class made every
+  // call fall through to body.prepend(), inserting the banner above the
+  // sticky topbar and corrupting the --table-top-offset CSS variable. (Bug 2)
+  const header = document.querySelector('.global-topbar');
   if (header && header.nextSibling) {
     header.parentNode.insertBefore(banner, header.nextSibling);
   } else {
