@@ -119,7 +119,43 @@ function heatStyle(v) {
 // --- Render main table ---
 function renderTable() {
   $body.innerHTML = '';
-  const groups = groupBySubsector(tickerList);
+
+  // Apply Coverage ribbon flag filters (if any). Filter first, then sort.
+  const _filters = (typeof window !== 'undefined') ? window.SignalCoverageFilters : null;
+  const _activeFlags = (_filters && typeof _filters.getActiveFlags === 'function') ? _filters.getActiveFlags() : [];
+  const visibleList = (_filters && typeof _filters.getVisibleTickers === 'function')
+    ? _filters.getVisibleTickers()
+    : tickerList;
+
+  // Empty state: filters active but nothing matched. Render a single friendly
+  // message row and short-circuit the groupBy render below.
+  if (Array.isArray(visibleList) && visibleList.length === 0 && _activeFlags.length > 0) {
+    const emptyTr = document.createElement('tr');
+    emptyTr.className = 'coverage-empty-row';
+    emptyTr.innerHTML = `
+      <td colspan="16" style="text-align:center; padding:24px; color: var(--text-muted, #888); font-style: italic;">
+        No names match the active flags.
+      </td>
+    `;
+    $body.appendChild(emptyTr);
+
+    // Still update sort indicators + compare header so UI stays consistent.
+    document.querySelectorAll('.watchlist-table thead th').forEach(th => {
+      th.classList.remove('sort-active');
+      const arrow = th.querySelector('.sort-arrow');
+      if (arrow) arrow.remove();
+      if (th.dataset.col === sortCol) {
+        th.classList.add('sort-active');
+        const span = document.createElement('span');
+        span.className = 'sort-arrow';
+        span.textContent = sortDir === 'asc' ? ' ▲' : ' ▼';
+        th.appendChild(span);
+      }
+    });
+    return;
+  }
+
+  const groups = groupBySubsector(visibleList);
 
   // Get sorted tickers within each group
   const getSortedTickers = (tickers) => {
@@ -773,8 +809,14 @@ function updateTotalMcap() {
 // the same visible universe used to render the coverage table, so they stay
 // in sync with filters and the current universe selection.
 function updateCoverageSummaryTiles() {
+  // Visible coverage universe = tickerList filtered by any active ribbon flags.
+  const _filters = (typeof window !== 'undefined') ? window.SignalCoverageFilters : null;
+  const _visible = (_filters && typeof _filters.getVisibleTickers === 'function')
+    ? _filters.getVisibleTickers()
+    : tickerList;
+
   // Median FY1 EV/Sales
-  const evSalesVals = tickerList
+  const evSalesVals = _visible
     .map(t => {
       const raw = tickerData[t] && tickerData[t].evSales;
       const v = typeof raw === 'string' ? parseFloat(raw) : raw;
@@ -791,7 +833,7 @@ function updateCoverageSummaryTiles() {
   if (elMedEv) elMedEv.textContent = medianEvSales != null ? medianEvSales.toFixed(1) + 'x' : '—';
 
   // Avg 1M move (visible universe)
-  const moves = tickerList
+  const moves = _visible
     .map(t => {
       const raw = tickerData[t] && tickerData[t].m1;
       const v = typeof raw === 'string' ? parseFloat(raw) : raw;
@@ -811,8 +853,9 @@ function updateCoverageSummaryTiles() {
     const upcoming = (typeof window.earningsData !== 'undefined' && window.earningsData)
       ? (window.earningsData.upcoming || [])
       : [];
-    const hasCoverage = Array.isArray(tickerList) && tickerList.length > 0;
-    const inCov = t => !hasCoverage || tickerList.indexOf(t) !== -1;
+    const hasCoverage = Array.isArray(_visible) && _visible.length > 0;
+    const _visSet = hasCoverage ? new Set(_visible) : null;
+    const inCov = t => !hasCoverage || _visSet.has(t);
     const count = upcoming.filter(u =>
       inCov(u.ticker) &&
       typeof u.days_until === 'number' &&
@@ -828,7 +871,7 @@ function updateCoverageSummaryTiles() {
     const mode = (typeof window.SignalMode !== 'undefined') ? window.SignalMode.get() : 'hf';
     if (mode === 'hf') {
       const score = (window.SignalIntel && window.SignalIntel.computeDebateScore)
-        ? window.SignalIntel.computeDebateScore(tickerList)
+        ? window.SignalIntel.computeDebateScore(_visible)
         : null;
       elModeValue.textContent = score != null ? String(score) : '—';
     } else {
@@ -839,8 +882,8 @@ function updateCoverageSummaryTiles() {
 
   // Fail loudly if the KPI dataset is empty while the rendered table has
   // valid row values — symptom of a state/normalization divergence.
-  if (!evSalesVals.length && tickerList.length) {
-    const tableHasEvSales = tickerList.some(t => {
+  if (!evSalesVals.length && _visible.length) {
+    const tableHasEvSales = _visible.some(t => {
       const raw = tickerData[t] && tickerData[t].evSales;
       const v = typeof raw === 'string' ? parseFloat(raw) : raw;
       return typeof v === 'number' && Number.isFinite(v) && v > 0;
@@ -849,6 +892,7 @@ function updateCoverageSummaryTiles() {
   }
 }
 try { window.updateCoverageSummaryTiles = updateCoverageSummaryTiles; } catch (_) {}
+try { window.renderTable = renderTable; } catch (_) {}
 
 // --- Refresh ---
 function updateTimestamp(snapshotDate) {

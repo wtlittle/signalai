@@ -309,9 +309,133 @@
     });
   }
 
+  // ----- Coverage ribbon flag filters ----------------------------------
+  // Public surface: window.SignalCoverageFilters
+  //   .getActiveFlags() -> string[] of active flag names
+  //   .getVisibleTickers() -> tickerList filtered by AND-combination of
+  //     active flags. Returns the full tickerList when no flags are active.
+  // Snapshot data is loaded once at boot via SignalSnapshot.fetchWithFallback
+  // and cached on the controller. Each flag toggle re-renders the coverage
+  // table + KPI tiles + universe count using the same filtered list.
+  const SignalCoverageFilters = (function () {
+    const activeFlags = new Set();
+    let _estimates = {};
+    let _shortInterest = {};
+    let _ready = false;
+
+    function getActiveFlags() {
+      return Array.from(activeFlags);
+    }
+
+    function _earningsTickersWithin7d() {
+      const ed = (typeof window.earningsData !== 'undefined' && window.earningsData) ? window.earningsData : null;
+      const upcoming = (ed && Array.isArray(ed.upcoming)) ? ed.upcoming : [];
+      const set = new Set();
+      for (const u of upcoming) {
+        if (u && typeof u.days_until === 'number' && u.days_until >= 0 && u.days_until <= 7 && u.ticker) {
+          set.add(u.ticker);
+        }
+      }
+      return set;
+    }
+
+    function _matchesFlag(ticker, flag, ctx) {
+      if (flag === 'earnings_7d') {
+        return ctx.earningsSet.has(ticker);
+      }
+      if (flag === 'revision_up') {
+        const e = _estimates[ticker];
+        if (!e) return false;
+        return (e.revisionsUp7d > 0) || (e.revisionsUp30d > 0) || (e.fy1RevisionsUp30d > 0);
+      }
+      if (flag === 'revision_dn') {
+        const e = _estimates[ticker];
+        if (!e) return false;
+        return (e.revisionsDown7d > 0) || (e.revisionsDown30d > 0) || (e.fy1RevisionsDown30d > 0);
+      }
+      if (flag === 'crowded_short') {
+        const si = _shortInterest[ticker];
+        const v = si && si.current && si.current.shortPercentOfFloat;
+        return typeof v === 'number' && v >= 10;
+      }
+      // Unknown flag (e.g. insider_buy, which is inert) -> never matches.
+      return false;
+    }
+
+    function getVisibleTickers() {
+      const list = (typeof window.tickerList !== 'undefined' && Array.isArray(window.tickerList))
+        ? window.tickerList
+        : [];
+      if (activeFlags.size === 0) return list.slice();
+      const ctx = { earningsSet: _earningsTickersWithin7d() };
+      const flags = Array.from(activeFlags);
+      return list.filter(t => flags.every(f => _matchesFlag(t, f, ctx)));
+    }
+
+    function _rerender() {
+      try { if (typeof window.renderTable === 'function') window.renderTable(); } catch (_) {}
+      try { if (typeof window.updateCoverageSummaryTiles === 'function') window.updateCoverageSummaryTiles(); } catch (_) {}
+      try { updateSummaryStripCounts(); } catch (_) {}
+    }
+
+    function _onFlagClick(btn) {
+      const flag = btn.getAttribute('data-flag');
+      if (!flag) return;
+      // insider_buy is inert until insider_activity snapshot exists.
+      if (flag === 'insider_buy') return;
+      if (activeFlags.has(flag)) {
+        activeFlags.delete(flag);
+        btn.classList.remove('active');
+      } else {
+        activeFlags.add(flag);
+        btn.classList.add('active');
+      }
+      _rerender();
+    }
+
+    async function _loadSnapshot() {
+      if (!(window.SignalSnapshot && typeof window.SignalSnapshot.fetchWithFallback === 'function')) {
+        return;
+      }
+      try {
+        const resp = await window.SignalSnapshot.fetchWithFallback('data-snapshot.json', { cacheBust: true });
+        if (!resp || !resp.ok) return;
+        const snap = await resp.json();
+        _estimates = (snap && snap.estimates) || {};
+        _shortInterest = (snap && snap.short_interest) || {};
+        _ready = true;
+        // If user activated flags before snapshot loaded, re-apply now.
+        if (activeFlags.size > 0) _rerender();
+      } catch (err) {
+        console.warn('[SignalCoverageFilters] snapshot load failed', err);
+      }
+    }
+
+    function init() {
+      const buttons = document.querySelectorAll('.ribbon-flag');
+      buttons.forEach(btn => {
+        const flag = btn.getAttribute('data-flag');
+        if (flag === 'insider_buy') {
+          btn.disabled = true;
+          btn.setAttribute('title', 'Requires insider_activity snapshot');
+          btn.classList.add('disabled');
+          return;
+        }
+        btn.addEventListener('click', () => _onFlagClick(btn));
+      });
+      _loadSnapshot();
+    }
+
+    return { init, getActiveFlags, getVisibleTickers };
+  })();
+  window.SignalCoverageFilters = SignalCoverageFilters;
+
   // ----- Summary strip (placeholder values until M2) --------------------
   function updateSummaryStripCounts() {
-    const n = (typeof window.tickerList !== 'undefined') ? window.tickerList.length : 0;
+    const visible = (window.SignalCoverageFilters && typeof window.SignalCoverageFilters.getVisibleTickers === 'function')
+      ? window.SignalCoverageFilters.getVisibleTickers()
+      : ((typeof window.tickerList !== 'undefined') ? window.tickerList : []);
+    const n = Array.isArray(visible) ? visible.length : 0;
     const el = document.getElementById('stat-universe-count');
     if (el) el.textContent = n || '—';
     // Median EV/Sales, avg move, earnings-7d, debate score — all derived
@@ -332,6 +456,7 @@
     initPrivateInputDropdown();
     registerSurfaces();
     window.SignalRouter.start();
+    SignalCoverageFilters.init();
     updateSummaryStripCounts();
 
     // Re-run summary counts after any watchlist mutation. The cleanest hook
