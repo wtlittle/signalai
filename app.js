@@ -939,6 +939,15 @@ async function loadAllData() {
     renderTable();
     updateTotalMcap();
 
+    // (Bug 7) Explicitly recompute summary tiles after tickerData is
+    // populated. updateTotalMcap() already calls this, but the explicit
+    // call here documents the contract: KPIs are computed exactly once
+    // per data load, AFTER tickerData is fully populated. shell.js no
+    // longer races us at boot.
+    if (typeof window.updateCoverageSummaryTiles === 'function') {
+      try { window.updateCoverageSummaryTiles(); } catch (_) {}
+    }
+
     // Detect data source and update UI accordingly
     const dsInfo = typeof getDataSourceInfo === 'function' ? getDataSourceInfo() : { source: 'none' };
     const usingSnapshot = dsInfo.source === 'snapshot' &&
