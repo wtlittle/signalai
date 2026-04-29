@@ -133,6 +133,8 @@ const SUBSECTOR_MAP = {
   'CTSH': 'IT Services', 'MOS': 'Materials',
   'CRDO': 'Semiconductors', 'KALU': 'Materials', 'VMI': 'Industrials',
   'ONTO': 'Semiconductors', 'AVT': 'Electronics Distribution',
+  // User Addition (2026-04-29)
+  'CSU.TO': 'Vertical Software',
 };
 
 // Subsector display order
@@ -256,6 +258,8 @@ const COMMON_NAMES = {
   // Week 6 additions (2026-04-18)
   'ADP': 'ADP', 'ACN': 'Accenture', 'ZBH': 'Zimmer Biomet', 'DHR': 'Danaher', 'PAYX': 'Paychex',
   'ALAB': 'Astera Labs', 'FIVE': 'Five Below', 'CAT': 'Caterpillar', 'GNRC': 'Generac', 'NEM': 'Newmont',
+  // User Addition (2026-04-29)
+  'CSU.TO': 'Constellation Software',
 };
 
 function cleanCompanyName(name) {
@@ -315,6 +319,7 @@ const COMPANY_HQ = {
   'BRZE': 'New York, NY', 'KVYO': 'Boston, MA', 'AMPL': 'San Francisco, CA',
   // Software Coverage Expansion (2026-03-25)
   'ZETA': 'New York, NY', 'RAMP': 'San Francisco, CA', 'CXM': 'New York, NY', 'SEMR': 'Boston, MA',
+  'CSU.TO': 'Toronto, Canada',
   'ORCL': 'Austin, TX', 'VEEV': 'Pleasanton, CA', 'DOCU': 'San Francisco, CA', 'ZM': 'San Jose, CA',
   'TTAN': 'Glendale, CA', 'FRSH': 'San Mateo, CA', 'OS': 'Birmingham, MI', 'BL': 'Woodland Hills, CA',
   'TWLO': 'San Francisco, CA', 'RNG': 'Belmont, CA', 'APP': 'Palo Alto, CA',
@@ -397,6 +402,8 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 7: 2026-04-25) ---
   'GPN','IQV','GEHC','CTSH','MOS',    // Value picks (payments/CRO/medical imaging/IT services/agricultural inputs)
   'CRDO','KALU','VMI','ONTO','AVT',   // Momentum picks (AI connectivity semis/aluminum/infra industrials/semicap/electronics distribution)
+  // --- User Addition (2026-04-29) ---
+  'CSU.TO',                           // Constellation Software (TSX) -- Canadian VMS roll-up, decentralized acquirer model
 ];
 
 // --- Default private companies ---
