@@ -547,3 +547,6 @@ function pctCls(v) {
   if (v == null || isNaN(v) || Math.abs(v) < 0.05) return 'val-neutral';
   return v > 0 ? 'val-pos' : 'val-neg';
 }
+
+// Expose for new SignalRouter / shell.js loadMorePane()
+window.renderMacroTab = renderMacroTab;

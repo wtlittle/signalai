@@ -411,8 +411,71 @@ function initWeeklyBriefing() {
   }
 }
 
+function showBriefingArchive() {
+  const idx = weeklyBriefingArchiveIndex || [];
+
+  // Build modal overlay using the same pattern as index.html popups.
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+
+  const modal = document.createElement('div');
+  modal.className = 'popup-modal';
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'popup-close';
+  closeBtn.innerHTML = '&times;';
+  closeBtn.setAttribute('aria-label', 'Close');
+
+  const heading = document.createElement('h2');
+  heading.textContent = 'Past Briefings';
+
+  const list = document.createElement('div');
+  list.className = 'briefing-archive-list';
+  list.style.maxHeight = '60vh';
+  list.style.overflowY = 'auto';
+
+  if (idx.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'wb-empty';
+    empty.textContent = 'No archived briefings available.';
+    list.appendChild(empty);
+  } else {
+    // Newest first.
+    const sorted = idx.slice().sort((a, b) => b.week_ending.localeCompare(a.week_ending));
+    sorted.forEach(item => {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'briefing-archive-row';
+      row.textContent = item.week_ending;
+      row.addEventListener('click', () => {
+        try { jumpToWeek(item.week_ending); } catch (e) { console.warn('jumpToWeek failed:', e); }
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      });
+      list.appendChild(row);
+    });
+  }
+
+  modal.appendChild(closeBtn);
+  modal.appendChild(heading);
+  modal.appendChild(list);
+  overlay.appendChild(modal);
+
+  // Close interactions: close button + click outside (overlay itself).
+  function dismiss() {
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  }
+  closeBtn.addEventListener('click', dismiss);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) dismiss();
+  });
+
+  document.body.appendChild(overlay);
+  overlay.classList.add('active');
+}
+
 window.loadLatestBriefing = loadLatestBriefing;
 window.jumpToWeek = jumpToWeek;
+window.showBriefingArchive = showBriefingArchive;
 
 // ───────────────────────────────────────────────────────────
 // PDF EXPORT
@@ -787,3 +850,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.exportBriefingPDF = exportBriefingPDF;
+
+window.loadWeeklyBriefing = loadWeeklyBriefing;

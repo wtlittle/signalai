@@ -168,43 +168,44 @@
   }
 
   // ----- More sub-tabs (briefing / macro / news / alerts) ---------------
-  function _loadMorePane(key) {
+  function loadMorePane(key) {
     if (key === 'briefing' && !window._briefingLoaded) {
       window._briefingLoaded = true;
-      if (typeof loadWeeklyBriefing === 'function') loadWeeklyBriefing();
-      else if (typeof window.loadWeeklyBriefing === 'function') window.loadWeeklyBriefing();
+      if (typeof window.loadWeeklyBriefing === 'function') window.loadWeeklyBriefing();
     }
     if (key === 'macro' && !window._macroLoaded) {
       window._macroLoaded = true;
-      if (typeof renderMacroTab === 'function') renderMacroTab();
-      else if (typeof window.renderMacroTab === 'function') window.renderMacroTab();
+      if (typeof window.renderMacroTab === 'function') window.renderMacroTab();
     }
     if (key === 'news' && !window._newsLoaded) {
       window._newsLoaded = true;
-      if (typeof fetchNews === 'function') fetchNews();
-      else if (typeof window.fetchNews === 'function') window.fetchNews();
+      if (typeof window.fetchNews === 'function') window.fetchNews();
     }
     if (key === 'alerts' && !window._alertsLoaded) {
       window._alertsLoaded = true;
-      if (typeof renderAlertsTab === 'function') renderAlertsTab();
-      else if (typeof window.renderAlertsTab === 'function') window.renderAlertsTab();
+      if (typeof window.renderAlertsTab === 'function') window.renderAlertsTab();
     }
   }
 
   function initMoreSubtabs() {
     const panes = document.querySelectorAll('[data-more-pane]');
+
     function activateMorePane(target) {
-      document.querySelectorAll('.more-subtab').forEach(b =>
-        b.classList.toggle('active', b.dataset.more === target)
-      );
-      panes.forEach(p =>
-        p.classList.toggle('active', p.dataset.morePane === target)
-      );
-      _loadMorePane(target);
+      document.querySelectorAll('.more-subtab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.more === target);
+      });
+      panes.forEach(pane => {
+        pane.classList.toggle('active', pane.dataset.morePane === target);
+      });
+      loadMorePane(target);
     }
+
     document.querySelectorAll('.more-subtab').forEach(btn => {
       btn.addEventListener('click', () => activateMorePane(btn.dataset.more));
     });
+
+    window.activateMorePane = activateMorePane;
+    // Back-compat alias for any earlier callers.
     window._activateMorePane = activateMorePane;
   }
 
@@ -231,12 +232,16 @@
         if (typeof window.renderPrivateTable === 'function') window.renderPrivateTable();
       },
     });
-    // More: lazy-load the active sub-pane via _loadMorePane (no legacy clicks)
+    // More: lazy-load the active sub-pane via loadMorePane (no legacy clicks)
     window.SignalRouter.register('more', {
       onActivate: () => {
         const active = document.querySelector('.more-subtab.active');
         const key = active ? active.dataset.more : 'briefing';
-        _loadMorePane(key);
+        if (typeof window.activateMorePane === 'function') {
+          window.activateMorePane(key);
+        } else {
+          loadMorePane(key);
+        }
       },
     });
     // Drilldown: ticker param -> open existing popup

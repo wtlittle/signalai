@@ -935,6 +935,13 @@ async function loadAllData() {
     renderTable();
     updateTotalMcap();
 
+    // Wire the Coverage ribbon controls (timeframe pills, sort regime,
+    // flag chips, customize columns). The IIFE at the bottom of this
+    // file owns idempotency: subsequent calls no-op once wired.
+    if (typeof initRibbon === 'function') {
+      try { initRibbon(); } catch (e) { console.warn('[ribbon] init failed:', e); }
+    }
+
     // Detect data source and update UI accordingly
     const dsInfo = typeof getDataSourceInfo === 'function' ? getDataSourceInfo() : { source: 'none' };
     const usingSnapshot = dsInfo.source === 'snapshot' &&
@@ -1379,6 +1386,7 @@ function renderNews(items) {
 }
 
 async function fetchNews() {
+  // Exposed on window below for shell.js loadMorePane('news').
   const newsTickers = tickerList.slice(0, 20);
   if (newsTickers.length === 0) return;
   try {
@@ -1406,6 +1414,9 @@ async function fetchNews() {
     $newsStatus.textContent = '';
   }
 }
+
+// Expose for new SignalRouter / shell.js loadMorePane('news')
+window.fetchNews = fetchNews;
 
 // --- Tab Navigation ---
 (function initTabs() {
@@ -1508,3 +1519,376 @@ setTimeout(() => {
     fetchEarnings();
   }
 }, 5000);
+
+// ============================================================
+// COVERAGE RIBBON — wires timeframe pills, sort regime, flag
+// chips, and customize-columns controls in #coverage-ribbon.
+// Called from loadAllData() after the first successful renderTable().
+// Idempotent: subsequent calls no-op via a one-shot module-level flag.
+// ============================================================
+(function ribbonModule() {
+  'use strict';
+
+  let _wired = false;
+
+  // Map from data-time pill values to the underlying tickerData keys.
+  const TIMEFRAME_TO_COL = {
+    '1d': 'd1',
+    '1w': 'w1',
+    '1m': 'm1',
+    '3m': 'm3',
+    'ytd': 'ytd',
+    '1y': 'y1',
+  };
+
+  // Persisted hidden-column preferences.
+  const COL_PREFS_KEY = 'ss_col_prefs';
+
+  // ── helpers ────────────────────────────────────────────────
+  function getStoredHiddenCols() {
+    try {
+      const raw = localStorage.getItem(COL_PREFS_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) { return []; }
+  }
+  function setStoredHiddenCols(arr) {
+    try { localStorage.setItem(COL_PREFS_KEY, JSON.stringify(arr)); } catch (_) {}
+  }
+
+  function applyColumnVisibility(colKey, hidden) {
+    const th = document.querySelector(`#watchlist-table thead th[data-col="${colKey}"]`);
+    if (!th) return;
+    th.classList.toggle('col-hidden', hidden);
+    // The existing renderTable() does not stamp data-col onto each <td>.
+    // Match cells by column index (th.cellIndex is 0-based; nth-child is
+    // 1-based) so the hide actually applies to data rows too.
+    const idx = th.cellIndex;
+    if (idx < 0) return;
+    document.querySelectorAll(`#watchlist-table tbody tr > td:nth-child(${idx + 1})`).forEach(td => {
+      td.classList.toggle('col-hidden', hidden);
+    });
+  }
+
+  // Compute days-to-earnings from tickerData[t].calendar in the same way
+  // popup.js does, so the next_earnings sort and earnings_7d flag share
+  // a single source of truth without bolting a new field onto ticker rows.
+  function daysToEarnings(t) {
+    const d = (typeof tickerData !== 'undefined') ? tickerData[t] : null;
+    if (!d) return null;
+    if (typeof d.daysToEarnings === 'number') return d.daysToEarnings;
+    const cal = d.calendar;
+    if (!cal) return null;
+    const raw = cal['Earnings Date'] || cal['earnings_date'];
+    if (!raw) return null;
+    const dateStr = Array.isArray(raw) ? raw[0] : raw;
+    const parsed = new Date(dateStr);
+    if (isNaN(parsed.getTime())) return null;
+    return Math.ceil((parsed - new Date()) / (1000 * 60 * 60 * 24));
+  }
+
+  // ── timeframe pills ────────────────────────────────────────
+  function wireTimeframePills() {
+    const pills = document.querySelectorAll('#ribbon-timeframe .ribbon-pill');
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const time = pill.dataset.time;
+        const col = TIMEFRAME_TO_COL[time];
+        if (!col) return;
+        pills.forEach(p => p.classList.toggle('active', p === pill));
+        // Reuse the existing sort mechanism (sortCol / sortDir / saveSort
+        // / renderTable). We always set descending for performance pills.
+        if (typeof sortCol !== 'undefined') {
+          sortCol = col;
+          sortDir = 'desc';
+          if (typeof saveSort === 'function') saveSort();
+          if (typeof renderTable === 'function') renderTable();
+        }
+      });
+    });
+  }
+
+  // ── sort regime select ─────────────────────────────────────
+  // Capture the original tickerList order on first wire so the
+  // 'default' regime can restore subsector grouping reliably.
+  let _origOrder = null;
+
+  function wireSortRegime() {
+    const sel = document.getElementById('ribbon-sort-regime');
+    if (!sel) return;
+    if (_origOrder == null && typeof tickerList !== 'undefined') {
+      _origOrder = tickerList.slice();
+    }
+    sel.addEventListener('change', () => {
+      const regime = sel.value;
+      if (typeof tickerList === 'undefined' || typeof tickerData === 'undefined') return;
+
+      // nullsLast(asc) sorter: undefined / null comparators sink to the bottom.
+      const cmpAsc = (key) => (a, b) => {
+        const va = tickerData[a]?.[key];
+        const vb = tickerData[b]?.[key];
+        const aN = va == null || isNaN(va);
+        const bN = vb == null || isNaN(vb);
+        if (aN && bN) return 0;
+        if (aN) return 1;
+        if (bN) return -1;
+        return va - vb;
+      };
+      const cmpDesc = (key) => (a, b) => {
+        const va = tickerData[a]?.[key];
+        const vb = tickerData[b]?.[key];
+        const aN = va == null || isNaN(va);
+        const bN = vb == null || isNaN(vb);
+        if (aN && bN) return 0;
+        if (aN) return 1;
+        if (bN) return -1;
+        return vb - va;
+      };
+
+      switch (regime) {
+        case 'default': {
+          // Restore original subsector-grouped order (re-sort by
+          // subsector then by original index in tickerList).
+          if (_origOrder) {
+            const origIdx = new Map(_origOrder.map((t, i) => [t, i]));
+            tickerList.sort((a, b) => {
+              const sa = (tickerData[a]?.subsector || '').toLowerCase();
+              const sb = (tickerData[b]?.subsector || '').toLowerCase();
+              if (sa !== sb) return sa < sb ? -1 : 1;
+              const ia = origIdx.has(a) ? origIdx.get(a) : 1e9;
+              const ib = origIdx.has(b) ? origIdx.get(b) : 1e9;
+              return ia - ib;
+            });
+          }
+          break;
+        }
+        case 'biggest_movers': {
+          tickerList.sort((a, b) => Math.abs(tickerData[b]?.m1 ?? 0) - Math.abs(tickerData[a]?.m1 ?? 0));
+          break;
+        }
+        case 'cheapest_fy1':       tickerList.sort(cmpAsc('evSales')); break;
+        case 'revisions_up':       tickerList.sort(cmpDesc('revenueGrowth')); break;
+        case 'revisions_down':     tickerList.sort(cmpAsc('revenueGrowth')); break;
+        case 'most_crowded_short': tickerList.sort(cmpAsc('evFcf')); break;
+        case 'next_earnings': {
+          tickerList.sort((a, b) => {
+            const va = daysToEarnings(a);
+            const vb = daysToEarnings(b);
+            const aN = va == null;
+            const bN = vb == null;
+            if (aN && bN) return 0;
+            if (aN) return 1;
+            if (bN) return -1;
+            return va - vb;
+          });
+          break;
+        }
+        default: break;
+      }
+
+      if (typeof renderTable === 'function') renderTable();
+    });
+  }
+
+  // ── flag chips ─────────────────────────────────────────────
+  // Predicate for each flag: returns true when row should be VISIBLE.
+  // For insider_buy we treat missing data as "don't hide" (per spec).
+  const FLAG_PREDICATES = {
+    earnings_7d: (t) => {
+      const d = daysToEarnings(t);
+      return d != null && d <= 7 && d >= 0;
+    },
+    revision_up: (t) => {
+      const v = tickerData[t]?.revenueGrowth;
+      return typeof v === 'number' && v > 0;
+    },
+    revision_dn: (t) => {
+      const v = tickerData[t]?.revenueGrowth;
+      return typeof v === 'number' && v < 0;
+    },
+    crowded_short: (t) => {
+      const v = tickerData[t]?.evFcf;
+      return typeof v === 'number' && v < 15;
+    },
+    insider_buy: (t) => {
+      const v = tickerData[t]?.insiderBuy;
+      // Skip entirely if no data — keep row visible.
+      if (v === undefined || v === null) return true;
+      return v === true;
+    },
+  };
+
+  function applyFlagFilters() {
+    const activeFlags = Array.from(document.querySelectorAll('.ribbon-flag.active'))
+      .map(b => b.dataset.flag)
+      .filter(f => FLAG_PREDICATES[f]);
+
+    const allDataRows = document.querySelectorAll('#watchlist-table tbody tr');
+    const subsectorHeaders = document.querySelectorAll('#watchlist-table tbody tr.subsector-header');
+
+    if (activeFlags.length === 0) {
+      // Restore everything: remove the ribbon-only hide class. (The
+      // existing collapse mechanism uses the same class but applies
+      // it elsewhere; we only touch rows we previously tagged with
+      // data-ribbon-hidden so we don't fight the collapse logic.)
+      allDataRows.forEach(tr => {
+        if (tr.dataset.ribbonHidden === '1') {
+          tr.classList.remove('row-hidden');
+          delete tr.dataset.ribbonHidden;
+        }
+      });
+      subsectorHeaders.forEach(tr => {
+        if (tr.dataset.ribbonHidden === '1') {
+          tr.classList.remove('row-hidden');
+          delete tr.dataset.ribbonHidden;
+        }
+      });
+      return;
+    }
+
+    // Hide non-matching data rows.
+    allDataRows.forEach(tr => {
+      if (tr.classList.contains('subsector-header')) return;
+      const cell = tr.querySelector('.cell-ticker');
+      const ticker = cell?.dataset.ticker;
+      if (!ticker) return;
+      const matches = activeFlags.every(f => FLAG_PREDICATES[f](ticker));
+      if (matches) {
+        if (tr.dataset.ribbonHidden === '1') {
+          tr.classList.remove('row-hidden');
+          delete tr.dataset.ribbonHidden;
+        }
+      } else {
+        tr.classList.add('row-hidden');
+        tr.dataset.ribbonHidden = '1';
+      }
+    });
+
+    // Hide subsector headers that have no visible children below them
+    // (mirrors screener.js applyFilters() logic).
+    subsectorHeaders.forEach(header => {
+      let next = header.nextElementSibling;
+      let hasVisibleChild = false;
+      while (next && !next.classList.contains('subsector-header')) {
+        if (!next.classList.contains('row-hidden')) {
+          hasVisibleChild = true;
+          break;
+        }
+        next = next.nextElementSibling;
+      }
+      if (hasVisibleChild) {
+        if (header.dataset.ribbonHidden === '1') {
+          header.classList.remove('row-hidden');
+          delete header.dataset.ribbonHidden;
+        }
+      } else {
+        header.classList.add('row-hidden');
+        header.dataset.ribbonHidden = '1';
+      }
+    });
+  }
+
+  function wireFlagChips() {
+    document.querySelectorAll('.ribbon-flag').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        applyFlagFilters();
+      });
+    });
+  }
+
+  // ── customize columns modal ────────────────────────────────
+  function applyAllStoredColumnPrefs() {
+    const hidden = getStoredHiddenCols();
+    document.querySelectorAll('#watchlist-table thead th[data-col]').forEach(th => {
+      const col = th.dataset.col;
+      applyColumnVisibility(col, hidden.includes(col));
+    });
+  }
+
+  function openCustomizeColumnsModal() {
+    const ths = Array.from(document.querySelectorAll('#watchlist-table thead th[data-col]'));
+    if (!ths.length) return;
+    const hiddenCols = new Set(getStoredHiddenCols());
+
+    const overlay = document.createElement('div');
+    overlay.className = 'popup-overlay active';
+    overlay.id = 'ribbon-customize-cols-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'popup-modal';
+    modal.style.maxWidth = '420px';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'popup-close';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.setAttribute('aria-label', 'Close');
+
+    const heading = document.createElement('h2');
+    heading.textContent = 'Customize columns';
+
+    const list = document.createElement('div');
+    list.className = 'ribbon-cols-list';
+    list.style.maxHeight = '60vh';
+    list.style.overflowY = 'auto';
+    list.style.padding = '8px 0';
+
+    ths.forEach(th => {
+      const col = th.dataset.col;
+      const label = th.textContent.trim() || col;
+      const row = document.createElement('label');
+      row.className = 'ribbon-cols-row';
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+      row.style.gap = '8px';
+      row.style.padding = '6px 12px';
+      row.style.cursor = 'pointer';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !hiddenCols.has(col);
+      cb.addEventListener('change', () => {
+        if (cb.checked) hiddenCols.delete(col); else hiddenCols.add(col);
+        setStoredHiddenCols(Array.from(hiddenCols));
+        applyColumnVisibility(col, !cb.checked);
+      });
+
+      const span = document.createElement('span');
+      span.textContent = label;
+
+      row.appendChild(cb);
+      row.appendChild(span);
+      list.appendChild(row);
+    });
+
+    function dismiss() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }
+    closeBtn.addEventListener('click', dismiss);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) dismiss(); });
+
+    modal.appendChild(closeBtn);
+    modal.appendChild(heading);
+    modal.appendChild(list);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+  }
+
+  function wireCustomizeCols() {
+    const btn = document.getElementById('ribbon-customize-cols');
+    if (btn) btn.addEventListener('click', openCustomizeColumnsModal);
+  }
+
+  // ── public entry point ─────────────────────────────────────
+  function initRibbon() {
+    if (_wired) return;
+    _wired = true;
+    wireTimeframePills();
+    wireSortRegime();
+    wireFlagChips();
+    wireCustomizeCols();
+    // Restore persisted column hide state immediately on first wire.
+    applyAllStoredColumnPrefs();
+  }
+
+  // Expose so loadAllData() can find it via `typeof initRibbon`.
+  window.initRibbon = initRibbon;
+})();
