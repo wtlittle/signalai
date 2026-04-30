@@ -167,44 +167,144 @@
     refresh();
   }
 
-  // ----- More sub-tabs (briefing / macro / news / alerts) ---------------
-  function _loadMorePane(key) {
-    if (key === 'briefing' && !window._briefingLoaded) {
-      window._briefingLoaded = true;
-      if (typeof loadWeeklyBriefing === 'function') loadWeeklyBriefing();
+  // ===== More-surface controller =======================================
+  // Self-contained: does NOT depend on legacy hidden .tab-btn clicks.
+  // Owns subtab state (DOM .active classes), persists last selection in
+  // localStorage, lazy-invokes the four pane loaders behind boolean flags,
+  // and renders a visible fallback message if a loader is missing or
+  // throws so panes are never blank during a live demo.
+
+  var MORE_PANES = ['briefing', 'macro', 'news', 'alerts'];
+  var MORE_LS_KEY = 'ss_more_pane';
+
+  // Map each pane key to (a) its loader resolver and (b) the inner
+  // content container we render fallback messages into.
+  var MORE_PANE_CONFIG = {
+    briefing: {
+      flag: '_briefingLoaded',
+      contentId: 'weekly-briefing-content',
+      loaderName: 'loadWeeklyBriefing',
+      label: 'Weekly Briefing',
+    },
+    macro: {
+      flag: '_macroLoaded',
+      contentId: 'macro-content',
+      loaderName: 'renderMacroTab',
+      label: 'Macro',
+    },
+    news: {
+      flag: '_newsLoaded',
+      contentId: 'news-feed',
+      loaderName: 'fetchNews',
+      label: 'News',
+    },
+    alerts: {
+      flag: '_alertsLoaded',
+      contentId: 'alerts-content',
+      loaderName: 'renderAlertsTab',
+      label: 'Alerts',
+    },
+  };
+
+  function _resolveMoreLoader(name) {
+    // Prefer explicit window export, fall back to bare global lookup
+    // (classic-script top-level fn decls become globals).
+    if (typeof window[name] === 'function') return window[name];
+    try {
+      var bare = (0, eval)(name);
+      if (typeof bare === 'function') return bare;
+    } catch (e) { /* ReferenceError -> truly not present */ }
+    return null;
+  }
+
+  function _renderMoreFallback(key, message) {
+    var cfg = MORE_PANE_CONFIG[key];
+    if (!cfg) return;
+    var el = document.getElementById(cfg.contentId);
+    if (!el) return;
+    el.innerHTML =
+      '<div class="more-pane-fallback" style="padding:24px;color:#94a3b8;' +
+      'font-size:13px;line-height:1.5;">' +
+      '<strong style="color:#e2e8f0;">' + cfg.label + ' unavailable.</strong><br>' +
+      String(message || '') +
+      '</div>';
+  }
+
+  function getMorePaneKey() {
+    var active = document.querySelector('.more-subtab.active');
+    var key = active && active.dataset && active.dataset.more;
+    return MORE_PANES.indexOf(key) !== -1 ? key : 'briefing';
+  }
+
+  function showMorePane(key) {
+    if (MORE_PANES.indexOf(key) === -1) key = 'briefing';
+    document.querySelectorAll('.more-subtab').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.more === key);
+    });
+    document.querySelectorAll('[data-more-pane]').forEach(function (p) {
+      p.classList.toggle('active', p.dataset.morePane === key);
+    });
+    try { localStorage.setItem(MORE_LS_KEY, key); } catch (e) { /* private mode */ }
+  }
+
+  function loadMorePane(key) {
+    var cfg = MORE_PANE_CONFIG[key];
+    if (!cfg) return;
+    if (window[cfg.flag]) return; // already loaded — don't refetch
+    var loader = _resolveMoreLoader(cfg.loaderName);
+    if (typeof loader !== 'function') {
+      // Don't set the flag — leave room for late-arriving exports on retry.
+      _renderMoreFallback(
+        key,
+        cfg.loaderName + '() is not available. The ' + cfg.label.toLowerCase() +
+        ' module may have failed to load.'
+      );
+      return;
     }
-    if (key === 'macro' && !window._macroLoaded) {
-      window._macroLoaded = true;
-      if (typeof renderMacroTab === 'function') renderMacroTab();
-    }
-    if (key === 'news' && !window._newsLoaded) {
-      window._newsLoaded = true;
-      if (typeof fetchNews === 'function') fetchNews();
-    }
-    if (key === 'alerts' && !window._alertsLoaded) {
-      window._alertsLoaded = true;
-      if (typeof renderAlertsTab === 'function') renderAlertsTab();
+    window[cfg.flag] = true;
+    try {
+      var ret = loader();
+      // If the loader returns a Promise, surface async failures too.
+      if (ret && typeof ret.then === 'function' && typeof ret.catch === 'function') {
+        ret.catch(function (err) {
+          console.error('[more] ' + cfg.loaderName + '() rejected:', err);
+          window[cfg.flag] = false; // allow retry
+          _renderMoreFallback(key, 'Loader failed: ' + (err && err.message ? err.message : err));
+        });
+      }
+    } catch (err) {
+      console.error('[more] ' + cfg.loaderName + '() threw:', err);
+      window[cfg.flag] = false; // allow retry
+      _renderMoreFallback(key, 'Loader threw: ' + (err && err.message ? err.message : err));
     }
   }
 
+  function activateMorePane(key) {
+    if (MORE_PANES.indexOf(key) === -1) key = 'briefing';
+    showMorePane(key);
+    loadMorePane(key);
+  }
+
+  // Back-compat aliases for prior shell.js releases.
+  window.activateMorePane = activateMorePane;
+  window._activateMorePane = activateMorePane;
+  window.loadMorePane = loadMorePane;
+  window._loadMorePane = loadMorePane;
+  window.showMorePane = showMorePane;
+  window.getMorePaneKey = getMorePaneKey;
+
   function initMoreSubtabs() {
-    const panes = document.querySelectorAll('[data-more-pane]');
-
-    function activateMorePane(target) {
-      document.querySelectorAll('.more-subtab').forEach(b =>
-        b.classList.toggle('active', b.dataset.more === target)
-      );
-      panes.forEach(p =>
-        p.classList.toggle('active', p.dataset.morePane === target)
-      );
-      _loadMorePane(target);
-    }
-
-    document.querySelectorAll('.more-subtab').forEach(btn => {
-      btn.addEventListener('click', () => activateMorePane(btn.dataset.more));
+    document.querySelectorAll('.more-subtab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activateMorePane(btn.dataset.more);
+      });
     });
 
-    window._activateMorePane = activateMorePane;
+    // Restore last-selected pane from localStorage; default to briefing.
+    var stored = null;
+    try { stored = localStorage.getItem(MORE_LS_KEY); } catch (e) { /* private mode */ }
+    var initial = MORE_PANES.indexOf(stored) !== -1 ? stored : 'briefing';
+    activateMorePane(initial);
   }
 
   // ----- Router integration --------------------------------------------
@@ -230,16 +330,20 @@
         if (typeof window.renderPrivateTable === 'function') window.renderPrivateTable();
       },
     });
-    // More: directly trigger the loader for whichever sub-pane is active
+    // More: self-contained controller — never clicks legacy .tab-btn.
+    // Resolves the target pane via (1) localStorage, (2) current active
+    // subtab, (3) 'briefing' default, then dispatches to activateMorePane.
     window.SignalRouter.register('more', {
-      onActivate: () => {
-        const active = document.querySelector('.more-subtab.active');
-        const key = active ? active.dataset.more : 'briefing';
-        if (typeof window._activateMorePane === 'function') {
-          window._activateMorePane(key);
+      onActivate: function () {
+        var stored = null;
+        try { stored = localStorage.getItem(MORE_LS_KEY); } catch (e) { /* private mode */ }
+        var key;
+        if (MORE_PANES.indexOf(stored) !== -1) {
+          key = stored;
         } else {
-          _loadMorePane(key);
+          key = getMorePaneKey();
         }
+        activateMorePane(key);
       },
     });
     // Drilldown: ticker param -> open existing popup
