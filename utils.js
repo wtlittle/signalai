@@ -135,6 +135,8 @@ const SUBSECTOR_MAP = {
   'ONTO': 'Semiconductors', 'AVT': 'Electronics Distribution',
   // User Addition (2026-04-29)
   'CSU.TO': 'Vertical Software',
+  // Weekly Briefing Picks (Week 8: 2026-05-03)
+  'CLX': 'Consumer Staples', 'MHK': 'Building Products', 'LKQ': 'Auto Parts',
 };
 
 // Subsector display order
@@ -404,6 +406,9 @@ const DEFAULT_TICKERS = [
   'CRDO','KALU','VMI','ONTO','AVT',   // Momentum picks (AI connectivity semis/aluminum/infra industrials/semicap/electronics distribution)
   // --- User Addition (2026-04-29) ---
   'CSU.TO',                           // Constellation Software (TSX) -- Canadian VMS roll-up, decentralized acquirer model
+  // --- Weekly Briefing Picks (Week 8: 2026-05-03) ---
+  'CLX','MHK','LKQ',                  // Value picks (consumer staples / housing-cycle / auto parts) -- CMCSA, ZBH already covered
+  // Momentum picks (SNDK, TWLO, GNRC, VRT, CIEN already in watchlist)
 ];
 
 // --- Default private companies ---
