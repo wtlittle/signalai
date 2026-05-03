@@ -72,6 +72,12 @@ def run():
 
     write_json(WEEKLY_BRIEFING, briefing)
     print(f"  Weekly briefing saved to {WEEKLY_BRIEFING.name}")
+
+    # Auto-archive this week's briefing
+    from automation.jobs.backfill_briefings import save_archive_briefing, patch_live_briefing_archive_index
+    from datetime import date as _date
+    save_archive_briefing(_date.today(), briefing)
+    patch_live_briefing_archive_index([_date.today()])
     print(f"  Value picks: {len(briefing['value_picks'])}")
     print(f"  Momentum picks: {len(briefing['momentum_picks'])}")
     print(f"  Trends: {len(briefing['trends'])}")

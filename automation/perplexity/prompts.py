@@ -245,3 +245,64 @@ Return ONLY this JSON. No prose.
   ],
   "narrative": "2-3 sentence summary"
 }}"""
+
+
+def _temporal_header(week_ending) -> str:
+    from datetime import timedelta
+    mon = (week_ending - timedelta(days=4)).isoformat()
+    return (
+        f"IMPORTANT: You are researching historical market data for the week of "
+        f"{mon} through {week_ending.isoformat()}. "
+        f"All data, prices, and analysis MUST reflect conditions as of that specific week. "
+        f"Do NOT use current data. Search for news and market data from {mon}–{week_ending.isoformat()} only.\n\n"
+    )
+
+
+def build_weekly_value_prompt_for_date(week_ending) -> str:
+    from datetime import timedelta
+    header = _temporal_header(week_ending)
+    return (
+        header
+        + f"As of the week ending {week_ending.isoformat()}, search for the top 5 value stocks "
+        f"that were trading near their 52-week lows with strong fundamentals at that time.\n\n"
+        + build_weekly_value_prompt().split("\n", 1)[1]
+    )
+
+
+def build_weekly_momentum_prompt_for_date(week_ending) -> str:
+    header = _temporal_header(week_ending)
+    return (
+        header
+        + f"As of the week ending {week_ending.isoformat()}, identify the top 5 momentum stocks "
+        f"showing the strongest recent performance with fundamental catalysts during that week.\n\n"
+        + build_weekly_momentum_prompt().split("\n", 1)[1]
+    )
+
+
+def build_weekly_trends_prompt_for_date(week_ending, watchlist_tickers: list) -> str:
+    from datetime import timedelta
+    header = _temporal_header(week_ending)
+    tickers_str = ", ".join(watchlist_tickers[:50])
+    mon = (week_ending - timedelta(days=4)).isoformat()
+    return f"""{header}Summarize the US equity market for the week of {mon} through {week_ending.isoformat()}. Include:
+1. Weekly index returns (S&P 500, Nasdaq, Russell 2000) — closing values and % change for that week
+2. 3-5 key market trends/themes from that week
+3. 3-5 risks that were being watched heading into the following week
+4. Material updates for these watchlist tickers during that week (only earnings, analyst changes, or >5% weekly move): {tickers_str}
+5. A 2-3 sentence market narrative summary for that week
+
+Return ONLY this JSON. No prose.
+
+{{
+  "index_returns": {{
+    "sp500": {{"close": 0.0, "weekly_return": "X%", "ytd_return": "X%"}},
+    "nasdaq": {{"close": 0.0, "weekly_return": "X%", "ytd_return": "X%"}},
+    "russell2000": {{"close": 0.0, "weekly_return": "X%", "ytd_return": "X%"}}
+  }},
+  "trends": ["trend 1 (max 40 words)", "trend 2", "trend 3"],
+  "risks": ["risk 1 (max 40 words)", "risk 2", "risk 3"],
+  "watchlist_movers": [
+    {{"ticker": "...", "move": "+X%", "catalyst": "...", "detail": "..."}}
+  ],
+  "narrative": "2-3 sentence summary of that specific week"
+}}"""
