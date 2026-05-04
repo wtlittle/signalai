@@ -168,14 +168,22 @@
   }
 
   // ===== More-surface controller =======================================
-  // Self-contained: does NOT depend on legacy hidden .tab-btn clicks.
-  // Owns subtab state (DOM .active classes), persists last selection in
-  // localStorage, lazy-invokes the four pane loaders behind boolean flags,
-  // and renders a visible fallback message if a loader is missing or
-  // throws so panes are never blank during a live demo.
+  // Self-contained, state-machine driven. Each pane has one of three states:
+  //   idle    — never loaded
+  //   loading — loader is in flight
+  //   loaded  — render produced visible content
+  //   error   — loader threw / rejected; will be re-tried on next activation
+  //
+  // The previous implementation set a single boolean flag BEFORE the loader
+  // ran and never re-attempted on transient failures. That left panes stuck
+  // showing "Loading..." forever once anything went wrong (Yahoo proxy
+  // hiccup, late script load, etc.). The new design retries automatically on
+  // every activation when the pane isn't in the loaded state, and surfaces a
+  // visible Retry button on error or after a watchdog timeout.
 
   var MORE_PANES = ['briefing', 'macro', 'news', 'alerts'];
   var MORE_LS_KEY = 'ss_more_pane';
+  var MORE_WATCHDOG_MS = 12000; // show retry UI if a loader hasn't rendered by then
 
   // Map each pane key to (a) its loader resolver and (b) the inner
   // content container we render fallback messages into.
@@ -206,9 +214,15 @@
     },
   };
 
+  // Per-pane runtime state. Survives the whole session.
+  var moreState = {
+    briefing: { status: 'idle', watchdog: null, attempt: 0 },
+    macro:    { status: 'idle', watchdog: null, attempt: 0 },
+    news:     { status: 'idle', watchdog: null, attempt: 0 },
+    alerts:   { status: 'idle', watchdog: null, attempt: 0 },
+  };
+
   function _resolveMoreLoader(name) {
-    // Prefer explicit window export, fall back to bare global lookup
-    // (classic-script top-level fn decls become globals).
     if (typeof window[name] === 'function') return window[name];
     try {
       var bare = (0, eval)(name);
@@ -217,17 +231,83 @@
     return null;
   }
 
-  function _renderMoreFallback(key, message) {
+  function _paneContent(key) {
+    var cfg = MORE_PANE_CONFIG[key];
+    return cfg ? document.getElementById(cfg.contentId) : null;
+  }
+
+  // True if the loader has put real content into the pane (anything beyond
+  // the inline "Loading" sentinel set in index.html). Used by the watchdog
+  // to decide whether to surface a retry CTA.
+  function _paneHasRealContent(key) {
+    var el = _paneContent(key);
+    if (!el) return false;
+    var html = el.innerHTML || '';
+    if (html.length < 100) return false;
+    if (/(macro|news|alerts|wb)-loading/.test(html)) return false;
+    if (/wb-empty/.test(html) && html.length < 250) return false;
+    return true;
+  }
+
+  function _renderMoreError(key, message) {
     var cfg = MORE_PANE_CONFIG[key];
     if (!cfg) return;
-    var el = document.getElementById(cfg.contentId);
+    var el = _paneContent(key);
     if (!el) return;
     el.innerHTML =
       '<div class="more-pane-fallback" style="padding:24px;color:#94a3b8;' +
       'font-size:13px;line-height:1.5;">' +
-      '<strong style="color:#e2e8f0;">' + cfg.label + ' unavailable.</strong><br>' +
-      String(message || '') +
+      '<strong style="color:#e2e8f0;display:block;margin-bottom:6px;">' +
+      cfg.label + ' did not load.</strong>' +
+      '<div style="margin-bottom:10px;">' + String(message || 'The module may have hit a transient error.') + '</div>' +
+      '<button type="button" data-more-retry="' + key + '" ' +
+      'style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;' +
+      'border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;">' +
+      'Retry</button>' +
       '</div>';
+  }
+
+  // After the watchdog fires, if the pane STILL doesn't have real content
+  // we soft-overlay a retry hint without nuking whatever the loader has put
+  // in place (some loaders progressively render).
+  function _renderMoreWatchdogHint(key) {
+    var cfg = MORE_PANE_CONFIG[key];
+    if (!cfg) return;
+    var el = _paneContent(key);
+    if (!el) return;
+    if (el.querySelector('[data-more-retry]')) return; // already shown
+    var hint = document.createElement('div');
+    hint.setAttribute('data-more-watchdog-hint', key);
+    hint.style.cssText = 'padding:14px 24px;color:#94a3b8;font-size:12px;' +
+      'border-top:1px solid #1e293b;display:flex;align-items:center;' +
+      'justify-content:space-between;gap:12px;';
+    hint.innerHTML =
+      '<span>Still loading ' + cfg.label.toLowerCase() + '… If this hangs, try again.</span>' +
+      '<button type="button" data-more-retry="' + key + '" ' +
+      'style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;' +
+      'border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;">Retry</button>';
+    el.appendChild(hint);
+  }
+
+  function _clearWatchdog(key) {
+    var s = moreState[key];
+    if (!s) return;
+    if (s.watchdog) { clearTimeout(s.watchdog); s.watchdog = null; }
+  }
+
+  function _armWatchdog(key) {
+    _clearWatchdog(key);
+    var s = moreState[key];
+    if (!s) return;
+    s.watchdog = setTimeout(function () {
+      // If the loader actually rendered, mark loaded and stand down.
+      if (_paneHasRealContent(key)) {
+        s.status = 'loaded';
+        return;
+      }
+      // Else surface a retry hint without clobbering partial UI.
+      _renderMoreWatchdogHint(key);
+    }, MORE_WATCHDOG_MS);
   }
 
   function getMorePaneKey() {
@@ -247,35 +327,91 @@
     try { localStorage.setItem(MORE_LS_KEY, key); } catch (e) { /* private mode */ }
   }
 
-  function loadMorePane(key) {
+  // Run a pane's loader. `force=true` bypasses the loaded-state check and is
+  // used by the Retry button. Otherwise we skip if the pane is already loaded.
+  // We INTENTIONALLY do not skip on `loading` — re-arming the watchdog when
+  // the user revisits is fine and harmless.
+  function loadMorePane(key, opts) {
+    opts = opts || {};
     var cfg = MORE_PANE_CONFIG[key];
     if (!cfg) return;
-    if (window[cfg.flag]) return; // already loaded — don't refetch
+    var s = moreState[key];
+    if (!s) return;
+
+    // If a previous boot left the legacy boolean flag set, treat the pane as
+    // loaded only when the DOM actually has real content. Otherwise reset.
+    if (window[cfg.flag] && s.status === 'idle') {
+      s.status = _paneHasRealContent(key) ? 'loaded' : 'idle';
+      if (s.status === 'idle') window[cfg.flag] = false;
+    }
+
+    if (!opts.force && s.status === 'loaded' && _paneHasRealContent(key)) {
+      return; // truly loaded, leave it alone
+    }
+
+    // Resolve loader. If still missing, try again shortly — modules may load
+    // async-ish on slow networks. Past that we surface a clear error.
     var loader = _resolveMoreLoader(cfg.loaderName);
     if (typeof loader !== 'function') {
-      // Don't set the flag — leave room for late-arriving exports on retry.
-      _renderMoreFallback(
-        key,
-        cfg.loaderName + '() is not available. The ' + cfg.label.toLowerCase() +
-        ' module may have failed to load.'
-      );
+      s.attempt = (s.attempt || 0) + 1;
+      if (s.attempt < 5) {
+        setTimeout(function () { loadMorePane(key, { force: true }); }, 250);
+        return;
+      }
+      s.status = 'error';
+      window[cfg.flag] = false;
+      _renderMoreError(key,
+        cfg.loaderName + '() never registered. The ' + cfg.label.toLowerCase() +
+        ' script may have failed to load — try a hard reload (Cmd/Ctrl+Shift+R).');
       return;
     }
-    window[cfg.flag] = true;
+
+    s.status = 'loading';
+    s.attempt = 0;
+    window[cfg.flag] = true; // back-compat: legacy callers still read this
+    _armWatchdog(key);
+
+    var settled = false;
+    function _onSuccess() {
+      if (settled) return;
+      settled = true;
+      _clearWatchdog(key);
+      // Re-check on next tick — most loaders mutate the DOM right after
+      // resolve, but jsPDF / pre-render paths sometimes hop a microtask.
+      setTimeout(function () {
+        if (_paneHasRealContent(key)) {
+          s.status = 'loaded';
+        } else {
+          // Loader resolved but produced empty UI. Don't lock — let the
+          // user retry without a page reload.
+          s.status = 'error';
+          window[cfg.flag] = false;
+          if (!_paneContent(key) || !_paneContent(key).querySelector('[data-more-retry]')) {
+            _renderMoreError(key, 'No data available right now. Try again in a moment.');
+          }
+        }
+      }, 50);
+    }
+    function _onError(err) {
+      if (settled) return;
+      settled = true;
+      _clearWatchdog(key);
+      console.error('[more] ' + cfg.loaderName + '() failed:', err);
+      s.status = 'error';
+      window[cfg.flag] = false; // allow retry
+      _renderMoreError(key, (err && err.message) ? err.message : 'Transient error. Tap retry.');
+    }
+
     try {
       var ret = loader();
-      // If the loader returns a Promise, surface async failures too.
-      if (ret && typeof ret.then === 'function' && typeof ret.catch === 'function') {
-        ret.catch(function (err) {
-          console.error('[more] ' + cfg.loaderName + '() rejected:', err);
-          window[cfg.flag] = false; // allow retry
-          _renderMoreFallback(key, 'Loader failed: ' + (err && err.message ? err.message : err));
-        });
+      if (ret && typeof ret.then === 'function') {
+        ret.then(_onSuccess, _onError);
+      } else {
+        // Sync loader — give the DOM a beat to settle, then verify.
+        _onSuccess();
       }
     } catch (err) {
-      console.error('[more] ' + cfg.loaderName + '() threw:', err);
-      window[cfg.flag] = false; // allow retry
-      _renderMoreFallback(key, 'Loader threw: ' + (err && err.message ? err.message : err));
+      _onError(err);
     }
   }
 
@@ -285,6 +421,20 @@
     loadMorePane(key);
   }
 
+  // Public retry: forces a fresh load and clears the legacy boolean flag.
+  function retryMorePane(key) {
+    if (MORE_PANES.indexOf(key) === -1) return;
+    var cfg = MORE_PANE_CONFIG[key];
+    var s = moreState[key];
+    if (s) { s.status = 'idle'; s.attempt = 0; _clearWatchdog(key); }
+    if (cfg) window[cfg.flag] = false;
+    var el = _paneContent(key);
+    if (el) {
+      el.innerHTML = '<div class="more-pane-loading" style="padding:24px;color:#94a3b8;font-size:13px;">Reloading ' + cfg.label.toLowerCase() + '...</div>';
+    }
+    loadMorePane(key, { force: true });
+  }
+
   // Back-compat aliases for prior shell.js releases.
   window.activateMorePane = activateMorePane;
   window._activateMorePane = activateMorePane;
@@ -292,12 +442,21 @@
   window._loadMorePane = loadMorePane;
   window.showMorePane = showMorePane;
   window.getMorePaneKey = getMorePaneKey;
+  window.retryMorePane = retryMorePane;
 
   function initMoreSubtabs() {
     document.querySelectorAll('.more-subtab').forEach(function (btn) {
       btn.addEventListener('click', function () {
         activateMorePane(btn.dataset.more);
       });
+    });
+
+    // Delegated retry handler — works for both error fallback and watchdog hint.
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest && e.target.closest('[data-more-retry]');
+      if (!t) return;
+      e.preventDefault();
+      retryMorePane(t.getAttribute('data-more-retry'));
     });
 
     // Restore last-selected pane from localStorage; default to briefing.
