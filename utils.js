@@ -336,31 +336,79 @@ const COMPANY_HQ = {
 
 // --- Initial tickers ---
 const DEFAULT_TICKERS = [
-  // --- Demo Watchlist (2026-05-03): 25 tickers ---
-  // Mega-cap tech
-  'NVDA','MSFT','GOOG','META','AMZN','AAPL','TSLA','AVGO',
-  // Enterprise software / AI
-  'CRM','NOW','PLTR',
-  // AI infrastructure / power
-  'VRT','GEV',
-  // Healthcare
-  'UNH','LLY',
-  // Financials / industrials / materials
-  'JPM','NUE',
-  // Communication services / media
-  'CMCSA',
-  // Semis / storage / networking
-  'SNDK',
-  // Communication APIs
-  'TWLO',
-  // Cybersecurity
-  'ZS','VRNS',
-  // Data observability
-  'DDOG',
-  // Cybersecurity (data security)
-  'RBRK',
-  // Data protection
-  'CVLT',
+  // --- Hyperscalers ---
+  'AMZN','GOOG','META','MSFT',
+  // --- Semiconductors ---
+  'NVDA','AVGO','AMD','TSM','ARM','MRVL','SNPS','CDNS',
+  // --- Cybersecurity ---
+  'CRWD','PANW','ZS','FTNT','S','OKTA','RBRK','VRNS','TENB',
+  // --- Enterprise Software ---
+  'CRM','NOW','WDAY','INTU','ADBE','HUBS','TEAM','MNDY','ASAN',
+  // --- Data & Analytics / Observability ---
+  'SNOW','MDB','DDOG','PLTR','ESTC','CFLT','DT',
+  // --- Cloud Infrastructure ---
+  'NET','ANET','DOCN','FSLY',
+  // --- DevOps & Automation ---
+  'GTLB','PATH',
+  // --- Fintech ---
+  'COIN','BILL','FOUR','XYZ','AFRM',
+  // --- Digital Commerce ---
+  'SHOP','SE',
+  // --- Digital Advertising ---
+  'TTD','PINS',
+  // --- Applied AI ---
+  'AI','IOT',
+  // --- Weekly Briefing Picks (Week 1: 2026-03-21) ---
+  'ELV','TMO','ACGL','LPLA',   // Value picks
+  'SNDK','CIEN','WDC','CF',    // Momentum picks
+  // --- Weekly Briefing Picks (Week 2: 2026-03-22) ---
+  'NKE','UNH','CMCSA','HD','MKC',   // Value picks
+  'MU','SOC','HIMS','GCT','BWXT',   // Momentum picks
+  // --- Weekly Briefing Picks (Week 3: 2026-03-23) ---
+  'NVO','KHC','UL','MDLZ','STZ',    // Value picks
+  'GEV','STX','TER','FIX','GLW',    // Momentum picks
+  // --- User Additions (2026-03-24) ---
+  'VRT','NTNX','VRTX','INTC','IBM',
+  // --- User Additions (2026-03-25) ---
+  'BRZE','KVYO','AMPL',
+  // --- Software Coverage Expansion (2026-03-25) ---
+  // Marketing Tech / AdTech
+  'ZETA','RAMP','CXM','SEMR',
+  // Enterprise Software (sell-side staples)
+  'ORCL','VEEV','DOCU','ZM','TTAN','FRSH','OS','BL','TWLO','RNG',
+  // Digital Advertising
+  'APP',
+  // Cybersecurity (coverage gaps)
+  'CHKP','QLYS','RPD',
+  // Industrial / Vertical Software
+  'ADSK','PTC','BSY','TRMB','ROP','PCOR','TYL','GWRE','MANH',
+  // Data & Analytics
+  'FICO',
+  // Cloud Infrastructure
+  'PSTG','AKAM',
+  // Digital Commerce
+  'WIX','GDDY',
+  // --- User Addition (2026-03-25) ---
+  'GLBE',
+  // --- Weekly Briefing Picks (Week 4: 2026-04-05) ---
+  'ABT','KDP','ZTS','GIS','KMB',     // Value picks (defensive/staples near 52-week lows)
+  'VLO','FANG','BKR','AEM','NOC',    // Momentum picks (energy/defense/gold -- Iran war beneficiaries)
+  // --- Earnings Coverage (added 2026-04-08) ---
+  'GS','JPM','WFC','MS','BAC','NFLX',  // Major banks + mega-cap earnings season coverage
+  // --- Weekly Briefing Picks (Week 5: 2026-04-12) ---
+  'COF','SYF','UAL','DVN','OXY',     // Value picks (financials + energy -- Reflation regime)
+  'FCX','NUE','CRC',  // Momentum picks (materials/energy -- copper/steel/CCS)
+  // --- Weekly Briefing Picks (Week 6: 2026-04-18) ---
+  'ADP','ACN','ZBH','DHR','PAYX',     // Value picks (HCM/IT services/medtech/life sciences near 52-week lows)
+  'ALAB','FIVE','CAT','GNRC','NEM',   // Momentum picks (AI connectivity/retail/industrial/power/gold)
+  // --- Weekly Briefing Picks (Week 7: 2026-04-25) ---
+  'GPN','IQV','GEHC','CTSH','MOS',    // Value picks (payments/CRO/medical imaging/IT services/agricultural inputs)
+  'CRDO','KALU','VMI','ONTO','AVT',   // Momentum picks (AI connectivity semis/aluminum/infra industrials/semicap/electronics distribution)
+  // --- User Addition (2026-04-29) ---
+  'CSU.TO',                           // Constellation Software (TSX) -- Canadian VMS roll-up, decentralized acquirer model
+  // --- Weekly Briefing Picks (Week 8: 2026-05-03) ---
+  'CLX','MHK','LKQ',                  // Value picks (consumer staples / housing-cycle / auto parts) -- CMCSA, ZBH already covered
+  // Momentum picks (SNDK, TWLO, GNRC, VRT, CIEN already in watchlist)
 ];
 
 // --- Default private companies ---
