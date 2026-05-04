@@ -1,5 +1,5 @@
 # Constellation Software (CSU.TO) — Pre-Earnings Note
-**Earnings Date:** 2026-05-12 | **Days Until Report:** 12
+**Earnings Date:** 2026-05-12 | **Days Until Report:** 8
 **Generated:** 2026-04-30 11:16
 
 ---

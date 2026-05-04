@@ -5430,5 +5430,997 @@
     "system": "Return only structured JSON. No prose, no markdown fences.",
     "max_tokens": 2000,
     "queued_at": "2026-04-30T11:16:15+00:00"
+  },
+  {
+    "ticker": "PLTR",
+    "task": "daily_news",
+    "prompt": "Search for material news about Palantir (PLTR, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "PINS",
+    "task": "daily_news",
+    "prompt": "Search for material news about Pinterest (PINS, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "BWXT",
+    "task": "daily_news",
+    "prompt": "Search for material news about BWX Technologies (BWXT, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "VRTX",
+    "task": "daily_news",
+    "prompt": "Search for material news about VRTX (VRTX, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "FANG",
+    "task": "daily_news",
+    "prompt": "Search for material news about FANG (FANG, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "AMD",
+    "task": "daily_news",
+    "prompt": "Search for material news about AMD (AMD, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "ANET",
+    "task": "daily_news",
+    "prompt": "Search for material news about Arista Networks (ANET, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "DOCN",
+    "task": "daily_news",
+    "prompt": "Search for material news about DigitalOcean (DOCN, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "SHOP",
+    "task": "daily_news",
+    "prompt": "Search for material news about Shopify (SHOP, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "KVYO",
+    "task": "daily_news",
+    "prompt": "Search for material news about Klaviyo (KVYO, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "FRSH",
+    "task": "daily_news",
+    "prompt": "Search for material news about Freshworks (FRSH, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "BL",
+    "task": "daily_news",
+    "prompt": "Search for material news about BlackLine (BL, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "QLYS",
+    "task": "daily_news",
+    "prompt": "Search for material news about Qualys (QLYS, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "RPD",
+    "task": "daily_news",
+    "prompt": "Search for material news about Rapid7 (RPD, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "PCOR",
+    "task": "daily_news",
+    "prompt": "Search for material news about Procore (PCOR, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "DVN",
+    "task": "daily_news",
+    "prompt": "Search for material news about Devon Energy (DVN, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "OXY",
+    "task": "daily_news",
+    "prompt": "Search for material news about Occidental Petroleum (OXY, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "CRC",
+    "task": "daily_news",
+    "prompt": "Search for material news about California Resources (CRC, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "ALAB",
+    "task": "daily_news",
+    "prompt": "Search for material news about Astera Labs (ALAB, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "IQV",
+    "task": "daily_news",
+    "prompt": "Search for material news about IQV (IQV, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "ONTO",
+    "task": "daily_news",
+    "prompt": "Search for material news about ONTO (ONTO, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "ARM",
+    "task": "daily_news",
+    "prompt": "Search for material news about Arm (ARM, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "FTNT",
+    "task": "daily_news",
+    "prompt": "Search for material news about Fortinet (FTNT, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "FSLY",
+    "task": "daily_news",
+    "prompt": "Search for material news about Fastly (FSLY, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "CF",
+    "task": "daily_news",
+    "prompt": "Search for material news about CF Industries (CF, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "NVO",
+    "task": "daily_news",
+    "prompt": "Search for material news about Novo Nordisk (NVO, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "KHC",
+    "task": "daily_news",
+    "prompt": "Search for material news about Kraft Heinz (KHC, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "AMPL",
+    "task": "daily_news",
+    "prompt": "Search for material news about Amplitude (AMPL, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "SEMR",
+    "task": "daily_news",
+    "prompt": "Search for material news about Semrush (SEMR, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "APP",
+    "task": "daily_news",
+    "prompt": "Search for material news about AppLovin (APP, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "PTC",
+    "task": "daily_news",
+    "prompt": "Search for material news about PTC (PTC, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "TRMB",
+    "task": "daily_news",
+    "prompt": "Search for material news about Trimble (TRMB, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "GPN",
+    "task": "daily_news",
+    "prompt": "Search for material news about GPN (GPN, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "HUBS",
+    "task": "daily_news",
+    "prompt": "Search for material news about HubSpot (HUBS, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "DDOG",
+    "task": "daily_news",
+    "prompt": "Search for material news about Datadog (DDOG, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "NET",
+    "task": "daily_news",
+    "prompt": "Search for material news about Cloudflare (NET, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "COIN",
+    "task": "daily_news",
+    "prompt": "Search for material news about Coinbase (COIN, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "BILL",
+    "task": "daily_news",
+    "prompt": "Search for material news about Bill.com (BILL, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "FOUR",
+    "task": "daily_news",
+    "prompt": "Search for material news about Shift4 Payments (FOUR, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "XYZ",
+    "task": "daily_news",
+    "prompt": "Search for material news about Block (XYZ, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "AFRM",
+    "task": "daily_news",
+    "prompt": "Search for material news about Affirm (AFRM, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "TTD",
+    "task": "daily_news",
+    "prompt": "Search for material news about Trade Desk (TTD, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "SOC",
+    "task": "daily_news",
+    "prompt": "Search for material news about Sable Offshore (SOC, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "GCT",
+    "task": "daily_news",
+    "prompt": "Search for material news about GigaCloud (GCT, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "OS",
+    "task": "daily_news",
+    "prompt": "Search for material news about OneStream (OS, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "RNG",
+    "task": "daily_news",
+    "prompt": "Search for material news about RingCentral (RNG, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "BSY",
+    "task": "daily_news",
+    "prompt": "Search for material news about Bentley Systems (BSY, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "AKAM",
+    "task": "daily_news",
+    "prompt": "Search for material news about Akamai (AKAM, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "ZTS",
+    "task": "daily_news",
+    "prompt": "Search for material news about ZTS (ZTS, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "MNDY",
+    "task": "daily_news",
+    "prompt": "Search for material news about monday.com (MNDY, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "HIMS",
+    "task": "daily_news",
+    "prompt": "Search for material news about Hims & Hers (HIMS, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "MOS",
+    "task": "daily_news",
+    "prompt": "Search for material news about MOS (MOS, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "SE",
+    "task": "daily_news",
+    "prompt": "Search for material news about Sea Limited (SE, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "CSU.TO",
+    "task": "daily_news",
+    "prompt": "Search for material news about Constellation Software (CSU.TO, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "DT",
+    "task": "daily_news",
+    "prompt": "Search for material news about Dynatrace (DT, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "WIX",
+    "task": "daily_news",
+    "prompt": "Search for material news about Wix (WIX, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "GLBE",
+    "task": "daily_news",
+    "prompt": "Search for material news about Global-E (GLBE, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "ZETA",
+    "task": "daily_news",
+    "prompt": "Search for material news about Zeta Global (ZETA, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "TEAM",
+    "task": "daily_news",
+    "prompt": "Search for material news about Atlassian (TEAM, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "LPLA",
+    "task": "daily_news",
+    "prompt": "Search for material news about LPL Financial (LPLA, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "SNDK",
+    "task": "daily_news",
+    "prompt": "Search for material news about SanDisk (SNDK, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "WDC",
+    "task": "daily_news",
+    "prompt": "Search for material news about Western Digital (WDC, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "ZETA",
+    "task": "daily_news",
+    "prompt": "Search for material news about Zeta Global (ZETA, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "TWLO",
+    "task": "daily_news",
+    "prompt": "Search for material news about Twilio (TWLO, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "CHKP",
+    "task": "daily_news",
+    "prompt": "Search for material news about Check Point (CHKP, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "GDDY",
+    "task": "daily_news",
+    "prompt": "Search for material news about GoDaddy (GDDY, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "VLO",
+    "task": "daily_news",
+    "prompt": "Search for material news about VLO (VLO, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "AEM",
+    "task": "daily_news",
+    "prompt": "Search for material news about AEM (AEM, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "CAT",
+    "task": "daily_news",
+    "prompt": "Search for material news about Caterpillar (CAT, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "CLX",
+    "task": "daily_news",
+    "prompt": "Search for material news about CLX (CLX, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "MHK",
+    "task": "daily_news",
+    "prompt": "Search for material news about MHK (MHK, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "LKQ",
+    "task": "daily_news",
+    "prompt": "Search for material news about LKQ (LKQ, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "AMZN",
+    "task": "daily_news",
+    "prompt": "Search for material news about Amazon (AMZN, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "GOOG",
+    "task": "daily_news",
+    "prompt": "Search for material news about Google (GOOG, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "META",
+    "task": "daily_news",
+    "prompt": "Search for material news about Meta (META, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "MSFT",
+    "task": "daily_news",
+    "prompt": "Search for material news about Microsoft (MSFT, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:42+00:00"
+  },
+  {
+    "ticker": "TENB",
+    "task": "daily_news",
+    "prompt": "Search for material news about Tenable (TENB, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "CFLT",
+    "task": "daily_news",
+    "prompt": "Search for material news about Confluent (CFLT, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "TYL",
+    "task": "daily_news",
+    "prompt": "Search for material news about Tyler Technologies (TYL, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "ADP",
+    "task": "daily_news",
+    "prompt": "Search for material news about ADP (ADP, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "GNRC",
+    "task": "daily_news",
+    "prompt": "Search for material news about Generac (GNRC, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "GEHC",
+    "task": "daily_news",
+    "prompt": "Search for material news about GEHC (GEHC, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "CTSH",
+    "task": "daily_news",
+    "prompt": "Search for material news about CTSH (CTSH, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "AVT",
+    "task": "daily_news",
+    "prompt": "Search for material news about AVT (AVT, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "VRNS",
+    "task": "daily_news",
+    "prompt": "Search for material news about Varonis (VRNS, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "ACGL",
+    "task": "daily_news",
+    "prompt": "Search for material news about Arch Capital (ACGL, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "MDLZ",
+    "task": "daily_news",
+    "prompt": "Search for material news about Mondelez (MDLZ, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "STX",
+    "task": "daily_news",
+    "prompt": "Search for material news about Seagate (STX, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "TER",
+    "task": "daily_news",
+    "prompt": "Search for material news about Teradyne (TER, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "GLW",
+    "task": "daily_news",
+    "prompt": "Search for material news about Corning (GLW, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "FICO",
+    "task": "daily_news",
+    "prompt": "Search for material news about FICO (FICO, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "KMB",
+    "task": "daily_news",
+    "prompt": "Search for material news about KMB (KMB, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "ZBH",
+    "task": "daily_news",
+    "prompt": "Search for material news about Zimmer Biomet (ZBH, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "CDNS",
+    "task": "daily_news",
+    "prompt": "Search for material news about Cadence (CDNS, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "NUE",
+    "task": "daily_news",
+    "prompt": "Search for material news about Nucor (NUE, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "TMO",
+    "task": "daily_news",
+    "prompt": "Search for material news about Thermo Fisher (TMO, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "CMCSA",
+    "task": "daily_news",
+    "prompt": "Search for material news about Comcast (CMCSA, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "FIX",
+    "task": "daily_news",
+    "prompt": "Search for material news about Comfort Systems (FIX, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "INTC",
+    "task": "daily_news",
+    "prompt": "Search for material news about Intel (INTC, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "ROP",
+    "task": "daily_news",
+    "prompt": "Search for material news about Roper Technologies (ROP, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "KDP",
+    "task": "daily_news",
+    "prompt": "Search for material news about KDP (KDP, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "BKR",
+    "task": "daily_news",
+    "prompt": "Search for material news about BKR (BKR, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "FCX",
+    "task": "daily_news",
+    "prompt": "Search for material news about Freeport-McMoRan (FCX, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "NEM",
+    "task": "daily_news",
+    "prompt": "Search for material news about Newmont (NEM, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "NOW",
+    "task": "daily_news",
+    "prompt": "Search for material news about ServiceNow (NOW, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "ELV",
+    "task": "daily_news",
+    "prompt": "Search for material news about Elevance Health (ELV, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "GEV",
+    "task": "daily_news",
+    "prompt": "Search for material news about GE Vernova (GEV, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "VRT",
+    "task": "daily_news",
+    "prompt": "Search for material news about VRT (VRT, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "IBM",
+    "task": "daily_news",
+    "prompt": "Search for material news about IBM (IBM, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "KALU",
+    "task": "daily_news",
+    "prompt": "Search for material news about KALU (KALU, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "UNH",
+    "task": "daily_news",
+    "prompt": "Search for material news about UnitedHealth (UNH, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "MANH",
+    "task": "daily_news",
+    "prompt": "Search for material news about Manhattan Associates (MANH, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "NOC",
+    "task": "daily_news",
+    "prompt": "Search for material news about NOC (NOC, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "COF",
+    "task": "daily_news",
+    "prompt": "Search for material news about Capital One (COF, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "SYF",
+    "task": "daily_news",
+    "prompt": "Search for material news about Synchrony Financial (SYF, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "UAL",
+    "task": "daily_news",
+    "prompt": "Search for material news about United Airlines (UAL, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "DHR",
+    "task": "daily_news",
+    "prompt": "Search for material news about Danaher (DHR, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "VMI",
+    "task": "daily_news",
+    "prompt": "Search for material news about VMI (VMI, ) in the last 48 hours only.\n\nReturn ONLY this JSON. No prose. No preamble. If no material news, return {\"has_material_update\": false, \"items\": [], \"catalyst_type\": \"none\"}.\n\n{\n  \"has_material_update\": true,\n  \"items\": [\n    {\"headline\": \"...\", \"impact\": \"positive/negative/neutral\", \"url\": \"...\"}\n  ],\n  \"catalyst_type\": \"earnings/guidance/analyst/product/regulatory/macro/none\"\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 600,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "GCT",
+    "task": "pre_earnings",
+    "prompt": "You are a buy-side equity analyst. Generate a pre-earnings brief for GigaCloud (GCT).\nEarnings date: 2026-05-07 (3 days away). Quarter: .\nConsensus: Rev $?B (?% YoY), EPS $?.\n\nReturn ONLY this JSON structure. No prose. No markdown. No preamble.\n\n{\n  \"setup\": \"2-3 sentences: stock price setup, key technical levels, YTD performance vs sector\",\n  \"key_debates\": [\"debate 1 (max 40 words)\", \"debate 2\", \"debate 3\"],\n  \"what_matters\": [\"metric 1 with threshold\", \"metric 2 with threshold\", \"metric 3\"],\n  \"guidance_watch\": \"1 sentence on the most important guidance line to watch\",\n  \"options_implied_move\": \"X%\",\n  \"scenarios\": {\n    \"bull\": {\"probability\": \"25%\", \"trigger\": \"...\", \"stock_move\": \"+X%\"},\n    \"base\": {\"probability\": \"50%\", \"trigger\": \"...\", \"stock_move\": \"+/-X%\"},\n    \"bear\": {\"probability\": \"25%\", \"trigger\": \"...\", \"stock_move\": \"-X%\"}\n  },\n  \"recent_news\": [\"item 1 (max 20 words)\", \"item 2\"],\n  \"analyst_changes\": [\"upgrade/downgrade 1 (max 20 words)\", \"item 2\"],\n  \"sources\": [\"url1\", \"url2\"]\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 1800,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "ZETA",
+    "task": "post_earnings",
+    "prompt": "You are a buy-side equity analyst. Write a post-earnings brief for Zeta Global (ZETA).\nReported: 2026-05-01.\nActuals: Rev $? vs $? est (?),\nEPS $? vs $? est (?),\nStock reaction: ?.\n\n\nReturn ONLY this JSON. No prose. No markdown. No preamble.\n\n{\n  \"headline\": \"1 sentence summary of the print\",\n  \"beat_miss_quality\": \"beat/miss/in-line + was it quality or noise? (max 30 words)\",\n  \"key_metrics\": [\"metric: actual vs est (1 line each)\", \"...\"],\n  \"guidance\": \"next Q and FY guidance vs consensus (1-2 sentences)\",\n  \"management_tone\": \"bullish/neutral/cautious + key quote or theme\",\n  \"surprises\": [\"positive surprise 1\", \"negative surprise 1\"],\n  \"thesis_impact\": \"reinforces/challenges/neutral + 1 sentence why\",\n  \"analyst_reactions\": [\"analyst firm: action, new PT (max 15 words)\", \"...\"],\n  \"stock_outlook\": \"1 sentence near-term view\",\n  \"sources\": [\"url1\", \"url2\"]\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 2000,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "CAT",
+    "task": "post_earnings",
+    "prompt": "You are a buy-side equity analyst. Write a post-earnings brief for Caterpillar (CAT).\nReported: 2026-04-30.\nActuals: Rev $? vs $? est (?),\nEPS $? vs $? est (?),\nStock reaction: ?.\n\n\nReturn ONLY this JSON. No prose. No markdown. No preamble.\n\n{\n  \"headline\": \"1 sentence summary of the print\",\n  \"beat_miss_quality\": \"beat/miss/in-line + was it quality or noise? (max 30 words)\",\n  \"key_metrics\": [\"metric: actual vs est (1 line each)\", \"...\"],\n  \"guidance\": \"next Q and FY guidance vs consensus (1-2 sentences)\",\n  \"management_tone\": \"bullish/neutral/cautious + key quote or theme\",\n  \"surprises\": [\"positive surprise 1\", \"negative surprise 1\"],\n  \"thesis_impact\": \"reinforces/challenges/neutral + 1 sentence why\",\n  \"analyst_reactions\": [\"analyst firm: action, new PT (max 15 words)\", \"...\"],\n  \"stock_outlook\": \"1 sentence near-term view\",\n  \"sources\": [\"url1\", \"url2\"]\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 2000,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "CLX",
+    "task": "post_earnings",
+    "prompt": "You are a buy-side equity analyst. Write a post-earnings brief for CLX (CLX).\nReported: 2026-04-30.\nActuals: Rev $? vs $? est (?),\nEPS $? vs $? est (?),\nStock reaction: ?.\n\n\nReturn ONLY this JSON. No prose. No markdown. No preamble.\n\n{\n  \"headline\": \"1 sentence summary of the print\",\n  \"beat_miss_quality\": \"beat/miss/in-line + was it quality or noise? (max 30 words)\",\n  \"key_metrics\": [\"metric: actual vs est (1 line each)\", \"...\"],\n  \"guidance\": \"next Q and FY guidance vs consensus (1-2 sentences)\",\n  \"management_tone\": \"bullish/neutral/cautious + key quote or theme\",\n  \"surprises\": [\"positive surprise 1\", \"negative surprise 1\"],\n  \"thesis_impact\": \"reinforces/challenges/neutral + 1 sentence why\",\n  \"analyst_reactions\": [\"analyst firm: action, new PT (max 15 words)\", \"...\"],\n  \"stock_outlook\": \"1 sentence near-term view\",\n  \"sources\": [\"url1\", \"url2\"]\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 2000,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "MHK",
+    "task": "post_earnings",
+    "prompt": "You are a buy-side equity analyst. Write a post-earnings brief for MHK (MHK).\nReported: 2026-04-30.\nActuals: Rev $? vs $? est (?),\nEPS $? vs $? est (?),\nStock reaction: ?.\n\n\nReturn ONLY this JSON. No prose. No markdown. No preamble.\n\n{\n  \"headline\": \"1 sentence summary of the print\",\n  \"beat_miss_quality\": \"beat/miss/in-line + was it quality or noise? (max 30 words)\",\n  \"key_metrics\": [\"metric: actual vs est (1 line each)\", \"...\"],\n  \"guidance\": \"next Q and FY guidance vs consensus (1-2 sentences)\",\n  \"management_tone\": \"bullish/neutral/cautious + key quote or theme\",\n  \"surprises\": [\"positive surprise 1\", \"negative surprise 1\"],\n  \"thesis_impact\": \"reinforces/challenges/neutral + 1 sentence why\",\n  \"analyst_reactions\": [\"analyst firm: action, new PT (max 15 words)\", \"...\"],\n  \"stock_outlook\": \"1 sentence near-term view\",\n  \"sources\": [\"url1\", \"url2\"]\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 2000,
+    "queued_at": "2026-05-04T11:18:43+00:00"
+  },
+  {
+    "ticker": "LKQ",
+    "task": "post_earnings",
+    "prompt": "You are a buy-side equity analyst. Write a post-earnings brief for LKQ (LKQ).\nReported: 2026-04-30.\nActuals: Rev $? vs $? est (?),\nEPS $? vs $? est (?),\nStock reaction: ?.\n\n\nReturn ONLY this JSON. No prose. No markdown. No preamble.\n\n{\n  \"headline\": \"1 sentence summary of the print\",\n  \"beat_miss_quality\": \"beat/miss/in-line + was it quality or noise? (max 30 words)\",\n  \"key_metrics\": [\"metric: actual vs est (1 line each)\", \"...\"],\n  \"guidance\": \"next Q and FY guidance vs consensus (1-2 sentences)\",\n  \"management_tone\": \"bullish/neutral/cautious + key quote or theme\",\n  \"surprises\": [\"positive surprise 1\", \"negative surprise 1\"],\n  \"thesis_impact\": \"reinforces/challenges/neutral + 1 sentence why\",\n  \"analyst_reactions\": [\"analyst firm: action, new PT (max 15 words)\", \"...\"],\n  \"stock_outlook\": \"1 sentence near-term view\",\n  \"sources\": [\"url1\", \"url2\"]\n}",
+    "system": "Return only structured JSON. No prose, no markdown fences.",
+    "max_tokens": 2000,
+    "queued_at": "2026-05-04T11:18:43+00:00"
   }
 ]
