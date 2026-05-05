@@ -191,7 +191,17 @@ async function renderPopupContent(ticker, data, summary, chart, estimatesData) {
   // --- Build HTML ---
   let html = '';
 
-  // Header
+  // Header — includes Quality + Debate score badges
+  let scoreBadgesHtml = '';
+  if (window.SignalScores) {
+    const q = window.SignalScores.calculateQualityScore(data);
+    const dd = window.SignalScores.calculateDebateIntensity(data);
+    scoreBadgesHtml = `<div class="popup-score-row">${
+      window.SignalScores.buildBadgeHtml(q, 'quality', { compact: false })
+    }${
+      window.SignalScores.buildBadgeHtml(dd, 'debate', { compact: false })
+    }</div>`;
+  }
   html += `
     <div class="popup-header">
       <span class="popup-ticker">${ticker}</span>
@@ -200,6 +210,7 @@ async function renderPopupContent(ticker, data, summary, chart, estimatesData) {
         <span class="popup-price">${formatPrice(price)}</span>
         <span class="popup-change ${percentClass(change1d)}">${formatPercent(change1d)}</span>
       </div>
+      ${scoreBadgesHtml}
     </div>
   `;
 

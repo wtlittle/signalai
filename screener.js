@@ -27,6 +27,8 @@
     { key: 'm3', label: '3M %', type: 'range', format: 'percent' },
     { key: 'y1', label: '1Y %', type: 'range', format: 'percent' },
     { key: 'price', label: 'Price', type: 'range', format: 'money' },
+    { key: 'qualityScore', label: 'Quality Score', type: 'range', format: 'number' },
+    { key: 'debateScore', label: 'Debate Intensity', type: 'range', format: 'number' },
   ];
 
   // Inject the screener toolbar into the public section header

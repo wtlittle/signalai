@@ -70,6 +70,14 @@
     var data = (typeof global.tickerData !== 'undefined' && global.tickerData) ||
                (global.SignalCoverage && global.SignalCoverage.getState && global.SignalCoverage.getState().tickerData) ||
                null;
+    // app.js declares tickerData as a module-scope `let`; fall back to the
+    // bare-identifier eval pattern used elsewhere (coverage-controller.js).
+    if (!data) {
+      try {
+        var ref = (0, eval)('typeof tickerData !== "undefined" ? tickerData : null');
+        if (ref) data = ref;
+      } catch (_) { /* ignore */ }
+    }
     if (!data) return null;
     return data[ticker] || null;
   }
@@ -141,11 +149,21 @@
 
     var stats = '';
     if (live) {
+      // Quality + Debate badges — last two KPI cards per spec
+      var qBadge = '—', dBadge = '—';
+      if (window.SignalScores) {
+        var q = window.SignalScores.calculateQualityScore(live);
+        var dd = window.SignalScores.calculateDebateIntensity(live);
+        qBadge = window.SignalScores.buildBadgeHtml(q, 'quality', { compact: false });
+        dBadge = window.SignalScores.buildBadgeHtml(dd, 'debate', { compact: false });
+      }
       stats =
         '<div class="dd-mast-stats">' +
           '<div class="dd-mast-stat"><span>Price</span><strong>' + _esc(_fmtPrice(live.price)) + '</strong></div>' +
           '<div class="dd-mast-stat"><span>EV/Sales</span><strong>' + _esc(live.evSales != null ? Number(live.evSales).toFixed(1) + 'x' : '—') + '</strong></div>' +
           '<div class="dd-mast-stat"><span>Rev growth</span><strong>' + _esc(live.revenueGrowth != null ? (live.revenueGrowth >= 0 ? '+' : '') + Number(live.revenueGrowth).toFixed(1) + '%' : '—') + '</strong></div>' +
+          '<div class="dd-mast-stat dd-mast-stat-score"><span>Quality</span>' + qBadge + '</div>' +
+          '<div class="dd-mast-stat dd-mast-stat-score"><span>Debate</span>' + dBadge + '</div>' +
         '</div>';
     }
 

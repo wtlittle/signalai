@@ -6577,3 +6577,223 @@ mark.search-highlight {
   font-weight: 600;
   color: var(--text-primary, #e5e7eb);
 }
+
+/* ========================================================================
+   Quality Score + Debate Intensity badges
+   Tier colors derive from existing palette:
+     Quality:  Elite=teal-deep, High=teal, Moderate=gold, Low=orange, Weak=red
+     Debate:   High=amber, Active=gold, Moderate=neutral, Low=muted
+   ======================================================================== */
+
+.ss-score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.2px;
+  border: 1px solid transparent;
+  background: var(--bg-surface-alt);
+  color: var(--text-secondary);
+  cursor: default;
+  white-space: nowrap;
+  position: relative;
+  vertical-align: middle;
+}
+.ss-score-badge .ss-score-num {
+  font-size: 12px;
+  font-weight: 700;
+}
+.ss-score-badge .ss-score-sep {
+  color: var(--text-muted);
+  margin: 0 1px;
+}
+.ss-score-compact { padding: 1px 6px; gap: 2px; font-size: 10px; }
+.ss-score-compact .ss-score-num { font-size: 11px; }
+
+/* Quality tiers */
+.ss-score-quality.ss-score-elite {
+  background: rgba(13, 148, 136, 0.18);
+  color: #5eead4;
+  border-color: rgba(20, 184, 166, 0.40);
+}
+.ss-score-quality.ss-score-high {
+  background: rgba(20, 184, 166, 0.12);
+  color: #2dd4bf;
+  border-color: rgba(20, 184, 166, 0.30);
+}
+.ss-score-quality.ss-score-moderate {
+  background: rgba(234, 179, 8, 0.12);
+  color: #facc15;
+  border-color: rgba(234, 179, 8, 0.30);
+}
+.ss-score-quality.ss-score-low {
+  background: rgba(249, 115, 22, 0.14);
+  color: #fb923c;
+  border-color: rgba(249, 115, 22, 0.30);
+}
+.ss-score-quality.ss-score-weak {
+  background: rgba(239, 68, 68, 0.10);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.28);
+}
+
+/* Debate tiers */
+.ss-score-debate.ss-score-high {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.40);
+}
+.ss-score-debate.ss-score-active {
+  background: rgba(234, 179, 8, 0.12);
+  color: #facc15;
+  border-color: rgba(234, 179, 8, 0.28);
+}
+.ss-score-debate.ss-score-moderate {
+  background: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+.ss-score-debate.ss-score-low {
+  background: rgba(107, 114, 128, 0.12);
+  color: var(--text-secondary);
+  border-color: rgba(107, 114, 128, 0.24);
+}
+
+/* N/A */
+.ss-score-na, .ss-score-badge.ss-score-na {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: rgba(107, 114, 128, 0.20);
+}
+
+/* Rich (non-compact) badge with hover tooltip card */
+.ss-score-rich {
+  cursor: help;
+  outline: none;
+}
+.ss-score-tip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  display: none;
+  pointer-events: none;
+}
+.ss-score-rich:hover .ss-score-tip,
+.ss-score-rich:focus .ss-score-tip,
+.ss-score-rich:focus-within .ss-score-tip {
+  display: block;
+}
+
+.ss-bd-card {
+  width: 320px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.40);
+  padding: 12px;
+  text-align: left;
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+}
+.ss-bd-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+.ss-bd-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-secondary);
+}
+.ss-bd-headline {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+.ss-bd-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.ss-bd-row:last-child { border-bottom: none; }
+.ss-bd-row-skip { opacity: 0.55; }
+.ss-bd-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.ss-bd-meta {
+  grid-column: 1 / 2;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.ss-bd-score {
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.ss-bd-skip {
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;
+  align-self: center;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.ss-bd-foot {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Watchlist row score cells */
+.watchlist-table td.cell-quality,
+.watchlist-table td.cell-debate {
+  padding: 4px 6px;
+}
+.watchlist-table th.col-quality,
+.watchlist-table th.col-debate {
+  white-space: nowrap;
+}
+
+/* Popup header score row */
+.popup-header { flex-wrap: wrap; }
+.popup-score-row {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+  align-items: center;
+}
+
+/* Drilldown masthead score stat \u2014 align badge next to the label */
+.dd-mast-stat-score {
+  align-items: flex-start;
+}
+.dd-mast-stat-score .ss-score-badge {
+  margin-top: 2px;
+}
+

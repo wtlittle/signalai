@@ -163,8 +163,39 @@ function heatStyle(v) {
   return v >= 0 ? `style="background: rgba(34,197,94,${o});"` : `style="background: rgba(239,68,68,${o});"`;
 }
 
+// --- Score helpers (Quality + Debate Intensity) ---
+// _ensureScores: compute (and cache on the record) Quality + Debate scores.
+// Called lazily during render and sort so any new data refresh is picked up.
+function _ensureScores(d) {
+  if (!d || typeof d !== 'object') return d;
+  if (!window.SignalScores) return d;
+  // Re-compute on each render — cheap (<0.1ms per ticker) and ensures freshness.
+  const q = window.SignalScores.calculateQualityScore(d);
+  const dd = window.SignalScores.calculateDebateIntensity(d);
+  d.qualityScore = q.score;
+  d.qualityTier = q.tier;
+  d._qualityResult = q;
+  d.debateScore = dd.score;
+  d.debateTier = dd.tier;
+  d._debateResult = dd;
+  return d;
+}
+
+function _renderScoreCell(d, kind) {
+  if (!window.SignalScores) return '<span class="ss-score-na">—</span>';
+  _ensureScores(d);
+  const result = kind === 'quality' ? d._qualityResult : d._debateResult;
+  if (!result) return '<span class="ss-score-na">—</span>';
+  return window.SignalScores.buildBadgeHtml(result, kind, { compact: true, showLabel: false });
+}
+
 // --- Render main table ---
 function renderTable() {
+  // Ensure scores are recomputed before sort/render so freshly fetched data
+  // produces up-to-date Quality / Debate values.
+  if (window.SignalScores) {
+    Object.keys(tickerData || {}).forEach(t => _ensureScores(tickerData[t]));
+  }
   $body.innerHTML = '';
   const groups = groupBySubsector(tickerList);
 
@@ -258,6 +289,8 @@ function renderTable() {
         <td class="num heat-cell ${percentClass(d.m3)}" ${heatStyle(d.m3)}>${formatPercent(d.m3)}</td>
         <td class="num heat-cell ${percentClass(d.y1)}" ${heatStyle(d.y1)}>${formatPercent(d.y1)}</td>
         <td class="num heat-cell ${percentClass(d.y3)}" ${heatStyle(d.y3)}>${formatPercent(d.y3)}</td>
+        <td class="num cell-quality">${_renderScoreCell(d, 'quality')}</td>
+        <td class="num cell-debate">${_renderScoreCell(d, 'debate')}</td>
         <td><button class="remove-btn" data-ticker="${ticker}" title="Remove">&times;</button></td>
       `;
       } catch (renderErr) {
@@ -267,7 +300,7 @@ function renderTable() {
         tr.innerHTML = `
           ${cmpCell}
           <td class="cell-ticker pin-col pin-col-1" data-ticker="${ticker}">${ticker}</td>
-          <td class="cell-name pin-col pin-col-2" colspan="14" style="color: var(--text-muted, #888); font-style: italic;">Data unavailable</td>
+          <td class="cell-name pin-col pin-col-2" colspan="16" style="color: var(--text-muted, #888); font-style: italic;">Data unavailable</td>
           <td><button class="remove-btn" data-ticker="${ticker}" title="Remove">&times;</button></td>
         `;
       }
