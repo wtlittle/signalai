@@ -56,8 +56,55 @@ let refreshCountdown = 60;
     }
   });
 
+  // 3. Merge funding_history from PRIVATE_FUNDING_HISTORY map (auto-enriched).
+  //    Never overwrite user-entered rounds; merge by round + date.
+  if (window.PRIVATE_FUNDING_HISTORY) {
+    privateCompanies.forEach((c, i) => {
+      const seed = window.PRIVATE_FUNDING_HISTORY[c.name];
+      if (!seed || !seed.length) return;
+      const existing = Array.isArray(c.funding_history) ? c.funding_history.slice() : [];
+      const seenKey = new Set(existing.map(r => `${(r.round || '').toLowerCase()}|${r.date || ''}`));
+      seed.forEach(r => {
+        const key = `${(r.round || '').toLowerCase()}|${r.date || ''}`;
+        if (!seenKey.has(key)) {
+          existing.push(r);
+          seenKey.add(key);
+        }
+      });
+      existing.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      c.funding_history = existing;
+      // Derive summary fields
+      const summary = computeFundingSummary(existing);
+      c.total_raised_usd = summary.total_raised_usd;
+      c.last_round_type = summary.last_round_type;
+      c.last_round_date = summary.last_round_date;
+      c.estimated_valuation = summary.estimated_valuation;
+      privateCompanies[i] = c;
+    });
+  }
+
   Storage.set('private_companies', privateCompanies);
 })();
+
+// --- Compute funding summary fields from a funding_history array ---
+function computeFundingSummary(history) {
+  if (!Array.isArray(history) || !history.length) {
+    return { total_raised_usd: 0, last_round_type: null, last_round_date: null, estimated_valuation: null };
+  }
+  let total = 0;
+  history.forEach(r => { if (typeof r.amount_usd === 'number') total += r.amount_usd; });
+  const sorted = history.slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  const latest = sorted[sorted.length - 1];
+  // Find latest round with a valuation (may not be the most recent round)
+  const valued = sorted.filter(r => typeof r.valuation_usd === 'number' && r.valuation_usd > 0);
+  const latestValued = valued.length ? valued[valued.length - 1] : null;
+  return {
+    total_raised_usd: total || null,
+    last_round_type: latest.round || null,
+    last_round_date: latest.date || null,
+    estimated_valuation: latestValued ? latestValued.valuation_usd : null
+  };
+}
 
 // --- DOM refs ---
 const $body = document.getElementById('watchlist-body');
@@ -574,6 +621,7 @@ async function addPrivateFromInline() {
   try {
     const co = await lookupPrivateCompany(name);
     co.name = capitalizeCompanyName(co.name || name);
+    mergeFundingHistoryIntoCompany(co, []);
     privateCompanies.push(co);
     savePrivate();
     renderPrivateTable();
@@ -581,6 +629,7 @@ async function addPrivateFromInline() {
   } catch (err) {
     console.error('Inline private lookup error:', err);
     const co = { name: capitalizeCompanyName(name), subsector: 'Unknown', valuation: 'N/A', funding: 'N/A', revenue: 'N/A', metrics: '' };
+    mergeFundingHistoryIntoCompany(co, []);
     privateCompanies.push(co);
     savePrivate();
     renderPrivateTable();
@@ -612,6 +661,92 @@ $privateInput.addEventListener('keydown', (e) => {
 $privateModalClose.addEventListener('click', () => {
   $privateModalOverlay.classList.remove('active');
 });
+
+// --- Funding Rounds builder in the Add Company modal ---
+const $privateRoundsList = document.getElementById('private-rounds-list');
+const $privateAddRoundBtn = document.getElementById('private-add-round-btn');
+
+function _privateRoundRowTemplate(idx) {
+  return `<div class="private-round-row" data-round-idx="${idx}">
+    <div class="private-round-grid">
+      <label class="pr-field pr-field-round">Round
+        <input type="text" name="round_${idx}" placeholder="e.g. Series B" required>
+      </label>
+      <label class="pr-field pr-field-date">Date
+        <input type="text" name="date_${idx}" placeholder="YYYY-MM-DD" pattern="\\d{4}(-\\d{2}(-\\d{2})?)?">
+      </label>
+      <label class="pr-field pr-field-amt">Amount ($M)
+        <input type="number" name="amount_${idx}" placeholder="100" min="0" step="any" required>
+      </label>
+      <label class="pr-field pr-field-val">Post-Money ($B)
+        <input type="number" name="valuation_${idx}" placeholder="3.0" min="0" step="any">
+      </label>
+      <label class="pr-field pr-field-lead">Lead Investor(s)
+        <input type="text" name="leads_${idx}" placeholder="e.g. Sequoia, Andreessen Horowitz">
+      </label>
+      <label class="pr-field pr-field-co">Co-investors (comma-separated)
+        <input type="text" name="coinvestors_${idx}" placeholder="Optional">
+      </label>
+      <label class="pr-field pr-field-source">Source
+        <input type="text" name="source_${idx}" placeholder="Crunchbase, TechCrunch, Press Release...">
+      </label>
+    </div>
+    <button type="button" class="pr-remove-btn" data-round-remove="${idx}" title="Remove this round">×</button>
+  </div>`;
+}
+
+let _privateRoundsCounter = 0;
+function addPrivateRoundRow() {
+  if (!$privateRoundsList) return;
+  const idx = _privateRoundsCounter++;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = _privateRoundRowTemplate(idx);
+  const node = wrap.firstElementChild;
+  $privateRoundsList.appendChild(node);
+  node.querySelector('[data-round-remove]').addEventListener('click', () => node.remove());
+  return node;
+}
+
+function collectPrivateRounds() {
+  if (!$privateRoundsList) return [];
+  const rows = $privateRoundsList.querySelectorAll('.private-round-row');
+  const out = [];
+  rows.forEach(row => {
+    const idx = row.getAttribute('data-round-idx');
+    const get = (n) => (row.querySelector(`input[name="${n}_${idx}"]`) || {}).value || '';
+    const round = get('round').trim();
+    const amtRaw = get('amount').trim();
+    if (!round || !amtRaw) return;
+    const amount_usd = parseFloat(amtRaw) * 1e6;
+    if (!isFinite(amount_usd) || amount_usd <= 0) return;
+    const r = { round, amount_usd };
+    const date = get('date').trim();
+    if (date) r.date = date;
+    const valRaw = get('valuation').trim();
+    if (valRaw) {
+      const v = parseFloat(valRaw);
+      if (isFinite(v) && v > 0) r.valuation_usd = v * 1e9;
+    }
+    const leads = get('leads').trim();
+    if (leads) r.lead_investors = leads;
+    const coInv = get('coinvestors').trim();
+    if (coInv) r.co_investors = coInv.split(',').map(s => s.trim()).filter(Boolean);
+    const source = get('source').trim();
+    if (source) r.source = source;
+    out.push(r);
+  });
+  out.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  return out;
+}
+
+function resetPrivateRounds() {
+  if ($privateRoundsList) $privateRoundsList.innerHTML = '';
+  _privateRoundsCounter = 0;
+}
+
+if ($privateAddRoundBtn) {
+  $privateAddRoundBtn.addEventListener('click', () => addPrivateRoundRow());
+}
 $privateModalOverlay.addEventListener('click', (e) => {
   if (e.target === $privateModalOverlay) $privateModalOverlay.classList.remove('active');
 });
@@ -725,17 +860,23 @@ $privateForm.addEventListener('submit', async (e) => {
   setPrivateFormLoading(true);
   showLookupStatus(`Looking up ${name}...`, 'loading');
 
+  // Capture user-entered rounds before any async work
+  const userRounds = collectPrivateRounds();
+
   try {
     const co = await lookupPrivateCompany(name);
     co.name = capitalizeCompanyName(co.name || name);
+    mergeFundingHistoryIntoCompany(co, userRounds);
     privateCompanies.push(co);
     savePrivate();
     renderPrivateTable();
     $privateForm.reset();
+    resetPrivateRounds();
 
     const details = [co.valuation, co.subsector, co.revenue].filter(v => v && v !== 'N/A').join(' · ');
-    showLookupStatus(`Added ${co.name}${details ? ': ' + details : ''}`, 'success');
-    
+    const roundMsg = userRounds.length ? ` (with ${userRounds.length} round${userRounds.length === 1 ? '' : 's'})` : '';
+    showLookupStatus(`Added ${co.name}${details ? ': ' + details : ''}${roundMsg}`, 'success');
+
     // Close modal after a brief delay
     setTimeout(() => {
       $privateModalOverlay.classList.remove('active');
@@ -745,10 +886,12 @@ $privateForm.addEventListener('submit', async (e) => {
     // Still add with just the name
     const properName = capitalizeCompanyName(name);
     const co = { name: properName, subsector: 'Unknown', valuation: 'N/A', funding: 'N/A', revenue: 'N/A', metrics: '' };
+    mergeFundingHistoryIntoCompany(co, userRounds);
     privateCompanies.push(co);
     savePrivate();
     renderPrivateTable();
     $privateForm.reset();
+    resetPrivateRounds();
     showLookupStatus(`Added ${properName} (lookup failed, details can be edited later)`, 'error');
     setTimeout(() => {
       $privateModalOverlay.classList.remove('active');
@@ -757,6 +900,31 @@ $privateForm.addEventListener('submit', async (e) => {
     setPrivateFormLoading(false);
   }
 });
+
+// --- Merge user-entered rounds with auto-enrichment seed for new companies ---
+function mergeFundingHistoryIntoCompany(co, userRounds) {
+  const seed = (window.PRIVATE_FUNDING_HISTORY || {})[co.name] || [];
+  const merged = [];
+  const seen = new Set();
+  // User-entered rounds win precedence (added first)
+  (userRounds || []).forEach(r => {
+    const key = `${(r.round || '').toLowerCase()}|${r.date || ''}`;
+    if (!seen.has(key)) { merged.push(r); seen.add(key); }
+  });
+  seed.forEach(r => {
+    const key = `${(r.round || '').toLowerCase()}|${r.date || ''}`;
+    if (!seen.has(key)) { merged.push(r); seen.add(key); }
+  });
+  merged.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  if (merged.length) {
+    co.funding_history = merged;
+    const summary = computeFundingSummary(merged);
+    co.total_raised_usd = summary.total_raised_usd;
+    co.last_round_type = summary.last_round_type;
+    co.last_round_date = summary.last_round_date;
+    co.estimated_valuation = summary.estimated_valuation;
+  }
+}
 
 // --- Total market cap ---
 function updateTotalMcap() {

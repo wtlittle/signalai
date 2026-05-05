@@ -196,12 +196,34 @@ function renderFundingHistoryTab(co, intel) {
   const fh = traj.getFundingHistory(co);
   const vh = traj.getValuationHistory(co);
   if (!fh.length && !vh.length) {
-    return '<div class="pd-section"><div class="pd-empty">No funding history available for this company yet.</div></div>';
+    return '<div class="pd-section"><div class="pd-empty">No funding data available. Add rounds manually using the edit form.</div></div>';
   }
+
+  // Summary block — Total Raised, Most Recent Round, Estimated Valuation
+  let totalRaised = 0;
+  fh.forEach(r => { if (typeof r.amount_usd === 'number') totalRaised += r.amount_usd; });
+  const latest = fh.length ? fh[fh.length - 1] : null;
+  const valued = fh.filter(r => typeof r.valuation_usd === 'number' && r.valuation_usd > 0);
+  const latestValued = valued.length ? valued[valued.length - 1] : null;
+  const summaryItems = [];
+  if (totalRaised > 0) {
+    summaryItems.push(`<div class="pd-fund-summary-item"><span class="pd-fund-summary-label">Total Raised</span><span class="pd-fund-summary-value">${traj.formatUsd(totalRaised)}</span></div>`);
+  }
+  if (latest) {
+    const amt = latest.amount_usd ? ' · ' + traj.formatUsd(latest.amount_usd) : '';
+    summaryItems.push(`<div class="pd-fund-summary-item"><span class="pd-fund-summary-label">Most Recent Round</span><span class="pd-fund-summary-value">${latest.round || '—'}${latest.date ? ' · ' + latest.date : ''}${amt}</span></div>`);
+  }
+  if (latestValued) {
+    summaryItems.push(`<div class="pd-fund-summary-item"><span class="pd-fund-summary-label">Estimated Valuation</span><span class="pd-fund-summary-value">${traj.formatUsd(latestValued.valuation_usd)}</span></div>`);
+  }
+  summaryItems.push(`<div class="pd-fund-summary-item"><span class="pd-fund-summary-label">Rounds Tracked</span><span class="pd-fund-summary-value">${fh.length}</span></div>`);
 
   // Compute cumulative returns vs first tracked round
   const firstVal = vh.length ? vh[0].valuation_usd : null;
-  let html = '<div class="pd-section"><div class="pd-section-title">Round-by-Round History</div>';
+  let html = '<div class="pd-section pd-fund-summary-card">' +
+             '<div class="pd-fund-summary-grid">' + summaryItems.join('') + '</div>' +
+             '</div>';
+  html += '<div class="pd-section"><div class="pd-section-title">Round-by-Round History</div>';
   html += '<table class="pd-funding-table"><thead><tr>' +
     '<th>Date</th><th>Round</th><th class="num">Raised</th><th class="num">Post-money</th>' +
     '<th>Lead Investors</th><th class="num">Δ Prior</th><th class="num">Cum. vs First</th>' +

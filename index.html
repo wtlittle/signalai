@@ -13,7 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260422d">
+<link rel="stylesheet" href="styles.css?v=20260505a">
 <link rel="stylesheet" href="redesign.css?v=20260430b">
 <script src="snapshot-config.js?v=20260422e"></script>
 <script src="snapshot-banner.js?v=20260422"></script>
@@ -561,6 +561,14 @@
           <input type="text" name="name" required placeholder="e.g. Databricks, Stripe, SpaceX" autocomplete="off" spellcheck="false">
         </label>
         <div class="private-form-hint">We'll look up subsector, valuation, funding, revenue, and key metrics automatically.</div>
+
+        <fieldset class="private-rounds-fieldset">
+          <legend>Funding Rounds (optional)</legend>
+          <div class="private-rounds-hint">Add any historical rounds you want to track. Round name and amount are required for each row. Auto-enrichment will fill in additional rounds for known companies.</div>
+          <div id="private-rounds-list" class="private-rounds-list"></div>
+          <button type="button" id="private-add-round-btn" class="btn-sm private-add-round-btn">+ Add Funding Round</button>
+        </fieldset>
+
         <button type="submit" class="btn-primary" id="private-submit-btn">
           <span id="private-submit-text">Look Up &amp; Add</span>
           <span id="private-submit-spinner" class="btn-spinner" style="display:none;"></span>
@@ -584,14 +592,15 @@
   <script src="popup.js?v=20260423c"></script>
   <script src="earnings.js?v=20260425a"></script>
   <script src="private-intel.js?v=20260406"></script>
-  <script src="private-trajectory.js?v=20260422"></script>
-  <script src="private-popup.js?v=20260424a"></script>
+  <script src="private-trajectory.js?v=20260505a"></script>
+  <script src="private-funding-history.js?v=20260505a"></script>
+  <script src="private-popup.js?v=20260505a"></script>
   <script src="note-enhancements.js?v=20260422e"></script>
   <script src="weekly-briefing.js?v=20260430a"></script>
   <script src="macro.js?v=20260430a"></script>
   <script src="alerts.js?v=20260422"></script>
   <script src="compare.js?v=20260422b"></script>
-  <script src="app.js?v=20260430a"></script>
+  <script src="app.js?v=20260505a"></script>
   <script src="screener.js?v=20260422e"></script>
   <script src="screener-presets.js?v=20260422"></script>
   <script src="shell.js?v=20260504a"></script>

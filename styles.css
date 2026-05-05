@@ -6436,3 +6436,144 @@ mark.search-highlight {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* ===== PRIVATE COMPANY — FUNDING ROUNDS FORM (modal) ===== */
+.private-modal { max-width: 720px; }
+.private-rounds-fieldset {
+  border: 1px solid var(--border, #334155);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 14px 0 10px;
+  background: var(--bg-surface-alt, rgba(15, 23, 42, 0.4));
+}
+.private-rounds-fieldset legend {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary, #e5e7eb);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 0 6px;
+}
+.private-rounds-hint {
+  font-size: 12px;
+  color: var(--text-muted, #94a3b8);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.private-rounds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.private-round-row {
+  position: relative;
+  background: var(--bg-surface, rgba(30, 41, 59, 0.5));
+  border: 1px solid var(--border, #334155);
+  border-radius: 8px;
+  padding: 12px 38px 12px 12px;
+}
+.private-round-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 12px;
+}
+.private-round-grid .pr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.private-round-grid .pr-field input {
+  background: var(--bg-page, #0f172a);
+  color: var(--text-primary, #e5e7eb);
+  border: 1px solid var(--border, #334155);
+  border-radius: 6px;
+  padding: 7px 9px;
+  font-size: 13px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.private-round-grid .pr-field input:focus {
+  border-color: var(--accent, #3b82f6);
+  outline: none;
+}
+.pr-field-round, .pr-field-source { grid-column: span 1; }
+.pr-field-lead { grid-column: span 2; }
+.pr-field-co { grid-column: span 2; }
+@media (max-width: 540px) {
+  .private-round-grid { grid-template-columns: 1fr; }
+  .pr-field-lead, .pr-field-co { grid-column: span 1; }
+}
+.pr-remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--border, #334155);
+  background: transparent;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pr-remove-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+.private-add-round-btn {
+  margin-top: 12px;
+  background: transparent;
+  border: 1px dashed var(--border, #334155);
+  color: var(--text-secondary, #cbd5e1);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.private-add-round-btn:hover {
+  border-color: var(--accent, #3b82f6);
+  color: var(--accent, #3b82f6);
+}
+
+/* ===== PRIVATE POPUP — FUNDING SUMMARY CARD ===== */
+.pd-fund-summary-card {
+  background: var(--bg-surface, rgba(30, 41, 59, 0.5));
+  border: 1px solid var(--border, #334155);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.pd-fund-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px 22px;
+}
+.pd-fund-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pd-fund-summary-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted, #94a3b8);
+  font-weight: 600;
+}
+.pd-fund-summary-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #e5e7eb);
+}
