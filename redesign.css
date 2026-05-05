@@ -488,15 +488,20 @@
 }
 
 .ctx-empty {
-  color: var(--text-secondary);
+  color: var(--text-muted);
+  padding: 16px;
+  border: 1px dashed var(--border-light, #2a2f37);
+  border-radius: 6px;
+  background: transparent;
 }
 .ctx-empty-title {
-  color: var(--text-primary);
-  font-weight: 600;
+  color: var(--text-secondary);
+  font-weight: 500;
   margin-bottom: 6px;
-  font-size: 14px;
+  font-size: 13px;
+  letter-spacing: 0.2px;
 }
-.ctx-empty-body { font-size: 12px; line-height: 1.5; }
+.ctx-empty-body { font-size: 11px; line-height: 1.5; color: var(--text-muted); }
 
 .ctx-header {
   display: flex;

@@ -147,6 +147,16 @@ function parseTickerData(ticker, chart, quote) {
   }
 
   // EV
+  // Sanity guard: yfinance occasionally returns enterpriseValue in a
+  // foreign currency for dual-listed ADRs (TSM in TWD, etc.). When the
+  // raw EV is implausibly large vs the USD market cap (>5x), drop it
+  // and let the computed fallback (mcap + debt - cash) take over.
+  if (
+    row.enterpriseValue && row.marketCap &&
+    row.enterpriseValue / row.marketCap > 5
+  ) {
+    row.enterpriseValue = null;
+  }
   row.ev = row.enterpriseValue;
   if (!row.ev && row.marketCap) {
     row.ev = row.marketCap + (row.totalDebt || 0) - (row.totalCash || 0);
