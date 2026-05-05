@@ -362,15 +362,35 @@ function renderTable() {
   });
 
   // Inject/remove a leading compare header cell based on compare mode.
-  const _hdrRow = document.querySelector('.watchlist-table thead tr');
-  if (_hdrRow) {
-    const existing = _hdrRow.querySelector('.col-compare');
-    const cmpOn = window.SignalCompare && window.SignalCompare.isModeOn && window.SignalCompare.isModeOn();
+  // The thead has TWO rows:
+  //   1) col-group-row (super-header bands: Performance, AI Signals)
+  //   2) actual column header row
+  // Both need a leading cell when compare mode is on, otherwise the
+  // super-header bands shift one column to the right and look broken.
+  const _hdrGroupRow = document.querySelector('.watchlist-table thead tr.col-group-row');
+  const _hdrDataRow = document.querySelector('.watchlist-table thead tr:not(.col-group-row)');
+  const cmpOn = window.SignalCompare && window.SignalCompare.isModeOn && window.SignalCompare.isModeOn();
+
+  // Data header row — the labelled "Cmp" cell that sorts/aligns with checkboxes
+  if (_hdrDataRow) {
+    const existing = _hdrDataRow.querySelector('.col-compare');
     if (cmpOn && !existing) {
       const th = document.createElement('th');
       th.className = 'col-compare';
       th.innerHTML = '<span class="compare-th-label">Cmp</span>';
-      _hdrRow.insertBefore(th, _hdrRow.firstChild);
+      _hdrDataRow.insertBefore(th, _hdrDataRow.firstChild);
+    } else if (!cmpOn && existing) {
+      existing.remove();
+    }
+  }
+  // Super-header band row — add a leading empty cell so the colspans
+  // for Performance / AI Signals stay aligned with the columns below.
+  if (_hdrGroupRow) {
+    const existing = _hdrGroupRow.querySelector('.col-compare');
+    if (cmpOn && !existing) {
+      const th = document.createElement('th');
+      th.className = 'col-compare';
+      _hdrGroupRow.insertBefore(th, _hdrGroupRow.firstChild);
     } else if (!cmpOn && existing) {
       existing.remove();
     }
