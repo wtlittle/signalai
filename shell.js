@@ -462,21 +462,15 @@
         if (typeof window.renderPrivateTable === 'function') window.renderPrivateTable();
       },
     });
-    // More: self-contained controller — never clicks legacy .tab-btn.
-    // Resolves the target pane via (1) localStorage, (2) current active
-    // subtab, (3) 'briefing' default, then dispatches to activateMorePane.
-    window.SignalRouter.register('more', {
-      onActivate: function () {
-        var stored = null;
-        try { stored = localStorage.getItem(MORE_LS_KEY); } catch (e) { /* private mode */ }
-        var key;
-        if (MORE_PANES.indexOf(stored) !== -1) {
-          key = stored;
-        } else {
-          key = getMorePaneKey();
-        }
-        activateMorePane(key);
-      },
+    // Briefing / Macro / News / Alerts: each is now a first-class surface.
+    // Each onActivate calls loadMorePane(key) directly, reusing the existing
+    // per-pane state machine (idle/loading/loaded/error + watchdog + retry).
+    ['briefing', 'macro', 'news', 'alerts'].forEach(function (key) {
+      window.SignalRouter.register(key, {
+        onActivate: function () {
+          loadMorePane(key);
+        },
+      });
     });
     // Drilldown: ticker param -> open existing popup
     window.SignalRouter.register('drilldown', {
@@ -594,7 +588,10 @@
     initUniverseSelector();
     initNav();
     initModeToggle();
-    initMoreSubtabs();
+    // initMoreSubtabs() removed — More wrapper deleted; briefing/macro/news/alerts
+    // are now first-class surfaces. initMoreSubtabs() body retained in source
+    // since the delegated [data-more-retry] click listener (if defined inside)
+    // operates on the same DOM IDs which still exist within each new surface.
     initPrivateInputDropdown();
     registerSurfaces();
     window.SignalRouter.start();

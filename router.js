@@ -20,7 +20,8 @@
 
   const DEFAULT_SURFACE = 'coverage';
   const KNOWN_SURFACES = new Set([
-    'coverage', 'compare', 'screener', 'earnings', 'private', 'drilldown', 'more'
+    'coverage', 'compare', 'screener', 'earnings', 'private', 'drilldown',
+    'briefing', 'macro', 'news', 'alerts'
   ]);
 
   const hooks = {}; // { surface: { onActivate, onDeactivate } }

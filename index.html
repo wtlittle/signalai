@@ -18,7 +18,7 @@
 <script src="snapshot-config.js?v=20260422e"></script>
 <script src="snapshot-banner.js?v=20260422"></script>
 <script src="mode.js?v=20260422f"></script>
-<script src="router.js?v=20260422f"></script>
+<script src="router.js?v=20260505d"></script>
 </head>
 <body>
   <!-- Global snapshot-host banner (hidden unless a fetch fails) -->
@@ -48,7 +48,10 @@
       <button type="button" class="surface-btn" data-nav-surface="earnings">Earnings</button>
       <button type="button" class="surface-btn" data-nav-surface="private">Private Markets</button>
       <button type="button" class="surface-btn" data-nav-surface="drilldown">Drilldown</button>
-      <button type="button" class="surface-btn surface-btn-muted" data-nav-surface="more" title="Briefing, Macro, News, Alerts">More</button>
+      <button type="button" class="surface-btn" data-nav-surface="briefing">Briefing</button>
+      <button type="button" class="surface-btn" data-nav-surface="macro">Macro</button>
+      <button type="button" class="surface-btn" data-nav-surface="news">News</button>
+      <button type="button" class="surface-btn" data-nav-surface="alerts">Alerts</button>
     </nav>
 
     <div class="topbar-actions">
@@ -403,19 +406,11 @@
       </div>
     </section>
 
-    <!-- === SURFACE: MORE (legacy-preserved briefing/macro/news/alerts) === -->
-    <section class="surface surface-more" data-surface="more" hidden>
+    <!-- === SURFACE: BRIEFING ================================== -->
+    <section class="surface surface-briefing" data-surface="briefing" hidden>
       <div class="surface-header">
-        <h2>More</h2>
-        <p class="surface-sub">Briefing, macro context, news, and alerts.</p>
+        <h2>Weekly Briefing</h2>
       </div>
-      <nav class="more-subtabs" id="more-subtabs" role="tablist">
-        <button type="button" class="more-subtab active" data-more="briefing">Briefing</button>
-        <button type="button" class="more-subtab" data-more="macro">Macro</button>
-        <button type="button" class="more-subtab" data-more="news">News</button>
-        <button type="button" class="more-subtab" data-more="alerts">Alerts</button>
-      </nav>
-
       <div class="more-pane active" data-more-pane="briefing">
         <div class="tab-pane active" id="tab-briefing">
           <section class="weekly-briefing-section" id="weekly-briefing-section">
@@ -435,16 +430,28 @@
           </section>
         </div>
       </div>
+    </section>
 
-      <div class="more-pane" data-more-pane="macro">
+    <!-- === SURFACE: MACRO ===================================== -->
+    <section class="surface surface-macro" data-surface="macro" hidden>
+      <div class="surface-header">
+        <h2>Macro</h2>
+      </div>
+      <div class="more-pane active" data-more-pane="macro">
         <div class="tab-pane active" id="tab-macro">
           <div id="macro-content" class="macro-content">
             <div class="macro-loading">Loading macro data...</div>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="more-pane" data-more-pane="news">
+    <!-- === SURFACE: NEWS ====================================== -->
+    <section class="surface surface-news" data-surface="news" hidden>
+      <div class="surface-header">
+        <h2>Market News</h2>
+      </div>
+      <div class="more-pane active" data-more-pane="news">
         <div class="tab-pane active" id="tab-news">
           <section class="news-section" id="news-section">
             <div class="section-header-bar">
@@ -457,8 +464,14 @@
           </section>
         </div>
       </div>
+    </section>
 
-      <div class="more-pane" data-more-pane="alerts">
+    <!-- === SURFACE: ALERTS ==================================== -->
+    <section class="surface surface-alerts" data-surface="alerts" hidden>
+      <div class="surface-header">
+        <h2>Alerts</h2>
+      </div>
+      <div class="more-pane active" data-more-pane="alerts">
         <div class="tab-pane active" id="tab-alerts">
           <section class="alerts-section" id="alerts-section">
             <div class="section-header-bar">
@@ -613,7 +626,7 @@
   <script src="app.js?v=20260505c"></script>
   <script src="screener.js?v=20260505b"></script>
   <script src="screener-presets.js?v=20260422"></script>
-  <script src="shell.js?v=20260505c"></script>
+  <script src="shell.js?v=20260505d"></script>
   <script src="coverage-controller.js?v=20260430b"></script>
   <script src="drilldown-library.js?v=20260504a"></script>
   <script src="drilldown-surface.js?v=20260505b"></script>
