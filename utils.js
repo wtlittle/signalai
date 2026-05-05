@@ -563,20 +563,27 @@ function formatLargeNumber(val) {
   return sign + '$' + abs.toFixed(0);
 }
 
+// Convention:
+//   '—'  → no data (null / undefined / NaN / non-numeric)
+//   'NM' → value exists but is not meaningful (e.g. negative P/E,
+//          division-by-zero EV/Sales, infinite multiples)
+// All formatters below follow this rule consistently.
+
 function formatPrice(val) {
-  if (val == null || isNaN(val)) return '—';
+  if (val == null || isNaN(val) || !isFinite(val)) return '—';
   return '$' + val.toFixed(2);
 }
 
 function formatMultiple(val) {
-  if (val == null || isNaN(val) || !isFinite(val)) return '—';
+  if (val == null || isNaN(val)) return '—';
+  if (!isFinite(val)) return 'NM';
   if (val < 0) return 'NM';
   if (val > 999) return '>999x';
   return val.toFixed(1) + 'x';
 }
 
 function formatPercent(val) {
-  if (val == null || isNaN(val)) return '—';
+  if (val == null || isNaN(val) || !isFinite(val)) return '—';
   if (Math.abs(val) < 0.05) return '0.0%';
   const sign = val > 0 ? '+' : '';
   return sign + val.toFixed(1) + '%';

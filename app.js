@@ -380,6 +380,12 @@ function renderTable() {
   if (window.SignalCompare && typeof window.SignalCompare.wireRowCheckboxes === 'function') {
     window.SignalCompare.wireRowCheckboxes($body);
   }
+
+  // P1-C: re-apply persisted hidden-column state after every render so
+  // newly-rebuilt tbody cells inherit the col-hidden class.
+  if (typeof window.applyAllStoredColumnPrefs === 'function') {
+    window.applyAllStoredColumnPrefs();
+  }
 }
 
 // --- Render private companies (grouped by subsector) ---
@@ -1081,14 +1087,14 @@ function updateTimestamp(snapshotDate) {
   const dsInfo = typeof getDataSourceInfo === 'function' ? getDataSourceInfo() : { source: 'none' };
   if (dsInfo.source === 'supabase') {
     const genDate = dsInfo.generated ? new Date(dsInfo.generated) : null;
-    $lastUpdated.textContent = genDate ? `Supabase: ${formatDateShort(genDate)}` : 'Supabase: connected';
+    $lastUpdated.textContent = genDate ? `Data as of ${formatDateShort(genDate)}` : 'Live (Supabase)';
     $lastUpdated.title = 'Data from Supabase database — refreshed daily by cron';
   } else if (snapshotDate) {
     const d = new Date(snapshotDate);
-    $lastUpdated.textContent = `Snapshot: ${formatDateShort(d)}`;
+    $lastUpdated.textContent = `Data as of ${formatDateShort(d)}`;
     $lastUpdated.title = 'Data from cached snapshot — connect backend for live data';
   } else {
-    $lastUpdated.textContent = `Updated: ${formatDateShort(new Date())}`;
+    $lastUpdated.textContent = `Data as of ${formatDateShort(new Date())}`;
     $lastUpdated.title = '';
   }
 }
@@ -1854,6 +1860,10 @@ setTimeout(() => {
           if (typeof saveSort === 'function') saveSort();
           if (typeof renderTable === 'function') renderTable();
         }
+        // P1-F: reset Sort regime dropdown to Default since timeframe
+        // pills override the regime sort.
+        const regimeSel = document.getElementById('ribbon-sort-regime');
+        if (regimeSel) regimeSel.value = 'default';
       });
     });
   }
@@ -2161,4 +2171,7 @@ setTimeout(() => {
   // Also expose applyFlagFilters so async data loads (e.g. earnings calendar)
   // can re-run ribbon filters when new data arrives after initial render.
   window.applyFlagFilters = applyFlagFilters;
+  // P1-C: expose applyAllStoredColumnPrefs so renderTable() can re-apply
+  // hidden columns after rebuilding tbody.
+  window.applyAllStoredColumnPrefs = applyAllStoredColumnPrefs;
 })();

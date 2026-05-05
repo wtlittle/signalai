@@ -14,7 +14,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="styles.css?v=20260505c">
-<link rel="stylesheet" href="redesign.css?v=20260505e">
+<link rel="stylesheet" href="redesign.css?v=20260505f">
 <script src="snapshot-config.js?v=20260422e"></script>
 <script src="snapshot-banner.js?v=20260422"></script>
 <script src="mode.js?v=20260422f"></script>
@@ -99,8 +99,8 @@
             </div>
           </div>
           <div class="ribbon-group" aria-label="Universe">
-            <span class="ribbon-label">Universe</span>
-            <select class="ribbon-select" id="ribbon-universe">
+            <span class="ribbon-label" title="Coverage is the full tracked list. Universe filters which subset of coverage is visible in the table.">Universe<span class="ribbon-info" aria-hidden="true">?</span></span>
+            <select class="ribbon-select" id="ribbon-universe" title="Default Coverage — curated buy-side watchlist. Full Legacy — every ticker ever tracked. Custom Basket — your manually-added names.">
               <option value="default_v1">Default Coverage</option>
               <option value="full_legacy">Full Legacy</option>
               <option value="custom">Custom Basket…</option>
@@ -165,12 +165,12 @@
           <div class="summary-value" id="stat-earnings-7d">—</div>
           <div class="summary-sub">names reporting</div>
         </div>
-        <div class="summary-tile">
+        <div class="summary-tile" title="Quality score (0–100): blends FCF margin, revenue growth, gross margin, balance-sheet leverage, and historical beat rate. Higher = more durable fundamentals.">
           <div class="summary-label">Avg Quality</div>
           <div class="summary-value" id="stat-quality-value">—</div>
           <div class="summary-sub">0–100 scale</div>
         </div>
-        <div class="summary-tile">
+        <div class="summary-tile" title="Debate score (0–100): blends analyst-target dispersion, short interest, earnings volatility, and multiple compression. Higher = more contested setup.">
           <div class="summary-label">High Debate</div>
           <div class="summary-value" id="stat-debate-count">—</div>
           <div class="summary-sub">names &gt; 65</div>
@@ -605,7 +605,7 @@
   </footer>
 
   <script src="universe-v1.js?v=20260422f"></script>
-  <script src="utils.js?v=20260422f"></script>
+  <script src="utils.js?v=20260505f"></script>
   <script src="scores.js?v=20260505b"></script>
   <script src="api-client.js?v=20260422e"></script>
   <script src="api.js?v=20260327m"></script>
@@ -623,7 +623,7 @@
   <script src="macro.js?v=20260430a"></script>
   <script src="alerts.js?v=20260422"></script>
   <script src="compare.js?v=20260422b"></script>
-  <script src="app.js?v=20260505e"></script>
+  <script src="app.js?v=20260505f"></script>
   <script src="screener.js?v=20260505b"></script>
   <script src="screener-presets.js?v=20260422"></script>
   <script src="shell.js?v=20260505e"></script>
