@@ -13,8 +13,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260505b">
-<link rel="stylesheet" href="redesign.css?v=20260430b">
+<link rel="stylesheet" href="styles.css?v=20260505c">
+<link rel="stylesheet" href="redesign.css?v=20260505c">
 <script src="snapshot-config.js?v=20260422e"></script>
 <script src="snapshot-banner.js?v=20260422"></script>
 <script src="mode.js?v=20260422f"></script>
@@ -59,10 +59,6 @@
       <button type="button" class="topbar-action" id="topbar-add" title="Add company to coverage">+ Add</button>
       <button type="button" class="topbar-action" id="topbar-compare" title="Compare 2–4 names">Compare</button>
       <button type="button" class="topbar-action" id="topbar-save-view" title="Save current view">Save view</button>
-      <div class="topbar-mode" role="group" aria-label="Analyst mode">
-        <button type="button" class="mode-btn" data-mode="hf" title="Hedge Fund mode: triage, positioning, catalysts">HF</button>
-        <button type="button" class="mode-btn" data-mode="lo" title="Long Only mode: valuation, quality, underwriting">LO</button>
-      </div>
       <span class="topbar-meta">
         <span class="last-updated" id="last-updated">Updated: —</span>
         <span class="refresh-timer" id="refresh-timer">↻ 60s</span>
@@ -166,10 +162,15 @@
           <div class="summary-value" id="stat-earnings-7d">—</div>
           <div class="summary-sub">names reporting</div>
         </div>
-        <div class="summary-tile summary-tile-mode">
-          <div class="summary-label" id="stat-mode-label">Debate intensity</div>
-          <div class="summary-value" id="stat-mode-value">—</div>
-          <div class="summary-sub" id="stat-mode-sub">HF mode</div>
+        <div class="summary-tile">
+          <div class="summary-label">Avg Quality</div>
+          <div class="summary-value" id="stat-quality-value">—</div>
+          <div class="summary-sub">0–100 scale</div>
+        </div>
+        <div class="summary-tile">
+          <div class="summary-label">High Debate</div>
+          <div class="summary-value" id="stat-debate-count">—</div>
+          <div class="summary-sub">names &gt; 65</div>
         </div>
       </div>
 
@@ -193,6 +194,12 @@
           <div class="table-wrapper" id="table-wrapper">
             <table class="watchlist-table" id="watchlist-table">
               <thead>
+                <tr class="col-group-row">
+                  <th colspan="8"></th>
+                  <th class="col-group-perf" colspan="7">Performance</th>
+                  <th class="col-group-signals" colspan="2">AI Signals</th>
+                  <th></th>
+                </tr>
                 <tr>
                   <th class="col-ticker sortable" data-col="ticker">Ticker</th>
                   <th class="col-name sortable" data-col="name">Company</th>
@@ -603,10 +610,10 @@
   <script src="macro.js?v=20260430a"></script>
   <script src="alerts.js?v=20260422"></script>
   <script src="compare.js?v=20260422b"></script>
-  <script src="app.js?v=20260505b"></script>
+  <script src="app.js?v=20260505c"></script>
   <script src="screener.js?v=20260505b"></script>
   <script src="screener-presets.js?v=20260422"></script>
-  <script src="shell.js?v=20260504a"></script>
+  <script src="shell.js?v=20260505c"></script>
   <script src="coverage-controller.js?v=20260430b"></script>
   <script src="drilldown-library.js?v=20260504a"></script>
   <script src="drilldown-surface.js?v=20260505b"></script>

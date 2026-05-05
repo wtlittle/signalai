@@ -137,34 +137,7 @@
 
   // ----- Mode toggle ---------------------------------------------------
   function initModeToggle() {
-    function refresh() {
-      const cur = window.SignalMode.get();
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === cur);
-      });
-      // Update mode-specific summary tile
-      const modeLabel = document.getElementById('stat-mode-label');
-      const modeValue = document.getElementById('stat-mode-value');
-      const modeSub = document.getElementById('stat-mode-sub');
-      if (modeLabel && modeValue && modeSub) {
-        if (cur === 'hf') {
-          modeLabel.textContent = 'Debate intensity';
-          modeSub.textContent = 'HF mode';
-        } else {
-          modeLabel.textContent = 'Quality score';
-          modeSub.textContent = 'LO mode';
-        }
-      }
-      // Re-compute mode-sensitive tile value (Debate score in HF, TBD in LO)
-      if (typeof window.updateCoverageSummaryTiles === 'function') {
-        try { window.updateCoverageSummaryTiles(); } catch (_) {}
-      }
-    }
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-      btn.addEventListener('click', () => window.SignalMode.set(btn.dataset.mode));
-    });
-    window.SignalMode.onChange(refresh);
-    refresh();
+    // Mode toggle removed — Quality and Debate are unified columns. SignalMode retained for compat.
   }
 
   // ===== More-surface controller =======================================

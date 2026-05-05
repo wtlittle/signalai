@@ -1023,19 +1023,30 @@ function updateCoverageSummaryTiles() {
     elEarnings7d.textContent = upcoming.length > 0 ? String(count) : '—';
   }
 
-  // Mode-sensitive tile: HF = Debate intensity score, LO = Quality (TBD)
-  const elModeValue = document.getElementById('stat-mode-value');
-  if (elModeValue) {
-    const mode = (typeof window.SignalMode !== 'undefined') ? window.SignalMode.get() : 'hf';
-    if (mode === 'hf') {
-      const score = (window.SignalIntel && window.SignalIntel.computeDebateScore)
-        ? window.SignalIntel.computeDebateScore(tickerList)
-        : null;
-      elModeValue.textContent = score != null ? String(score) : '—';
-    } else {
-      // LO Quality score — not yet implemented
-      elModeValue.textContent = '—';
-    }
+  // AI signal tiles — Avg Quality across coverage and High Debate count (>= 65)
+  try {
+    const qualityVals = [];
+    let highDebateCount = 0;
+    tickerList.forEach(t => {
+      const d = tickerData && tickerData[t];
+      if (!d) return;
+      try { _ensureScores(d); } catch (_) {}
+      const q = (typeof d.qualityScore === 'number' && Number.isFinite(d.qualityScore)) ? d.qualityScore : null;
+      const dd = (typeof d.debateScore === 'number' && Number.isFinite(d.debateScore)) ? d.debateScore : null;
+      if (q != null) qualityVals.push(q);
+      if (dd != null && dd >= 65) highDebateCount += 1;
+    });
+    const avgQuality = qualityVals.length
+      ? qualityVals.reduce((a, b) => a + b, 0) / qualityVals.length
+      : null;
+    const elQuality = document.getElementById('stat-quality-value');
+    if (elQuality) elQuality.textContent = avgQuality != null ? Math.round(avgQuality).toString() : '—';
+    const elDebateCount = document.getElementById('stat-debate-count');
+    if (elDebateCount) elDebateCount.textContent = qualityVals.length || tickerList.length
+      ? String(highDebateCount)
+      : '—';
+  } catch (e) {
+    console.warn('[coverage-kpi] AI signal tiles failed:', e);
   }
 
   // Fail loudly if the KPI dataset is empty while the rendered table has
@@ -2059,6 +2070,23 @@ setTimeout(() => {
 
       row.appendChild(cb);
       row.appendChild(span);
+
+      // AI badge for the AI-derived signal columns
+      if (col === 'qualityScore' || col === 'debateScore') {
+        const aiBadge = document.createElement('span');
+        aiBadge.textContent = 'AI';
+        aiBadge.style.background = 'var(--accent)';
+        aiBadge.style.color = '#0a0d12';
+        aiBadge.style.fontSize = '10px';
+        aiBadge.style.fontWeight = '700';
+        aiBadge.style.letterSpacing = '0.04em';
+        aiBadge.style.padding = '1px 5px';
+        aiBadge.style.borderRadius = '3px';
+        aiBadge.style.marginLeft = '6px';
+        aiBadge.style.lineHeight = '1.4';
+        row.appendChild(aiBadge);
+      }
+
       list.appendChild(row);
     });
 

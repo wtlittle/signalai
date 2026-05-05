@@ -6797,3 +6797,27 @@ mark.search-highlight {
   margin-top: 2px;
 }
 
+
+/* ── Watchlist column-group header row ──────────────────────────────────
+   Lightweight super-header above the main thead row. Visually labels
+   the Performance and AI Signals column ranges without affecting any
+   sort or filter logic on the row below it. */
+.watchlist-table thead tr.col-group-row > th {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-bottom: none;
+  padding-bottom: 0;
+  font-weight: 600;
+  background: transparent;
+  text-align: center;
+  cursor: default;
+}
+.watchlist-table thead tr.col-group-row > th.col-group-signals {
+  color: var(--accent);
+  font-weight: 700;
+}
+.watchlist-table thead tr.col-group-row > th.col-group-perf {
+  color: var(--text-secondary);
+}

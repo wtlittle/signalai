@@ -144,7 +144,8 @@
   border-color: var(--border-light);
 }
 
-/* Mode toggle (HF / LO) */
+/* Mode toggle (HF / LO) — removed. Quality and Debate are unified columns now. */
+/*
 .topbar-mode {
   display: inline-flex;
   border: 1px solid var(--border);
@@ -170,6 +171,7 @@
   background: var(--accent);
   color: #0a0e17;
 }
+*/
 
 .topbar-meta {
   display: inline-flex;
