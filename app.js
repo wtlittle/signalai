@@ -1669,77 +1669,39 @@ async function fetchNews() {
 // Expose for new SignalRouter / shell.js loadMorePane('news')
 window.fetchNews = fetchNews;
 
-// --- Tab Navigation ---
+// --- Legacy Tab Navigation (NEUTRALIZED) ---
+//
+// This used to be a full tab system that read/wrote location.hash and
+// toggled .tab-pane.active classes on the four legacy panes. It now
+// fights with SignalRouter (which manages first-class surfaces with
+// hash format `#/news`, `#/macro`, etc.) and was the root cause of
+// Macro / Briefing / News / Alerts surfaces rendering blank: the
+// legacy IIFE ran at boot, set hash to `#watchlist`, removed the
+// .active class from #tab-news / #tab-macro / etc., which kicked in
+// `.tab-pane { display: none }` and collapsed the surfaces to 0 height.
+//
+// We keep the IIFE as a no-op that exposes a back-compat shim for any
+// stray callers of window.activateTab. All real tab-switching is now
+// done by SignalRouter -> shell.js loadMorePane().
 (function initTabs() {
-  const TAB_KEY = 'active_tab';
-  const tabBar = document.getElementById('tab-bar');
-  const tabBtns = tabBar ? tabBar.querySelectorAll('.tab-btn') : [];
-  const tabPanes = document.querySelectorAll('.tab-pane');
-  const validTabs = ['watchlist', 'research', 'briefing', 'macro', 'news', 'alerts'];
-
+  // Back-compat shim: route any legacy activateTab('news') call into
+  // SignalRouter so behavior matches the new surface system.
   function activateTab(tabId) {
-    if (!validTabs.includes(tabId)) tabId = 'watchlist';
-    tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
-    tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === 'tab-' + tabId));
-    Storage.set(TAB_KEY, tabId);
-    // Update hash without scroll
-    history.replaceState(null, '', '#' + tabId);
-    // Lazy-load data for the tab
-    if (tabId === 'research' && !window._earningsLoaded) {
-      window._earningsLoaded = true;
-      fetchEarnings();
-      if (typeof renderEarningsCalendar === 'function') renderEarningsCalendar();
+    if (typeof window.SignalRouter === 'undefined' || !window.SignalRouter.go) return;
+    var legacyMap = { watchlist: 'coverage', research: 'earnings' };
+    var surface = legacyMap[tabId] || tabId;
+    if (window.SignalRouter.KNOWN_SURFACES && window.SignalRouter.KNOWN_SURFACES.indexOf(surface) === -1) {
+      surface = window.SignalRouter.DEFAULT_SURFACE;
     }
-    if (tabId === 'briefing' && !window._briefingLoaded) {
-      window._briefingLoaded = true;
-      if (typeof loadWeeklyBriefing === 'function') loadWeeklyBriefing();
-    }
-    if (tabId === 'macro' && !window._macroLoaded) {
-      window._macroLoaded = true;
-      if (typeof renderMacroTab === 'function') renderMacroTab();
-    }
-    if (tabId === 'news' && !window._newsLoaded) {
-      window._newsLoaded = true;
-      fetchNews();
-    }
-    if (tabId === 'alerts' && !window._alertsLoaded) {
-      window._alertsLoaded = true;
-      if (typeof renderAlertsTab === 'function') renderAlertsTab();
-    }
-    // Hide the floating Compare tray when user leaves the Watchlist tab —
-    // the tray is only meaningful against watchlist rows.
-    if (tabId !== 'watchlist') {
-      var tray = document.getElementById('compare-tray');
-      if (tray) tray.classList.remove('visible');
-    } else if (window.SignalCompare && typeof window.SignalCompare.refreshTrayVisibility === 'function') {
-      window.SignalCompare.refreshTrayVisibility();
-    }
+    window.SignalRouter.go(surface);
   }
-
-  // Click handlers
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
-  });
-
-  // Determine initial tab: hash > saved preference > default
-  let initial = 'watchlist';
-  const hash = location.hash.replace('#', '');
-  if (validTabs.includes(hash)) {
-    initial = hash;
-  } else {
-    const saved = Storage.get(TAB_KEY);
-    if (validTabs.includes(saved)) initial = saved;
-  }
-  activateTab(initial);
-
-  // Listen for hash changes (e.g. from email deep links)
-  window.addEventListener('hashchange', () => {
-    const h = location.hash.replace('#', '');
-    if (validTabs.includes(h)) activateTab(h);
-  });
-
-  // Make activateTab globally accessible
   window.activateTab = activateTab;
+
+  // Ensure every legacy .tab-pane element is visible by default. Any
+  // hiding/showing is now done by .surface[hidden] at the surface level.
+  document.querySelectorAll('.tab-pane').forEach(function (pane) {
+    pane.classList.add('active');
+  });
 })();
 
 // --- Boot ---
