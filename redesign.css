@@ -44,28 +44,47 @@
 }
 
 /* ----- Surface nav ----------------------------------------------- */
+/* Wrapper: provides relative positioning for the right-edge scroll-fade. */
 .surface-nav {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 2px;
   overflow-x: auto;
   scrollbar-width: thin;
+  /* Right-edge scroll affordance: linear-gradient mask hints that there
+     is more content to the right. We apply it as a pseudo-element on a
+     wrapper, but since the nav itself is the scroll container we use a
+     sticky-positioned ::after instead. */
 }
 .surface-nav::-webkit-scrollbar { height: 4px; }
 .surface-nav::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+/* Right-edge fade affordance — hints the strip is scrollable. */
+.surface-nav::after {
+  content: '';
+  position: sticky;
+  right: 0;
+  flex: 0 0 24px;
+  align-self: stretch;
+  margin-left: -24px;
+  background: linear-gradient(to right, transparent, var(--bg-surface, #0a0d12) 80%);
+  pointer-events: none;
+}
 
 .surface-btn {
   appearance: none;
   background: transparent;
   color: var(--text-secondary);
   border: 1px solid transparent;
-  padding: 7px 12px;
+  padding: 7px 12px 6px; /* trim bottom 1px so .active border-bottom doesn't shift the row */
   font-size: 13px;
   font-weight: 500;
   font-family: var(--font-sans);
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
+  position: relative;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
 .surface-btn:hover {
@@ -76,6 +95,18 @@
   color: var(--text-primary);
   background: var(--bg-surface-alt);
   border-color: var(--border-light);
+}
+/* Stronger active indicator: accent underline so the current surface
+   pops at a glance even with the muted bg-surface-alt fill. */
+.surface-btn.active::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent, #4f9eff);
+  border-radius: 2px 2px 0 0;
 }
 .surface-btn-muted {
   color: var(--text-muted);
