@@ -100,6 +100,13 @@ async function openPopup(ticker, options) {
           quote[field] = td[field];
         }
       }
+      // Price/currency: Supabase quote (via tickerData) is our freshest source.
+      // The bundled data-snapshot.json chart meta can lag by days/weeks when
+      // a single-ticker yfinance fetch fails on the daily cron. Always let
+      // Supabase override the chart meta price so the popup header matches
+      // the Coverage table.
+      if (typeof td.price === 'number') quote.price = td.price;
+      if (td.currency) quote.currency = td.currency;
     }
 
     const data = parseTickerData(ticker, chart, quote);

@@ -7,6 +7,53 @@
 let earningsIntelData = null;
 let earningsIntelLoading = null;
 
+/**
+ * Bullet items in base_case/bull_case/bear_case can be either plain strings or
+ * `{ signal_id, text }` objects. Older notes used strings; the canonical schema
+ * uses objects. Render either shape safely so we never emit `[object Object]`.
+ */
+function bulletText(b) {
+  if (b == null) return '';
+  if (typeof b === 'string') return b;
+  if (typeof b === 'object') return b.text || b.label || b.signal_id || '';
+  return String(b);
+}
+
+/**
+ * `next_earnings_date` is set when a note is generated and never invalidated
+ * after the date passes. Treat any past date as stale so the header doesn't
+ * keep showing "Next earnings: 2026-04-29" three weeks later.
+ */
+function freshNextEarningsDate(s) {
+  if (!s) return null;
+  const parsed = new Date(s);
+  if (isNaN(parsed.getTime())) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return parsed >= today ? s : null;
+}
+
+/**
+ * Some upstream notes (manually authored or older generator output) include
+ * the same bullet under both `pushes_higher` and `pushes_lower` in a case
+ * block, which reads like a contradiction. When that happens, treat the
+ * bullet as a "pushes_higher" item (the dominant interpretation) and drop it
+ * from `pushes_lower` at render time. Defensive — does not mutate inputs.
+ */
+function dedupeCase(caseObj) {
+  if (!caseObj || typeof caseObj !== 'object') return caseObj;
+  const ph = Array.isArray(caseObj.pushes_higher) ? caseObj.pushes_higher : [];
+  const pl = Array.isArray(caseObj.pushes_lower)  ? caseObj.pushes_lower  : [];
+  if (!ph.length || !pl.length) return caseObj;
+  const phKeys = new Set(ph.map(bulletText).filter(Boolean));
+  const dedupedLower = pl.filter(b => {
+    const k = bulletText(b);
+    return !(k && phKeys.has(k));
+  });
+  if (dedupedLower.length === pl.length) return caseObj;
+  return Object.assign({}, caseObj, { pushes_lower: dedupedLower });
+}
+
 /** Load and cache the canonical earnings_intel.json */
 async function loadEarningsIntel() {
   if (earningsIntelData) return earningsIntelData;
@@ -152,7 +199,7 @@ function renderEarningsIntelHeaderHtml(ticker, intel) {
             <span class="ei-state-pill ei-state-${state}">${state.replace('_', ' ')}</span>
           </div>
           <div class="ei-header-sub">
-            ${intel.next_earnings_date ? `<span>Next earnings: <strong>${intel.next_earnings_date}</strong></span>` : ''}
+            ${freshNextEarningsDate(intel.next_earnings_date) ? `<span>Next earnings: <strong>${intel.next_earnings_date}</strong></span>` : ''}
             ${intel.last_earnings_date ? `<span>Last: ${intel.last_earnings_date}</span>` : ''}
             <span>Signals: ${signalSummary(intel.signal_scorecard)}</span>
           </div>
@@ -217,7 +264,7 @@ function renderEarningsIntelHtml(ticker, intel) {
             <span class="ei-state-pill ei-state-${state}">${state.replace('_', ' ')}</span>
           </div>
           <div class="ei-header-sub">
-            ${intel.next_earnings_date ? `<span>Next earnings: <strong>${intel.next_earnings_date}</strong></span>` : ''}
+            ${freshNextEarningsDate(intel.next_earnings_date) ? `<span>Next earnings: <strong>${intel.next_earnings_date}</strong></span>` : ''}
             ${intel.last_earnings_date ? `<span>Last: ${intel.last_earnings_date}</span>` : ''}
             <span>Signals: ${signalSummary(intel.signal_scorecard)}</span>
           </div>
@@ -281,7 +328,7 @@ function renderEarningsIntelHtml(ticker, intel) {
   if (cases.length) {
     html += `<section class="ei-cases">`;
     cases.forEach(c => {
-      const d = c.data;
+      const d = dedupeCase(c.data);
       const headline = d.thesis_headline || d.setup_headline || '';
       html += `
         <div class="ei-case ${c.cls}">
@@ -291,12 +338,12 @@ function renderEarningsIntelHtml(ticker, intel) {
           ${Array.isArray(d.pushes_higher) && d.pushes_higher.length ? `
             <div class="ei-push-block">
               <div class="ei-push-label ei-push-higher">Pushes higher</div>
-              <ul class="ei-bullets">${d.pushes_higher.map(b => `<li>${b}</li>`).join('')}</ul>
+              <ul class="ei-bullets">${d.pushes_higher.map(b => `<li>${bulletText(b)}</li>`).join('')}</ul>
             </div>` : ''}
           ${Array.isArray(d.pushes_lower) && d.pushes_lower.length ? `
             <div class="ei-push-block">
               <div class="ei-push-label ei-push-lower">Pushes lower</div>
-              <ul class="ei-bullets">${d.pushes_lower.map(b => `<li>${b}</li>`).join('')}</ul>
+              <ul class="ei-bullets">${d.pushes_lower.map(b => `<li>${bulletText(b)}</li>`).join('')}</ul>
             </div>` : ''}
         </div>`;
     });
