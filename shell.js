@@ -30,16 +30,22 @@
         window.tickerList.length = 0;
         window.UNIVERSE_V1_TICKERS.forEach(t => window.tickerList.push(t));
         if (typeof window.saveTickers === 'function') window.saveTickers();
+        // Render synchronously first so subsector group counts update
+        // immediately, then refresh data async.
+        if (typeof window.renderTable === 'function') {
+          try { window.renderTable(); } catch (_) {}
+        }
         if (typeof window.loadAllData === 'function') window.loadAllData();
-        else if (typeof window.renderTable === 'function') window.renderTable();
       }
     } else if (choice === 'full_legacy' && window.DEFAULT_TICKERS) {
       if (typeof window.tickerList !== 'undefined') {
         window.tickerList.length = 0;
         window.DEFAULT_TICKERS.forEach(t => window.tickerList.push(t));
         if (typeof window.saveTickers === 'function') window.saveTickers();
+        if (typeof window.renderTable === 'function') {
+          try { window.renderTable(); } catch (_) {}
+        }
         if (typeof window.loadAllData === 'function') window.loadAllData();
-        else if (typeof window.renderTable === 'function') window.renderTable();
       }
     }
     // 'custom' = no-op, let whatever the user built stand.
@@ -100,14 +106,30 @@
     // Top-bar action shortcuts
     document.getElementById('topbar-add')?.addEventListener('click', () => {
       window.SignalRouter.go('coverage');
-      setTimeout(() => document.getElementById('ticker-input')?.focus(), 50);
+      // Always scroll the ticker input into view and flash it so the user gets
+      // visible feedback even when they're already on Coverage. Without this
+      // the click reads as a no-op when the input is already on screen.
+      setTimeout(() => {
+        const input = document.getElementById('ticker-input');
+        if (!input) return;
+        try { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {}
+        input.focus({ preventScroll: true });
+        input.classList.add('topbar-flash');
+        setTimeout(() => input.classList.remove('topbar-flash'), 1100);
+      }, 60);
     });
     document.getElementById('topbar-compare')?.addEventListener('click', () => {
       window.SignalRouter.go('coverage');
       setTimeout(() => document.getElementById('compare-toggle-btn')?.click(), 50);
     });
-    document.getElementById('topbar-save-view')?.addEventListener('click', () => {
-      alert('Save view lands in M3 — saved views let you snapshot current ribbon + column state.');
+    document.getElementById('topbar-save-view')?.addEventListener('click', (e) => {
+      // Disabled-but-discoverable. The button is intentionally non-functional
+      // until M3; we surface a small toast instead of an alert so it doesn't
+      // read as a broken button.
+      e.preventDefault();
+      const btn = e.currentTarget;
+      btn.classList.add('topbar-action-soon-flash');
+      setTimeout(() => btn.classList.remove('topbar-action-soon-flash'), 700);
     });
 
     // Global search: lightweight pass-through to the Coverage search input
@@ -611,6 +633,13 @@
     ['add-ticker-btn', 'compare-toggle-btn'].forEach(id => {
       document.getElementById(id)?.addEventListener('click', () => setTimeout(updateSummaryStripCounts, 400));
     });
+
+    // Eagerly load earnings_calendar.json so the Coverage "Earnings 7D" flag
+    // has data to filter against even if the user never visits the Earnings
+    // surface. Fire-and-forget; applyFlagFilters re-runs on load.
+    if (typeof window.loadEarningsCalendarData === 'function') {
+      try { window.loadEarningsCalendarData(); } catch (_) {}
+    }
   }
 
   if (document.readyState === 'loading') {

@@ -776,6 +776,14 @@ async function loadEarningsCalendarData() {
     console.warn('Calendar data load failed:', e);
     ecalData = { upcoming: [] };
   }
+  // Expose to other modules (app.js daysToEarnings, etc.) without wiring a
+  // dedicated event. This is the only module that owns ecalData today.
+  window._earningsCalendarData = ecalData;
+  // Re-run the Coverage flag filter so the Earnings 7D chip reflects newly
+  // loaded data without requiring a user click.
+  if (typeof window.applyFlagFilters === 'function') {
+    try { window.applyFlagFilters(); } catch (_) {}
+  }
 }
 
 function renderEarningsCalendarGrid() {

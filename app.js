@@ -305,9 +305,22 @@ function renderTable() {
         `;
       }
 
-      // Click ticker to open popup (guard in case fallback row was rendered)
+      // Click ticker to open popup (guard in case fallback row was rendered).
+      // In Compare mode, the same click should toggle the row's compare
+      // checkbox instead of opening the drilldown — otherwise users keep
+      // surfacing the popup when they're trying to multi-select.
       const tickerCell = tr.querySelector('.cell-ticker');
-      if (tickerCell) tickerCell.addEventListener('click', () => openPopup(ticker));
+      if (tickerCell) tickerCell.addEventListener('click', (e) => {
+        if (window.SignalCompare && window.SignalCompare.isModeOn && window.SignalCompare.isModeOn()) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof window.SignalCompare.toggleTicker === 'function') {
+            window.SignalCompare.toggleTicker(ticker);
+          }
+          return;
+        }
+        openPopup(ticker);
+      });
 
       // Click or long-press subsector badge to change via picker
       const badge = tr.querySelector('.subsector-badge');
@@ -1787,16 +1800,41 @@ setTimeout(() => {
   // a single source of truth without bolting a new field onto ticker rows.
   function daysToEarnings(t) {
     const d = (typeof tickerData !== 'undefined') ? tickerData[t] : null;
-    if (!d) return null;
-    if (typeof d.daysToEarnings === 'number') return d.daysToEarnings;
-    const cal = d.calendar;
-    if (!cal) return null;
-    const raw = cal['Earnings Date'] || cal['earnings_date'];
-    if (!raw) return null;
-    const dateStr = Array.isArray(raw) ? raw[0] : raw;
-    const parsed = new Date(dateStr);
-    if (isNaN(parsed.getTime())) return null;
-    return Math.ceil((parsed - new Date()) / (1000 * 60 * 60 * 24));
+    // 1. Prefer the pre-computed field on the ticker row
+    if (d && typeof d.daysToEarnings === 'number') return d.daysToEarnings;
+    // 2. Then Supabase calendar (when present)
+    const cal = d?.calendar;
+    if (cal) {
+      const raw = cal['Earnings Date'] || cal['earnings_date'];
+      if (raw) {
+        const dateStr = Array.isArray(raw) ? raw[0] : raw;
+        const parsed = new Date(dateStr);
+        if (!isNaN(parsed.getTime())) {
+          return Math.ceil((parsed - new Date()) / (1000 * 60 * 60 * 24));
+        }
+      }
+    }
+    // 3. Fall back to earnings_calendar.json (bundled, refreshed by cron).
+    //    This is the source that the Earnings calendar grid uses, so the
+    //    Earnings 7D flag and the grid stay in sync even when Supabase
+    //    `calendar` fields are sparse.
+    const ecal = window._earningsCalendarData || (typeof ecalData !== 'undefined' ? ecalData : null);
+    if (ecal) {
+      const pools = [
+        ecal.pre_earnings, ecal.upcoming, ecal.upcoming_notable,
+      ].filter(Array.isArray);
+      for (const pool of pools) {
+        const hit = pool.find(r => r && r.ticker === t && r.date);
+        if (hit) {
+          if (typeof hit.days_until === 'number') return hit.days_until;
+          const parsed = new Date(hit.date);
+          if (!isNaN(parsed.getTime())) {
+            return Math.ceil((parsed - new Date()) / (1000 * 60 * 60 * 24));
+          }
+        }
+      }
+    }
+    return null;
   }
 
   // ── timeframe pills ────────────────────────────────────────
@@ -2120,4 +2158,7 @@ setTimeout(() => {
 
   // Expose so loadAllData() can find it via `typeof initRibbon`.
   window.initRibbon = initRibbon;
+  // Also expose applyFlagFilters so async data loads (e.g. earnings calendar)
+  // can re-run ribbon filters when new data arrives after initial render.
+  window.applyFlagFilters = applyFlagFilters;
 })();

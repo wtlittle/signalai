@@ -144,6 +144,49 @@
   border-color: var(--border-light);
 }
 
+/* "Save view" — disabled-but-discoverable style. Keeps visual weight so the
+   user sees it's intentional (not broken) while we ship the real feature. */
+.topbar-action.topbar-action-soon {
+  color: var(--text-secondary);
+  background: transparent;
+  border-style: dashed;
+  cursor: default;
+}
+.topbar-action.topbar-action-soon:hover {
+  background: var(--bg-surface);
+}
+.topbar-badge-soon {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 5px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-tertiary, var(--text-secondary));
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  vertical-align: middle;
+}
+@keyframes topbar-action-soon-flash {
+  0%, 100% { border-color: var(--border); }
+  50%      { border-color: var(--accent, #4f9eff); }
+}
+.topbar-action.topbar-action-soon-flash {
+  animation: topbar-action-soon-flash 0.7s ease;
+}
+
+/* "+ Add" flash — visible feedback when the user clicks the topbar Add
+   button while Coverage is already the active surface. */
+@keyframes topbar-input-flash {
+  0%   { box-shadow: 0 0 0 0 var(--accent, #4f9eff); }
+  35%  { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #4f9eff) 45%, transparent); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.topbar-flash {
+  animation: topbar-input-flash 1.1s ease;
+}
+
 /* Mode toggle (HF / LO) — removed. Quality and Debate are unified columns now. */
 /*
 .topbar-mode {
