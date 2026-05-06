@@ -3931,6 +3931,9 @@ mark.search-highlight {
 .pd-comps-table tbody td.num { text-align: right; font-family: var(--font-mono); font-size: 11px; }
 .pd-comp-row { cursor: pointer; transition: background 0.12s; }
 .pd-comp-row:hover { background: var(--bg-tertiary); }
+.pd-comp-median-row { background: rgba(148, 163, 184, 0.08); border-top: 1px solid rgba(148, 163, 184, 0.25); font-weight: 600; }
+.pd-comp-median-row td { color: var(--text-primary); }
+.pd-fund-tag { display: inline-block; margin-left: 6px; padding: 1px 6px; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); background: rgba(0, 229, 255, 0.12); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 3px; vertical-align: middle; }
 
 .pd-comp-name-cell {
   display: flex;

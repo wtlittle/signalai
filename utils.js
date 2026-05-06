@@ -428,7 +428,7 @@ const DEFAULT_PRIVATE_COMPANIES = [
   { name: 'Cognition AI', subsector: 'AI Software', valuation: '$10.2B', funding: '$400M Later Stage VC (Sep 2025)', revenue: 'N/A', metrics: 'Devin AI agent, autonomous coding', headquarters: 'New York, NY', lead_investors: 'Khosla, Lux Capital, Bain Capital' },
   { name: 'Glean', subsector: 'AI Software', valuation: '$7.2B', funding: '$150M Later Stage VC (Jun 2025)', revenue: '~$250M TTM', metrics: '1,000 employees, enterprise knowledge AI', headquarters: 'Palo Alto, CA', lead_investors: 'Sequoia, Lightspeed, Kleiner Perkins' },
   // --- Fintech ---
-  { name: 'Stripe', subsector: 'Fintech', valuation: '$159B', funding: 'Secondary (Feb 2026)', revenue: '~$1B net rev TTM', metrics: '8,500 employees, payments infrastructure', headquarters: 'South San Francisco, CA', lead_investors: 'Sequoia, a16z, Founders Fund' },
+  { name: 'Stripe', subsector: 'Fintech', valuation: '$159B', funding: 'Secondary (Feb 2026)', revenue: '~$6.5B net rev TTM', metrics: '8,500 employees · $1.9T TPV 2025 (+34% YoY) · Revenue suite $1B+ run-rate', headquarters: 'South San Francisco, CA', lead_investors: 'Sequoia, a16z, Founders Fund' },
   { name: 'Rippling', subsector: 'Fintech', valuation: '$16.8B', funding: 'Later Stage VC (Dec 2025)', revenue: 'N/A', metrics: '6,473 employees, HR + IT + Finance', headquarters: 'San Francisco, CA', lead_investors: 'Bain Capital, GIC, Goldman Sachs' },
   // --- Design & Creative ---
   { name: 'Canva', subsector: 'Design & Creative', valuation: '$42B', funding: 'Secondary (Sep 2025)', revenue: '~$4B TTM', metrics: '11,813 employees, 200M+ monthly users', headquarters: 'Surry Hills, Australia', lead_investors: 'Sequoia, Blackbird, CapitalG' },

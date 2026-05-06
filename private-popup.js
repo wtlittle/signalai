@@ -213,8 +213,23 @@ function renderFundingHistoryTab(co, intel) {
     const amt = latest.amount_usd ? ' · ' + traj.formatUsd(latest.amount_usd) : '';
     summaryItems.push(`<div class="pd-fund-summary-item"><span class="pd-fund-summary-label">Most Recent Round</span><span class="pd-fund-summary-value">${latest.round || '—'}${latest.date ? ' · ' + latest.date : ''}${amt}</span></div>`);
   }
-  if (latestValued) {
-    summaryItems.push(`<div class="pd-fund-summary-item"><span class="pd-fund-summary-label">Estimated Valuation</span><span class="pd-fund-summary-value">${traj.formatUsd(latestValued.valuation_usd)}</span></div>`);
+  // Prefer headline valuation (co.valuation) when it's a newer estimate than the last tracked round
+  const headlineVal = traj.parseValuation(co.valuation);
+  let estimatedVal = latestValued ? latestValued.valuation_usd : null;
+  let estimatedSuffix = '';
+  if (headlineVal != null) {
+    if (estimatedVal == null) {
+      estimatedVal = headlineVal;
+    } else {
+      const deltaPct = Math.abs(headlineVal / estimatedVal - 1) * 100;
+      if (deltaPct > 5) {
+        estimatedVal = headlineVal;
+        estimatedSuffix = ' <span class="pd-fund-tag">current</span>';
+      }
+    }
+  }
+  if (estimatedVal != null) {
+    summaryItems.push(`<div class="pd-fund-summary-item"><span class="pd-fund-summary-label">Estimated Valuation</span><span class="pd-fund-summary-value">${traj.formatUsd(estimatedVal)}${estimatedSuffix}</span></div>`);
   }
   summaryItems.push(`<div class="pd-fund-summary-item"><span class="pd-fund-summary-label">Rounds Tracked</span><span class="pd-fund-summary-value">${fh.length}</span></div>`);
 
@@ -585,6 +600,30 @@ async function renderCompsTab(co, intel, $body) {
             <td class="num">${recBadge}</td>
           </tr>`;
   });
+
+  // Median row — computed from actual row data
+  const _median = (arr) => {
+    const s = arr.filter(v => v != null && isFinite(v)).sort((a, b) => a - b);
+    if (!s.length) return null;
+    const mid = Math.floor(s.length / 2);
+    return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+  };
+  const medYtd = _median(rows.map(r => r.changeYtd));
+  const medPE = _median(rows.map(r => r.forwardPE).filter(v => v > 0));
+  const medEvRev = _median(rows.map(r => r.evRev));
+  const medGrowth = _median(rows.map(r => r.revenueGrowth));
+  const medOpM = _median(rows.map(r => r.opMargin));
+  html += `
+          <tr class="pd-comp-median-row">
+            <td><strong>Median</strong></td>
+            <td class="num">—</td>
+            <td class="num ${pxClass(medYtd)}">${fmtPct(medYtd)}</td>
+            <td class="num">${medPE != null ? fmt(medPE) + 'x' : '—'}</td>
+            <td class="num">${medEvRev != null ? fmt(medEvRev, 2) + 'x' : '—'}</td>
+            <td class="num ${pxClass(medGrowth)}">${fmt(medGrowth, 1, '%')}</td>
+            <td class="num">${fmt(medOpM, 1, '%')}</td>
+            <td class="num">—</td>
+          </tr>`;
 
   html += `</tbody></table></div>`;
 
