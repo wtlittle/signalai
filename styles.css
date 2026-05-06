@@ -6042,6 +6042,16 @@ mark.search-highlight {
   font-weight: 600;
   background: rgba(34,197,94,0.08);
 }
+.cmp-pct-flagged {
+  color: var(--amber, #f59e0b);
+  cursor: help;
+  border-bottom: 1px dotted rgba(245, 158, 11, 0.6);
+}
+.cmp-pct-flagged sup {
+  font-size: 9px;
+  margin-left: 2px;
+  color: var(--amber, #f59e0b);
+}
 
 /* AI Diff */
 .cmp-aidiff {

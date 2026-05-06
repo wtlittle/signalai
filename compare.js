@@ -19,6 +19,7 @@
     mode: false,
     selected: new Set(),          // tickers chosen in current session
     popupOpen: false,
+    _persistKey: 'signalai_compare_selected_v1',
     popupTicker: null,            // [t1,t2,...] while popup open
     activeTab: 'overview',
     chart: null,
@@ -28,10 +29,32 @@
     priceCache: {},               // { TICKER_RANGE: { dates, closes } }
   };
 
+  // ======================= PERSISTENCE =======================
+  function persistSelection() {
+    try {
+      const arr = Array.from(state.selected);
+      if (arr.length) localStorage.setItem(state._persistKey, JSON.stringify(arr));
+      else localStorage.removeItem(state._persistKey);
+    } catch (e) { /* storage disabled */ }
+  }
+
+  function hydrateSelection() {
+    try {
+      const raw = localStorage.getItem(state._persistKey);
+      if (!raw) return;
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) arr.slice(0, MAX_PICK).forEach(t => state.selected.add(t));
+    } catch (e) { /* ignore */ }
+  }
+
   // ======================= COMPARE MODE TOGGLE =======================
   function toggleMode() {
     state.mode = !state.mode;
-    state.selected.clear();
+    // Preserve prior selection when entering compare mode; clear on exit.
+    if (!state.mode) {
+      state.selected.clear();
+      persistSelection();
+    }
     renderMode();
     updateTray();
     if (typeof global.renderTable === 'function') {
@@ -63,6 +86,7 @@
       }
       return;
     }
+    persistSelection();
     updateTray();
     // Update row checkbox visual without full re-render.
     const cb = document.querySelector('.compare-checkbox[data-ticker="' + t + '"]');
@@ -91,6 +115,7 @@
     document.body.appendChild(tray);
     tray.querySelector('#compare-tray-clear').addEventListener('click', () => {
       state.selected.clear();
+      persistSelection();
       updateTray();
       document.querySelectorAll('.compare-checkbox').forEach(cb => { cb.checked = false; });
     });
@@ -281,15 +306,15 @@
   function buildFundamentalsTable(tickers) {
     const rowDefs = [
       { key: 'price',       label: 'Price',          fmt: (d) => fmt.price(d.price),        winner: null },
-      { key: 'marketCap',   label: 'Market Cap',     fmt: (d) => fmt.large(d.marketCap),    winner: null },
-      { key: 'ev',          label: 'EV',             fmt: (d) => fmt.large(d.ev),           winner: null },
+      { key: 'marketCap',   label: 'Market Cap',     fmt: (d) => fmt.large(d.marketCap),    winner: 'high' },
+      { key: 'ev',          label: 'EV',             fmt: (d) => fmt.large(d.ev),           winner: 'high' },
       { key: 'evSales',     label: 'FY1 EV/Sales',   fmt: (d) => fmt.mult(d.evSales),       winner: 'low' },
       { key: 'evFcf',       label: 'FY1 EV/FCF',     fmt: (d) => fmt.mult(d.evFcf),         winner: 'low' },
       { key: 'ytd',         label: 'YTD',            fmt: (d) => fmt.pct(d.ytd),            winner: 'high' },
       { key: 'm1',          label: '1M',             fmt: (d) => fmt.pct(d.m1),             winner: 'high' },
       { key: 'm3',          label: '3M',             fmt: (d) => fmt.pct(d.m3),             winner: 'high' },
-      { key: 'y1',          label: '1Y',             fmt: (d) => fmt.pct(d.y1),             winner: 'high' },
-      { key: 'y3',          label: '3Y',             fmt: (d) => fmt.pct(d.y3),             winner: 'high' },
+      { key: 'y1',          label: '1Y',             fmt: (d) => fmt.pctWithFlag(d.y1),     winner: 'high' },
+      { key: 'y3',          label: '3Y',             fmt: (d) => fmt.pctWithFlag(d.y3),     winner: 'high' },
       { key: 'subsector',   label: 'Subsector',      fmt: (d, t) => (d.subsector || (typeof global.getSubsector === 'function' ? global.getSubsector(t) : '\u2014')), winner: null },
       { key: 'revGrowth',   label: 'Rev Growth',     fmt: (d) => fmt.pct(d.revenueGrowth),  winner: 'high' },
       { key: 'fcfMargin',   label: 'FCF Margin',     fmt: (d) => fmt.pct(d.fcfMargin),      winner: 'high' },
@@ -802,6 +827,15 @@
     large: (v) => (typeof global.formatLargeNumber === 'function' ? global.formatLargeNumber(v) : (v == null ? '\u2014' : String(v))),
     mult: (v) => (typeof global.formatMultiple === 'function' ? global.formatMultiple(v) : (v == null ? '\u2014' : v.toFixed(1) + 'x')),
     pct: (v) => (typeof global.formatPercent === 'function' ? global.formatPercent(v) : (v == null ? '\u2014' : v.toFixed(1) + '%')),
+    // pctWithFlag: flags extreme returns (>500%) with a tooltip hint
+    pctWithFlag: (v) => {
+      if (v == null || Number.isNaN(v)) return '\u2014';
+      const str = v.toFixed(1) + '%';
+      if (Math.abs(v) >= 500) {
+        return `<span title="Extreme return — may reflect recent spinoff, IPO, or structural corporate action. Cross-reference with company history before comparing." class="cmp-pct-flagged">${str}<sup>‼</sup></span>`;
+      }
+      return str;
+    },
     num: (v, d) => (v == null || Number.isNaN(v)) ? '\u2014' : Number(v).toFixed(d || 0)
   };
 
@@ -826,12 +860,21 @@
 
   // Wire toggle button when DOM ready
   function attach() {
+    // C6: rehydrate prior selection so it persists across nav
+    hydrateSelection();
     const btn = document.getElementById('compare-toggle-btn');
     if (btn) {
       btn.addEventListener('click', toggleMode);
       renderMode();
     }
     ensureTray();
+    // If we rehydrated any tickers, enable compare mode + show tray
+    if (state.selected.size > 0) {
+      state.mode = true;
+      renderMode();
+      updateTray();
+      if (typeof global.renderTable === 'function') global.renderTable();
+    }
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', attach);
