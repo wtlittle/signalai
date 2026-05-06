@@ -473,16 +473,45 @@ async function openArchive() {
   } else if (index) {
     // Build from structured arrays
     (index.active_pre_earnings || []).forEach(n => {
-      allNotes.push({ ...n, type: 'pre', status: 'active', name: n.name || n.ticker });
+      allNotes.push({
+        ...n,
+        earnings_date: n.date || n.earnings_date,
+        type: 'pre',
+        status: 'active',
+        name: n.company || n.name || n.ticker,
+        path: n.file || n.note_file || n.note_path
+      });
     });
     (index.active_post_earnings || []).forEach(n => {
-      allNotes.push({ ...n, type: 'post', status: 'active', name: n.name || n.ticker });
+      allNotes.push({
+        ...n,
+        earnings_date: n.date || n.earnings_date,
+        type: 'post',
+        status: 'active',
+        name: n.company || n.name || n.ticker,
+        path: n.note_file || n.note_path
+      });
     });
-    (index.archived || []).forEach(n => {
-      const type = (n.type || '').includes('post') ? 'post' : 'pre';
-      allNotes.push({ ...n, type, status: 'archived', name: n.name || n.ticker,
-        path: n.archive_path || n.note_path });
-    });
+    if (index.archive) {
+      const archiveStrings = [
+        ...(index.archive.pre_earnings || []).map(s => ({ s, type: 'pre' })),
+        ...(index.archive.post_earnings || []).map(s => ({ s, type: 'post' }))
+      ];
+      archiveStrings.forEach(({ s, type }) => {
+        const parts = s.split('_');
+        const date = parts[parts.length - 1]; // last segment is YYYY-MM-DD
+        const ticker = parts.slice(0, -1).join('_');
+        const prefix = type === 'post' ? 'notes/post_earnings' : 'notes/pre_earnings';
+        allNotes.push({
+          ticker,
+          earnings_date: date,
+          type,
+          status: 'archived',
+          name: ticker,
+          path: `${prefix}/${s}.md`
+        });
+      });
+    }
   }
 
   if (allNotes.length === 0) {
