@@ -400,6 +400,12 @@ function wirePeerTrajectory($body, co) {
           x: { type: 'time', ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(148,163,184,0.08)' } },
           y: {
             type: mode === 'valuation' ? 'logarithmic' : 'linear',
+            title: {
+              display: true,
+              text: mode === 'valuation' ? 'Valuation (log scale)' : mode === 'rev_mult' ? 'Valuation / Revenue (x)' : 'Return (%)',
+              color: '#94a3b8',
+              font: { size: 10, weight: '600' }
+            },
             ticks: { color: '#64748b', font: { size: 10 }, callback: (v) => mode === 'valuation' ? traj.formatUsd(v) : (mode === 'rev_mult' ? v.toFixed(0) + 'x' : v.toFixed(0) + '%') },
             grid: { color: 'rgba(148,163,184,0.08)' }
           }

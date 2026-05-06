@@ -59,16 +59,16 @@
    * a single-point history (so the trajectory tab still renders meaningfully).
    */
   function getValuationHistory(co) {
+    let base;
     if (Array.isArray(co.valuation_history) && co.valuation_history.length) {
-      return co.valuation_history.slice().sort((a, b) => {
+      base = co.valuation_history.slice().sort((a, b) => {
         const da = new Date(a.date || '1970-01-01').getTime();
         const db = new Date(b.date || '1970-01-01').getTime();
         return da - db;
       });
-    }
-    // Derive valuation_history from funding_history rounds that include a valuation
-    if (Array.isArray(co.funding_history) && co.funding_history.length) {
-      const points = co.funding_history
+    } else if (Array.isArray(co.funding_history) && co.funding_history.length) {
+      // Derive valuation_history from funding_history rounds that include a valuation
+      base = co.funding_history
         .filter(r => r && r.valuation_usd != null && !Number.isNaN(Number(r.valuation_usd)))
         .map(r => ({
           date: r.date,
@@ -81,17 +81,37 @@
           const db = new Date(b.date || '1970-01-01').getTime();
           return da - db;
         });
-      if (points.length) return points;
+    } else {
+      const v = parseValuation(co.valuation);
+      if (v == null) return [];
+      const roundDate = extractRoundDate(co.funding) || null;
+      return [{
+        date: roundDate || new Date().toISOString().slice(0, 10),
+        valuation_usd: v,
+        round: extractRoundType(co.funding) || 'Latest round',
+        source: 'inferred'
+      }];
     }
-    const v = parseValuation(co.valuation);
-    if (v == null) return [];
-    const roundDate = extractRoundDate(co.funding) || null;
-    return [{
-      date: roundDate || new Date().toISOString().slice(0, 10),
-      valuation_usd: v,
-      round: extractRoundType(co.funding) || 'Latest round',
-      source: 'inferred'
-    }];
+
+    // C9: Append a synthetic "Current" point if co.valuation is a newer estimate
+    // than the last funding round (e.g. secondary-market, news leak, tender valuation).
+    if (base && base.length) {
+      const headline = parseValuation(co.valuation);
+      const last = base[base.length - 1];
+      if (headline != null && last && last.valuation_usd) {
+        const deltaPct = Math.abs(headline / last.valuation_usd - 1) * 100;
+        // Only add if current valuation differs by >5% from last tracked round
+        if (deltaPct > 5) {
+          base = base.concat([{
+            date: new Date().toISOString().slice(0, 10),
+            valuation_usd: headline,
+            round: 'Current estimate',
+            source: 'headline'
+          }]);
+        }
+      }
+    }
+    return base || [];
   }
 
   function getFundingHistory(co) {
