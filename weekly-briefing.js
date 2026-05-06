@@ -307,14 +307,6 @@ function renderWeeklyBriefing() {
           <span class="wb-stat">Rev Growth: ${v.rev_growth || v.revenue_growth || 'N/A'}</span>
           <span class="wb-stat">FCF Yield: ${v.fcf_yield || 'N/A'}</span>
         </div>
-        <div class="wb-card-thesis">
-          <div class="wb-label">Why undervalued:</div>
-          <div>${v.why_undervalued || ''}</div>
-        </div>
-        <div class="wb-card-bull">
-          <div class="wb-label">Bull case:</div>
-          <div>${v.bull_case || ''}</div>
-        </div>
       </div>`;
   });
   html += `</div></div>`;
@@ -341,23 +333,53 @@ function renderWeeklyBriefing() {
           <span class="wb-stat ${parseFloat(((m.perf_3m||m.three_month||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">3M: ${m.perf_3m||m.three_month||'N/A'}</span>
           <span class="wb-stat">Rev Growth: ${m.rev_growth || m.revenue_growth || 'N/A'}</span>
         </div>
-        <div class="wb-card-thesis">
-          <div class="wb-label">Catalyst:</div>
-          <div>${m.catalyst || ''}</div>
-        </div>
-        <div class="wb-card-bull">
-          <div class="wb-label">Risk/reward:</div>
-          <div>${m.risk_reward || ''}</div>
-        </div>
       </div>`;
   });
   html += `</div></div>`;
 
   // --- Watchlist Updates ---
   const updates = d.watchlist_updates || d.watchlist_movers || [];
+  // --- helpers to resolve the weekly/30-day move fields under the current
+  //     live schema (weekly_move/thirty_day_move strings + return_weekly_pct/
+  //     return_30d_pct numbers). Legacy price_change_* is kept as a fallback
+  //     so historical archive briefings continue to render correctly.
+  const _fmtPct = (n) => (n >= 0 ? '+' : '') + n.toFixed(1) + '%';
+  const _resolveWeekly = (u) => {
+    if (u.weekly_move) return u.weekly_move;
+    if (typeof u.return_weekly_pct === 'number') return _fmtPct(u.return_weekly_pct);
+    if (u.price_change_1w) return u.price_change_1w;
+    return '—';
+  };
+  const _resolveThirty = (u) => {
+    if (u.thirty_day_move) return u.thirty_day_move;
+    if (typeof u.return_30d_pct === 'number') return _fmtPct(u.return_30d_pct);
+    if (u.price_change_30d) return u.price_change_30d;
+    return '—';
+  };
+  const _weeklyNum = (u) => {
+    if (typeof u.return_weekly_pct === 'number') return u.return_weekly_pct;
+    const s = u.weekly_move || u.price_change_1w || '0';
+    return parseFloat(String(s).replace('%','').replace('+',''));
+  };
+  const _thirtyNum = (u) => {
+    if (typeof u.return_30d_pct === 'number') return u.return_30d_pct;
+    const s = u.thirty_day_move || u.price_change_30d || '0';
+    return parseFloat(String(s).replace('%','').replace('+',''));
+  };
+  const _truncate = (s, n) => {
+    if (!s) return '';
+    const str = String(s);
+    return str.length > n ? str.slice(0, n - 1).trimEnd() + '…' : str;
+  };
   if (updates.length > 0) {
-    const majorMovers = updates.filter(u => u.is_major_mover);
-    const otherMovers = updates.filter(u => !u.is_major_mover);
+    // Classify major movers: explicit flag wins, otherwise abs(30-day) > 10%
+    const isMajor = (u) => {
+      if (typeof u.is_major_mover === 'boolean') return u.is_major_mover;
+      const m30 = _thirtyNum(u);
+      return !isNaN(m30) && Math.abs(m30) > 10;
+    };
+    const majorMovers = updates.filter(isMajor);
+    const otherMovers = updates.filter(u => !isMajor(u));
 
     html += `<div class="wb-section">
       <h3 class="wb-section-title">
@@ -369,19 +391,25 @@ function renderWeeklyBriefing() {
       html += `<div class="wb-sub-header">Major Movers (>10% in 30 days)</div>
         <div class="wb-updates-grid">`;
       majorMovers.forEach(u => {
-        const w = parseFloat((u.price_change_1w || '0').replace('%','').replace('+',''));
-        const m = parseFloat((u.price_change_30d || '0').replace('%','').replace('+',''));
+        const wNum = _weeklyNum(u);
+        const mNum = _thirtyNum(u);
+        const wStr = _resolveWeekly(u);
+        const mStr = _resolveThirty(u);
+        const headline = _truncate(u.headline, 120);
+        const detail = u.detail || '';
+        const signal = u.signal ? `<span class="wb-signal-chip">${u.signal}</span>` : '';
         html += `
-          <div class="wb-update-card ${m >= 0 ? 'wb-up' : 'wb-down'}">
+          <div class="wb-update-card ${mNum >= 0 ? 'wb-up' : 'wb-down'}">
             <div class="wb-update-header">
               <span class="wb-update-ticker">${u.ticker}</span>
               <div class="wb-update-perfs">
-                <span class="wb-perf ${w >= 0 ? 'positive' : 'negative'}">1W: ${u.price_change_1w}</span>
-                <span class="wb-perf ${m >= 0 ? 'positive' : 'negative'}">30D: ${u.price_change_30d}</span>
+                <span class="wb-perf ${wNum >= 0 ? 'positive' : 'negative'}">1W: ${wStr}</span>
+                <span class="wb-perf ${mNum >= 0 ? 'positive' : 'negative'}">30D: ${mStr}</span>
+                ${signal}
               </div>
             </div>
-            <div class="wb-update-headline">${u.headline || ''}</div>
-            <div class="wb-update-detail">${u.detail || ''}</div>
+            <div class="wb-update-headline">${headline}</div>
+            <div class="wb-update-detail">${detail}</div>
           </div>`;
       });
       html += `</div>`;
@@ -391,12 +419,14 @@ function renderWeeklyBriefing() {
       html += `<div class="wb-sub-header" style="margin-top:16px;">Other Notable Moves (>5% weekly)</div>
         <div class="wb-updates-compact">`;
       otherMovers.forEach(u => {
-        const w = parseFloat((u.price_change_1w || '0').replace('%','').replace('+',''));
+        const wNum = _weeklyNum(u);
+        const wStr = _resolveWeekly(u);
+        const headline = _truncate(u.headline, 120);
         html += `
           <div class="wb-compact-item">
             <span class="wb-compact-ticker">${u.ticker}</span>
-            <span class="wb-perf ${w >= 0 ? 'positive' : 'negative'}">${u.price_change_1w}</span>
-            <span class="wb-compact-headline">${u.headline || ''}</span>
+            <span class="wb-perf ${wNum >= 0 ? 'positive' : 'negative'}">${wStr}</span>
+            <span class="wb-compact-headline">${headline}</span>
           </div>`;
       });
       html += `</div>`;

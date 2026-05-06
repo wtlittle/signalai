@@ -241,7 +241,7 @@ Return ONLY this JSON. No prose.
   "trends": ["trend 1 (max 40 words)", "trend 2", "trend 3"],
   "risks": ["risk 1 (max 40 words)", "risk 2", "risk 3"],
   "watchlist_movers": [
-    {{"ticker": "...", "move": "+X%", "catalyst": "...", "detail": "..."}}
+    {{"ticker": "...", "weekly_move": "+X%", "thirty_day_move": "+X%", "catalyst": "...", "detail": "..."}}
   ],
   "narrative": "2-3 sentence summary"
 }}"""
@@ -302,7 +302,7 @@ Return ONLY this JSON. No prose.
   "trends": ["trend 1 (max 40 words)", "trend 2", "trend 3"],
   "risks": ["risk 1 (max 40 words)", "risk 2", "risk 3"],
   "watchlist_movers": [
-    {{"ticker": "...", "move": "+X%", "catalyst": "...", "detail": "..."}}
+    {{"ticker": "...", "weekly_move": "+X%", "thirty_day_move": "+X%", "catalyst": "...", "detail": "..."}}
   ],
   "narrative": "2-3 sentence summary of that specific week"
 }}"""
