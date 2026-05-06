@@ -210,9 +210,9 @@ For each stock return this JSON array. No prose. No preamble.
     "ticker": "...",
     "name": "...",
     "price": 0.0,
-    "perf_1w": "X%",
-    "perf_1m": "X%",
-    "perf_3m": "X%",
+    "one_week_perf": "X%",
+    "one_month_perf": "X%",
+    "three_month_perf": "X%",
     "revenue_growth": "X%",
     "catalyst": "1-2 sentences on what is driving the move",
     "risk_reward": "1-2 sentences on risk/reward from here"

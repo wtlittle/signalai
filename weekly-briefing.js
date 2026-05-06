@@ -91,7 +91,7 @@ function synthesizeTldr(d) {
   }
   if ((d.momentum_picks || []).length && bullets.length < 5) {
     const m = d.momentum_picks[0];
-    bullets.push(`Momentum leader: ${m.ticker} ${m.perf_1w || m.one_week || ''} on the week.`);
+    bullets.push(`Momentum leader: ${m.ticker} ${m.one_week_perf || m.perf_1w || m.one_week || ''} on the week.`);
   }
   // Regime chip
   if (ms.macro_regime) chips.push(ms.macro_regime);
@@ -328,9 +328,9 @@ function renderWeeklyBriefing() {
           <span class="wb-card-price">${m.price || m.current_price || ''}</span>
         </div>
         <div class="wb-card-stats">
-          <span class="wb-stat ${parseFloat(((m.perf_1w||m.one_week||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1W: ${m.perf_1w||m.one_week||'N/A'}</span>
-          <span class="wb-stat ${parseFloat(((m.perf_1m||m.one_month||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1M: ${m.perf_1m||m.one_month||'N/A'}</span>
-          <span class="wb-stat ${parseFloat(((m.perf_3m||m.three_month||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">3M: ${m.perf_3m||m.three_month||'N/A'}</span>
+          <span class="wb-stat ${parseFloat(((m.one_week_perf||m.perf_1w||m.one_week||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1W: ${m.one_week_perf||m.perf_1w||m.one_week||'N/A'}</span>
+          <span class="wb-stat ${parseFloat(((m.one_month_perf||m.perf_1m||m.one_month||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1M: ${m.one_month_perf||m.perf_1m||m.one_month||'N/A'}</span>
+          <span class="wb-stat ${parseFloat(((m.three_month_perf||m.perf_3m||m.three_month||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">3M: ${m.three_month_perf||m.perf_3m||m.three_month||'N/A'}</span>
           <span class="wb-stat">Rev Growth: ${m.rev_growth || m.revenue_growth || 'N/A'}</span>
         </div>
       </div>`;
@@ -845,9 +845,9 @@ async function exportBriefingPDF() {
         y += 14;
         setFont(9, 'normal'); setColor(TEXT_MUTED);
         const stats = [
-          `1W ${m.perf_1w || m.one_week || '—'}`,
-          `1M ${m.perf_1m || m.one_month || '—'}`,
-          `3M ${m.perf_3m || m.three_month || '—'}`,
+          `1W ${m.one_week_perf || m.perf_1w || m.one_week || '—'}`,
+          `1M ${m.one_month_perf || m.perf_1m || m.one_month || '—'}`,
+          `3M ${m.three_month_perf || m.perf_3m || m.three_month || '—'}`,
           `Rev Gr ${m.rev_growth || m.revenue_growth || 'N/A'}`,
         ].join('   ·   ');
         doc.text(stats, MARGIN, y); y += 12;
