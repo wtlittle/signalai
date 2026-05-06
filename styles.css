@@ -858,6 +858,21 @@ tr.long-pressing {
   font-size: 13px;
   margin-left: 8px;
 }
+.popup-change-tf {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 5px;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #9ca3af);
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 3px;
+  vertical-align: middle;
+  text-transform: uppercase;
+}
 .popup-section {
   margin-bottom: 24px;
 }

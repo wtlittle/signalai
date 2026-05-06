@@ -215,7 +215,7 @@ async function renderPopupContent(ticker, data, summary, chart, estimatesData) {
       <span class="popup-company">${getCommonName(ticker, data.name)}</span>
       <div class="popup-price-group">
         <span class="popup-price">${formatPrice(price)}</span>
-        <span class="popup-change ${percentClass(change1d)}">${formatPercent(change1d)}</span>
+        <span class="popup-change ${percentClass(change1d)}" title="1-day price change">${formatPercent(change1d)}<span class="popup-change-tf">1D</span></span>
       </div>
       ${scoreBadgesHtml}
     </div>

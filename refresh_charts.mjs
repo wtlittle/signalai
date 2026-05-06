@@ -18,17 +18,33 @@ const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 const snapshotPath = resolve(__dirname, 'data-snapshot.json');
 const snapshot = JSON.parse(readFileSync(snapshotPath, 'utf-8'));
 
-// Find missing tickers
+// Always include indexes used by the popup chart
+const INDEX_TICKERS = ['^GSPC', '^IXIC', 'IGV', 'SPY'];
+
+// Find missing tickers + stale tickers (latest bar > 5 days old)
 const utilsSrc = readFileSync(resolve(__dirname, 'utils.js'), 'utf-8');
 const match = utilsSrc.match(/const\s+DEFAULT_TICKERS\s*=\s*\[([\s\S]*?)\];/);
-const allTickers = [...new Set([...match[1].matchAll(/'([A-Z.^]+)'/g)].map(m => m[1]))];
+const allTickers = [...new Set([...match[1].matchAll(/'([A-Z.^]+)'/g)].map(m => m[1])), ...INDEX_TICKERS];
 const existingCharts = new Set(Object.keys(snapshot.tickers || {}));
-const missing = allTickers.filter(t => !existingCharts.has(t));
 
-console.log(`Total tickers: ${allTickers.length}, existing charts: ${existingCharts.size}, missing: ${missing.length}\n`);
+const STALE_THRESHOLD_SEC = 5 * 24 * 60 * 60; // 5 days
+const nowSec = Math.floor(Date.now() / 1000);
 
-if (missing.length === 0) {
-  console.log('All tickers have chart data!');
+const missing = [];
+const stale = [];
+for (const t of allTickers) {
+  const existing = snapshot.tickers?.[t];
+  if (!existing) { missing.push(t); continue; }
+  const ts = existing.timestamps || [];
+  const lastTs = ts.length ? ts[ts.length - 1] : 0;
+  if (nowSec - lastTs > STALE_THRESHOLD_SEC) stale.push(t);
+}
+
+const toRefresh = [...missing, ...stale];
+console.log(`Total tickers: ${allTickers.length}, existing: ${existingCharts.size}, missing: ${missing.length}, stale: ${stale.length}\n`);
+
+if (toRefresh.length === 0) {
+  console.log('All tickers current!');
   process.exit(0);
 }
 
@@ -51,9 +67,9 @@ let success = 0;
 const newChartMeta = [];
 const newChartData = [];
 
-for (let i = 0; i < missing.length; i++) {
-  const ticker = missing[i];
-  process.stdout.write(`  [${i + 1}/${missing.length}] ${ticker}...`);
+for (let i = 0; i < toRefresh.length; i++) {
+  const ticker = toRefresh[i];
+  process.stdout.write(`  [${i + 1}/${toRefresh.length}] ${ticker}...`);
   
   const result = await fetchChart(ticker);
   if (result) {
@@ -108,7 +124,7 @@ for (let i = 0; i < missing.length; i++) {
   if (i % 3 === 2) await new Promise(r => setTimeout(r, 600));
 }
 
-console.log(`\nFetched: ${success}/${missing.length} tickers`);
+console.log(`\nFetched: ${success}/${toRefresh.length} tickers`);
 
 // Save snapshot
 writeFileSync(snapshotPath, JSON.stringify(snapshot));
