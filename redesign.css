@@ -51,14 +51,14 @@
   align-items: center;
   gap: 2px;
   overflow-x: auto;
-  scrollbar-width: thin;
-  /* Right-edge scroll affordance: linear-gradient mask hints that there
-     is more content to the right. We apply it as a pseudo-element on a
-     wrapper, but since the nav itself is the scroll container we use a
-     sticky-positioned ::after instead. */
+  /* C12 FIX: hide the phantom horizontal scrollbar that appeared under the nav
+     even when the strip didn't actually overflow. The `::after` gradient still
+     hints that the strip is horizontally scrollable when content exceeds width. */
+  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;  /* IE / legacy Edge */
 }
-.surface-nav::-webkit-scrollbar { height: 4px; }
-.surface-nav::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+.surface-nav::-webkit-scrollbar { height: 0; width: 0; display: none; }
+.surface-nav::-webkit-scrollbar-thumb { background: transparent; }
 
 /* Right-edge fade affordance — hints the strip is scrollable. */
 .surface-nav::after {
@@ -137,6 +137,17 @@
   font-family: var(--font-sans);
   outline: none;
   transition: border-color 0.12s ease;
+  /* C13 FIX: prevent the placeholder from visually wrapping / appearing
+     mid-truncated. text-overflow on placeholders requires the input itself
+     to be a single-line text-overflow context. */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.topbar-search input::placeholder {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .topbar-search input:focus {
   border-color: var(--accent);
@@ -186,18 +197,29 @@
 .topbar-action.topbar-action-soon:hover {
   background: var(--bg-surface);
 }
+/* C13 FIX: align the SOON badge perfectly with the "Save view" label by
+   making the parent button a flex row, so the small badge centers against
+   the larger label glyph cap-height instead of riding the inline baseline. */
+.topbar-action.topbar-action-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 .topbar-badge-soon {
-  display: inline-block;
-  margin-left: 6px;
-  padding: 1px 5px;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0;          /* gap handles spacing now */
+  padding: 1px 5px 2px;
   font-size: 9px;
+  line-height: 1;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-tertiary, var(--text-secondary));
   border: 1px solid var(--border);
   border-radius: 3px;
-  vertical-align: middle;
+  position: relative;
+  top: 0;                  /* explicit — don't drift on font-metric hosts */
 }
 @keyframes topbar-action-soon-flash {
   0%, 100% { border-color: var(--border); }

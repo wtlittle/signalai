@@ -581,11 +581,13 @@
 
   function _screenerState() {
     var stored = _safeGet(SCREENER_KEY) || {};
+    // C11 FIX: don't coerce explicit 0 / '0' to '' via `||` — use nullish guard.
+    function _v(x, dflt) { return (x === null || x === undefined) ? dflt : x; }
     return {
-      sector: stored.sector || 'All',
-      minMcap: stored.minMcap || '',
-      maxEvSales: stored.maxEvSales || '',
-      minRev: stored.minRev || ''
+      sector: _v(stored.sector, 'All'),
+      minMcap: _v(stored.minMcap, ''),
+      maxEvSales: _v(stored.maxEvSales, ''),
+      minRev: _v(stored.minRev, '')
     };
   }
   function _screenerSet(s) { _safeSet(SCREENER_KEY, s); }
@@ -597,13 +599,14 @@
     if (placeholder) placeholder.style.display = 'none';
 
     var data = _tickerData();
-    if (!Object.keys(data).length) {
-      pane.innerHTML = '<div class="screener-mvp-empty">Coverage data still loading. Open Coverage first to populate the universe.</div>';
-      return;
-    }
+    var st = _screenerState();
+
+    // C11 FIX: When data isn't ready, show the placeholder via a side-panel
+    // (NOT pane.innerHTML) so we don't destroy the form's persisted values.
+    var emptyEl = pane.querySelector('#screener-mvp-empty');
+    var dataEmpty = !Object.keys(data).length;
 
     var sectors = Array.from(new Set(Object.keys(data).map(function (t) { return _subsectorFor(t, data[t]); }))).sort();
-    var st = _screenerState();
 
     // Build the form once, then re-render results into a sub-pane on input.
     if (!pane.querySelector('#screener-mvp-form')) {
@@ -622,16 +625,18 @@
           '<button type="button" class="btn-sm" id="screener-reset">Reset</button>' +
           '<span class="screener-mvp-count" id="screener-count">— results</span>' +
         '</div>' +
+        '<div class="screener-mvp-empty" id="screener-mvp-empty" style="display:none;">Coverage data still loading. Open Coverage first to populate the universe.</div>' +
         '<div class="screener-mvp-results" id="screener-mvp-results"></div>';
 
       var $sector = pane.querySelector('#screener-sector');
       var $mc = pane.querySelector('#screener-min-mcap');
       var $ev = pane.querySelector('#screener-max-evsales');
       var $rev = pane.querySelector('#screener-min-rev');
-      $sector.value = st.sector;
-      $mc.value = st.minMcap;
-      $ev.value = st.maxEvSales;
-      $rev.value = st.minRev;
+      // Use string fallbacks (preserve '0' if user explicitly typed it)
+      $sector.value = (st.sector != null && st.sector !== '') ? st.sector : 'All';
+      $mc.value  = (st.minMcap     != null) ? String(st.minMcap)     : '';
+      $ev.value  = (st.maxEvSales  != null) ? String(st.maxEvSales)  : '';
+      $rev.value = (st.minRev      != null) ? String(st.minRev)      : '';
 
       function refresh() {
         var ns = {
@@ -644,19 +649,64 @@
         _renderScreenerResults(ns);
       }
       $sector.addEventListener('change', refresh);
+      // C11 FIX: persist immediately on every keystroke (no debounce on save),
+      // debounce only the heavy results re-render. Also save on blur as a safety.
       [$mc, $ev, $rev].forEach(function (el) {
+        function persistNow() {
+          var ns = {
+            sector: $sector.value,
+            minMcap: $mc.value,
+            maxEvSales: $ev.value,
+            minRev: $rev.value
+          };
+          _screenerSet(ns);
+        }
         el.addEventListener('input', function () {
-          // light debounce
+          persistNow();                       // immediate persist
           clearTimeout(el._t);
-          el._t = setTimeout(refresh, 150);
+          el._t = setTimeout(refresh, 150);   // debounced render
         });
+        el.addEventListener('blur', persistNow);
+        el.addEventListener('change', persistNow);
       });
       pane.querySelector('#screener-reset').addEventListener('click', function () {
         $sector.value = 'All'; $mc.value = ''; $ev.value = ''; $rev.value = '';
         refresh();
       });
+    } else {
+      // C11 FIX: form already exists — re-hydrate input values from storage on
+      // every activation so navigation never silently resets typed filters.
+      var $sector2 = pane.querySelector('#screener-sector');
+      var $mc2  = pane.querySelector('#screener-min-mcap');
+      var $ev2  = pane.querySelector('#screener-max-evsales');
+      var $rev2 = pane.querySelector('#screener-min-rev');
+      // Repopulate sector options if universe expanded since first build
+      if ($sector2 && sectors.length) {
+        var existingSectors = Array.from($sector2.options).map(function (o) { return o.value; });
+        var needsRebuild = existingSectors.length !== sectors.length + 1 ||
+          sectors.some(function (s) { return existingSectors.indexOf(s) === -1; });
+        if (needsRebuild) {
+          var prevVal = $sector2.value;
+          $sector2.innerHTML = '<option value="All">All</option>' +
+            sectors.map(function (s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
+          $sector2.value = prevVal;
+        }
+      }
+      if ($sector2) $sector2.value = (st.sector != null && st.sector !== '') ? st.sector : 'All';
+      if ($mc2)  $mc2.value  = (st.minMcap    != null) ? String(st.minMcap)    : '';
+      if ($ev2)  $ev2.value  = (st.maxEvSales != null) ? String(st.maxEvSales) : '';
+      if ($rev2) $rev2.value = (st.minRev     != null) ? String(st.minRev)     : '';
     }
-    _renderScreenerResults(_screenerState());
+
+    // Toggle empty-state visibility without wiping the form
+    emptyEl = pane.querySelector('#screener-mvp-empty');
+    if (emptyEl) emptyEl.style.display = dataEmpty ? 'block' : 'none';
+    var resultsHost = pane.querySelector('#screener-mvp-results');
+    if (resultsHost) resultsHost.style.display = dataEmpty ? 'none' : 'block';
+
+    if (!dataEmpty) {
+      _renderScreenerResults(_screenerState());
+    }
   }
 
   function _renderScreenerResults(st) {
