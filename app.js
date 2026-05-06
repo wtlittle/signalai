@@ -44,7 +44,7 @@ let refreshCountdown = 60;
     const key = c.name.toLowerCase();
     const updated = defaultNameMap.get(key);
     if (updated) {
-      privateCompanies[i] = { ...c, ...updated };
+      privateCompanies[i] = { ...c, ...updated, funding_history: c.funding_history || updated.funding_history };
     }
   });
 
@@ -72,14 +72,13 @@ let refreshCountdown = 60;
         }
       });
       existing.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
-      c.funding_history = existing;
+      privateCompanies[i].funding_history = existing;
       // Derive summary fields
       const summary = computeFundingSummary(existing);
-      c.total_raised_usd = summary.total_raised_usd;
-      c.last_round_type = summary.last_round_type;
-      c.last_round_date = summary.last_round_date;
-      c.estimated_valuation = summary.estimated_valuation;
-      privateCompanies[i] = c;
+      privateCompanies[i].total_raised_usd = summary.total_raised_usd;
+      privateCompanies[i].last_round_type = summary.last_round_type;
+      privateCompanies[i].last_round_date = summary.last_round_date;
+      privateCompanies[i].estimated_valuation = summary.estimated_valuation;
     });
   }
 
