@@ -926,7 +926,11 @@ function renderEarningsCalendarGrid() {
   // Click on ticker chips
   $grid.querySelectorAll('.ecal-ticker-chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      openEarningsNote(chip.dataset.ticker, chip.dataset.date, chip.dataset.type);
+      if (typeof openPopup === 'function') {
+        openPopup(chip.dataset.ticker, { initialTab: 'earnings-intel' });
+      } else {
+        openEarningsNote(chip.dataset.ticker, chip.dataset.date, chip.dataset.type);
+      }
     });
   });
 }
