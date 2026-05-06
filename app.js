@@ -1841,6 +1841,12 @@ setTimeout(() => {
           if (typeof saveSort === 'function') saveSort();
           if (typeof renderTable === 'function') renderTable();
         }
+        // C1: If tickerData is empty when a pill is clicked, kick a fetch so
+        // the table hydrates. Without this the pill re-sorts an empty object.
+        try {
+          var tdEmpty = !tickerData || Object.keys(tickerData).length === 0;
+          if (tdEmpty && typeof loadAllData === 'function') loadAllData();
+        } catch (_) {}
         // P1-F: reset Sort regime dropdown to Default since timeframe
         // pills override the regime sort.
         const regimeSel = document.getElementById('ribbon-sort-regime');
@@ -2149,6 +2155,18 @@ setTimeout(() => {
 
   // Expose so loadAllData() can find it via `typeof initRibbon`.
   window.initRibbon = initRibbon;
+
+  // C1: Also wire the ribbon at DOM-ready, independent of loadAllData().
+  // This ensures pills work even if the initial data fetch fails silently —
+  // previously pills were dead until the user triggered a universe change.
+  function _bootRibbon() {
+    try { initRibbon(); } catch (e) { console.warn('[ribbon] early init failed:', e); }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _bootRibbon);
+  } else {
+    setTimeout(_bootRibbon, 0);
+  }
   // Also expose applyFlagFilters so async data loads (e.g. earnings calendar)
   // can re-run ribbon filters when new data arrives after initial render.
   window.applyFlagFilters = applyFlagFilters;

@@ -466,8 +466,21 @@
     // Coverage: ensure the public table is refreshed when returning
     window.SignalRouter.register('coverage', {
       onActivate: () => {
-        // Nothing special — app.js already keeps the table live.
         updateSummaryStripCounts();
+        // C1: if tickerData is empty (e.g. user navigated away during initial
+        // fetch, or the cold-load failed silently), kick a refetch so the
+        // table hydrates instead of showing skeleton rows forever.
+        try {
+          var td = window.tickerData;
+          if (td == null) {
+            // tickerData is module-scoped in app.js — bare-eval pattern
+            try { td = (0, eval)('typeof tickerData !== "undefined" ? tickerData : null'); } catch (_) {}
+          }
+          var empty = !td || (typeof td === 'object' && Object.keys(td).length === 0);
+          if (empty && typeof window.loadAllData === 'function') {
+            window.loadAllData();
+          }
+        } catch (_) {}
       },
     });
     // Earnings: trigger legacy earnings load if not yet done
