@@ -1121,6 +1121,8 @@
   line-height: 1.5;
 }
 .dd-step-sub strong { color: var(--text-primary); font-weight: 600; }
+.dd-step-sub em { font-style: normal; color: var(--accent, #4f9eff); font-weight: 500; }
+.dd-run-step-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .dd-html-input {
   width: 100%;
   background: var(--bg-surface-alt);

@@ -93,18 +93,93 @@
       .catch(function () { _promptCache = ''; return ''; });
   }
 
-  // Build a Perplexity deep-link that opens the canonical drilldown prompt
-  // pre-filled with the analyst's ticker. The prompt file is the single
-  // source of truth — we just append the ticker context.
-  function _buildPplxUrl(ticker, promptText) {
+  // Build the SHORT prefill that goes in the Perplexity URL `q` param.
+  // We deliberately do NOT URL-encode the entire 14KB prompt — that produces
+  // a request-URI long enough to trigger nginx/CloudFront `414 URI Too Large`
+  // on perplexity.ai. Instead, we ship a compact instruction in the URL and
+  // copy the full prompt to the clipboard so the analyst pastes it as the
+  // first message in the new thread.
+  function _buildShortPrefill(ticker) {
+    return (
+      'Run the canonical Signal Stack institutional drilldown engine on ' + ticker + '. ' +
+      'I will paste the full canonical prompt as my next message. ' +
+      'When you finish, output the full HTML note in a single fenced ```html block ' +
+      'so I can paste it into my Drilldown Library.'
+    );
+  }
+  function _buildPplxUrl(ticker /* , promptText (unused — see clipboard path) */) {
+    return 'https://www.perplexity.ai/?q=' + encodeURIComponent(_buildShortPrefill(ticker));
+  }
+
+  // Build the FULL prompt text (header + instruction + canonical body) that
+  // we copy to the clipboard. This is what the analyst pastes into the new
+  // Perplexity thread to run the canonical drilldown.
+  function _buildFullPrompt(ticker, promptText) {
     var header = 'Run the canonical Signal Stack drilldown engine on ' + ticker + '. ';
     var instruction =
       'Use the prompt below verbatim. When you finish, output the full HTML ' +
       'note in a single fenced ```html block so I can paste it into my ' +
       'Drilldown Library.';
-    var fullPrompt = header + instruction + '\n\n---\n\n' + (promptText || '');
-    // Perplexity supports `q` query param for prefilled prompts.
-    return 'https://www.perplexity.ai/?q=' + encodeURIComponent(fullPrompt);
+    return header + instruction + '\n\n---\n\n' + (promptText || '');
+  }
+
+  // Best-effort clipboard write — navigator.clipboard requires a secure
+  // context AND a user gesture; on some embedded hosts neither is true, so
+  // we fall back to a hidden <textarea> + execCommand('copy') which works
+  // in iframes.
+  function _copyToClipboard(text) {
+    if (!text) return Promise.resolve(false);
+    try {
+      if (global.navigator && global.navigator.clipboard && global.navigator.clipboard.writeText) {
+        return global.navigator.clipboard.writeText(text).then(function () { return true; }, function () {
+          return _execCopyFallback(text);
+        });
+      }
+    } catch (_) {}
+    return Promise.resolve(_execCopyFallback(text));
+  }
+  function _execCopyFallback(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '0';
+      ta.style.left = '0';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return !!ok;
+    } catch (_) { return false; }
+  }
+
+  // Toast surfaced after Run-drilldown so the analyst knows the canonical
+  // prompt is on their clipboard and just needs to be pasted into the new tab.
+  function _toast(msg, kind) {
+    var t = document.getElementById('dd-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'dd-toast';
+      t.style.cssText = [
+        'position:fixed', 'left:50%', 'bottom:32px', 'transform:translateX(-50%)',
+        'z-index:9999', 'padding:10px 14px', 'border-radius:6px',
+        'font-family:var(--font-sans, system-ui)', 'font-size:13px', 'font-weight:500',
+        'box-shadow:0 8px 24px rgba(0,0,0,0.35)',
+        'background:var(--bg-surface, #1a1d24)', 'color:var(--text-primary, #e8eaed)',
+        'border:1px solid var(--border, #2a2f3a)',
+        'opacity:0', 'transition:opacity 0.18s ease'
+      ].join(';');
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.borderLeft = (kind === 'error') ? '3px solid var(--red, #ef4444)'
+                       : (kind === 'ok')    ? '3px solid var(--green, #22c55e)'
+                       :                       '3px solid var(--accent, #4f9eff)';
+    requestAnimationFrame(function () { t.style.opacity = '1'; });
+    clearTimeout(t._h);
+    t._h = setTimeout(function () { t.style.opacity = '0'; }, 5000);
   }
 
   // ----- Surface markup -------------------------------------------------
@@ -225,8 +300,11 @@
           '<div class="dd-step-num">1</div>' +
           '<div class="dd-step-body">' +
             '<div class="dd-step-title">Run the canonical drilldown prompt</div>' +
-            '<div class="dd-step-sub">Opens a fresh Perplexity thread pre-loaded with the institutional prompt for <strong>' + _esc(t) + '</strong>. The model will return a full HTML note in a fenced block.</div>' +
-            '<button type="button" class="btn-primary" data-dd-act="run">Run institutional drilldown for ' + _esc(t) + '</button>' +
+            '<div class="dd-step-sub">Opens a fresh Perplexity thread for <strong>' + _esc(t) + '</strong> and copies the full canonical institutional prompt to your clipboard. <em>Paste it as your first message in the new tab.</em> The model will return a full HTML note in a fenced block.</div>' +
+            '<div class="dd-run-step-actions">' +
+              '<button type="button" class="btn-primary" data-dd-act="run">Run institutional drilldown for ' + _esc(t) + '</button>' +
+              '<button type="button" class="btn-sm" data-dd-act="copy-prompt" title="Copy the canonical prompt to your clipboard without opening a new tab">Copy prompt only</button>' +
+            '</div>' +
           '</div>' +
         '</div>' +
         '<div class="dd-run-step">' +
@@ -489,6 +567,17 @@
       _runDrilldown(act === 'refresh' ? 'refresh' : 'manual');
       return;
     }
+    if (act === 'copy-prompt') {
+      if (!state.ticker) return;
+      _loadPrompt().then(function (txt) {
+        var fullPrompt = _buildFullPrompt(state.ticker, txt);
+        _copyToClipboard(fullPrompt).then(function (ok) {
+          if (ok) _toast('Canonical drilldown prompt copied to clipboard.', 'ok');
+          else    _toast('Clipboard blocked — try the Run button instead.', 'error');
+        });
+      });
+      return;
+    }
     if (act === 'save-html') {
       state.showRunPanel = true;
       render();
@@ -515,9 +604,27 @@
     if (!state.ticker) return;
     state.showRunPanel = true;
     render();
+    // Open the new tab IMMEDIATELY so the popup fires inside the click gesture
+    // (Safari/Firefox block window.open from inside a Promise.then callback).
+    var newWin = null;
+    try { newWin = global.open('about:blank', '_blank', 'noopener'); } catch (_) {}
+
     _loadPrompt().then(function (txt) {
-      var url = _buildPplxUrl(state.ticker, txt);
-      try { global.open(url, '_blank', 'noopener'); } catch (_) {}
+      var url = _buildPplxUrl(state.ticker);
+      var fullPrompt = _buildFullPrompt(state.ticker, txt);
+      // Navigate the pre-opened tab; if it was blocked, fall back to a same-
+      // tab open (rare — the user gesture should always succeed here).
+      if (newWin && !newWin.closed) {
+        try { newWin.location.href = url; } catch (_) { try { global.open(url, '_blank', 'noopener'); } catch (_) {} }
+      } else {
+        try { global.open(url, '_blank', 'noopener'); } catch (_) {}
+      }
+      // Copy the full canonical prompt to the clipboard so the analyst can
+      // paste it as their first message in the freshly-opened thread.
+      _copyToClipboard(fullPrompt).then(function (ok) {
+        if (ok) _toast('Canonical drilldown prompt copied — paste it into the new Perplexity tab.', 'ok');
+        else    _toast('Open the new tab and paste the prompt manually (clipboard blocked).', 'error');
+      });
       // Persist the trigger so the next save defaults to it.
       var sel = document.getElementById('dd-trigger-input');
       if (sel) sel.value = trigger;

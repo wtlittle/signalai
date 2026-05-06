@@ -424,6 +424,40 @@ function initWeeklyBriefing() {
   }
 }
 
+/*
+ * FIX (back-nav bug): track the currently-open archive overlay so it can be
+ * dismissed programmatically when the user navigates away — either via the
+ * browser Back button (hashchange fires -> onDeactivate) or by clicking a
+ * top-bar surface button while the modal is still open.  Without this the
+ * full-screen overlay remained in the DOM after navigation, sitting on top of
+ * the newly-visible surface and intercepting all pointer events, making the
+ * app appear completely broken (clicks did nothing).
+ *
+ * Root causes addressed:
+ *   (a) No onDeactivate hook for the 'briefing' surface, so the overlay was
+ *       never removed when SignalRouter switched surfaces.
+ *   (b) Browser Back (hashchange) triggered _activate() -> onDeactivate but
+ *       there was no deactivate hook registered at all, leaving the overlay
+ *       permanently blocking the view the user landed on.
+ *   (c) The overlay had no listener for hashchange / popstate so it could not
+ *       self-dismiss on browser navigation.
+ *
+ * Fix: hold a module-level reference to the active overlay's dismiss function.
+ * dismissBriefingArchive() is called from:
+ *   1. The close button / click-outside handler (existing UX, unchanged).
+ *   2. A one-shot hashchange listener added when the overlay opens, so browser
+ *      Back closes it before the router re-activates the target surface.
+ *   3. window.dismissBriefingArchive, exposed so shell.js can call it from
+ *      the briefing surface's onDeactivate hook (registered below).
+ */
+let _briefingArchiveDismiss = null;
+
+function dismissBriefingArchive() {
+  if (typeof _briefingArchiveDismiss === 'function') {
+    _briefingArchiveDismiss();
+  }
+}
+
 function showBriefingArchive() {
   const idx = weeklyBriefingArchiveIndex || [];
 
@@ -462,7 +496,7 @@ function showBriefingArchive() {
       row.textContent = item.week_ending;
       row.addEventListener('click', () => {
         try { jumpToWeek(item.week_ending); } catch (e) { console.warn('jumpToWeek failed:', e); }
-        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        dismiss();
       });
       list.appendChild(row);
     });
@@ -473,10 +507,23 @@ function showBriefingArchive() {
   modal.appendChild(list);
   overlay.appendChild(modal);
 
-  // Close interactions: close button + click outside (overlay itself).
+  // FIX: shared dismiss function stored at module scope so external callers
+  // (onDeactivate hook, hashchange listener) can close the overlay.
   function dismiss() {
     if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    window.removeEventListener('hashchange', _onHashChangeDismiss);
+    _briefingArchiveDismiss = null;
   }
+  _briefingArchiveDismiss = dismiss;
+
+  // FIX: close the overlay whenever the URL hash changes (browser Back /
+  // Forward, or clicking another surface nav button).  Use a named function
+  // so we can remove it precisely in dismiss() — no listener leaks.
+  function _onHashChangeDismiss() {
+    dismiss();
+  }
+  window.addEventListener('hashchange', _onHashChangeDismiss);
+
   closeBtn.addEventListener('click', dismiss);
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) dismiss();
@@ -489,6 +536,8 @@ function showBriefingArchive() {
 window.loadLatestBriefing = loadLatestBriefing;
 window.jumpToWeek = jumpToWeek;
 window.showBriefingArchive = showBriefingArchive;
+// FIX: expose dismiss so shell.js onDeactivate can close any open archive overlay.
+window.dismissBriefingArchive = dismissBriefingArchive;
 
 // ───────────────────────────────────────────────────────────
 // PDF EXPORT

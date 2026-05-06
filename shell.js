@@ -500,12 +500,29 @@
     // Briefing / Macro / News / Alerts: each is now a first-class surface.
     // Each onActivate calls loadMorePane(key) directly, reusing the existing
     // per-pane state machine (idle/loading/loaded/error + watchdog + retry).
+    //
+    // FIX (back-nav bug): the briefing surface registers an onDeactivate hook
+    // that closes any open archive overlay before the router hides the surface.
+    // Without this, navigating away (browser Back or clicking another surface
+    // tab) while the archive modal was open left a full-screen overlay in the
+    // DOM that blocked all pointer events on whatever surface the user landed
+    // on, making navigation appear completely broken.
     ['briefing', 'macro', 'news', 'alerts'].forEach(function (key) {
-      window.SignalRouter.register(key, {
+      var hooks = {
         onActivate: function () {
           loadMorePane(key);
         },
-      });
+      };
+      if (key === 'briefing') {
+        hooks.onDeactivate = function () {
+          // Close archive overlay if open; the function is a no-op when no
+          // overlay is present (_briefingArchiveDismiss === null).
+          if (typeof window.dismissBriefingArchive === 'function') {
+            window.dismissBriefingArchive();
+          }
+        };
+      }
+      window.SignalRouter.register(key, hooks);
     });
     // Drilldown: ticker param -> open existing popup
     window.SignalRouter.register('drilldown', {
