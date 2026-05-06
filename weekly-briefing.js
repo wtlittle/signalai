@@ -65,14 +65,17 @@ function synthesizeTldr(d) {
   const chips = [];
   const ms = d.market_summary || {};
   const ir = ms.index_returns || {};
-  const sp = ir.sp500_weekly || '';
+  const sp = ir.sp500_weekly || ms.sp500_weekly
+    || (ir.sp500 && ir.sp500.weekly_pct !== undefined
+       ? (ir.sp500.weekly_pct >= 0 ? '+' : '') + ir.sp500.weekly_pct.toFixed(2) + '%'
+       : '');
   const spPct = parseFloat((sp || '').replace('%', '').replace('+', ''));
   if (!isNaN(spPct)) {
     if (spPct >= 1.5) { chips.push('Risk-on'); bullets.push(`S&P 500 up ${sp.split(' ')[0]} this week — risk-on tone with broad breadth.`); }
     else if (spPct <= -1.5) { chips.push('Risk-off'); bullets.push(`S&P 500 down ${sp.split(' ')[0]} this week — defensive tone as risk assets retreat.`); }
     else bullets.push(`S&P 500 ${sp.split(' ')[0]} — mixed tape with leadership rotation beneath the surface.`);
   }
-  const trends = (d.trends || []).slice(0, 2);
+  const trends = (d.trends || d.key_trends || []).slice(0, 2);
   trends.forEach(t => {
     const title = t.title || t.name || '';
     if (title) bullets.push(title.length > 110 ? title.slice(0, 107) + '…' : title);
@@ -173,9 +176,19 @@ function renderWeeklyBriefing() {
   const ir = ms.index_returns || {};
 
   // Pull index returns from either the nested index_returns block or the flat top-level keys
-  const sp500 = ms.sp500_weekly || ir.sp500_weekly;
-  const nasdaq = ms.nasdaq_weekly || ir.nasdaq_weekly;
-  const russell = ms.russell_weekly || ir.russell_weekly;
+  const sp500Raw = ms.sp500_weekly || ir.sp500_weekly
+    || (ir.sp500 ? (ir.sp500.weekly_pct !== undefined ? (ir.sp500.weekly_pct >= 0 ? '+' : '') + ir.sp500.weekly_pct.toFixed(2) + '%' : null) : null);
+  const sp500 = sp500Raw;
+
+  const nasdaqRaw = ms.nasdaq_weekly || ir.nasdaq_weekly
+    || (ir.nasdaq_composite ? (ir.nasdaq_composite.weekly_pct !== undefined ? (ir.nasdaq_composite.weekly_pct >= 0 ? '+' : '') + ir.nasdaq_composite.weekly_pct.toFixed(2) + '%' : null) : null)
+    || (ir.nasdaq ? (ir.nasdaq.weekly_pct !== undefined ? (ir.nasdaq.weekly_pct >= 0 ? '+' : '') + ir.nasdaq.weekly_pct.toFixed(2) + '%' : null) : null);
+  const nasdaq = nasdaqRaw;
+
+  const russellRaw = ms.russell_weekly || ir.russell_weekly
+    || (ir.russell_2000 ? (ir.russell_2000.weekly_pct !== undefined ? (ir.russell_2000.weekly_pct >= 0 ? '+' : '') + ir.russell_2000.weekly_pct.toFixed(2) + '%' : null) : null)
+    || (ir.russell ? (ir.russell.weekly_pct !== undefined ? (ir.russell.weekly_pct >= 0 ? '+' : '') + ir.russell.weekly_pct.toFixed(2) + '%' : null) : null);
+  const russell = russellRaw;
 
   // Build archive set for picker
   const archive = Array.isArray(d.archive) ? d.archive : [];
@@ -247,7 +260,7 @@ function renderWeeklyBriefing() {
       <span class="wb-icon">&#8680;</span> Key Trends
     </h3>
     <div class="wb-list">`;
-  (d.trends || []).forEach(t => {
+  (d.trends || d.key_trends || []).forEach(t => {
     html += `
       <div class="wb-list-item">
         <div class="wb-list-title">${t.title || t.name || ''}</div>
@@ -678,9 +691,9 @@ async function exportBriefingPDF() {
     }
 
     // Trends
-    if (Array.isArray(d.trends) && d.trends.length) {
+    if ((Array.isArray(d.trends) && d.trends.length) || (Array.isArray(d.key_trends) && d.key_trends.length)) {
       drawSectionHeader('Key Trends', ACCENT_GREEN);
-      d.trends.forEach(t => {
+      (d.trends || d.key_trends || []).forEach(t => {
         const title = t.title || t.name || '';
         const detail = t.detail || t.description || '';
         if (title) { writeParagraph(title, 11, 'bold'); }
