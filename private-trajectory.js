@@ -66,6 +66,23 @@
         return da - db;
       });
     }
+    // Derive valuation_history from funding_history rounds that include a valuation
+    if (Array.isArray(co.funding_history) && co.funding_history.length) {
+      const points = co.funding_history
+        .filter(r => r && r.valuation_usd != null && !Number.isNaN(Number(r.valuation_usd)))
+        .map(r => ({
+          date: r.date,
+          valuation_usd: Number(r.valuation_usd),
+          round: r.round || '',
+          source: r.source || 'funding_history'
+        }))
+        .sort((a, b) => {
+          const da = new Date(a.date || '1970-01-01').getTime();
+          const db = new Date(b.date || '1970-01-01').getTime();
+          return da - db;
+        });
+      if (points.length) return points;
+    }
     const v = parseValuation(co.valuation);
     if (v == null) return [];
     const roundDate = extractRoundDate(co.funding) || null;
