@@ -8,19 +8,32 @@ const SUPABASE_KEY = 'sb_publishable_VOT04H1B4O7dVBqxTOk5rw_lyYBR9SW';
 async function supabaseGet(table, params = '', maxRows = 1000) {
   try {
     const headers = { 'apikey': SUPABASE_KEY };
-    // For queries that may exceed 1000 rows, use offset pagination
+    // For queries that may exceed 1000 rows, use offset pagination.
+    // BUG FIX (2026-05-06): the prior `while (offset < maxRows)` guard with
+    // pageSize=1000 capped the result at exactly maxRows even when more rows
+    // existed (e.g. DOCN chart_data had 2508 rows but only 2000 were
+    // returned, truncating the series at 2025-04-07 and producing a bogus
+    // +442.9% 1D return in the popup). The loop now keeps paginating until a
+    // short page comes back, with maxRows acting purely as a safety cap on
+    // the cumulative row count.
     if (maxRows > 1000) {
       let allRows = [];
       let offset = 0;
       const pageSize = 1000;
-      while (offset < maxRows) {
-        const url = `${SUPABASE_URL}/rest/v1/${table}?${params}&limit=${pageSize}&offset=${offset}`;
+      // Strip any caller-supplied limit/offset so PostgREST honours our paging.
+      const cleanParams = params
+        .split('&')
+        .filter(p => p && !/^limit=/i.test(p) && !/^offset=/i.test(p))
+        .join('&');
+      while (true) {
+        const url = `${SUPABASE_URL}/rest/v1/${table}?${cleanParams}&limit=${pageSize}&offset=${offset}`;
         const resp = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const page = await resp.json();
         if (!page || page.length === 0) break;
         allRows = allRows.concat(page);
         if (page.length < pageSize) break; // last page
+        if (allRows.length >= maxRows) break; // safety cap
         offset += pageSize;
       }
       return allRows;
@@ -146,7 +159,9 @@ async function fetchChartDataClient(ticker, range = '5y', interval = '1d') {
     try {
       const [metaArr, points] = await Promise.all([
         supabaseGet('chart_meta', `select=*&ticker=eq.${encodeURIComponent(ticker)}`),
-        supabaseGet('chart_data', `select=ts,close&ticker=eq.${encodeURIComponent(ticker)}&order=ts.asc&limit=2000`, 2000),
+        // 5Y daily series can run ~2500+ bars; pass a high maxRows cap and let
+        // the paginator stop on the first short page rather than truncating.
+        supabaseGet('chart_data', `select=ts,close&ticker=eq.${encodeURIComponent(ticker)}&order=ts.asc`, 5000),
       ]);
       if (metaArr?.length && points?.length) {
         const m = metaArr[0];

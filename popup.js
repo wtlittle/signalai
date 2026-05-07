@@ -107,6 +107,24 @@ async function openPopup(ticker, options) {
       // the Coverage table.
       if (typeof td.price === 'number') quote.price = td.price;
       if (td.currency) quote.currency = td.currency;
+
+      // BUG FIX (2026-05-06): propagate pre-computed Supabase performance
+      // returns (already set on tickerData via parseTickerData on initial
+      // load) so parseTickerData below uses them instead of falling back to
+      // chart-close computation. If the Supabase chart_data series is
+      // truncated or stale, the chart-fallback path can produce wildly wrong
+      // 1D returns (e.g. DOCN displayed +442.9% because the truncated chart
+      // ended at $28.14 from 2025-04-07 vs current $152.77).
+      const perfFieldMap = [
+        ['change1d', 'd1'], ['change1w', 'w1'], ['change1m', 'm1'],
+        ['change3m', 'm3'], ['change1y', 'y1'], ['change3y', 'y3'],
+        ['changeYtd', 'ytd'],
+      ];
+      for (const [quoteKey, tdKey] of perfFieldMap) {
+        if (td[tdKey] != null && quote[quoteKey] == null) {
+          quote[quoteKey] = td[tdKey];
+        }
+      }
     }
 
     const data = parseTickerData(ticker, chart, quote);
