@@ -2343,6 +2343,76 @@ tbody tr:hover .comps-sticky-col {
   line-height: 1.45;
   margin-bottom: 6px;
 }
+
+/* --- Per-stock primer expander on each value/momentum card --- */
+.wb-card-primer {
+  margin-top: 8px;
+  border-top: 1px solid #1e2433;
+  padding-top: 8px;
+}
+.wb-card-primer[open] {
+  /* Subtle background tint when expanded so it reads as a sub-section */
+  /* without crowding the rest of the card. */
+}
+.wb-card-primer > summary.wb-primer-toggle {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.04);
+  transition: color 0.12s ease, background 0.12s ease;
+  user-select: none;
+}
+.wb-card-primer > summary.wb-primer-toggle::-webkit-details-marker {
+  display: none; /* Hide native triangle on WebKit. */
+}
+.wb-card-primer > summary.wb-primer-toggle:hover,
+.wb-card-primer > summary.wb-primer-toggle:focus-visible {
+  color: #e5e7eb;
+  background: rgba(255,255,255,0.07);
+  outline: none;
+}
+.wb-card-primer > summary.wb-primer-toggle:focus-visible {
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.6);
+}
+.wb-primer-toggle-caret {
+  display: inline-block;
+  transition: transform 0.15s ease;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+.wb-card-primer[open] > summary.wb-primer-toggle .wb-primer-toggle-caret {
+  transform: rotate(90deg);
+}
+.wb-primer-body {
+  margin-top: 10px;
+  padding-top: 4px;
+  animation: wb-primer-fade 0.18s ease;
+}
+.wb-primer-body .wb-label {
+  margin-top: 4px;
+}
+.wb-primer-body .wb-card-thesis,
+.wb-primer-body .wb-card-bull {
+  margin-bottom: 8px;
+}
+@keyframes wb-primer-fade {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wb-primer-body { animation: none; }
+  .wb-primer-toggle-caret { transition: none; }
+}
 .wb-label {
   font-weight: 600;
   font-size: 0.72rem;

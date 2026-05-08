@@ -1,5 +1,16 @@
 /* ===== WEEKLY-BRIEFING.JS — Weekly Market Briefing tab ===== */
 
+// Lightweight HTML escape for narrative strings rendered into innerHTML.
+// JSON-sourced primer text can contain <, >, &, quotes, and apostrophes.
+function _wbEsc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 let weeklyBriefingData = null;
 let weeklyBriefingArchiveIndex = null; // array of { week_ending, path }
 let weeklyBriefingInFlight = null;
@@ -292,21 +303,38 @@ function renderWeeklyBriefing() {
     </h3>
     <div class="wb-cards">`;
   (d.value_picks || []).forEach((v, i) => {
+    // Per-stock primer narrative — collapsed by default; expand inline on click.
+    const why = v.why_undervalued || '';
+    const bull = v.bull_case || '';
+    const hasPrimer = !!(why || bull);
+    const primerHtml = hasPrimer
+      ? `<details class="wb-card-primer">
+           <summary class="wb-primer-toggle" aria-label="Toggle ${_wbEsc(v.ticker)} primer">
+             <span class="wb-primer-toggle-label">Primer</span>
+             <span class="wb-primer-toggle-caret" aria-hidden="true">&#9656;</span>
+           </summary>
+           <div class="wb-primer-body">
+             ${why ? `<div class="wb-card-thesis"><div class="wb-label">Why undervalued</div>${_wbEsc(why)}</div>` : ''}
+             ${bull ? `<div class="wb-card-bull"><div class="wb-label">Bull case</div>${_wbEsc(bull)}</div>` : ''}
+           </div>
+         </details>`
+      : '';
     html += `
       <div class="wb-card wb-value-card">
         <div class="wb-card-rank">#${i + 1}</div>
         <div class="wb-card-header">
-          <span class="wb-card-ticker">${v.ticker}</span>
-          <span class="wb-card-name">${v.name}</span>
-          <span class="wb-card-price">${v.price || v.current_price || ''}</span>
+          <span class="wb-card-ticker">${_wbEsc(v.ticker)}</span>
+          <span class="wb-card-name">${_wbEsc(v.name || '')}</span>
+          <span class="wb-card-price">${_wbEsc(v.price || v.current_price || '')}</span>
         </div>
         <div class="wb-card-stats">
-          <span class="wb-stat negative">${v.off_high_pct || v.pct_off_high || ''} off 52w high</span>
-          <span class="wb-stat">P/E: ${v.pe_ratio || 'N/A'}</span>
-          <span class="wb-stat">EV/EBITDA: ${v.ev_ebitda || 'N/A'}</span>
-          <span class="wb-stat">Rev Growth: ${v.rev_growth || v.revenue_growth || 'N/A'}</span>
-          <span class="wb-stat">FCF Yield: ${v.fcf_yield || 'N/A'}</span>
+          <span class="wb-stat negative">${_wbEsc(v.off_high_pct || v.pct_off_high || '')} off 52w high</span>
+          <span class="wb-stat">P/E: ${_wbEsc(v.pe_ratio || 'N/A')}</span>
+          <span class="wb-stat">EV/EBITDA: ${_wbEsc(v.ev_ebitda || 'N/A')}</span>
+          <span class="wb-stat">Rev Growth: ${_wbEsc(v.rev_growth || v.revenue_growth || 'N/A')}</span>
+          <span class="wb-stat">FCF Yield: ${_wbEsc(v.fcf_yield || 'N/A')}</span>
         </div>
+        ${primerHtml}
       </div>`;
   });
   html += `</div></div>`;
@@ -319,20 +347,40 @@ function renderWeeklyBriefing() {
     </h3>
     <div class="wb-cards">`;
   (d.momentum_picks || []).forEach((m, i) => {
+    // Momentum primer: catalyst + risk_reward narrative.
+    const catalyst = m.catalyst || '';
+    const riskReward = m.risk_reward || '';
+    const hasPrimer = !!(catalyst || riskReward);
+    const primerHtml = hasPrimer
+      ? `<details class="wb-card-primer">
+           <summary class="wb-primer-toggle" aria-label="Toggle ${_wbEsc(m.ticker)} primer">
+             <span class="wb-primer-toggle-label">Primer</span>
+             <span class="wb-primer-toggle-caret" aria-hidden="true">&#9656;</span>
+           </summary>
+           <div class="wb-primer-body">
+             ${catalyst ? `<div class="wb-card-thesis"><div class="wb-label">Catalyst</div>${_wbEsc(catalyst)}</div>` : ''}
+             ${riskReward ? `<div class="wb-card-bull"><div class="wb-label">Risk / reward</div>${_wbEsc(riskReward)}</div>` : ''}
+           </div>
+         </details>`
+      : '';
+    const w1Str = m.one_week_perf || m.perf_1w || m.one_week || 'N/A';
+    const m1Str = m.one_month_perf || m.perf_1m || m.one_month || 'N/A';
+    const m3Str = m.three_month_perf || m.perf_3m || m.three_month || 'N/A';
     html += `
       <div class="wb-card wb-momentum-card">
         <div class="wb-card-rank">#${i + 1}</div>
         <div class="wb-card-header">
-          <span class="wb-card-ticker">${m.ticker}</span>
-          <span class="wb-card-name">${m.name}</span>
-          <span class="wb-card-price">${m.price || m.current_price || ''}</span>
+          <span class="wb-card-ticker">${_wbEsc(m.ticker)}</span>
+          <span class="wb-card-name">${_wbEsc(m.name || '')}</span>
+          <span class="wb-card-price">${_wbEsc(m.price || m.current_price || '')}</span>
         </div>
         <div class="wb-card-stats">
-          <span class="wb-stat ${parseFloat(((m.one_week_perf||m.perf_1w||m.one_week||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1W: ${m.one_week_perf||m.perf_1w||m.one_week||'N/A'}</span>
-          <span class="wb-stat ${parseFloat(((m.one_month_perf||m.perf_1m||m.one_month||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1M: ${m.one_month_perf||m.perf_1m||m.one_month||'N/A'}</span>
-          <span class="wb-stat ${parseFloat(((m.three_month_perf||m.perf_3m||m.three_month||'0').replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">3M: ${m.three_month_perf||m.perf_3m||m.three_month||'N/A'}</span>
-          <span class="wb-stat">Rev Growth: ${m.rev_growth || m.revenue_growth || 'N/A'}</span>
+          <span class="wb-stat ${parseFloat((String(w1Str).replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1W: ${_wbEsc(w1Str)}</span>
+          <span class="wb-stat ${parseFloat((String(m1Str).replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1M: ${_wbEsc(m1Str)}</span>
+          <span class="wb-stat ${parseFloat((String(m3Str).replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">3M: ${_wbEsc(m3Str)}</span>
+          <span class="wb-stat">Rev Growth: ${_wbEsc(m.rev_growth || m.revenue_growth || 'N/A')}</span>
         </div>
+        ${primerHtml}
       </div>`;
   });
   html += `</div></div>`;
