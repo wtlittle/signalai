@@ -2,7 +2,13 @@ name: Daily Research Refresh
 
 on:
   schedule:
-    - cron: '0 11 * * 1-5'   # 7am ET weekdays (11 UTC)
+    # Two distinct GitHub-hosted cron slots, gated by REFRESH_MODE below.
+    # The Perplexity-Computer-managed crons (BMO 9 AM ET, AMC 6:15 PM ET)
+    # remain the primary refresh path; these workflow_run slots act as a
+    # repo-side safety net that always pushes a clean commit even if the
+    # Computer cron is unavailable.
+    - cron: '0 10 * * 1-5'   # 6am ET  weekdays — BMO run (pre-market)
+    - cron: '30 21 * * 1-5'  # 5:30pm ET weekdays — AMC run (post-close)
   workflow_dispatch:
     inputs:
       force_regenerate:
@@ -28,6 +34,16 @@ env:
   DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
   MAX_PRE_EARNINGS_DAYS: '14'
   MAX_POST_EARNINGS_DAYS: '14'
+  # Distinguish BMO vs AMC schedule slots so daily_refresh.py can gate
+  # which steps to execute. Manual dispatches default to "full" (run
+  # everything). The schedule expression matched at runtime is exposed
+  # via github.event.schedule, so we map it here.
+  REFRESH_MODE: >-
+    ${{
+      github.event_name == 'schedule' && github.event.schedule == '0 10 * * 1-5' && 'bmo' ||
+      github.event_name == 'schedule' && github.event.schedule == '30 21 * * 1-5' && 'amc' ||
+      'full'
+    }}
 
 # Grant the workflow's GITHUB_TOKEN write access to repository contents so
 # the commit/push step at the end can land changes on main. Without this
@@ -76,8 +92,13 @@ jobs:
 
       - name: Run notes only
         if: ${{ github.event.inputs.notes_only == 'true' }}
+        # Read directly from the already-committed earnings_calendar.json
+        # rather than re-running event detection. Both pre_earnings_notes
+        # and post_earnings_notes consume the calendar JSON directly, so
+        # an extra earnings_events invocation here was redundant work
+        # that could also flip same-day BMO/AMC categorisation back to
+        # "pre" before the notes step had a chance to run.
         run: |
-          python -m automation.jobs.earnings_events
           python -m automation.jobs.pre_earnings_notes
           python -m automation.jobs.post_earnings_notes
 

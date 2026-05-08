@@ -264,69 +264,88 @@ def step_compute_debate_scores():
         print(f"  [WARN] debate score compute failed: {exc}")
 
 
-def step_supabase_push():
-    """Step 7: Push all data to Supabase."""
-    print("\n=== Step 7: Supabase Push ===")
-    # populate_supabase.mjs lives in the workspace root in the current setup
-    # After migration it should be in the repo
-    populate_script = ROOT_DIR.parent / "populate_supabase.mjs"
-    if not populate_script.exists():
-        populate_script = ROOT_DIR / "populate_supabase.mjs"
-    if populate_script.exists():
-        supabase_env = {
-            "SUPABASE_URL": os.environ.get("SUPABASE_URL", ""),
-            "SUPABASE_SERVICE_KEY": os.environ.get("SUPABASE_SERVICE_KEY", ""),
-        }
-        subprocess.run(
-            ["node", str(populate_script)],
-            cwd=str(ROOT_DIR),
-            env={**os.environ, **supabase_env},
-            capture_output=True,
-            text=True,
-            timeout=300,
-        )
-        print("  Supabase push complete")
-    else:
-        print("  [WARN] populate_supabase.mjs not found")
+# NOTE: A previous step_supabase_push() function attempted to invoke a
+# top-level populate_supabase.mjs that does not exist in this repo.
+# Supabase writes are already performed directly inside each refresh
+# script (refresh_quotes.mjs, refresh_deep_dive.mjs, refresh_charts.mjs,
+# refresh_comps_outperf.mjs, refresh_macro.mjs), so the standalone push
+# step was a silent no-op every run. Removed to eliminate dead code.
 
 
 def run():
-    """Full daily pipeline."""
+    """Daily pipeline — gated by REFRESH_MODE env var.
+
+    Modes:
+      * "bmo"  — 6 AM ET pre-market run. Detects new earnings events,
+                generates pre-earnings notes (today's reporters) and
+                post-earnings notes for any prior-day AMC reporters,
+                refreshes macro context, recomputes subsectors, and
+                updates debate scores. NO market-data refresh (the market
+                is closed) and NO news scan.
+      * "amc"  — 5:30 PM ET post-close run. Refreshes quotes / deep-dive /
+                charts / comps, re-detects earnings events with AMC
+                timing, runs the news scan + tagging for active tickers,
+                generates post-earnings notes for today's AMC reporters,
+                and updates debate scores. NO macro refresh and NO
+                subsector refresh (those are owned by the BMO run).
+      * "full" — Legacy / dev-dispatch behavior: runs every step. This is
+                the implicit default when REFRESH_MODE is unset, used by
+                manual workflow_dispatch invocations.
+    """
+    mode = os.environ.get("REFRESH_MODE", "full").lower().strip()
+    if mode not in ("bmo", "amc", "full"):
+        print(f"[WARN] Unknown REFRESH_MODE={mode!r}, falling back to 'full'")
+        mode = "full"
+
     print(f"{'='*60}")
-    print(f"SignalAI Daily Refresh — {TODAY.isoformat()}")
+    print(f"SignalAI Daily Refresh — {TODAY.isoformat()} (mode={mode})")
     print(f"{'='*60}")
 
-    # Housekeeping
+    # Housekeeping (always)
     clear_stale_cache()
 
-    # Step 1: Market data (no LLM)
-    step_market_data()
+    # Step 1: Market data (no LLM) — AMC + full only. Skipped at 6 AM ET
+    # because the market hasn't opened and Yahoo's quote data still
+    # reflects yesterday's close.
+    if mode in ("amc", "full"):
+        step_market_data()
 
-    # Step 2: Macro (no LLM)
-    step_macro_refresh()
+    # Step 2: Macro (no LLM) — BMO + full only. Macro indicators (rates,
+    # VIX, regime) refresh once per day pre-market; AMC re-pull would
+    # be redundant.
+    if mode in ("bmo", "full"):
+        step_macro_refresh()
 
-    # Step 3: Earnings events (no LLM)
+    # Step 3: Earnings events (no LLM) — always. The detection logic is
+    # cheap and is the source of truth for downstream steps.
     pre, post = step_earnings_events()
     active = pre + post
 
-    # Step 4: News — only for active tickers (Perplexity)
-    news_updates = step_news_scan(active)
+    # Step 4 / 4b: News scan + tagging (Perplexity) — AMC + full only.
+    # We scan once per day after the close so that the news set covers a
+    # full trading day's worth of catalysts.
+    if mode in ("amc", "full"):
+        news_updates = step_news_scan(active)
+        step_news_tagging(news_updates)
 
-    # Step 4b: News tagging — queue buy-side catalyst tagging for updated tickers
-    step_news_tagging(news_updates)
-
-    # Step 5: Notes — with skip guards (Perplexity)
+    # Step 5: Notes (Perplexity, with skip guards) — always. Both
+    # pre_earnings_notes and post_earnings_notes already filter their
+    # own work using the freshly-detected calendar; running in both BMO
+    # and AMC slots ensures same-day BMO/AMC reporters get post-earnings
+    # notes generated within hours of their print.
     step_generate_notes()
 
-    # Step 6: Subsectors (no LLM)
-    step_subsector_refresh()
+    # Step 6: Subsectors (no LLM) — BMO + full only. Subsector
+    # classifications change at most once per day; pinning them to BMO
+    # avoids a redundant Node spawn at 5:30 PM.
+    if mode in ("bmo", "full"):
+        step_subsector_refresh()
 
-    # Step 6.5: Debate scores (derived from earnings_intel.json) — must run
-    # AFTER any step that writes earnings_intel.json and BEFORE Supabase push.
+    # Step 6.5: Debate scores (derived from earnings_intel.json) —
+    # always. Must run AFTER any step that writes earnings_intel.json.
+    # Supabase writes are already performed inside each refresh_*.mjs
+    # script invoked above, so there is no separate Supabase-push step.
     step_compute_debate_scores()
-
-    # Step 7: Supabase (no LLM)
-    step_supabase_push()
 
     # --- Queue summary: tasks written to automation/queue/pending_tasks.json ---
     queue_file = ROOT_DIR / "automation" / "queue" / "pending_tasks.json"

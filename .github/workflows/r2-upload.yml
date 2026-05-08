@@ -27,7 +27,7 @@ on:
       - 'earnings_notes_index.json'
   workflow_dispatch:
   workflow_run:
-    workflows: ["SignalAI Daily Research"]
+    workflows: ["Daily Research Refresh"]
     types:
       - completed
 
