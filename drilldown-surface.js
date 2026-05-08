@@ -434,9 +434,10 @@
           '<div class="dd-empty-eyebrow">Institutional drilldown</div>' +
           '<div class="dd-empty-title">Generate a buyside-grade research note in one click</div>' +
           '<div class="dd-empty-body">' +
-            'Drilldowns follow the Signal Stack canonical prompt: valuation, KPIs, catalysts, ' +
-            'management, competitive matrix, risks, and 4+ Chart.js charts. Notes are ' +
-            'saved with version history so you can track how a thesis evolved.' +
+            'Drilldowns are two-stage notes pre-filled with live Supabase data (quote, ' +
+            'estimates, comps). Part\u00a01 covers valuation, KPIs, industry, catalysts, and ' +
+            'earnings setup. Part\u00a02 covers management, competitive landscape, risks, ' +
+            'financials, and diligence questions. Both parts are saved with version history.' +
           '</div>' +
           '<div class="dd-empty-actions">' +
             '<input type="text" id="dd-empty-ticker" placeholder="Enter ticker (e.g. ZS, NVDA, 1364.HK)" autocomplete="off" spellcheck="false">' +
@@ -455,11 +456,13 @@
         '<div class="dd-run-step">' +
           '<div class="dd-step-num">1</div>' +
           '<div class="dd-step-body">' +
-            '<div class="dd-step-title">Run the canonical drilldown prompt</div>' +
-            '<div class="dd-step-sub">Opens a fresh Perplexity thread for <strong>' + _esc(t) + '</strong> and copies the full canonical institutional prompt to your clipboard. <em>Paste it as your first message in the new tab.</em> The model will return a full HTML note in a fenced block.</div>' +
+            '<div class="dd-step-title">Run the two-stage drilldown prompt</div>' +
+            '<div class="dd-step-sub">Opens a fresh Perplexity thread for <strong>' + _esc(t) + '</strong> and copies the prompt with the <code>[SIGNAL_DATA_BLOCK]</code> pre-filled from live Supabase data. <em>Paste it as your first message in the new tab.</em> Run Part\u00a01 first (valuation, KPIs, industry, catalysts, earnings setup), then Part\u00a02 (management, competitive landscape, risks, financials, diligence).</div>' +
             '<div class="dd-run-step-actions">' +
-              '<button type="button" class="btn-primary" data-dd-act="run">Run institutional drilldown for ' + _esc(t) + '</button>' +
-              '<button type="button" class="btn-sm" data-dd-act="copy-prompt" title="Copy the canonical prompt to your clipboard without opening a new tab">Copy prompt only</button>' +
+              '<button type="button" class="btn-primary" data-dd-act="run">Run Part\u00a01 for ' + _esc(t) + '</button>' +
+              '<button type="button" class="btn-primary" data-dd-act="run-p2">Run Part\u00a02 for ' + _esc(t) + '</button>' +
+              '<button type="button" class="btn-sm" data-dd-act="copy-prompt" title="Copy the Part 1 prompt to your clipboard without opening a new tab">Copy Part\u00a01 prompt</button>' +
+              '<button type="button" class="btn-sm" data-dd-act="copy-p2-prompt" title="Copy the Part 2 prompt to your clipboard without opening a new tab">Copy Part\u00a02 prompt</button>' +
             '</div>' +
           '</div>' +
         '</div>' +
