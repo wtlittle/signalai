@@ -817,8 +817,11 @@ function buildGuidanceSection(est, ticker) {
           else { spreadClass = 'spread-wide'; spreadLabel = 'Wide'; }
         }
 
+        // FIX: backend already returns growth as a percent (e.g. 23.25 means
+        // 23.25%), so do NOT multiply by 100. Multiplying produced bogus values
+        // like +2325%. Aligns with fmtPct in buildTopLineSection.
         const growthHtml = r.growth != null
-          ? `<span class="${percentClass(r.growth * 100)}">${(r.growth * 100) >= 0 ? '+' : ''}${(r.growth * 100).toFixed(1)}%</span>`
+          ? `<span class="${percentClass(r.growth)}">${r.growth >= 0 ? '+' : ''}${r.growth.toFixed(1)}%</span>`
           : '\u2014';
 
         html += `
