@@ -264,6 +264,25 @@ def step_compute_debate_scores():
         print(f"  [WARN] debate score compute failed: {exc}")
 
 
+def step_market_intel_harvest():
+    """Harvest TAM / category-growth / AI-ML context per subsector to Supabase.
+
+    Sunday-only by default — the underlying research is slow-changing
+    (TAM and CAGR estimates rarely move week-to-week) and each row costs a
+    Perplexity research task. Skipped on every other weekday to keep daily
+    credit consumption flat.
+    """
+    print("\n=== Step 7: Market Intel Harvest ===")
+    if TODAY.weekday() != 6:
+        print(f"  [SKIP] Not Sunday (today is {TODAY.strftime('%A')}); harvest is Sunday-only.")
+        return
+    try:
+        from automation.jobs.market_intel_harvest import run as _harvest_run
+        _harvest_run(dry_run=False, force=False)
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARN] market_intel_harvest failed: {exc}")
+
+
 # NOTE: A previous step_supabase_push() function attempted to invoke a
 # top-level populate_supabase.mjs that does not exist in this repo.
 # Supabase writes are already performed directly inside each refresh
@@ -346,6 +365,12 @@ def run():
     # Supabase writes are already performed inside each refresh_*.mjs
     # script invoked above, so there is no separate Supabase-push step.
     step_compute_debate_scores()
+
+    # Step 7: Market intel harvest (Perplexity, Sunday-only) — BMO + full.
+    # The harvester self-skips when today is not Sunday, but we additionally
+    # gate on mode so AMC runs never trigger the import even on a Sunday.
+    if mode in ("bmo", "full"):
+        step_market_intel_harvest()
 
     # --- Queue summary: tasks written to automation/queue/pending_tasks.json ---
     queue_file = ROOT_DIR / "automation" / "queue" / "pending_tasks.json"

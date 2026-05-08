@@ -111,16 +111,172 @@
     return 'https://www.perplexity.ai/?q=' + encodeURIComponent(_buildShortPrefill(ticker));
   }
 
+  // Build a structured pre-fill block from the live app state. Injected into
+  // the [SIGNAL_DATA_BLOCK] placeholder in the canonical prompt so the model
+  // treats the numbers as ground truth rather than fetching them again.
+  function _buildSignalDataBlock(ticker) {
+    var live = _currentTickerData(ticker);
+    if (!live) return '[SIGNAL_DATA_BLOCK]\n(No pre-fetched data available \u2014 collect all fields from search tools.)\n';
+
+    function fmt(v, decimals) {
+      if (v == null || isNaN(v)) return 'MISSING';
+      return decimals != null ? Number(v).toFixed(decimals) : String(v);
+    }
+    function fmtPct(v) { return v == null ? 'MISSING' : (Number(v) * 100).toFixed(1) + '%'; }
+    function fmtB(v)   { return v == null ? 'MISSING' : '$' + (Number(v) / 1e9).toFixed(2) + 'B'; }
+
+    var q = live;          // quote-level fields live on the tickerData object
+    var est = live.estimates || {};
+    var hist = (live.earningsHistory || []).slice(-8);
+
+    var lines = [
+      '[SIGNAL_DATA_BLOCK]',
+      'Generated: ' + new Date().toISOString(),
+      '',
+      '## QUOTE',
+      'Ticker: ' + ticker,
+      'Price: ' + fmt(q.price, 2),
+      'MarketCap: ' + fmtB(q.marketCap),
+      'EnterpriseValue: ' + fmtB(q.enterpriseValue),
+      'Sector: ' + (q.sector || 'MISSING'),
+      'Industry: ' + (q.industry || 'MISSING'),
+      '52wHigh: ' + fmt(q.fiftyTwoWeekHigh, 2),
+      '52wLow: ' + fmt(q.fiftyTwoWeekLow, 2),
+      'Beta: ' + fmt(q.beta, 2),
+      'ForwardPE: ' + fmt(q.forwardPE, 1),
+      'TrailingPE: ' + fmt(q.trailingPE, 1),
+      'EVRevenue: ' + fmt(q.enterpriseToRevenue, 2),
+      'EVEBITDA: ' + fmt(q.enterpriseToEbitda, 2),
+      'RevenueGrowth: ' + fmtPct(q.revenueGrowth),
+      'GrossMargin: ' + fmtPct(q.grossMargins),
+      'OperatingMargin: ' + fmtPct(q.operatingMargins),
+      'FCF: ' + fmtB(q.freeCashflow),
+      'TotalRevenue: ' + fmtB(q.totalRevenue),
+      'ConsensusTarget: ' + fmt(q.targetMeanPrice, 2),
+      'TargetHigh: ' + fmt(q.targetHighPrice, 2),
+      'TargetLow: ' + fmt(q.targetLowPrice, 2),
+      'ConsensusRating: ' + (q.recommendationKey || 'MISSING'),
+      'AnalystCount: ' + fmt(q.numberOfAnalystOpinions),
+      '',
+      '## ESTIMATES',
+      'NQ_RevEst: ' + fmtB(est.nextQRevEst),
+      'NQ_RevGrowth: ' + fmtPct(est.nextQRevGrowth),
+      'NQ_EpsEst: ' + fmt(est.nextQEpsEst, 2),
+      'NQ_EpsGrowth: ' + fmtPct(est.nextQEpsGrowth),
+      'FY1_RevEst: ' + fmtB(est.fy1RevEst),
+      'FY1_RevGrowth: ' + fmtPct(est.fy1RevGrowth),
+      'FY1_EpsEst: ' + fmt(est.fy1EpsEst, 2),
+      'FY2_RevEst: ' + fmtB(est.fy2RevEst),
+      'FY2_RevGrowth: ' + fmtPct(est.fy2RevGrowth),
+      'FY2_EpsEst: ' + fmt(est.fy2EpsEst, 2),
+      'GuideRevHigh: ' + fmtB(est.guideRevHigh),
+      'GuideRevLow: ' + fmtB(est.guideRevLow),
+      'EPSTrend_Now: ' + fmt(est.epsTrendCurrent, 2),
+      'EPSTrend_30d: ' + fmt(est.epsTrend30d, 2),
+      'EPSTrend_90d: ' + fmt(est.epsTrend90d, 2),
+      'RevisionsUp_30d: ' + fmt(est.revisionsUp30d),
+      'RevisionsDown_30d: ' + fmt(est.revisionsDown30d),
+      'FCFMargin: ' + fmtPct(est.fcfMargin),
+      'RevenueLTM: ' + fmtB(est.revenueLtm),
+      '',
+      '## EARNINGS HISTORY (last 8 quarters)',
+    ];
+
+    if (hist.length) {
+      lines.push('Quarter | Rev Beat% | EPS Beat% | 1d Move | GuidanceTone');
+      hist.forEach(function(h) {
+        lines.push(
+          (h.period || '?') + ' | ' +
+          (h.revBeatPct != null ? h.revBeatPct.toFixed(1) + '%' : 'MISSING') + ' | ' +
+          (h.epsBeatPct != null ? h.epsBeatPct.toFixed(1) + '%' : 'MISSING') + ' | ' +
+          (h.oneDayReturn != null ? (h.oneDayReturn * 100).toFixed(1) + '%' : 'MISSING') + ' | ' +
+          (h.guidanceTone || 'MISSING')
+        );
+      });
+    } else {
+      lines.push('(No earnings history cached \u2014 source from search tools)');
+    }
+
+    // Comps
+    var comps = live.crossSectorComps || (live.comps && live.comps.peers) || [];
+    lines.push('', '## CROSS-SECTOR COMPS');
+    if (comps.length) {
+      lines.push('Ticker | EVRev | PEFwd | GrossMargin | FCFMargin | RevGrowth');
+      comps.forEach(function(c) {
+        lines.push(
+          (c.ticker || '?') + ' | ' +
+          fmt(c.evRevenue, 2) + 'x | ' +
+          fmt(c.forwardPE, 1) + 'x | ' +
+          fmtPct(c.grossMargin) + ' | ' +
+          fmtPct(c.fcfMargin) + ' | ' +
+          fmtPct(c.revenueGrowth)
+        );
+      });
+    } else {
+      lines.push('(No comps cached \u2014 source from search tools)');
+    }
+
+    // Market intel (from Supabase via app state, if present)
+    var mi = live.marketIntel || null;
+    lines.push('', '## MARKET INTEL');
+    if (mi) {
+      lines.push('TAM: ' + (mi.tam_label || 'MISSING'));
+      lines.push('TAMSource: ' + (mi.tam_source || 'MISSING'));
+      lines.push('CategoryGrowthRate: ' + (mi.growth_rate_label || 'MISSING'));
+      lines.push('HarvestedAt: ' + (mi.harvested_at || 'MISSING'));
+      lines.push('StructuralDrivers: ' + (mi.structural_drivers || 'MISSING'));
+      lines.push('AIMLContext: ' + (mi.ai_ml_context || 'MISSING'));
+    } else {
+      lines.push('(MISSING \u2014 model must source TAM and category growth from search tools)');
+    }
+
+    lines.push('', '[/SIGNAL_DATA_BLOCK]');
+    return lines.join('\n');
+  }
+
   // Build the FULL prompt text (header + instruction + canonical body) that
   // we copy to the clipboard. This is what the analyst pastes into the new
-  // Perplexity thread to run the canonical drilldown.
-  function _buildFullPrompt(ticker, promptText) {
-    var header = 'Run the canonical Signal Stack drilldown engine on ' + ticker + '. ';
+  // Perplexity thread to run the canonical drilldown. When `part === 'p2'`,
+  // strips the Part 1 output spec so only Part 2 sections (7-11) remain.
+  function _buildFullPrompt(ticker, promptText, part) {
+    part = part || 'p1';
+    var dataBlock = _buildSignalDataBlock(ticker);
+
+    // Splice the data block into the prompt text by replacing the
+    // [SIGNAL_DATA_BLOCK] placeholder token.
+    var body = (promptText || '').replace('[SIGNAL_DATA_BLOCK]', dataBlock);
+
+    // For Part 2, strip everything from "OUTPUT STRUCTURE \u2014 PART 1" down
+    // to (but not including) "OUTPUT STRUCTURE \u2014 PART 2" so the model
+    // only sees the Part 2 output spec, writing rules, and quality check.
+    if (part === 'p2') {
+      var p2Marker = 'OUTPUT STRUCTURE \u2014 PART 2 of 2';
+      var idx = body.indexOf(p2Marker);
+      if (idx !== -1) {
+        // Keep the preamble (audience, data block, data collection rules) +
+        // everything from Part 2 onward.
+        var preambleEnd = body.indexOf('OUTPUT STRUCTURE \u2014 PART 1');
+        var preamble = preambleEnd !== -1 ? body.slice(0, preambleEnd) : '';
+        body = preamble + body.slice(idx);
+      }
+      body = 'This is PART 2 of the Signal Stack institutional drilldown for ' + ticker + '. ' +
+             'Part 1 (Sections 1\u20136) has already been generated. ' +
+             'Produce only the Part 2 sections (7\u201311) as a self-contained HTML file ' +
+             'using the same branding and CSS as Part 1.\n\n' + body;
+    }
+
+    var header = 'Run the canonical Signal Stack drilldown engine on ' + ticker +
+      ' (' + (part === 'p2' ? 'PART 2 of 2' : 'PART 1 of 2') + '). ';
     var instruction =
-      'Use the prompt below verbatim. When you finish, output the full HTML ' +
-      'note in a single fenced ```html block so I can paste it into my ' +
-      'Drilldown Library.';
-    return header + instruction + '\n\n---\n\n' + (promptText || '');
+      'Use the prompt below verbatim. The [SIGNAL_DATA_BLOCK] has been pre-filled ' +
+      'with live data \u2014 treat it as ground truth. When you finish, output the full HTML ' +
+      'note in a single fenced ```html block.';
+    return header + instruction + '\n\n---\n\n' + body;
+  }
+
+  // Convenience wrapper that forces Part 2 framing.
+  function _buildPart2Prompt(ticker, promptText) {
+    return _buildFullPrompt(ticker, promptText, 'p2');
   }
 
   // Best-effort clipboard write — navigator.clipboard requires a secure
@@ -564,15 +720,30 @@
       return;
     }
     if (act === 'run' || act === 'refresh') {
-      _runDrilldown(act === 'refresh' ? 'refresh' : 'manual');
+      _runDrilldown(act === 'refresh' ? 'refresh' : 'manual', 'p1');
+      return;
+    }
+    if (act === 'run-p2') {
+      _runDrilldown('manual', 'p2');
       return;
     }
     if (act === 'copy-prompt') {
       if (!state.ticker) return;
       _loadPrompt().then(function (txt) {
-        var fullPrompt = _buildFullPrompt(state.ticker, txt);
+        var fullPrompt = _buildFullPrompt(state.ticker, txt, 'p1');
         _copyToClipboard(fullPrompt).then(function (ok) {
-          if (ok) _toast('Canonical drilldown prompt copied to clipboard.', 'ok');
+          if (ok) _toast('Part 1 drilldown prompt copied to clipboard.', 'ok');
+          else    _toast('Clipboard blocked — try the Run button instead.', 'error');
+        });
+      });
+      return;
+    }
+    if (act === 'copy-p2-prompt') {
+      if (!state.ticker) return;
+      _loadPrompt().then(function (txt) {
+        var fullPrompt = _buildPart2Prompt(state.ticker, txt);
+        _copyToClipboard(fullPrompt).then(function (ok) {
+          if (ok) _toast('Part 2 drilldown prompt copied to clipboard.', 'ok');
           else    _toast('Clipboard blocked — try the Run button instead.', 'error');
         });
       });
@@ -600,8 +771,9 @@
     }
   }
 
-  function _runDrilldown(trigger) {
+  function _runDrilldown(trigger, part) {
     if (!state.ticker) return;
+    part = part || 'p1';
     state.showRunPanel = true;
     render();
     // Open the new tab IMMEDIATELY so the popup fires inside the click gesture
@@ -611,7 +783,10 @@
 
     _loadPrompt().then(function (txt) {
       var url = _buildPplxUrl(state.ticker);
-      var fullPrompt = _buildFullPrompt(state.ticker, txt);
+      var fullPrompt = part === 'p2'
+        ? _buildPart2Prompt(state.ticker, txt)
+        : _buildFullPrompt(state.ticker, txt, 'p1');
+      var label = part === 'p2' ? 'Part 2' : 'Part 1';
       // Navigate the pre-opened tab; if it was blocked, fall back to a same-
       // tab open (rare — the user gesture should always succeed here).
       if (newWin && !newWin.closed) {
@@ -622,8 +797,8 @@
       // Copy the full canonical prompt to the clipboard so the analyst can
       // paste it as their first message in the freshly-opened thread.
       _copyToClipboard(fullPrompt).then(function (ok) {
-        if (ok) _toast('Canonical drilldown prompt copied — paste it into the new Perplexity tab.', 'ok');
-        else    _toast('Open the new tab and paste the prompt manually (clipboard blocked).', 'error');
+        if (ok) _toast(label + ' drilldown prompt copied — paste it into the new Perplexity tab.', 'ok');
+        else    _toast('Open the new tab and paste the ' + label + ' prompt manually (clipboard blocked).', 'error');
       });
       // Persist the trigger so the next save defaults to it.
       var sel = document.getElementById('dd-trigger-input');

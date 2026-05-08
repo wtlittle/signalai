@@ -133,3 +133,67 @@ data/cache/
 
 Cache files are keyed by `{ticker}_{date}_{task}.json` and expire after 20 hours.
 Stale files (>3 days old) are auto-cleaned at the start of each run.
+
+## Market Intel Harvest
+
+`automation/jobs/market_intel_harvest.py` populates the Supabase `market_intel`
+table with per-subsector TAM, category CAGR, structural demand drivers, and
+AI/ML context. The drilldown surface splices these rows into the
+`[SIGNAL_DATA_BLOCK]` of the canonical prompt so notes start with a credible
+market-sizing fact-base instead of asking the model to source it from scratch.
+
+### When it runs
+
+The harvester is wired into `daily_refresh.run()` as `step_market_intel_harvest()`
+and is **Sunday-only** in production:
+
+- Mode gate: only triggered in `bmo` and `full` modes (skipped on `amc` runs).
+- Day gate: the function self-skips unless `today.weekday() == 6` (Sunday).
+- Freshness gate: rows whose `harvested_at` is within `MARKET_INTEL_TTL_DAYS`
+  (default 30) are skipped automatically — pass `--force` to override.
+
+This means a normal weekday run is a no-op, the Sunday BMO run touches every
+stale subsector, and ad-hoc backfills can be triggered manually.
+
+### Schema
+
+Defined in `automation/scripts/create_market_intel_table.sql`:
+
+| Column | Type | Notes |
+|---|---|---|
+| `subsector` | text (PK) | Matches `SUBSECTOR_MAP` in `utils.js`. |
+| `source` | text (PK) | Gartner, IDC, Forrester, Statista, McKinsey, 10-K MD&A, etc. |
+| `tam_label` | text | One-line TAM, e.g. `"$185B by 2028"`. |
+| `tam_usd_bn` | numeric | TAM in USD billions, or null. |
+| `growth_rate_label` | text | One-line CAGR string. |
+| `growth_rate_pct` | numeric | CAGR as a percent (12.4 = 12.4%), or null. |
+| `structural_drivers` | text | 2-4 sentences on demand drivers. |
+| `ai_ml_context` | text | 2-4 sentences on AI/ML disruption. |
+| `raw_excerpt` | text | Short verbatim quote/stat from the source. |
+| `harvested_at` | timestamptz | Used for the freshness gate. |
+
+Apply the schema once via Supabase SQL editor or `psql`; the file is idempotent.
+
+### Manual usage
+
+```bash
+# Dry-run: list every subsector that would be harvested, no Supabase / API calls.
+python -m automation.jobs.market_intel_harvest --dry-run
+
+# Live run: queues a Perplexity research task per stale subsector and upserts
+# any direct-API results into the market_intel table.
+SUPABASE_URL=https://...supabase.co \
+SUPABASE_SERVICE_KEY=sb_secret_... \
+python -m automation.jobs.market_intel_harvest
+
+# Force re-harvest every subsector regardless of freshness.
+python -m automation.jobs.market_intel_harvest --force
+```
+
+### Relevant env vars
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `MARKET_INTEL_TTL_DAYS` | `30` | How fresh a row must be to be skipped. |
+| `SUPABASE_URL` | — | Required for live runs. |
+| `SUPABASE_SERVICE_KEY` | — | Required for live runs. |
