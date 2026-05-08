@@ -2346,13 +2346,9 @@ tbody tr:hover .comps-sticky-col {
 
 /* --- Per-stock primer expander on each value/momentum card --- */
 .wb-card-primer {
-  margin-top: 8px;
+  margin-top: 10px;
   border-top: 1px solid #1e2433;
-  padding-top: 8px;
-}
-.wb-card-primer[open] {
-  /* Subtle background tint when expanded so it reads as a sub-section */
-  /* without crowding the rest of the card. */
+  padding-top: 10px;
 }
 .wb-card-primer > summary.wb-primer-toggle {
   list-style: none;
@@ -2373,7 +2369,7 @@ tbody tr:hover .comps-sticky-col {
   user-select: none;
 }
 .wb-card-primer > summary.wb-primer-toggle::-webkit-details-marker {
-  display: none; /* Hide native triangle on WebKit. */
+  display: none;
 }
 .wb-card-primer > summary.wb-primer-toggle:hover,
 .wb-card-primer > summary.wb-primer-toggle:focus-visible {
@@ -2397,14 +2393,251 @@ tbody tr:hover .comps-sticky-col {
   margin-top: 10px;
   padding-top: 4px;
   animation: wb-primer-fade 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-.wb-primer-body .wb-label {
+.wb-primer-part {
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.015);
+  border-left: 2px solid #1e2a3a;
+  border-radius: 3px;
+}
+.wb-primer-part-head { margin-bottom: 4px; }
+.wb-primer-headline {
+  margin: 0 0 6px 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #e5e7eb;
+  font-weight: 500;
+}
+.wb-primer-bullets {
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+.wb-primer-bullets li {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: #9ca3af;
+  margin-bottom: 3px;
+}
+.wb-value-card .wb-primer-part { border-left-color: #22c55e; }
+.wb-momentum-card .wb-primer-part { border-left-color: #3b82f6; }
+.wb-primer-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
   margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed #1e2433;
 }
-.wb-primer-body .wb-card-thesis,
-.wb-primer-body .wb-card-bull {
-  margin-bottom: 8px;
+.wb-primer-openfull {
+  background: rgba(59,130,246,0.12);
+  border: 1px solid rgba(59,130,246,0.35);
+  color: #93c5fd;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
 }
+.wb-primer-openfull:hover {
+  background: rgba(59,130,246,0.22);
+  color: #dbeafe;
+}
+.wb-primer-share {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: #6b7280;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.wb-primer-share:hover { color: #9ca3af; }
+
+/* Expand-all section toggle */
+.wb-expand-all {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid #2a3444;
+  color: #9ca3af;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+.wb-expand-all:hover {
+  color: #e5e7eb;
+  border-color: #3b82f6;
+  background: rgba(59,130,246,0.08);
+}
+
+/* --- Primer drawer (side panel for full narrative) --- */
+.wb-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 9998;
+  pointer-events: none;
+}
+.wb-drawer-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.wb-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(560px, 100vw);
+  height: 100vh;
+  background: #0b1019;
+  border-left: 1px solid #1e2433;
+  box-shadow: -10px 0 40px rgba(0,0,0,0.6);
+  transform: translateX(100%);
+  transition: transform 0.22s ease;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.wb-drawer.active { transform: translateX(0); }
+
+body.wb-drawer-open { overflow: hidden; }
+
+.wb-drawer-header {
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid #1e2433;
+  background: linear-gradient(180deg, #111827 0%, #0b1019 100%);
+}
+.wb-drawer-titlerow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.wb-drawer-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wb-drawer-ticker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #e5e7eb;
+  letter-spacing: 0.03em;
+}
+.wb-drawer-name {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 440px;
+}
+.wb-drawer-close {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.6rem;
+  line-height: 1;
+  padding: 2px 8px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: color 0.12s ease, background 0.12s ease;
+}
+.wb-drawer-close:hover { color: #e5e7eb; background: rgba(255,255,255,0.06); }
+.wb-drawer-kind {
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: #6b7280;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.wb-drawer-stats {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.wb-drawer-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+.wb-drawer-share {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid #2a3444;
+  color: #9ca3af;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.wb-drawer-share:hover { color: #e5e7eb; border-color: #3b82f6; }
+
+.wb-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 22px 32px;
+}
+.wb-drawer-section {
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px dashed #1e2433;
+}
+.wb-drawer-section:last-child { border-bottom: none; }
+.wb-drawer-sectionhead {
+  margin: 0 0 10px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #3b82f6;
+}
+.wb-value-card ~ .wb-drawer .wb-drawer-sectionhead,
+.wb-drawer[aria-label*="value"] .wb-drawer-sectionhead { color: #22c55e; }
+.wb-drawer-subsection {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.02);
+  border-left: 2px solid #1e2a3a;
+  border-radius: 3px;
+}
+.wb-drawer-subhead {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 6px;
+}
+.wb-drawer-body p {
+  margin: 0 0 10px 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #d1d5db;
+}
+.wb-drawer-body p:last-child { margin-bottom: 0; }
+
+@media (max-width: 640px) {
+  .wb-drawer { width: 100vw; }
+  .wb-drawer-name { max-width: 60vw; }
+}
+
 @keyframes wb-primer-fade {
   from { opacity: 0; transform: translateY(-2px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -2412,6 +2645,8 @@ tbody tr:hover .comps-sticky-col {
 @media (prefers-reduced-motion: reduce) {
   .wb-primer-body { animation: none; }
   .wb-primer-toggle-caret { transition: none; }
+  .wb-drawer { transition: none; }
+  .wb-drawer-overlay { transition: none; }
 }
 .wb-label {
   font-weight: 600;

@@ -141,7 +141,15 @@ function jumpToWeek(weekEnding) {
   if (match && match.path) {
     loadWeeklyBriefing(match.path);
   } else {
-    // No archive for this week — show an inline empty state
+    // Nothing for this exact Friday — find the nearest earlier archived week
+    // so navigation feels continuous instead of hitting a dead-end.
+    const sorted = idx.slice().sort((a, b) => a.week_ending.localeCompare(b.week_ending));
+    const earlier = sorted.filter(a => a.week_ending < weekEnding).pop();
+    if (earlier && earlier.path) {
+      loadWeeklyBriefing(earlier.path);
+      return;
+    }
+    // No archive at all for this week — show an inline empty state
     const $content = document.getElementById('weekly-briefing-content');
     if ($content) {
       const existingPicker = $content.querySelector('.wb-header');
@@ -163,17 +171,193 @@ function wireWeekPicker() {
   const next = document.querySelector('.wb-week-next');
   const input = document.querySelector('.wb-week-input');
   if (prev) prev.addEventListener('click', () => {
+    // Step to the previous *archived* week, not simply -7 days. Prevents
+    // "ghost week" dead-ends when briefings are not published every Friday.
     const cur = input?.value || weeklyBriefingData?.week_ending;
-    if (cur) jumpToWeek(weekEndingFriday(shiftWeek(cur, -1)));
+    if (!cur) return;
+    const idx = (weeklyBriefingArchiveIndex || []).slice()
+      .sort((a, b) => a.week_ending.localeCompare(b.week_ending));
+    const earlier = idx.filter(a => a.week_ending < cur).pop();
+    if (earlier) jumpToWeek(earlier.week_ending);
   });
   if (next) next.addEventListener('click', () => {
     const cur = input?.value || weeklyBriefingData?.week_ending;
-    if (cur) jumpToWeek(weekEndingFriday(shiftWeek(cur, 1)));
+    if (!cur) return;
+    const idx = (weeklyBriefingArchiveIndex || []).slice()
+      .sort((a, b) => a.week_ending.localeCompare(b.week_ending));
+    const later = idx.find(a => a.week_ending > cur);
+    if (later) jumpToWeek(later.week_ending);
   });
   if (input) input.addEventListener('change', (e) => {
     const picked = weekEndingFriday(e.target.value);
     jumpToWeek(picked);
   });
+}
+
+// ─── Primer summary helpers ───────────────────────────────────
+//
+// The raw JSON primer narratives (why_undervalued / bull_case / catalyst /
+// risk_reward) routinely run 1500–3500 characters as a single paragraph.
+// For the card we want a *scannable summary* — a one-sentence headline plus
+// 2–3 key-point bullets — and the full text stays available in the drawer.
+//
+// These helpers run entirely client-side so we don't need to regenerate the
+// 26 archived briefings.
+
+function _splitSentences(text) {
+  if (!text) return [];
+  // Split on sentence-ending punctuation followed by whitespace + uppercase.
+  // Keeps decimals like "5.3x" intact.
+  const raw = String(text)
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(/(?<=[.!?])\s+(?=[A-Z(])/);
+  return raw.map(s => s.trim()).filter(Boolean);
+}
+
+// Try to split a long narrative into titled sub-sections based on enumerated
+// signposts the generator uses ("First,", "Second,", "(1)", "(2)", etc).
+// Returns an array of { heading, body } or null if no structure is detected.
+function _extractStructuredSections(text) {
+  if (!text) return null;
+  const sents = _splitSentences(text);
+  if (sents.length < 3) return null;
+
+  const marker = /^(First,|Second,|Third,|Fourth,|Fifth,|Finally,|Lastly,|Additionally,|\(1\)|\(2\)|\(3\)|\(4\)|\(5\))/i;
+  const sections = [];
+  let bucket = [];
+  sents.forEach(s => {
+    if (marker.test(s) && bucket.length) {
+      sections.push(bucket.join(' '));
+      bucket = [s];
+    } else {
+      bucket.push(s);
+    }
+  });
+  if (bucket.length) sections.push(bucket.join(' '));
+  if (sections.length < 2) return null;
+  return sections.map(sec => {
+    // First 4–7 words become the heading.
+    const words = sec.replace(/^(First,|Second,|Third,|Fourth,|Fifth,|Finally,|Lastly,|Additionally,|\(\d\))\s*/i, '').split(' ');
+    const head = words.slice(0, 6).join(' ').replace(/[,.;:]+$/, '');
+    return { heading: head, body: sec };
+  });
+}
+
+// One-line headline: the first sentence, trimmed to ~160 chars.
+function _primerHeadline(text) {
+  const sents = _splitSentences(text);
+  if (!sents.length) return '';
+  let h = sents[0];
+  if (h.length > 170) h = h.slice(0, 167).trimEnd() + '…';
+  return h;
+}
+
+// Extract 2–4 key-point bullets from narrative. Prefer enumerated signposts;
+// fall back to sentences containing quantitative anchors (%, $, x, bps).
+function _primerKeyPoints(text, max = 3) {
+  if (!text) return [];
+  const sents = _splitSentences(text);
+  if (sents.length < 3) return [];
+  const out = [];
+  const seen = new Set();
+
+  const numericRe = /(%|\$|\d+(\.\d+)?x|bps|billion|million|bn|mm)/i;
+  const push = (s) => {
+    if (!s) return;
+    const trimmed = s.length > 200 ? s.slice(0, 197).trimEnd() + '…' : s;
+    if (!seen.has(trimmed)) {
+      seen.add(trimmed);
+      out.push(trimmed);
+    }
+  };
+
+  // Pass 1: enumerated signposts (First, Second, (1), (2), ...). Skip the
+  // opening sentence (already shown as headline).
+  const marker = /^(First,|Second,|Third,|Fourth,|Fifth,|Finally,|Lastly,|Additionally,|\(1\)|\(2\)|\(3\)|\(4\)|\(5\))/i;
+  sents.slice(1).forEach(s => {
+    if (marker.test(s) && out.length < max) push(s);
+  });
+
+  // Pass 2: numeric-heavy sentences to fill remaining slots.
+  if (out.length < max) {
+    sents.slice(1).forEach(s => {
+      if (out.length >= max) return;
+      if (numericRe.test(s)) push(s);
+    });
+  }
+
+  return out;
+}
+
+// Render the full narrative into a drawer-friendly block: structured sections
+// if detectable, otherwise paragraph-broken prose.
+function _renderFullPrimerBlock(text) {
+  if (!text) return '';
+  const sections = _extractStructuredSections(text);
+  if (sections && sections.length >= 2) {
+    return sections.map(sec => `
+      <div class="wb-drawer-subsection">
+        <div class="wb-drawer-subhead">${_wbEsc(sec.heading)}</div>
+        <p>${_wbEsc(sec.body)}</p>
+      </div>
+    `).join('');
+  }
+  // Fallback: paragraph breaks on existing newlines or every 3 sentences.
+  const paragraphs = String(text).includes('\n\n')
+    ? String(text).split(/\n\n+/).map(p => p.trim()).filter(Boolean)
+    : (() => {
+        const sents = _splitSentences(text);
+        const groups = [];
+        for (let i = 0; i < sents.length; i += 3) groups.push(sents.slice(i, i + 3).join(' '));
+        return groups;
+      })();
+  return paragraphs.map(p => `<p>${_wbEsc(p)}</p>`).join('');
+}
+
+// Build the compact inline primer card: headline + labeled short sections +
+// "Read full primer" affordance. `parts` is an array of { label, text }.
+function _buildPrimerCard(ticker, kind, parts) {
+  const have = parts.filter(p => p && p.text);
+  if (!have.length) return '';
+
+  // Headline takes the first non-empty narrative's opening sentence.
+  const headline = _primerHeadline(have[0].text);
+
+  // For each part, show label + headline + up to 2 bullets.
+  const partsHtml = have.map(p => {
+    const head = _primerHeadline(p.text);
+    const bullets = _primerKeyPoints(p.text, 2);
+    return `
+      <div class="wb-primer-part">
+        <div class="wb-primer-part-head">
+          <span class="wb-label">${_wbEsc(p.label)}</span>
+        </div>
+        <div class="wb-primer-part-body">
+          <p class="wb-primer-headline">${_wbEsc(head)}</p>
+          ${bullets.length ? `<ul class="wb-primer-bullets">${bullets.map(b => `<li>${_wbEsc(b)}</li>`).join('')}</ul>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <details class="wb-card-primer" data-ticker="${_wbEsc(ticker)}" data-kind="${_wbEsc(kind)}">
+      <summary class="wb-primer-toggle" aria-label="Toggle ${_wbEsc(ticker)} primer">
+        <span class="wb-primer-toggle-label">Primer</span>
+        <span class="wb-primer-toggle-caret" aria-hidden="true">&#9656;</span>
+      </summary>
+      <div class="wb-primer-body">
+        ${partsHtml}
+        <div class="wb-primer-footer">
+          <button type="button" class="wb-primer-openfull" data-ticker="${_wbEsc(ticker)}" data-kind="${_wbEsc(kind)}">
+            Read full primer &rsaquo;
+          </button>
+          <a class="wb-primer-share" href="#briefing/${_wbEsc(ticker)}" title="Copy share link" data-ticker="${_wbEsc(ticker)}">Share</a>
+        </div>
+      </div>
+    </details>
+  `;
 }
 
 function renderWeeklyBriefing() {
@@ -201,16 +385,28 @@ function renderWeeklyBriefing() {
     || (ir.russell ? (ir.russell.weekly_pct !== undefined ? (ir.russell.weekly_pct >= 0 ? '+' : '') + ir.russell.weekly_pct.toFixed(2) + '%' : null) : null);
   const russell = russellRaw;
 
-  // Build archive set for picker
-  const archive = Array.isArray(d.archive) ? d.archive : [];
-  weeklyBriefingArchiveIndex = archive.map(a => typeof a === 'string' ? { week_ending: a, path: `archive/briefings/weekly_briefing_${a}.json` } : a)
-                                      .filter(a => a && a.week_ending);
-  // Ensure current week is in the set
-  if (weekEnd && !weeklyBriefingArchiveIndex.some(a => a.week_ending === weekEnd)) {
-    weeklyBriefingArchiveIndex.push({ week_ending: weekEnd, path: 'weekly_briefing.json' });
+  // Build archive set for picker. The current live payload carries the full
+  // archive list; archived payloads DO NOT (they were snapshotted before the
+  // archive was known). We therefore MERGE the incoming archive into whatever
+  // we already have in memory rather than overwriting — this is the fix for
+  // the picker bug where navigating back one week wiped the archive list.
+  const incomingArchive = Array.isArray(d.archive) ? d.archive : [];
+  const merged = new Map();
+  (weeklyBriefingArchiveIndex || []).forEach(a => {
+    if (a && a.week_ending) merged.set(a.week_ending, a);
+  });
+  incomingArchive.forEach(a => {
+    const rec = typeof a === 'string' ? { week_ending: a, path: `archive/briefings/weekly_briefing_${a}.json` } : a;
+    if (rec && rec.week_ending) merged.set(rec.week_ending, rec);
+  });
+  // Ensure current week is in the set.
+  if (weekEnd && !merged.has(weekEnd)) {
+    // If the live file name maps to the current week, point there; otherwise
+    // assume it's the weekly_briefing.json canonical file.
+    merged.set(weekEnd, { week_ending: weekEnd, path: 'weekly_briefing.json' });
   }
-  // Sort ascending
-  weeklyBriefingArchiveIndex.sort((a, b) => a.week_ending.localeCompare(b.week_ending));
+  weeklyBriefingArchiveIndex = Array.from(merged.values())
+    .sort((a, b) => a.week_ending.localeCompare(b.week_ending));
   const earliest = weeklyBriefingArchiveIndex[0]?.week_ending || weekEnd;
   const today = new Date().toISOString().slice(0, 10);
 
@@ -296,31 +492,20 @@ function renderWeeklyBriefing() {
   html += `</div></div>`;
 
   // --- Value Picks ---
-  html += `<div class="wb-section">
+  html += `<div class="wb-section" data-wb-section="value">
     <h3 class="wb-section-title">
       <span class="wb-icon">&#9670;</span> Top 5 Value Stocks
       <span class="wb-subtitle">Near 52-week lows, strong fundamentals</span>
+      <button type="button" class="wb-expand-all" data-target="value" aria-expanded="false">Expand all</button>
     </h3>
     <div class="wb-cards">`;
   (d.value_picks || []).forEach((v, i) => {
-    // Per-stock primer narrative — collapsed by default; expand inline on click.
-    const why = v.why_undervalued || '';
-    const bull = v.bull_case || '';
-    const hasPrimer = !!(why || bull);
-    const primerHtml = hasPrimer
-      ? `<details class="wb-card-primer">
-           <summary class="wb-primer-toggle" aria-label="Toggle ${_wbEsc(v.ticker)} primer">
-             <span class="wb-primer-toggle-label">Primer</span>
-             <span class="wb-primer-toggle-caret" aria-hidden="true">&#9656;</span>
-           </summary>
-           <div class="wb-primer-body">
-             ${why ? `<div class="wb-card-thesis"><div class="wb-label">Why undervalued</div>${_wbEsc(why)}</div>` : ''}
-             ${bull ? `<div class="wb-card-bull"><div class="wb-label">Bull case</div>${_wbEsc(bull)}</div>` : ''}
-           </div>
-         </details>`
-      : '';
+    const primerHtml = _buildPrimerCard(v.ticker, 'value', [
+      { label: 'Why undervalued', text: v.why_undervalued || '' },
+      { label: 'Bull case',       text: v.bull_case || '' },
+    ]);
     html += `
-      <div class="wb-card wb-value-card">
+      <div class="wb-card wb-value-card" id="wb-card-${_wbEsc(v.ticker)}">
         <div class="wb-card-rank">#${i + 1}</div>
         <div class="wb-card-header">
           <span class="wb-card-ticker">${_wbEsc(v.ticker)}</span>
@@ -340,34 +525,23 @@ function renderWeeklyBriefing() {
   html += `</div></div>`;
 
   // --- Momentum Picks ---
-  html += `<div class="wb-section">
+  html += `<div class="wb-section" data-wb-section="momentum">
     <h3 class="wb-section-title">
       <span class="wb-icon">&#9650;</span> Top 5 Momentum Stocks
       <span class="wb-subtitle">Strongest recent performance</span>
+      <button type="button" class="wb-expand-all" data-target="momentum" aria-expanded="false">Expand all</button>
     </h3>
     <div class="wb-cards">`;
   (d.momentum_picks || []).forEach((m, i) => {
-    // Momentum primer: catalyst + risk_reward narrative.
-    const catalyst = m.catalyst || '';
-    const riskReward = m.risk_reward || '';
-    const hasPrimer = !!(catalyst || riskReward);
-    const primerHtml = hasPrimer
-      ? `<details class="wb-card-primer">
-           <summary class="wb-primer-toggle" aria-label="Toggle ${_wbEsc(m.ticker)} primer">
-             <span class="wb-primer-toggle-label">Primer</span>
-             <span class="wb-primer-toggle-caret" aria-hidden="true">&#9656;</span>
-           </summary>
-           <div class="wb-primer-body">
-             ${catalyst ? `<div class="wb-card-thesis"><div class="wb-label">Catalyst</div>${_wbEsc(catalyst)}</div>` : ''}
-             ${riskReward ? `<div class="wb-card-bull"><div class="wb-label">Risk / reward</div>${_wbEsc(riskReward)}</div>` : ''}
-           </div>
-         </details>`
-      : '';
+    const primerHtml = _buildPrimerCard(m.ticker, 'momentum', [
+      { label: 'Catalyst',     text: m.catalyst || '' },
+      { label: 'Risk / reward', text: m.risk_reward || '' },
+    ]);
     const w1Str = m.one_week_perf || m.perf_1w || m.one_week || 'N/A';
     const m1Str = m.one_month_perf || m.perf_1m || m.one_month || 'N/A';
     const m3Str = m.three_month_perf || m.perf_3m || m.three_month || 'N/A';
     html += `
-      <div class="wb-card wb-momentum-card">
+      <div class="wb-card wb-momentum-card" id="wb-card-${_wbEsc(m.ticker)}">
         <div class="wb-card-rank">#${i + 1}</div>
         <div class="wb-card-header">
           <span class="wb-card-ticker">${_wbEsc(m.ticker)}</span>
@@ -387,10 +561,6 @@ function renderWeeklyBriefing() {
 
   // --- Watchlist Updates ---
   const updates = d.watchlist_updates || d.watchlist_movers || [];
-  // --- helpers to resolve the weekly/30-day move fields under the current
-  //     live schema (weekly_move/thirty_day_move strings + return_weekly_pct/
-  //     return_30d_pct numbers). Legacy price_change_* is kept as a fallback
-  //     so historical archive briefings continue to render correctly.
   const _fmtPct = (n) => (n >= 0 ? '+' : '') + n.toFixed(1) + '%';
   const _resolveWeekly = (u) => {
     if (u.weekly_move) return u.weekly_move;
@@ -420,7 +590,6 @@ function renderWeeklyBriefing() {
     return str.length > n ? str.slice(0, n - 1).trimEnd() + '…' : str;
   };
   if (updates.length > 0) {
-    // Classify major movers: explicit flag wins, otherwise abs(30-day) > 10%
     const isMajor = (u) => {
       if (typeof u.is_major_mover === 'boolean') return u.is_major_mover;
       const m30 = _thirtyNum(u);
@@ -492,7 +661,228 @@ function renderWeeklyBriefing() {
 
   $content.innerHTML = html;
   wireWeekPicker();
+  wirePrimerControls();
+  // After paint, honor any deep-link hash (e.g. #briefing/CMCSA) pointing at
+  // a specific ticker primer on this week.
+  requestAnimationFrame(handleBriefingHash);
 }
+
+// ─── Primer wiring (expand-all, open-drawer, deep-link copy) ────
+function wirePrimerControls() {
+  const $content = document.getElementById('weekly-briefing-content');
+  if (!$content) return;
+
+  // Expand-all / collapse-all toggle per section
+  $content.querySelectorAll('.wb-expand-all').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-target');
+      const sec = $content.querySelector(`[data-wb-section="${target}"]`);
+      if (!sec) return;
+      const details = sec.querySelectorAll('details.wb-card-primer');
+      const anyClosed = Array.from(details).some(d => !d.open);
+      details.forEach(d => { d.open = anyClosed; });
+      btn.textContent = anyClosed ? 'Collapse all' : 'Expand all';
+      btn.setAttribute('aria-expanded', String(anyClosed));
+    });
+  });
+
+  // "Read full primer" → open drawer
+  $content.querySelectorAll('.wb-primer-openfull').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const ticker = btn.getAttribute('data-ticker');
+      const kind = btn.getAttribute('data-kind');
+      openPrimerDrawer(ticker, kind);
+    });
+  });
+
+  // Share link → copy deep-link URL to clipboard
+  $content.querySelectorAll('.wb-primer-share').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const ticker = a.getAttribute('data-ticker');
+      const base = window.location.href.split('#')[0];
+      const url = `${base}#briefing/${ticker}`;
+      // Reflect the hash so browser back/forward captures this state.
+      history.replaceState(null, '', url);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(
+          () => showBriefingToast('Link copied', { type: 'success', duration: 1600 }),
+          () => showBriefingToast('Copied to URL bar', { type: 'success', duration: 1600 })
+        );
+      } else {
+        showBriefingToast('Copied to URL bar', { type: 'success', duration: 1600 });
+      }
+    });
+  });
+}
+
+// ─── Primer drawer ─────────────────────────────────────────────
+function _findPickByTicker(ticker) {
+  const d = weeklyBriefingData;
+  if (!d || !ticker) return null;
+  const t = String(ticker).toUpperCase();
+  const v = (d.value_picks || []).find(x => (x.ticker || '').toUpperCase() === t);
+  if (v) return { kind: 'value', pick: v };
+  const m = (d.momentum_picks || []).find(x => (x.ticker || '').toUpperCase() === t);
+  if (m) return { kind: 'momentum', pick: m };
+  return null;
+}
+
+function openPrimerDrawer(ticker, kind) {
+  if (!ticker) return;
+  const found = _findPickByTicker(ticker);
+  if (!found) {
+    showBriefingToast(`No primer for ${ticker}`, { type: 'error', duration: 1800 });
+    return;
+  }
+  kind = kind || found.kind;
+  const p = found.pick;
+
+  // Clean up any existing drawer first.
+  closePrimerDrawer();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'wb-drawer-overlay';
+  const drawer = document.createElement('aside');
+  drawer.className = 'wb-drawer';
+  drawer.setAttribute('role', 'dialog');
+  drawer.setAttribute('aria-modal', 'true');
+  drawer.setAttribute('aria-label', `${ticker} primer`);
+
+  const parts = (kind === 'value')
+    ? [
+        { label: 'Why undervalued', text: p.why_undervalued || '' },
+        { label: 'Bull case',       text: p.bull_case || '' },
+      ]
+    : [
+        { label: 'Catalyst',       text: p.catalyst || '' },
+        { label: 'Risk / reward',  text: p.risk_reward || '' },
+      ];
+
+  const statChips = [
+    p.current_price || p.price ? `<span class="wb-stat">${_wbEsc(p.current_price || p.price)}</span>` : '',
+    (kind === 'value')
+      ? `<span class="wb-stat negative">${_wbEsc(p.pct_off_high || p.off_high_pct || '')} off 52w high</span>`
+      : '',
+    (kind === 'value' && (p.pe_ratio)) ? `<span class="wb-stat">P/E ${_wbEsc(p.pe_ratio)}</span>` : '',
+    (kind === 'value' && (p.ev_ebitda)) ? `<span class="wb-stat">EV/EBITDA ${_wbEsc(p.ev_ebitda)}</span>` : '',
+    (kind === 'value' && (p.fcf_yield)) ? `<span class="wb-stat">FCF Yld ${_wbEsc(p.fcf_yield)}</span>` : '',
+    (kind === 'momentum' && (p.one_week_perf || p.perf_1w)) ? `<span class="wb-stat">1W ${_wbEsc(p.one_week_perf || p.perf_1w)}</span>` : '',
+    (kind === 'momentum' && (p.one_month_perf || p.perf_1m)) ? `<span class="wb-stat">1M ${_wbEsc(p.one_month_perf || p.perf_1m)}</span>` : '',
+    (kind === 'momentum' && (p.three_month_perf || p.perf_3m)) ? `<span class="wb-stat">3M ${_wbEsc(p.three_month_perf || p.perf_3m)}</span>` : '',
+    (p.revenue_growth || p.rev_growth) ? `<span class="wb-stat">Rev ${_wbEsc(p.revenue_growth || p.rev_growth)}</span>` : '',
+  ].filter(Boolean).join('');
+
+  drawer.innerHTML = `
+    <header class="wb-drawer-header">
+      <div class="wb-drawer-titlerow">
+        <div class="wb-drawer-title">
+          <span class="wb-drawer-ticker">${_wbEsc(p.ticker)}</span>
+          <span class="wb-drawer-name">${_wbEsc(p.name || '')}</span>
+        </div>
+        <button type="button" class="wb-drawer-close" aria-label="Close primer">&times;</button>
+      </div>
+      <div class="wb-drawer-kind">${kind === 'value' ? 'Value pick' : 'Momentum pick'} · Week ending ${_wbEsc(weeklyBriefingData?.week_ending || '')}</div>
+      <div class="wb-drawer-stats">${statChips}</div>
+      <div class="wb-drawer-actions">
+        <button type="button" class="wb-drawer-share" data-ticker="${_wbEsc(p.ticker)}">Copy share link</button>
+      </div>
+    </header>
+    <div class="wb-drawer-body">
+      ${parts.filter(pt => pt.text).map(pt => `
+        <section class="wb-drawer-section">
+          <h3 class="wb-drawer-sectionhead">${_wbEsc(pt.label)}</h3>
+          ${_renderFullPrimerBlock(pt.text)}
+        </section>
+      `).join('')}
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  document.body.appendChild(drawer);
+  // Force-reflow then add active class for CSS transition.
+  void drawer.offsetWidth;
+  overlay.classList.add('active');
+  drawer.classList.add('active');
+  document.body.classList.add('wb-drawer-open');
+
+  // Push deep-link state so Back closes the drawer instead of leaving the app.
+  const base = window.location.href.split('#')[0];
+  const hash = `#briefing/${p.ticker}`;
+  if (window.location.hash !== hash) {
+    history.pushState({ wbDrawer: p.ticker }, '', base + hash);
+  }
+
+  const close = () => closePrimerDrawer();
+  overlay.addEventListener('click', close);
+  drawer.querySelector('.wb-drawer-close').addEventListener('click', close);
+  drawer.querySelector('.wb-drawer-share').addEventListener('click', () => {
+    const url = base + hash;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(
+        () => showBriefingToast('Link copied', { type: 'success', duration: 1600 }),
+        () => showBriefingToast('Share link in URL bar', { type: 'success', duration: 1600 })
+      );
+    } else {
+      showBriefingToast('Share link in URL bar', { type: 'success', duration: 1600 });
+    }
+  });
+
+  // ESC to close
+  _drawerKeyHandler = (ev) => {
+    if (ev.key === 'Escape') close();
+  };
+  window.addEventListener('keydown', _drawerKeyHandler);
+
+  // Focus close button for accessibility.
+  setTimeout(() => drawer.querySelector('.wb-drawer-close')?.focus(), 50);
+}
+
+let _drawerKeyHandler = null;
+
+function closePrimerDrawer() {
+  const overlay = document.querySelector('.wb-drawer-overlay');
+  const drawer = document.querySelector('.wb-drawer');
+  if (!overlay && !drawer) return;
+  if (overlay) overlay.classList.remove('active');
+  if (drawer) drawer.classList.remove('active');
+  document.body.classList.remove('wb-drawer-open');
+  setTimeout(() => {
+    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    if (drawer && drawer.parentNode) drawer.parentNode.removeChild(drawer);
+  }, 220);
+  if (_drawerKeyHandler) {
+    window.removeEventListener('keydown', _drawerKeyHandler);
+    _drawerKeyHandler = null;
+  }
+  // Clean up hash if it still points at a briefing primer.
+  if (window.location.hash.startsWith('#briefing/')) {
+    const base = window.location.href.split('#')[0];
+    history.replaceState(null, '', base);
+  }
+}
+
+// ─── Deep-link handler ───
+// Listens for "#briefing/TICKER" and opens the corresponding drawer after
+// the briefing payload has rendered. Also handles back/forward navigation.
+function handleBriefingHash() {
+  const h = window.location.hash || '';
+  const m = h.match(/^#briefing\/([A-Za-z0-9._-]+)$/);
+  if (m) {
+    const ticker = m[1].toUpperCase();
+    openPrimerDrawer(ticker, null);
+  } else {
+    closePrimerDrawer();
+  }
+}
+
+window.addEventListener('hashchange', () => {
+  // Only react when we're on the briefing surface. Cheap check: the content
+  // container must be present and visible.
+  const $content = document.getElementById('weekly-briefing-content');
+  if ($content && $content.offsetParent !== null) handleBriefingHash();
+});
 
 // initWeeklyBriefing is called by the tab system when the Briefing tab is activated
 function initWeeklyBriefing() {
@@ -510,23 +900,6 @@ function initWeeklyBriefing() {
  * full-screen overlay remained in the DOM after navigation, sitting on top of
  * the newly-visible surface and intercepting all pointer events, making the
  * app appear completely broken (clicks did nothing).
- *
- * Root causes addressed:
- *   (a) No onDeactivate hook for the 'briefing' surface, so the overlay was
- *       never removed when SignalRouter switched surfaces.
- *   (b) Browser Back (hashchange) triggered _activate() -> onDeactivate but
- *       there was no deactivate hook registered at all, leaving the overlay
- *       permanently blocking the view the user landed on.
- *   (c) The overlay had no listener for hashchange / popstate so it could not
- *       self-dismiss on browser navigation.
- *
- * Fix: hold a module-level reference to the active overlay's dismiss function.
- * dismissBriefingArchive() is called from:
- *   1. The close button / click-outside handler (existing UX, unchanged).
- *   2. A one-shot hashchange listener added when the overlay opens, so browser
- *      Back closes it before the router re-activates the target surface.
- *   3. window.dismissBriefingArchive, exposed so shell.js can call it from
- *      the briefing surface's onDeactivate hook (registered below).
  */
 let _briefingArchiveDismiss = null;
 
@@ -534,6 +907,7 @@ function dismissBriefingArchive() {
   if (typeof _briefingArchiveDismiss === 'function') {
     _briefingArchiveDismiss();
   }
+  closePrimerDrawer();
 }
 
 function showBriefingArchive() {
@@ -585,8 +959,6 @@ function showBriefingArchive() {
   modal.appendChild(list);
   overlay.appendChild(modal);
 
-  // FIX: shared dismiss function stored at module scope so external callers
-  // (onDeactivate hook, hashchange listener) can close the overlay.
   function dismiss() {
     if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
     window.removeEventListener('hashchange', _onHashChangeDismiss);
@@ -594,9 +966,6 @@ function showBriefingArchive() {
   }
   _briefingArchiveDismiss = dismiss;
 
-  // FIX: close the overlay whenever the URL hash changes (browser Back /
-  // Forward, or clicking another surface nav button).  Use a named function
-  // so we can remove it precisely in dismiss() — no listener leaks.
   function _onHashChangeDismiss() {
     dismiss();
   }
@@ -614,8 +983,9 @@ function showBriefingArchive() {
 window.loadLatestBriefing = loadLatestBriefing;
 window.jumpToWeek = jumpToWeek;
 window.showBriefingArchive = showBriefingArchive;
-// FIX: expose dismiss so shell.js onDeactivate can close any open archive overlay.
 window.dismissBriefingArchive = dismissBriefingArchive;
+window.openPrimerDrawer = openPrimerDrawer;
+window.closePrimerDrawer = closePrimerDrawer;
 
 // ───────────────────────────────────────────────────────────
 // PDF EXPORT
@@ -695,7 +1065,6 @@ async function exportBriefingPDF() {
     }
     function drawSectionHeader(label, rgb = ACCENT_GREEN) {
       ensureSpace(30);
-      // Accent left bar
       doc.setFillColor(rgb[0], rgb[1], rgb[2]);
       doc.rect(MARGIN, y - 10, 3, 18, 'F');
       setFont(13, 'bold');
@@ -848,7 +1217,6 @@ async function exportBriefingPDF() {
         setColor(TEXT_PRIMARY);
         const head = `#${i + 1}  ${v.ticker}  —  ${v.name || ''}`;
         doc.text(head, MARGIN, y);
-        // price right-aligned
         const price = v.price || v.current_price || '';
         if (price) {
           setFont(11, 'bold');
@@ -913,13 +1281,11 @@ async function exportBriefingPDF() {
       });
     }
 
-    // Earnings highlights (from watchlist updates if present)
     const updates = d.watchlist_updates || d.watchlist_movers || d.earnings_highlights || [];
     if (updates.length) {
       drawSectionHeader('Earnings & Watchlist Highlights', ACCENT_GREEN);
       updates.forEach(u => {
         ensureSpace(30);
-        // Beat / miss / move signal
         let signalLabel = '';
         let signalColor = TEXT_MUTED;
         if (u.result) {
@@ -951,19 +1317,15 @@ async function exportBriefingPDF() {
       });
     }
 
-    // ── FOOTER: page numbers (Page X of Y) ──
     const pageCount = doc.internal.getNumberOfPages();
     for (let p = 1; p <= pageCount; p++) {
       doc.setPage(p);
       setFont(9, 'normal');
       setColor(TEXT_MUTED);
       const footerY = PAGE_H - 28;
-      // left: app name
       doc.text('SignalStack AI', MARGIN, footerY);
-      // center: week ending
       const centerLabel = `Week ending ${weekEnd}`;
       doc.text(centerLabel, PAGE_W / 2 - doc.getTextWidth(centerLabel) / 2, footerY);
-      // right: page X of Y
       const pageLabel = `Page ${p} of ${pageCount}`;
       doc.text(pageLabel, PAGE_W - MARGIN - doc.getTextWidth(pageLabel), footerY);
       doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
