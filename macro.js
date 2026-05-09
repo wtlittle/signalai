@@ -4,31 +4,46 @@
 let macroDataCache = null;
 
 // ── MacroReconciliation in-memory store ──
-// Populated lazily on first Drilldown or Macro tab load.
+// Intentionally short-lived. Cleared and re-fetched on every Macro tab mount
+// and every Drilldown open. Never served stale across tab changes.
 // Schema: { [ticker]: { tactical, strategic, reconciled, exposure_map, ... } }
-// See macro_reconciliation_prompt.md and macro_name_reconciliation.json.
 window.MacroReconciliation = window.MacroReconciliation || {};
 
 async function loadMacroReconciliation() {
-  // Supabase first
+  // Always start clean — never serve stale in-memory data
+  window.MacroReconciliation = {};
+
+  // Supabase first — always fresh, no cache gate
   if (typeof checkSupabase === 'function' && await checkSupabase()) {
     try {
-      const rows = await supabaseGet('macro_name_reconciliation', 'select=ticker,tactical_score,tactical_label,strategic_score,strategic_label,net_stance,headline,explanation,exposure_map,generated_at');
-      (rows || []).forEach(r => {
-        if (r.ticker) window.MacroReconciliation[r.ticker] = r;
-      });
-      return;
+      const rows = await supabaseGet(
+        'macro_name_reconciliation',
+        'select=ticker,regime_label,tactical_score,tactical_label,strategic_score,strategic_label,net_stance,headline,explanation,exposure_map,generated_at',
+        { cache: 'no-store' }
+      );
+      if (rows && rows.length > 0) {
+        rows.forEach(r => {
+          if (r.ticker) window.MacroReconciliation[r.ticker] = r;
+        });
+        return; // Supabase had data — do not fall through to JSON
+      }
     } catch (e) {
       console.warn('macro_name_reconciliation Supabase fetch skipped:', e.message);
     }
   }
-  // Fallback to local JSON snapshot
+
+  // Fallback: local JSON snapshot (used only when Supabase is unreachable)
   try {
-    const resp = await fetch('macro_name_reconciliation.json', { signal: AbortSignal.timeout(5000) });
+    const resp = await fetch('macro_name_reconciliation.json', {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(5000)
+    });
     if (resp.ok) {
       const parsed = await resp.json();
       const tickers = parsed.tickers || {};
-      Object.entries(tickers).forEach(([t, obj]) => { window.MacroReconciliation[t] = obj; });
+      Object.entries(tickers).forEach(([t, obj]) => {
+        window.MacroReconciliation[t] = obj;
+      });
     }
   } catch (e) {
     console.warn('macro_name_reconciliation.json fetch skipped:', e.message);
@@ -70,23 +85,14 @@ function renderMacroTab() {
   const container = document.getElementById('macro-content');
   if (!container) return;
 
-  if (!macroDataCache) {
-    container.innerHTML = '<div class="macro-loading">Loading macro data...</div>';
-    Promise.all([loadMacroData(), loadMacroReconciliation()]).then(([data]) => {
-      if (data) renderMacroContent(container, data);
-      else container.innerHTML = '<div class="macro-empty">No macro data available. Run refresh_macro.mjs to generate.</div>';
-    });
-    return;
-  }
-  // Reconciliation may not be loaded yet — kick off in background
-  if (Object.keys(window.MacroReconciliation).length === 0) {
-    loadMacroReconciliation().then(() => {
-      // Re-render ideas section only once reconciliation data arrives
-      const container = document.getElementById('macro-content');
-      if (container && macroDataCache) renderMacroContent(container, macroDataCache);
-    });
-  }
-  renderMacroContent(container, macroDataCache);
+  container.innerHTML = '<div class="macro-loading">Loading macro data…</div>';
+
+  // Always reload both macro data AND reconciliation on every mount.
+  // This ensures the user always sees the latest Supabase state.
+  Promise.all([loadMacroData(), loadMacroReconciliation()]).then(([data]) => {
+    if (data) renderMacroContent(container, data);
+    else container.innerHTML = '<div class="macro-empty">No macro data available. Run refresh_macro.mjs to generate.</div>';
+  });
 }
 
 function renderMacroContent(container, data) {
@@ -232,11 +238,6 @@ function renderIndicesBar(indices) {
 }
 
 // ── Composite Regime Score ──
-// Combines regime alignment (FAVOR/AVOID) with relative momentum into one number.
-// Score range: -100 (strong avoid) to +100 (strong favor)
-// Components:
-//   Regime alignment: FAVOR = +50, AVOID = -50, Neutral = 0
-//   Relative momentum: rank-based percentile of 1M return, scaled -50 to +50
 function computeRegimeScores(entries, favoredSet, avoidSet) {
   const byPerf = entries.slice().sort((a, b) => (a[1].change_1m || 0) - (b[1].change_1m || 0));
   const n = byPerf.length;
@@ -438,7 +439,6 @@ function netStancePill(ticker) {
   };
   const c = colorMap[stance] || { bg: 'rgba(156,163,175,.15)', fg: '#9ca3af' };
   const headline = rec.headline || (rec.reconciled && rec.reconciled.headline) || '';
-  const truncated = headline.length > 60 ? headline.slice(0, 57) + '…' : headline;
   return `<span class="macro-net-stance-pill" title="${headline}" style="background:${c.bg};color:${c.fg};border:1px solid ${c.fg};border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;margin-left:6px;cursor:default;">${stance}</span>`;
 }
 
