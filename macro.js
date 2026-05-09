@@ -3,6 +3,38 @@
 
 let macroDataCache = null;
 
+// ── MacroReconciliation in-memory store ──
+// Populated lazily on first Drilldown or Macro tab load.
+// Schema: { [ticker]: { tactical, strategic, reconciled, exposure_map, ... } }
+// See macro_reconciliation_prompt.md and macro_name_reconciliation.json.
+window.MacroReconciliation = window.MacroReconciliation || {};
+
+async function loadMacroReconciliation() {
+  // Supabase first
+  if (typeof checkSupabase === 'function' && await checkSupabase()) {
+    try {
+      const rows = await supabaseGet('macro_name_reconciliation', 'select=ticker,tactical_score,tactical_label,strategic_score,strategic_label,net_stance,headline,explanation,exposure_map,generated_at');
+      (rows || []).forEach(r => {
+        if (r.ticker) window.MacroReconciliation[r.ticker] = r;
+      });
+      return;
+    } catch (e) {
+      console.warn('macro_name_reconciliation Supabase fetch skipped:', e.message);
+    }
+  }
+  // Fallback to local JSON snapshot
+  try {
+    const resp = await fetch('macro_name_reconciliation.json', { signal: AbortSignal.timeout(5000) });
+    if (resp.ok) {
+      const parsed = await resp.json();
+      const tickers = parsed.tickers || {};
+      Object.entries(tickers).forEach(([t, obj]) => { window.MacroReconciliation[t] = obj; });
+    }
+  } catch (e) {
+    console.warn('macro_name_reconciliation.json fetch skipped:', e.message);
+  }
+}
+
 async function loadMacroData() {
   // Try Supabase first
   if (await checkSupabase()) {
@@ -30,7 +62,6 @@ async function loadMacroData() {
     return macroDataCache;
   } catch (e) {
     console.warn('macro_data.json fetch failed:', e.message);
-    // fetchWithFallback marks failure internally when both primary + fallback fail.
     return null;
   }
 }
@@ -41,11 +72,19 @@ function renderMacroTab() {
 
   if (!macroDataCache) {
     container.innerHTML = '<div class="macro-loading">Loading macro data...</div>';
-    loadMacroData().then(data => {
+    Promise.all([loadMacroData(), loadMacroReconciliation()]).then(([data]) => {
       if (data) renderMacroContent(container, data);
       else container.innerHTML = '<div class="macro-empty">No macro data available. Run refresh_macro.mjs to generate.</div>';
     });
     return;
+  }
+  // Reconciliation may not be loaded yet — kick off in background
+  if (Object.keys(window.MacroReconciliation).length === 0) {
+    loadMacroReconciliation().then(() => {
+      // Re-render ideas section only once reconciliation data arrives
+      const container = document.getElementById('macro-content');
+      if (container && macroDataCache) renderMacroContent(container, macroDataCache);
+    });
   }
   renderMacroContent(container, macroDataCache);
 }
@@ -199,11 +238,10 @@ function renderIndicesBar(indices) {
 //   Regime alignment: FAVOR = +50, AVOID = -50, Neutral = 0
 //   Relative momentum: rank-based percentile of 1M return, scaled -50 to +50
 function computeRegimeScores(entries, favoredSet, avoidSet) {
-  // Rank by 1M performance (best = highest rank)
   const byPerf = entries.slice().sort((a, b) => (a[1].change_1m || 0) - (b[1].change_1m || 0));
   const n = byPerf.length;
   const rankMap = {};
-  byPerf.forEach(([t], i) => { rankMap[t] = n > 1 ? (i / (n - 1)) * 100 - 50 : 0; }); // -50 to +50
+  byPerf.forEach(([t], i) => { rankMap[t] = n > 1 ? (i / (n - 1)) * 100 - 50 : 0; });
 
   return entries.map(([ticker, d]) => {
     const isFavor = favoredSet.has(ticker);
@@ -216,7 +254,6 @@ function computeRegimeScores(entries, favoredSet, avoidSet) {
 }
 
 function renderScoreBar(score) {
-  // Score: -100 to +100. Bar fills from center outward.
   const absScore = Math.abs(score);
   const barWidth = Math.min(50, (absScore / 100) * 50);
   const barColor = score >= 0 ? 'var(--green)' : 'var(--red)';
@@ -239,7 +276,6 @@ function renderSectorHeatmap(sectors, regime) {
   const avoidSet = new Set(regime?.avoid_sectors || []);
 
   const scored = computeRegimeScores(entries, favoredSet, avoidSet);
-  // Sort by composite score descending
   scored.sort((a, b) => b[2] - a[2]);
 
   const rows = scored.map(([ticker, d, score, isFavor, isAvoid]) => {
@@ -335,7 +371,7 @@ async function loadMacroRationales() {
       (rows || []).forEach(r => {
         if (!r.ticker) return;
         map[`${r.ticker}|${(r.regime || '').toLowerCase()}`] = r;
-        map[`${r.ticker}|*`] = r; // fallback match
+        map[`${r.ticker}|*`] = r;
       });
       _macroRationaleCache = map;
       return map;
@@ -351,7 +387,6 @@ function fallbackRationale(idea, regime) {
   const regimeName = regime?.regime || 'current';
   const sector = idea.subsector || idea.sector || 'its sector';
   const name = idea.name || idea.ticker;
-  // Try to pull a watchlist-derived name-specific fact
   let nameFact = '';
   try {
     const store = (typeof tickerData === 'object' && tickerData) ? tickerData[idea.ticker] : null;
@@ -369,7 +404,6 @@ function fallbackRationale(idea, regime) {
 
 function regimeScoreBreakdownHtml(regime) {
   if (!regime) return '';
-  // Try to find pillar scores from the cached macro snapshot
   const pillars = (macroDataCache && macroDataCache.pillars) || regime.pillars || null;
   if (!pillars) return '';
   const rows = ['growth', 'inflation', 'policy', 'sentiment'].map(k => {
@@ -387,13 +421,35 @@ function regimeScoreBreakdownHtml(regime) {
   return `<div class="idea-pop-body"><div class="idea-pop-title">Regime score breakdown</div>${rows}</div>`;
 }
 
+// ── Net Stance pill for MacroReconciliation ──
+// Colors match drilldown rendering contract in macro_reconciliation_prompt.md
+function netStancePill(ticker) {
+  const rec = window.MacroReconciliation && window.MacroReconciliation[ticker];
+  if (!rec) return '';
+  const stance = rec.net_stance || (rec.reconciled && rec.reconciled.net_stance);
+  if (!stance) return '';
+  const colorMap = {
+    'Build':   { bg: 'var(--teal-dim,rgba(20,184,166,.15))',   fg: 'var(--teal,#14b8a6)' },
+    'Trade':   { bg: 'var(--yellow-dim)',                        fg: 'var(--yellow)' },
+    'Hold':    { bg: 'rgba(156,163,175,.15)',                    fg: '#9ca3af' },
+    'Reduce':  { bg: 'var(--red-dim)',                           fg: 'var(--red)' },
+    'Avoid':   { bg: 'var(--red-dim)',                           fg: 'var(--red)' },
+    'Monitor': { bg: 'rgba(156,163,175,.15)',                    fg: '#9ca3af' },
+  };
+  const c = colorMap[stance] || { bg: 'rgba(156,163,175,.15)', fg: '#9ca3af' };
+  const headline = rec.headline || (rec.reconciled && rec.reconciled.headline) || '';
+  const truncated = headline.length > 60 ? headline.slice(0, 57) + '…' : headline;
+  return `<span class="macro-net-stance-pill" title="${headline}" style="background:${c.bg};color:${c.fg};border:1px solid ${c.fg};border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;margin-left:6px;cursor:default;">${stance}</span>`;
+}
+
 function renderIdeaRow(i, regime, rationaleMap, kind) {
   const lookupKey = `${i.ticker}|${(regime?.regime || '').toLowerCase()}`;
   const supaRec = rationaleMap[lookupKey] || rationaleMap[`${i.ticker}|*`];
   const rationale = i.rationale || (supaRec && supaRec.rationale) || fallbackRationale(i, regime);
   const popoverId = `idea-pop-${kind}-${i.ticker}`;
+  const stancePill = netStancePill(i.ticker);
   return `<div class="idea-row idea-${kind}">
-    <span class="idea-ticker">${i.ticker}</span>
+    <span class="idea-ticker">${i.ticker}${stancePill}</span>
     <span class="idea-name">${i.name || ''}</span>
     <span class="idea-subsector">${i.subsector || ''}</span>
     <span class="idea-reason">${rationale}
@@ -407,12 +463,9 @@ function renderStockIdeas(ideas, regime) {
   if (!ideas) return '';
   const regimeLabel = regime?.regime || 'Current Regime';
 
-  // Kick off async Supabase fetch; render template-rationale immediately and
-  // re-render the affected rows when rationale data arrives.
   const rationaleMap = _macroRationaleCache || {};
   if (!_macroRationaleCache) {
     loadMacroRationales().then(() => {
-      // Re-render this card with the new data if still on Macro tab
       const container = document.getElementById('macro-content');
       if (container && macroDataCache) renderMacroContent(container, macroDataCache);
     });
