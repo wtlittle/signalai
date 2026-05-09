@@ -1320,6 +1320,284 @@
   background: #fff;
 }
 
+/* --- Macro Stance panel (drilldown) --- */
+.dd-macro-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 12px 0;
+  color: var(--text-primary);
+}
+.dd-macro-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-surface-alt);
+}
+.dd-macro-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.dd-macro-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.dd-macro-regime-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+.dd-macro-ts {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.dd-macro-dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.dd-macro-side {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dd-macro-side + .dd-macro-side {
+  border-left: 1px solid var(--border-light);
+}
+.dd-macro-side-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.dd-macro-side-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dd-macro-score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0b1220;
+}
+.dd-macro-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.dd-macro-drivers {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dd-macro-drivers li {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding-left: 12px;
+  position: relative;
+  line-height: 1.45;
+}
+.dd-macro-drivers li::before {
+  content: '\00b7';
+  position: absolute;
+  left: 4px;
+  top: -2px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.dd-macro-drivers-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+.dd-macro-watch {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.dd-macro-watch-label,
+.dd-macro-conviction-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-right: 4px;
+}
+.dd-macro-watch-chip {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+.dd-macro-conviction {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.dd-macro-conviction em {
+  color: var(--text-primary);
+  font-style: italic;
+}
+.dd-macro-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-surface-alt);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dd-macro-footer-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dd-macro-stance-pill {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+.dd-macro-headline {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.dd-macro-explanation {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.dd-macro-exposure-wrap {
+  border-top: 1px solid var(--border-light);
+}
+.dd-macro-exposure-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+}
+.dd-macro-exposure-toggle:hover {
+  color: var(--text-primary);
+}
+.dd-macro-exposure-chev {
+  display: inline-block;
+  width: 12px;
+  color: var(--text-muted);
+}
+.dd-macro-exposure {
+  display: none;
+  padding: 6px 16px 14px 16px;
+  flex-direction: column;
+  gap: 6px;
+}
+.dd-macro-exposure-wrap.is-open .dd-macro-exposure {
+  display: flex;
+}
+.dd-macro-exposure-head,
+.dd-macro-exposure-row {
+  display: grid;
+  grid-template-columns: 180px 110px 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 6px 0;
+  font-size: 12px;
+}
+.dd-macro-exposure-head {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+  border-bottom: 1px dashed var(--border-light);
+}
+.dd-macro-exposure-row + .dd-macro-exposure-row {
+  border-top: 1px solid var(--border-light);
+}
+.dd-macro-exp-dim {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.dd-macro-exp-tact,
+.dd-macro-exp-strat {
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+.dd-macro-exp-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-right: 4px;
+}
+.dd-macro-assess-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+.dd-macro-empty .dd-macro-empty-body {
+  padding: 14px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.dd-macro-skel-line {
+  height: 10px;
+  border-radius: 4px;
+  background: var(--bg-surface-alt);
+  margin: 4px 0;
+  width: 100%;
+  max-width: 240px;
+  animation: dd-macro-pulse 1.4s ease-in-out infinite;
+}
+.dd-macro-skel-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--bg-surface-alt);
+  animation: dd-macro-pulse 1.4s ease-in-out infinite;
+}
+@keyframes dd-macro-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 0.95; }
+}
+
 /* --- Responsive --- */
 @media (max-width: 760px) {
   .dd-mast { flex-direction: column; }
@@ -1330,4 +1608,9 @@
   .dd-versions th:nth-child(5), .dd-versions td:nth-child(5) { display: none; }
   .dd-library th:nth-child(5), .dd-library td:nth-child(5),
   .dd-library th:nth-child(6), .dd-library td:nth-child(6) { display: none; }
+  .dd-macro-dual { grid-template-columns: 1fr; }
+  .dd-macro-side + .dd-macro-side { border-left: 0; border-top: 1px solid var(--border-light); }
+  .dd-macro-exposure-head,
+  .dd-macro-exposure-row { grid-template-columns: 1fr; gap: 4px; }
+  .dd-macro-exposure-head { display: none; }
 }

@@ -66,6 +66,26 @@
     return sign + p.toFixed(1) + '%';
   }
 
+  // Relative timestamp helper ("3h ago", "2d ago"). Returns '—' on bad input.
+  function _relTime(iso) {
+    if (!iso) return '—';
+    var ts;
+    try { ts = new Date(iso).getTime(); } catch (_) { return '—'; }
+    if (!ts || isNaN(ts)) return '—';
+    var diff = Math.max(0, Date.now() - ts);
+    var s = Math.floor(diff / 1000);
+    if (s < 60)        return s + 's ago';
+    var m = Math.floor(s / 60);
+    if (m < 60)        return m + 'm ago';
+    var h = Math.floor(m / 60);
+    if (h < 24)        return h + 'h ago';
+    var d = Math.floor(h / 24);
+    if (d < 30)        return d + 'd ago';
+    var mo = Math.floor(d / 30);
+    if (mo < 12)       return mo + 'mo ago';
+    return Math.floor(mo / 12) + 'y ago';
+  }
+
   function _currentTickerData(ticker) {
     var data = (typeof global.tickerData !== 'undefined' && global.tickerData) ||
                (global.SignalCoverage && global.SignalCoverage.getState && global.SignalCoverage.getState().tickerData) ||
@@ -372,6 +392,204 @@
   // ----- Renderers ------------------------------------------------------
 
   // Per-ticker masthead with current ticker selector + run / refresh / library actions.
+  // ─────────────────────────────────────────────────────────────────────
+  // Macro Stance panel — renders between masthead and the run/versions/viewer.
+  // Reads from window.MacroReconciliation[ticker]. Display-only.
+  // ─────────────────────────────────────────────────────────────────────
+
+  function _macroScoreColor(score) {
+    var n = Number(score);
+    if (isNaN(n))          return '#9ca3af';
+    if (n >= 2)            return 'var(--teal, #14b8a6)';
+    if (n >= 1)            return 'var(--green, #22c55e)';
+    if (n <= -2)           return 'var(--red, #ef4444)';
+    if (n <= -1)           return 'var(--yellow, #eab308)';
+    return '#9ca3af';
+  }
+
+  function _macroStanceColor(stance) {
+    var s = String(stance || '').trim();
+    if (s === 'Build')                              return 'var(--teal, #14b8a6)';
+    if (s === 'Trade')                              return 'var(--yellow, #eab308)';
+    if (s === 'Reduce' || s === 'Avoid')            return 'var(--red, #ef4444)';
+    return '#9ca3af'; // Hold / Monitor / unknown
+  }
+
+  function _macroAssessColor(assessment) {
+    var a = String(assessment || '').toUpperCase();
+    if (a === 'TAILWIND')  return 'var(--teal, #14b8a6)';
+    if (a === 'HEADWIND')  return 'var(--red, #ef4444)';
+    return '#9ca3af';
+  }
+
+  function _macroFmtScore(score) {
+    var n = Number(score);
+    if (isNaN(n)) return '—';
+    return (n > 0 ? '+' : '') + n;
+  }
+
+  function _macroDriversList(drivers) {
+    if (!drivers || !drivers.length) {
+      return '<div class="dd-macro-drivers-empty">No drivers available.</div>';
+    }
+    return (
+      '<ul class="dd-macro-drivers">' +
+      drivers.map(function (d) {
+        return '<li>' + _esc(d) + '</li>';
+      }).join('') +
+      '</ul>'
+    );
+  }
+
+  function _renderMacroStancePanel(ticker) {
+    if (!ticker) return '';
+
+    // Loading skeleton while the fresh fetch is in flight.
+    if (state.macroLoading) {
+      return (
+        '<div class="dd-macro-panel dd-macro-loading" data-dd-macro-skeleton>' +
+          '<div class="dd-macro-header">' +
+            '<div class="dd-macro-title">Macro stance</div>' +
+            '<div class="dd-macro-skel-line" style="width:140px;"></div>' +
+          '</div>' +
+          '<div class="dd-macro-dual">' +
+            '<div class="dd-macro-side"><div class="dd-macro-skel-badge"></div><div class="dd-macro-skel-line"></div><div class="dd-macro-skel-line"></div><div class="dd-macro-skel-line"></div></div>' +
+            '<div class="dd-macro-side"><div class="dd-macro-skel-badge"></div><div class="dd-macro-skel-line"></div><div class="dd-macro-skel-line"></div><div class="dd-macro-skel-line"></div></div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    var rec = (global.MacroReconciliation && global.MacroReconciliation[ticker]) || null;
+
+    if (!rec) {
+      return (
+        '<div class="dd-macro-panel dd-macro-empty">' +
+          '<div class="dd-macro-empty-body">' +
+            'No macro stance available for ' + _esc(ticker) + '. Run the reconciliation engine to generate.' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    // Pull tactical / strategic blocks. The Supabase row stores the score
+    // and label as flat columns plus the full tactical / strategic objects
+    // as jsonb under those keys. The local-fallback JSON keeps the original
+    // nested shape from the reconciliation prompt. Be lenient.
+    var tact = rec.tactical && typeof rec.tactical === 'object' ? rec.tactical : {};
+    var strat = rec.strategic && typeof rec.strategic === 'object' ? rec.strategic : {};
+    var tactScore  = (rec.tactical_score  != null) ? rec.tactical_score  : tact.score;
+    var stratScore = (rec.strategic_score != null) ? rec.strategic_score : strat.score;
+    var tactLabel  = rec.tactical_label  || tact.label  || '';
+    var stratLabel = rec.strategic_label || strat.label || '';
+    var watch      = tact.watch || '';
+    var conviction = strat.conviction_question || '';
+
+    // Footer (net stance + headline + explanation) tolerates both the flat
+    // Supabase columns and the legacy `reconciled` nested object.
+    var reconciled = rec.reconciled && typeof rec.reconciled === 'object' ? rec.reconciled : {};
+    var stance      = rec.net_stance  || reconciled.net_stance  || '';
+    var headline    = rec.headline    || reconciled.headline    || '';
+    var explanation = rec.explanation || reconciled.explanation || '';
+    var stanceColor = _macroStanceColor(stance);
+
+    var regimePill = rec.regime_label
+      ? '<span class="dd-macro-regime-pill">' + _esc(rec.regime_label) + '</span>'
+      : '';
+    var ts = rec.generated_at
+      ? '<span class="dd-macro-ts" title="' + _esc(rec.generated_at) + '">' + _esc(_relTime(rec.generated_at)) + '</span>'
+      : '';
+
+    var watchHtml = watch
+      ? '<div class="dd-macro-watch"><span class="dd-macro-watch-label">Watch:</span> <span class="dd-macro-watch-chip">' + _esc(watch) + '</span></div>'
+      : '';
+    var convictionHtml = conviction
+      ? '<div class="dd-macro-conviction"><span class="dd-macro-conviction-label">Conviction Q:</span> <em>' + _esc(conviction) + '</em></div>'
+      : '';
+
+    var tacticalHtml =
+      '<div class="dd-macro-side">' +
+        '<div class="dd-macro-side-eyebrow">Tactical — 1\u20138 weeks</div>' +
+        '<div class="dd-macro-side-head">' +
+          '<span class="dd-macro-score-badge" style="background:' + _macroScoreColor(tactScore) + ';">' + _esc(_macroFmtScore(tactScore)) + '</span>' +
+          '<span class="dd-macro-label">' + _esc(tactLabel || '—') + '</span>' +
+        '</div>' +
+        _macroDriversList(tact.key_drivers) +
+        watchHtml +
+      '</div>';
+
+    var strategicHtml =
+      '<div class="dd-macro-side">' +
+        '<div class="dd-macro-side-eyebrow">Strategic — 6\u201324 months</div>' +
+        '<div class="dd-macro-side-head">' +
+          '<span class="dd-macro-score-badge" style="background:' + _macroScoreColor(stratScore) + ';">' + _esc(_macroFmtScore(stratScore)) + '</span>' +
+          '<span class="dd-macro-label">' + _esc(stratLabel || '—') + '</span>' +
+        '</div>' +
+        _macroDriversList(strat.key_drivers) +
+        convictionHtml +
+      '</div>';
+
+    var footerHtml = (stance || headline || explanation)
+      ? (
+          '<div class="dd-macro-footer">' +
+            '<div class="dd-macro-footer-head">' +
+              (stance ? '<span class="dd-macro-stance-pill" style="background:' + stanceColor + '14;color:' + stanceColor + ';border:1px solid ' + stanceColor + ';">' + _esc(stance) + '</span>' : '') +
+              (headline ? '<span class="dd-macro-headline">' + _esc(headline) + '</span>' : '') +
+            '</div>' +
+            (explanation ? '<div class="dd-macro-explanation">' + _esc(explanation) + '</div>' : '') +
+          '</div>'
+        )
+      : '';
+
+    var exposureHtml = '';
+    if (Array.isArray(rec.exposure_map) && rec.exposure_map.length) {
+      var rows = rec.exposure_map.map(function (row) {
+        if (!row || typeof row !== 'object') return '';
+        var assess = String(row.assessment || '').toUpperCase();
+        var color  = _macroAssessColor(assess);
+        return (
+          '<div class="dd-macro-exposure-row">' +
+            '<div class="dd-macro-exp-dim">' + _esc(row.dimension || '—') + '</div>' +
+            '<div class="dd-macro-exp-assess">' +
+              '<span class="dd-macro-assess-badge" style="background:' + color + '14;color:' + color + ';border:1px solid ' + color + ';">' + _esc(assess || 'NEUTRAL') + '</span>' +
+            '</div>' +
+            '<div class="dd-macro-exp-tact"><span class="dd-macro-exp-label">Tactical:</span> ' + _esc(row.tactical || '—') + '</div>' +
+            '<div class="dd-macro-exp-strat"><span class="dd-macro-exp-label">Strategic:</span> ' + _esc(row.strategic || '—') + '</div>' +
+          '</div>'
+        );
+      }).join('');
+      var openClass = state.macroExposureOpen ? ' is-open' : '';
+      var chev = state.macroExposureOpen ? '▾' : '▸';
+      exposureHtml =
+        '<div class="dd-macro-exposure-wrap' + openClass + '">' +
+          '<button type="button" class="dd-macro-exposure-toggle" data-dd-act="toggle-exposure">' +
+            '<span class="dd-macro-exposure-chev">' + chev + '</span> Exposure map (' + rec.exposure_map.length + ' dimensions)' +
+          '</button>' +
+          '<div class="dd-macro-exposure">' +
+            '<div class="dd-macro-exposure-head">' +
+              '<div>Dimension</div><div>Assessment</div><div>Tactical commentary</div><div>Strategic commentary</div>' +
+            '</div>' +
+            rows +
+          '</div>' +
+        '</div>';
+    }
+
+    return (
+      '<div class="dd-macro-panel">' +
+        '<div class="dd-macro-header">' +
+          '<div class="dd-macro-title">Macro stance</div>' +
+          '<div class="dd-macro-meta">' + regimePill + ts + '</div>' +
+        '</div>' +
+        '<div class="dd-macro-dual">' +
+          tacticalHtml +
+          strategicHtml +
+        '</div>' +
+        footerHtml +
+        exposureHtml +
+      '</div>'
+    );
+  }
+
   function _renderMasthead(state) {
     var t = state.ticker || '';
     var rec = t ? _lib().getTicker(t) : null;
@@ -610,6 +828,8 @@
     openVersion: null,    // when set, render viewer
     showRunPanel: false,  // toggled when user clicks Run / Refresh
     livePrice: null,
+    macroLoading: false,       // true while loadMacroReconciliation() is in flight
+    macroExposureOpen: false,  // toggled by the Exposure map disclosure button
   };
 
   function setTicker(t) {
@@ -634,6 +854,7 @@
       html = _renderEmpty(state);
     } else {
       html += _renderMasthead(state);
+      html += _renderMacroStancePanel(state.ticker);
       if (state.openVersion != null) {
         html += _renderViewer(state);
       } else {
@@ -665,6 +886,11 @@
 
   function _handleAction(act, target) {
     var lib = _lib();
+    if (act === 'toggle-exposure') {
+      state.macroExposureOpen = !state.macroExposureOpen;
+      render();
+      return;
+    }
     if (act === 'go') {
       var input = document.getElementById('dd-ticker-input');
       if (input) {
@@ -919,6 +1145,31 @@
         setTicker(t);
         var root = _ensureSurface();
         if (root) _bindGlobalHandlers(root);
+        // Trigger fresh macro reconciliation pull whenever a ticker is activated.
+        // The loader (macro.js) populates window.MacroReconciliation[ticker]; we
+        // re-render once the promise resolves so the panel swaps from skeleton
+        // to populated state.
+        if (t && typeof global.loadMacroReconciliation === 'function') {
+          state.macroLoading = true;
+          state.macroExposureOpen = false;
+          render();
+          try {
+            var p = global.loadMacroReconciliation();
+            if (p && typeof p.then === 'function') {
+              p.then(function () {
+                state.macroLoading = false;
+                render();
+              }).catch(function () {
+                state.macroLoading = false;
+                render();
+              });
+            } else {
+              state.macroLoading = false;
+            }
+          } catch (_) {
+            state.macroLoading = false;
+          }
+        }
       }
     });
   }
