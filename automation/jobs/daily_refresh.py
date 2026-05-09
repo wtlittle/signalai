@@ -252,13 +252,18 @@ def step_compute_debate_scores():
         print("  [WARN] earnings_intel.json not found at", intel_path)
         return
     try:
-        # Import lazily so the script remains a standalone tool too.
-        import sys as _sys
-        _repo_root = str(ROOT_DIR)
-        if _repo_root not in _sys.path:
-            _sys.path.insert(0, _repo_root)
-        import compute_debate_scores  # type: ignore
-        compute_debate_scores.process(str(intel_path), verbose=False)
+        # Load compute_debate_scores.py by absolute path so this works
+        # regardless of the runner's current working directory.
+        import importlib.util as _ilu
+        _spec = _ilu.spec_from_file_location(
+            "compute_debate_scores",
+            ROOT_DIR / "compute_debate_scores.py",
+        )
+        if _spec is None or _spec.loader is None:
+            raise ImportError(f"compute_debate_scores.py not found at {ROOT_DIR}")
+        _mod = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_mod)
+        _mod.process(str(intel_path), verbose=False)
         print("  Debate scores updated")
     except Exception as exc:  # noqa: BLE001
         print(f"  [WARN] debate score compute failed: {exc}")

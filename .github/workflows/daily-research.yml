@@ -34,16 +34,9 @@ env:
   DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
   MAX_PRE_EARNINGS_DAYS: '14'
   MAX_POST_EARNINGS_DAYS: '14'
-  # Distinguish BMO vs AMC schedule slots so daily_refresh.py can gate
-  # which steps to execute. Manual dispatches default to "full" (run
-  # everything). The schedule expression matched at runtime is exposed
-  # via github.event.schedule, so we map it here.
-  REFRESH_MODE: >-
-    ${{
-      github.event_name == 'schedule' && github.event.schedule == '0 10 * * 1-5' && 'bmo' ||
-      github.event_name == 'schedule' && github.event.schedule == '30 21 * * 1-5' && 'amc' ||
-      'full'
-    }}
+  # REFRESH_MODE is set per-run by the "Set REFRESH_MODE" step below. The
+  # previous expression-based ternary collapsed to a boolean inside GitHub
+  # Actions, which made every scheduled run silently fall back to "full".
 
 # Grant the workflow's GITHUB_TOKEN write access to repository contents so
 # the commit/push step at the end can land changes on main. Without this
@@ -58,6 +51,20 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Set REFRESH_MODE
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "${{ github.event.schedule }}" = "0 10 * * 1-5" ]; then
+              echo "REFRESH_MODE=bmo" >> $GITHUB_ENV
+            elif [ "${{ github.event.schedule }}" = "30 21 * * 1-5" ]; then
+              echo "REFRESH_MODE=amc" >> $GITHUB_ENV
+            else
+              echo "REFRESH_MODE=full" >> $GITHUB_ENV
+            fi
+          else
+            echo "REFRESH_MODE=full" >> $GITHUB_ENV
+          fi
+
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
