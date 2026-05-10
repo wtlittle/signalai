@@ -137,6 +137,8 @@ const SUBSECTOR_MAP = {
   'CSU.TO': 'Vertical Software',
   // Weekly Briefing Picks (Week 8: 2026-05-03)
   'CLX': 'Consumer Staples', 'MHK': 'Building Products', 'LKQ': 'Auto Parts',
+  // Weekly Briefing Picks (Week 9: 2026-05-09)
+  'MDT': 'Medical Devices', 'IONQ': 'Quantum Computing',
 };
 
 // Subsector display order
@@ -409,6 +411,9 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 8: 2026-05-03) ---
   'CLX','MHK','LKQ',                  // Value picks (consumer staples / housing-cycle / auto parts) -- CMCSA, ZBH already covered
   // Momentum picks (SNDK, TWLO, GNRC, VRT, CIEN already in watchlist)
+  // --- Weekly Briefing Picks (Week 9: 2026-05-09) ---
+  'MDT',                              // Value pick (medtech near 52-week low; PFA ablation catalyst) -- GIS, NKE, ADBE, HD already in watchlist
+  'IONQ',                             // Momentum pick (quantum computing; +755% YoY rev) -- MU, STX, DDOG, FTNT already in watchlist
 ];
 
 // --- Default private companies ---
