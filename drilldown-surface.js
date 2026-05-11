@@ -721,7 +721,7 @@
           '<div class="dd-step-num">1</div>' +
           '<div class="dd-step-body">' +
             '<div class="dd-step-title">Run the two-stage drilldown prompt</div>' +
-            '<div class="dd-step-sub">Opens a fresh Perplexity thread for <strong>' + _esc(t) + '</strong> and copies the prompt with the <code>[SIGNAL_DATA_BLOCK]</code> pre-filled from live Supabase data. <em>Paste it as your first message in the new tab.</em> Run Part\u00a01 first (valuation, KPIs, industry, catalysts, earnings setup), then Part\u00a02 (management, competitive landscape, risks, financials, diligence).</div>' +
+            '<div class="dd-step-sub">Opens a fresh Perplexity <strong>Deep Research</strong> thread for <strong>' + _esc(t) + '</strong> and copies the prompt with the <code>[SIGNAL_DATA_BLOCK]</code> pre-filled from live Supabase data. <em>Paste it as your first message in the new tab.</em> Run Part\u00a01 first (valuation, KPIs, industry, catalysts, earnings setup), then Part\u00a02 (management, competitive landscape, risks, financials, diligence).</div>' +
             '<div class="dd-run-step-actions">' +
               '<button type="button" class="btn-primary" data-dd-act="run">Run Part\u00a01 for ' + _esc(t) + '</button>' +
               '<button type="button" class="btn-primary" data-dd-act="run-p2">Run Part\u00a02 for ' + _esc(t) + '</button>' +
@@ -729,7 +729,7 @@
               '<button type="button" class="btn-sm" data-dd-act="copy-p2-prompt" title="Copy the Part 2 prompt to your clipboard without opening a new tab">Copy Part\u00a02 prompt</button>' +
             '</div>' +
             '<div class="dd-run-fallback">' +
-              'Backend offline? ' +
+              'Prefer a regular Perplexity tab (not Deep Research)? ' +
               '<a href="#" data-dd-act="run-fallback" data-part="p1">Copy Part\u00a01 prompt instead</a> &nbsp;\u00b7&nbsp; ' +
               '<a href="#" data-dd-act="run-fallback" data-part="p2">Copy Part\u00a02 prompt instead</a>' +
             '</div>' +
@@ -739,11 +739,12 @@
           '<div class="dd-step-num">2</div>' +
           '<div class="dd-step-body">' +
             '<div class="dd-step-title">Paste the HTML back to save it</div>' +
-            '<div class="dd-step-sub">Copy the entire HTML block from the run output, paste below, and save. The Library auto-versions every save so you can compare drafts later.</div>' +
+            '<div class="dd-step-sub">Copy the entire HTML block from the Deep Research output, paste below, and save. The Library auto-versions every save so you can compare drafts later. Saving also writes a <code>notes/drilldown/&lt;ticker&gt;_&lt;date&gt;_&lt;part&gt;.md</code> file and upserts to the Supabase <code>drilldown_intel</code> table if the backend is reachable.</div>' +
             '<textarea id="dd-html-input" class="dd-html-input" placeholder="Paste the full HTML note here…" rows="6"></textarea>' +
             '<div class="dd-run-meta">' +
               '<label>Trigger ' +
                 '<select id="dd-trigger-input">' +
+                  '<option value="deep-research">Deep Research</option>' +
                   '<option value="manual">Manual run</option>' +
                   '<option value="refresh">Refresh</option>' +
                   '<option value="earnings_alert">Earnings alert</option>' +
@@ -1223,21 +1224,35 @@
     }
   }
 
-  // New flow: POST the assembled prompt to the local backend, which calls
-  // the Perplexity API server-side with PERPLEXITY_API_KEY. On success we
-  // save into the local Drilldown Library, re-render, and open the new
-  // version in the iframe. On failure we surface a clear inline error and
-  // leave the "Copy prompt instead" fallback link in place.
+  // Deep Research deeplink flow: opens a fresh Perplexity Deep Research
+  // thread, copies the canonical prompt to the clipboard, and prompts the
+  // analyst to paste the resulting HTML back into the Save textarea. The
+  // Save step then POSTs to /drilldown/save which writes a markdown file
+  // AND upserts to the Supabase drilldown_intel table. No API key required.
+  function _buildDeepResearchUrl(ticker) {
+    // The mode=research param routes the new thread into Deep Research.
+    // We keep `q` short (just the short prefill) to avoid 414 URI Too Large.
+    return (
+      'https://www.perplexity.ai/search/new?mode=research&q=' +
+      encodeURIComponent(_buildShortPrefill(ticker))
+    );
+  }
+
   function _runDrilldownApi(trigger, part) {
     if (!state.ticker) return;
     part = part || 'p1';
+    var partKey = part === 'p2' ? 'p2' : 'p1';
     state.showRunPanel = true;
     render();
 
     var ticker = state.ticker;
-    var partKey = part === 'p2' ? 'p2' : 'p1';
 
-    // Step A: gate on isTickerDataReady — poll every 1s up to 15s.
+    // Open the Deep Research tab IMMEDIATELY inside the click gesture so
+    // Safari/Firefox don\u0027t block it (popup blockers only fire after a
+    // Promise.then resolves).
+    var newWin = null;
+    try { newWin = global.open('about:blank', '_blank', 'noopener'); } catch (_) {}
+
     function whenReady(cb) {
       if (isTickerDataReady(ticker)) { cb(true); return; }
       _setRunButtonState(partKey, 'fetching');
@@ -1256,62 +1271,62 @@
 
     whenReady(function (ready) {
       if (!ready) {
-        _setRunButtonState(partKey, 'error', 'Live ticker data didn\u0027t load in 15s. Refresh the watchlist (or use "Copy prompt instead" below).');
+        _setRunButtonState(partKey, 'error',
+          'Live ticker data didn\u0027t load in 15s. Refresh the watchlist, then try again. ' +
+          'You can still use "Copy prompt instead" below.');
+        if (newWin && !newWin.closed) { try { newWin.close(); } catch (_) {} }
         return;
       }
 
-      _setRunButtonState(partKey, 'generating');
+      _setRunButtonState(partKey, 'generating',
+        'Opening Deep Research for ' + ticker + ' (' + (partKey === 'p2' ? 'Part\u00a02' : 'Part\u00a01') + ')\u2026 paste the prompt as your first message.');
 
       _loadPrompt().then(function (txt) {
         var fullPrompt = partKey === 'p2'
           ? _buildPart2Prompt(ticker, txt)
           : _buildFullPrompt(ticker, txt, 'p1');
+        var url = _buildDeepResearchUrl(ticker);
+        // Persist the per-part prompt + state for the Save step.
+        state.lastRunPart = partKey;
+        state.lastRunTrigger = trigger;
 
-        var url = DRILLDOWN_BACKEND + '/drilldown/run';
-        return fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ticker: ticker, part: partKey, prompt: fullPrompt }),
-        }).then(function (resp) {
-          return resp.json().then(function (j) { return { ok: resp.ok, status: resp.status, body: j }; },
-            function () { return { ok: resp.ok, status: resp.status, body: { error: 'Invalid JSON response' } }; });
+        // Navigate the pre-opened tab; fallback to a same-gesture open.
+        if (newWin && !newWin.closed) {
+          try { newWin.location.href = url; } catch (_) { try { global.open(url, '_blank', 'noopener'); } catch (_) {} }
+        } else {
+          try { global.open(url, '_blank', 'noopener'); } catch (_) {}
+        }
+
+        _copyToClipboard(fullPrompt).then(function (ok) {
+          var label = partKey === 'p2' ? 'Part\u00a02' : 'Part\u00a01';
+          if (ok) {
+            _setRunButtonState(partKey, 'done',
+              label + ' prompt copied. Paste it as your first message in the new Deep Research tab, then paste the HTML output below to save.');
+          } else {
+            _setRunButtonState(partKey, 'error',
+              'Clipboard blocked. Use "Copy ' + label + ' prompt instead" below to retry.');
+          }
         });
-      }).then(function (result) {
-        if (!result || !result.ok) {
-          var errMsg = (result && result.body && result.body.error) || ('Backend returned ' + (result && result.status));
-          _setRunButtonState(partKey, 'error', errMsg);
-          return;
+
+        // Default the Save trigger select to reflect Deep Research.
+        var sel = document.getElementById('dd-trigger-input');
+        if (sel) {
+          var v = trigger === 'refresh' ? 'refresh' : 'deep-research';
+          // Add the option if it isn\u0027t already in the dropdown.
+          var found = false;
+          for (var i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].value === v) { found = true; break; }
+          }
+          if (!found) {
+            var opt = document.createElement('option');
+            opt.value = v;
+            opt.textContent = v === 'deep-research' ? 'Deep Research' : 'Refresh';
+            sel.appendChild(opt);
+          }
+          sel.value = v;
         }
-        var html = result.body && result.body.html;
-        if (!html || typeof html !== 'string') {
-          _setRunButtonState(partKey, 'error', 'Backend returned an empty response.');
-          return;
-        }
-        var live = _currentTickerData(ticker);
-        var currentPrice = live ? live.price : null;
-        try {
-          var entry = _lib().save(ticker, {
-            html: html,
-            trigger: trigger === 'refresh' ? 'refresh' : 'api-generated',
-            part: partKey,
-            price: currentPrice,
-            target: live ? live.priceTarget : null,
-          });
-          _setRunButtonState(partKey, 'done', 'Saved as v' + entry.version + '. Loading\u2026');
-          // Open the freshly saved version in the iframe.
-          state.openVersion = entry.version;
-          state.showRunPanel = false;
-          render();
-        } catch (e) {
-          _setRunButtonState(partKey, 'error', 'Save failed: ' + (e && e.message ? e.message : 'Library quota?'));
-        }
-      }).catch(function (e) {
-        var msg = e && e.message ? e.message : 'Network error';
-        // Most common cause is the local backend not running on port 5001.
-        if (/Failed to fetch|NetworkError|TypeError/i.test(msg)) {
-          msg = 'Cannot reach the drilldown backend on ' + DRILLDOWN_BACKEND + '. Start backend.py or use "Copy prompt instead" below.';
-        }
-        _setRunButtonState(partKey, 'error', msg);
+        var ta = document.getElementById('dd-html-input');
+        if (ta) ta.focus();
       });
     });
   }
@@ -1363,10 +1378,14 @@
     }
     var html = _extractHtmlBlock(ta.value);
     var live = _currentTickerData(state.ticker);
+    var trigger = (sel && sel.value) || 'manual';
+    // Default part to whatever Run-last set; otherwise leave null (legacy).
+    var partKey = state.lastRunPart || null;
     try {
       var entry = _lib().save(state.ticker, {
         html: html,
-        trigger: (sel && sel.value) || 'manual',
+        trigger: trigger,
+        part: partKey,
         price: live ? live.price : null,
         target: live ? live.priceTarget : null,
       });
@@ -1374,9 +1393,51 @@
       state.showRunPanel = false;
       state.openVersion = entry.version; // jump straight into the new version
       render();
+
+      // Best-effort dual-write: post to backend so it lands in
+      // notes/drilldown/<TICKER>_<DATE>_<part>.md AND drilldown_intel
+      // table on Supabase. Backend failure does NOT block local save.
+      _saveDrilldownToBackend({
+        ticker: state.ticker,
+        part: partKey || 'p1',
+        html: html,
+        trigger: trigger,
+        price_at_generation: live ? live.price : null,
+      });
     } catch (e) {
       // _write already alerted the user on quota errors.
     }
+  }
+
+  // Fire-and-forget POST to /drilldown/save. Surfaces a toast on success or
+  // a discreet error toast on failure but never blocks the local-only save.
+  function _saveDrilldownToBackend(payload) {
+    try {
+      fetch(DRILLDOWN_BACKEND + '/drilldown/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).then(function (resp) {
+        return resp.json().then(function (j) { return { ok: resp.ok, body: j }; },
+          function () { return { ok: resp.ok, body: {} }; });
+      }).then(function (res) {
+        if (!res || !res.ok) {
+          var msg = (res && res.body && res.body.error) || 'backend save failed';
+          _toast('Saved locally only \u2014 ' + msg, 'error');
+          return;
+        }
+        var b = res.body || {};
+        if (b.supabase_ok) {
+          _toast('Saved to library, ' + (b.markdown_path || 'markdown') + ', and Supabase.', 'ok');
+        } else if (b.markdown_path) {
+          _toast('Saved to library + ' + b.markdown_path + ' (Supabase: ' + (b.supabase_error || 'skipped') + ').', 'ok');
+        } else {
+          _toast('Saved to library only (' + (b.markdown_error || b.supabase_error || 'backend offline') + ').', 'error');
+        }
+      }).catch(function () {
+        _toast('Saved locally only \u2014 drilldown backend unreachable.', 'error');
+      });
+    } catch (_) { /* swallow */ }
   }
 
   // The model often returns the note inside ```html ... ``` fences. Strip

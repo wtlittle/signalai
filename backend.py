@@ -1502,7 +1502,7 @@ class QuoteHandler(BaseHTTPRequestHandler):
         import os
         parsed = urlparse(self.path)
 
-        if parsed.path == '/drilldown/run':
+        if parsed.path == '/drilldown/save':
             try:
                 content_length = int(self.headers.get('Content-Length', '0') or '0')
                 raw_body = self.rfile.read(content_length) if content_length > 0 else b''
@@ -1513,73 +1513,93 @@ class QuoteHandler(BaseHTTPRequestHandler):
                     return
 
                 ticker = (payload.get('ticker') or '').strip().upper()
-                part = payload.get('part')
-                prompt = payload.get('prompt') or ''
-                if not ticker or not prompt:
-                    self._send_json({'error': 'ticker and prompt are required'}, status=400)
+                part = (payload.get('part') or 'p1').strip().lower()
+                if part not in ('p1', 'p2', 'merged'):
+                    part = 'p1'
+                html = payload.get('html') or ''
+                trigger = payload.get('trigger') or 'deep-research'
+                price_at_gen = payload.get('price_at_generation')
+                if not ticker or not html:
+                    self._send_json({'error': 'ticker and html are required'}, status=400)
                     return
 
-                api_key = os.environ.get('PERPLEXITY_API_KEY')
-                if not api_key:
-                    self._send_json({'error': 'PERPLEXITY_API_KEY not set'}, status=500)
-                    return
+                from pathlib import Path
+                import datetime as _dt
+                date_str = _dt.datetime.now().strftime('%Y-%m-%d')
+                stamp = _dt.datetime.now().astimezone().isoformat(timespec='seconds')
 
-                try:
-                    import requests as _rq
-                except ImportError:
-                    self._send_json({'error': 'requests library not installed'}, status=500)
-                    return
-
-                system_msg = (
-                    'You are an institutional equity research analyst. '
-                    'Output only valid HTML. No markdown code fences. '
-                    'No explanation text outside the HTML.'
+                # ---- Write markdown file (HTML wrapped) ---------------------
+                notes_dir = Path(__file__).resolve().parent / 'notes' / 'drilldown'
+                notes_dir.mkdir(parents=True, exist_ok=True)
+                md_filename = f'{ticker}_{date_str}_{part}.md'
+                md_path = notes_dir / md_filename
+                md_body = (
+                    f'---\n'
+                    f'ticker: {ticker}\n'
+                    f'part: {part}\n'
+                    f'trigger: {trigger}\n'
+                    f'generated_at: {stamp}\n'
+                    + (f'price_at_generation: {price_at_gen}\n' if price_at_gen is not None else '')
+                    + f'---\n\n{html}\n'
                 )
-                body = {
-                    'model': 'sonar-pro',
-                    'max_tokens': 4000,
-                    'messages': [
-                        {'role': 'system', 'content': system_msg},
-                        {'role': 'user', 'content': prompt},
-                    ],
-                }
+                md_write_err = None
                 try:
-                    resp = _rq.post(
-                        'https://api.perplexity.ai/chat/completions',
-                        headers={
-                            'Authorization': 'Bearer ' + api_key,
-                            'Content-Type': 'application/json',
-                        },
-                        data=json.dumps(body),
-                        timeout=300,
-                    )
+                    md_path.write_text(md_body, encoding='utf-8')
                 except Exception as e:
-                    self._send_json({'error': 'Perplexity API request failed: ' + str(e)}, status=502)
-                    return
+                    md_write_err = str(e)
 
-                if resp.status_code != 200:
-                    self._send_json({
-                        'error': 'Perplexity API returned ' + str(resp.status_code),
-                        'detail': resp.text[:1000],
-                    }, status=502)
-                    return
+                # ---- Upsert to Supabase drilldown_intel ---------------------
+                supabase_url, supabase_key = _supabase_env()
+                supa_ok = False
+                supa_err = None
+                if supabase_url and supabase_key:
+                    try:
+                        import requests as _rq
+                    except ImportError:
+                        _rq = None
+                        supa_err = 'requests not installed'
+                    if _rq is not None:
+                        try:
+                            row = {
+                                'ticker': ticker,
+                                'part': part,
+                                'date': date_str,
+                                'html': html,
+                                'trigger': trigger,
+                                'price_at_generation': price_at_gen,
+                                'generated_at': stamp,
+                                'markdown_path': f'notes/drilldown/{md_filename}',
+                            }
+                            r = _rq.post(
+                                f'{supabase_url}/rest/v1/drilldown_intel?on_conflict=ticker,date,part',
+                                headers={
+                                    'apikey': supabase_key,
+                                    'Authorization': f'Bearer {supabase_key}',
+                                    'Content-Type': 'application/json',
+                                    'Prefer': 'resolution=merge-duplicates,return=minimal',
+                                },
+                                data=json.dumps(row),
+                                timeout=15,
+                            )
+                            if r.status_code < 300:
+                                supa_ok = True
+                            else:
+                                supa_err = f'supabase {r.status_code}: {r.text[:200]}'
+                        except Exception as e:
+                            supa_err = str(e)
+                else:
+                    supa_err = 'SUPABASE_URL/SUPABASE_SERVICE_KEY not set'
 
-                try:
-                    data = resp.json()
-                    html_out = data.get('choices', [{}])[0].get('message', {}).get('content', '') or ''
-                except Exception as e:
-                    self._send_json({'error': 'Failed to parse Perplexity response: ' + str(e)}, status=502)
-                    return
-
-                # Strip accidental ```html fences if the model emits them despite the system rule.
-                stripped = html_out.strip()
-                if stripped.startswith('```'):
-                    import re as _re
-                    m = _re.match(r'^```(?:html)?\s*\n([\s\S]*?)\n```\s*$', stripped, _re.IGNORECASE)
-                    if m:
-                        stripped = m.group(1).strip()
-
-                self._send_json({'html': stripped, 'ticker': ticker, 'part': part})
+                self._send_json({
+                    'ok': md_write_err is None,
+                    'ticker': ticker,
+                    'part': part,
+                    'date': date_str,
+                    'markdown_path': str(md_path.relative_to(Path(__file__).resolve().parent)) if md_write_err is None else None,
+                    'markdown_error': md_write_err,
+                    'supabase_ok': supa_ok,
+                    'supabase_error': supa_err,
+                })
                 return
             except Exception as e:
                 try:
