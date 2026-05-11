@@ -87,19 +87,65 @@
   }
 
   function _currentTickerData(ticker) {
-    var data = (typeof global.tickerData !== 'undefined' && global.tickerData) ||
-               (global.SignalCoverage && global.SignalCoverage.getState && global.SignalCoverage.getState().tickerData) ||
-               null;
-    // app.js declares tickerData as a module-scope `let`; fall back to the
-    // bare-identifier eval pattern used elsewhere (coverage-controller.js).
+    // Safe lookup chain (no eval) — checks the documented globals and a DOM
+    // fallback so the surface stays usable even if app.js hasn't exposed
+    // tickerData on the window yet.
+    var data = null;
+
+    // 1. Direct window.tickerData (preferred — exposed by app.js).
+    if (global.tickerData && typeof global.tickerData === 'object') {
+      data = global.tickerData;
+    }
+
+    // 2. Coverage controller / signalState container.
+    if (!data) {
+      if (global.signalState && global.signalState.tickerData) {
+        data = global.signalState.tickerData;
+      } else if (global.SignalCoverage && typeof global.SignalCoverage.getState === 'function') {
+        try {
+          var s = global.SignalCoverage.getState();
+          if (s && s.tickerData) data = s.tickerData;
+        } catch (_) {}
+      }
+    }
+
+    // 3. DOM fallback — data-ticker-data on body, or a <script id="ticker-data-store">.
     if (!data) {
       try {
-        var ref = (0, eval)('typeof tickerData !== "undefined" ? tickerData : null');
-        if (ref) data = ref;
-      } catch (_) { /* ignore */ }
+        var attr = document && document.body && document.body.getAttribute('data-ticker-data');
+        if (attr) {
+          var parsed = JSON.parse(attr);
+          if (parsed && typeof parsed === 'object') data = parsed;
+        }
+      } catch (_) {}
     }
+    if (!data) {
+      try {
+        var store = document && document.getElementById('ticker-data-store');
+        if (store && store.textContent) {
+          var parsed2 = JSON.parse(store.textContent);
+          if (parsed2 && typeof parsed2 === 'object') data = parsed2;
+        }
+      } catch (_) {}
+    }
+
     if (!data) return null;
     return data[ticker] || null;
+  }
+
+  // Returns true only if the ticker has been hydrated with at least one
+  // non-null quote field. Used by the Run button to gate the API call until
+  // tickerData is ready (the [SIGNAL_DATA_BLOCK] is useless without it).
+  function isTickerDataReady(ticker) {
+    if (!ticker) return false;
+    var rec = _currentTickerData(ticker);
+    if (!rec || typeof rec !== 'object') return false;
+    var fields = ['price', 'marketCap', 'totalRevenue', 'forwardPE'];
+    for (var i = 0; i < fields.length; i++) {
+      var v = rec[fields[i]];
+      if (v != null && !(typeof v === 'number' && isNaN(v))) return true;
+    }
+    return false;
   }
 
   // The drilldown prompt is shipped as a static file alongside the app.
@@ -682,6 +728,11 @@
               '<button type="button" class="btn-sm" data-dd-act="copy-prompt" title="Copy the Part 1 prompt to your clipboard without opening a new tab">Copy Part\u00a01 prompt</button>' +
               '<button type="button" class="btn-sm" data-dd-act="copy-p2-prompt" title="Copy the Part 2 prompt to your clipboard without opening a new tab">Copy Part\u00a02 prompt</button>' +
             '</div>' +
+            '<div class="dd-run-fallback">' +
+              'Backend offline? ' +
+              '<a href="#" data-dd-act="run-fallback" data-part="p1">Copy Part\u00a01 prompt instead</a> &nbsp;\u00b7&nbsp; ' +
+              '<a href="#" data-dd-act="run-fallback" data-part="p2">Copy Part\u00a02 prompt instead</a>' +
+            '</div>' +
           '</div>' +
         '</div>' +
         '<div class="dd-run-step">' +
@@ -706,6 +757,53 @@
     );
   }
 
+  // Find the most recent Part 1 and Part 2 versions in a versions array.
+  // Falls back to legacy entries (no `part` field) by inferring from the html:
+  // Part 1 contains the Part 1 output spec markers, Part 2 contains Part 2.
+  function _findLatestParts(versions) {
+    var p1 = null, p2 = null;
+    var sorted = versions.slice().sort(function (a, b) { return b.version - a.version; });
+    for (var i = 0; i < sorted.length; i++) {
+      var v = sorted[i];
+      var part = v.part;
+      if (!part && v.html) {
+        // Legacy inference — Part 2 notes typically start with a Sections 7-11
+        // marker; default everything else to Part 1.
+        if (/PART\s*2/i.test(v.html.slice(0, 2000))) part = 'p2';
+        else part = 'p1';
+      }
+      if (part === 'p1' && !p1) p1 = v;
+      if (part === 'p2' && !p2) p2 = v;
+      if (p1 && p2) break;
+    }
+    return { p1: p1, p2: p2 };
+  }
+
+  // Merge two HTML drilldown documents by splicing Part 2's <body> contents
+  // immediately before Part 1's </body>. If either document lacks <body>,
+  // we wrap accordingly so the result is still a valid standalone document.
+  function _mergePartsHtml(p1Html, p2Html) {
+    if (!p1Html) return p2Html || '';
+    if (!p2Html) return p1Html;
+
+    function extractBody(html) {
+      var m = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      return m ? m[1] : null;
+    }
+    var p2Body = extractBody(p2Html);
+    if (p2Body == null) {
+      // Treat the entire p2 doc as a fragment.
+      p2Body = p2Html;
+    }
+    var divider = '\n<hr class="dd-part-divider" style="margin:32px 0; border:none; border-top:1px solid #444;">\n' +
+                  '<!-- ==== Part 2 (Sections 7\u201311) merged in ==== -->\n';
+    if (/<\/body>/i.test(p1Html)) {
+      return p1Html.replace(/<\/body>/i, divider + p2Body + '\n</body>');
+    }
+    // No </body> tag — just append.
+    return p1Html + divider + p2Body;
+  }
+
   function _renderVersionsTable(state) {
     var rec = _lib().getTicker(state.ticker);
     if (!rec || !rec.versions.length) return '';
@@ -714,9 +812,10 @@
       var deltaPct = v.price_at_generation != null && state.livePrice != null
         ? _pctChange(v.price_at_generation, state.livePrice) : null;
       var deltaCls = deltaPct == null ? '' : (deltaPct >= 0 ? 'val-pos' : 'val-neg');
+      var partBadge = v.part ? ' <span class="dd-trigger dd-trigger-' + _esc(v.part) + '" style="margin-left:6px">' + _esc(v.part.toUpperCase()) + '</span>' : '';
       return (
         '<tr data-dd-ver="' + v.version + '">' +
-          '<td><strong>v' + v.version + '</strong></td>' +
+          '<td><strong>v' + v.version + '</strong>' + partBadge + '</td>' +
           '<td>' + _esc(_fmtDate(v.generated_at)) + '</td>' +
           '<td><span class="dd-trigger dd-trigger-' + _esc(v.trigger) + '">' + _esc(v.trigger || 'manual') + '</span></td>' +
           '<td>' + _esc(_fmtPrice(v.price_at_generation)) + '</td>' +
@@ -728,6 +827,19 @@
         '</tr>'
       );
     }).join('');
+
+    // Merge-eligibility — require at least one Part\u00a01 + one Part\u00a02.
+    var parts = _findLatestParts(rec.versions);
+    var canMerge = !!(parts.p1 && parts.p2);
+    var mergeBar = canMerge
+      ? (
+          '<div class="dd-card-foot" style="display:flex; gap:10px; align-items:center; padding:10px 14px; border-top:1px solid var(--border-light);">' +
+            '<button type="button" class="btn-sm btn-primary" data-dd-act="merge-parts">Merge Part\u00a01 + Part\u00a02 into single note</button>' +
+            '<span style="font-size:11px; color:var(--text-secondary)">Will combine v' + parts.p1.version + ' (P1) + v' + parts.p2.version + ' (P2) into a new merged version.</span>' +
+          '</div>'
+        )
+      : '';
+
     return (
       '<div class="dd-card">' +
         '<div class="dd-card-head">' +
@@ -738,6 +850,7 @@
           '<thead><tr><th>Version</th><th>Generated</th><th>Trigger</th><th>Price at gen</th><th>Δ vs. now</th><th></th></tr></thead>' +
           '<tbody>' + rows + '</tbody>' +
         '</table>' +
+        mergeBar +
       '</div>'
     );
   }
@@ -949,11 +1062,22 @@
       return;
     }
     if (act === 'run' || act === 'refresh') {
-      _runDrilldown(act === 'refresh' ? 'refresh' : 'manual', 'p1');
+      _runDrilldownApi(act === 'refresh' ? 'refresh' : 'manual', 'p1');
       return;
     }
     if (act === 'run-p2') {
-      _runDrilldown('manual', 'p2');
+      _runDrilldownApi('manual', 'p2');
+      return;
+    }
+    if (act === 'merge-parts') {
+      _mergeParts();
+      return;
+    }
+    if (act === 'run-fallback') {
+      // Old window.open + clipboard flow — kept as a fallback for when the
+      // local backend (port 5001) isn't running.
+      var partAttr = (target.dataset && target.dataset.part) || 'p1';
+      _runDrilldown('manual', partAttr === 'p2' ? 'p2' : 'p1');
       return;
     }
     if (act === 'copy-prompt') {
@@ -998,6 +1122,198 @@
       if (f) f.click();
       return;
     }
+  }
+
+  // Merge the most recent Part 1 + Part 2 versions for the current ticker
+  // into a single new version (trigger='merged') and load it in the iframe.
+  function _mergeParts() {
+    if (!state.ticker) return;
+    var lib = _lib();
+    var rec = lib.getTicker(state.ticker);
+    if (!rec || !rec.versions || !rec.versions.length) {
+      _toast('No saved versions to merge for ' + state.ticker + '.', 'error');
+      return;
+    }
+    var parts = _findLatestParts(rec.versions);
+    if (!parts.p1 || !parts.p2) {
+      _toast('Need both a Part\u00a01 and a Part\u00a02 version before merging.', 'error');
+      return;
+    }
+    var mergedHtml = _mergePartsHtml(parts.p1.html, parts.p2.html);
+    var live = _currentTickerData(state.ticker);
+    try {
+      var entry = lib.save(state.ticker, {
+        html: mergedHtml,
+        trigger: 'merged',
+        part: 'merged',
+        price: live ? live.price : null,
+        target: live ? live.priceTarget : null,
+      });
+      state.openVersion = entry.version;
+      state.showRunPanel = false;
+      render();
+      _toast('Merged v' + parts.p1.version + ' + v' + parts.p2.version + ' \u2192 v' + entry.version + '.', 'ok');
+    } catch (e) {
+      _toast('Merge save failed: ' + (e && e.message ? e.message : 'Library quota?'), 'error');
+    }
+  }
+
+  // ---- Backend endpoint config (overridable for dev) ------------------
+  var DRILLDOWN_BACKEND = (function () {
+    try {
+      var qs = global.SS_DRILLDOWN_BACKEND;
+      if (typeof qs === 'string' && qs) return qs.replace(/\/+$/, '');
+    } catch (_) {}
+    return 'http://localhost:5001';
+  })();
+
+  // Mutate the Run button DOM in place to reflect a phase of the API call.
+  // phase: 'idle' | 'fetching' | 'generating' | 'done' | 'error'
+  function _setRunButtonState(part, phase, msg) {
+    var sel = part === 'p2' ? '[data-dd-act="run-p2"]' : '[data-dd-act="run"]';
+    var btn = document.querySelector(sel);
+    if (!btn) return;
+    var label = part === 'p2' ? 'Part\u00a02' : 'Part\u00a01';
+    var ticker = state.ticker || '';
+    btn.classList.remove('btn-loading');
+    btn.removeAttribute('disabled');
+    if (phase === 'fetching') {
+      btn.setAttribute('disabled', 'disabled');
+      btn.classList.add('btn-loading');
+      btn.innerHTML = '<span class="dd-spinner" aria-hidden="true"></span> Fetching data\u2026';
+    } else if (phase === 'generating') {
+      btn.setAttribute('disabled', 'disabled');
+      btn.classList.add('btn-loading');
+      btn.innerHTML = '<span class="dd-spinner" aria-hidden="true"></span> Generating ' + label + '\u2026';
+    } else if (phase === 'done') {
+      btn.textContent = 'Run ' + label + ' again';
+    } else if (phase === 'error') {
+      btn.textContent = 'Retry ' + label;
+    } else {
+      btn.textContent = 'Run ' + label + ' for ' + ticker;
+    }
+    // Render or clear the inline status node beneath the button group.
+    var status = document.getElementById('dd-run-status-' + (part === 'p2' ? 'p2' : 'p1'));
+    if (!status) {
+      var actionsBlock = btn.parentNode;
+      if (actionsBlock && actionsBlock.parentNode) {
+        status = document.createElement('div');
+        status.id = 'dd-run-status-' + (part === 'p2' ? 'p2' : 'p1');
+        status.className = 'dd-run-status';
+        actionsBlock.parentNode.insertBefore(status, actionsBlock.nextSibling);
+      }
+    }
+    if (status) {
+      if (phase === 'error') {
+        status.className = 'dd-run-status dd-run-status-error';
+        status.textContent = msg || 'Drilldown failed. Try "Copy prompt instead" below.';
+      } else if (phase === 'fetching') {
+        status.className = 'dd-run-status dd-run-status-info';
+        status.textContent = msg || 'Waiting for live ticker data\u2026';
+      } else if (phase === 'generating') {
+        status.className = 'dd-run-status dd-run-status-info';
+        status.textContent = msg || 'Calling Perplexity sonar-pro\u2026 this usually takes 30\u201360s.';
+      } else if (phase === 'done') {
+        status.className = 'dd-run-status dd-run-status-ok';
+        status.textContent = msg || 'Saved to library.';
+      } else {
+        status.className = 'dd-run-status';
+        status.textContent = '';
+      }
+    }
+  }
+
+  // New flow: POST the assembled prompt to the local backend, which calls
+  // the Perplexity API server-side with PERPLEXITY_API_KEY. On success we
+  // save into the local Drilldown Library, re-render, and open the new
+  // version in the iframe. On failure we surface a clear inline error and
+  // leave the "Copy prompt instead" fallback link in place.
+  function _runDrilldownApi(trigger, part) {
+    if (!state.ticker) return;
+    part = part || 'p1';
+    state.showRunPanel = true;
+    render();
+
+    var ticker = state.ticker;
+    var partKey = part === 'p2' ? 'p2' : 'p1';
+
+    // Step A: gate on isTickerDataReady — poll every 1s up to 15s.
+    function whenReady(cb) {
+      if (isTickerDataReady(ticker)) { cb(true); return; }
+      _setRunButtonState(partKey, 'fetching');
+      var attempts = 0;
+      var timer = setInterval(function () {
+        attempts++;
+        if (isTickerDataReady(ticker)) {
+          clearInterval(timer);
+          cb(true);
+        } else if (attempts >= 15) {
+          clearInterval(timer);
+          cb(false);
+        }
+      }, 1000);
+    }
+
+    whenReady(function (ready) {
+      if (!ready) {
+        _setRunButtonState(partKey, 'error', 'Live ticker data didn\u0027t load in 15s. Refresh the watchlist (or use "Copy prompt instead" below).');
+        return;
+      }
+
+      _setRunButtonState(partKey, 'generating');
+
+      _loadPrompt().then(function (txt) {
+        var fullPrompt = partKey === 'p2'
+          ? _buildPart2Prompt(ticker, txt)
+          : _buildFullPrompt(ticker, txt, 'p1');
+
+        var url = DRILLDOWN_BACKEND + '/drilldown/run';
+        return fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticker: ticker, part: partKey, prompt: fullPrompt }),
+        }).then(function (resp) {
+          return resp.json().then(function (j) { return { ok: resp.ok, status: resp.status, body: j }; },
+            function () { return { ok: resp.ok, status: resp.status, body: { error: 'Invalid JSON response' } }; });
+        });
+      }).then(function (result) {
+        if (!result || !result.ok) {
+          var errMsg = (result && result.body && result.body.error) || ('Backend returned ' + (result && result.status));
+          _setRunButtonState(partKey, 'error', errMsg);
+          return;
+        }
+        var html = result.body && result.body.html;
+        if (!html || typeof html !== 'string') {
+          _setRunButtonState(partKey, 'error', 'Backend returned an empty response.');
+          return;
+        }
+        var live = _currentTickerData(ticker);
+        var currentPrice = live ? live.price : null;
+        try {
+          var entry = _lib().save(ticker, {
+            html: html,
+            trigger: trigger === 'refresh' ? 'refresh' : 'api-generated',
+            part: partKey,
+            price: currentPrice,
+            target: live ? live.priceTarget : null,
+          });
+          _setRunButtonState(partKey, 'done', 'Saved as v' + entry.version + '. Loading\u2026');
+          // Open the freshly saved version in the iframe.
+          state.openVersion = entry.version;
+          state.showRunPanel = false;
+          render();
+        } catch (e) {
+          _setRunButtonState(partKey, 'error', 'Save failed: ' + (e && e.message ? e.message : 'Library quota?'));
+        }
+      }).catch(function (e) {
+        var msg = e && e.message ? e.message : 'Network error';
+        // Most common cause is the local backend not running on port 5001.
+        if (/Failed to fetch|NetworkError|TypeError/i.test(msg)) {
+          msg = 'Cannot reach the drilldown backend on ' + DRILLDOWN_BACKEND + '. Start backend.py or use "Copy prompt instead" below.';
+        }
+        _setRunButtonState(partKey, 'error', msg);
+      });
+    });
   }
 
   function _runDrilldown(trigger, part) {

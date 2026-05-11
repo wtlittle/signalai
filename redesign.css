@@ -1146,6 +1146,56 @@
 .dd-step-sub strong { color: var(--text-primary); font-weight: 600; }
 .dd-step-sub em { font-style: normal; color: var(--accent, #4f9eff); font-weight: 500; }
 .dd-run-step-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dd-run-fallback {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.dd-run-fallback a {
+  color: var(--accent, #4f9eff);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.dd-run-fallback a:hover { color: var(--text-primary); }
+.dd-run-status {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.dd-run-status:empty { display: none; }
+.dd-run-status-info {
+  background: rgba(79, 158, 255, 0.08);
+  color: var(--text-primary);
+  border: 1px solid rgba(79, 158, 255, 0.25);
+}
+.dd-run-status-ok {
+  background: rgba(46, 204, 113, 0.10);
+  color: var(--text-primary);
+  border: 1px solid rgba(46, 204, 113, 0.30);
+}
+.dd-run-status-error {
+  background: rgba(231, 76, 60, 0.10);
+  color: var(--text-primary);
+  border: 1px solid rgba(231, 76, 60, 0.30);
+}
+.dd-spinner {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -2px;
+  margin-right: 6px;
+  animation: dd-spin 0.7s linear infinite;
+}
+@keyframes dd-spin { to { transform: rotate(360deg); } }
+.btn-loading { opacity: 0.85; cursor: progress; }
+.dd-merge-row { background: rgba(79, 158, 255, 0.05); }
+.dd-merge-row td { font-style: italic; color: var(--text-secondary); }
 .dd-html-input {
   width: 100%;
   background: var(--bg-surface-alt);

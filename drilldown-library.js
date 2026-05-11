@@ -167,6 +167,7 @@
       version: nextVer,
       generated_at: opts.generated_at || new Date().toISOString(),
       trigger: opts.trigger || 'manual',
+      part: opts.part || null,  // 'p1' | 'p2' | 'merged' | null (legacy)
       price_at_generation: (opts.price != null ? Number(opts.price) : null),
       consensus_target_at_generation: (opts.target != null ? Number(opts.target) : null),
       html: opts.html,

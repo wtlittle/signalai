@@ -1498,11 +1498,119 @@ class QuoteHandler(BaseHTTPRequestHandler):
         else:
             self.wfile.write(json.dumps({'error': 'Unknown endpoint'}).encode())
 
+    def do_POST(self):
+        import os
+        parsed = urlparse(self.path)
+
+        if parsed.path == '/drilldown/run':
+            try:
+                content_length = int(self.headers.get('Content-Length', '0') or '0')
+                raw_body = self.rfile.read(content_length) if content_length > 0 else b''
+                try:
+                    payload = json.loads(raw_body.decode('utf-8')) if raw_body else {}
+                except (json.JSONDecodeError, UnicodeDecodeError):
+                    self._send_json({'error': 'Invalid JSON body'}, status=400)
+                    return
+
+                ticker = (payload.get('ticker') or '').strip().upper()
+                part = payload.get('part')
+                prompt = payload.get('prompt') or ''
+                if not ticker or not prompt:
+                    self._send_json({'error': 'ticker and prompt are required'}, status=400)
+                    return
+
+                api_key = os.environ.get('PERPLEXITY_API_KEY')
+                if not api_key:
+                    self._send_json({'error': 'PERPLEXITY_API_KEY not set'}, status=500)
+                    return
+
+                try:
+                    import requests as _rq
+                except ImportError:
+                    self._send_json({'error': 'requests library not installed'}, status=500)
+                    return
+
+                system_msg = (
+                    'You are an institutional equity research analyst. '
+                    'Output only valid HTML. No markdown code fences. '
+                    'No explanation text outside the HTML.'
+                )
+                body = {
+                    'model': 'sonar-pro',
+                    'max_tokens': 4000,
+                    'messages': [
+                        {'role': 'system', 'content': system_msg},
+                        {'role': 'user', 'content': prompt},
+                    ],
+                }
+                try:
+                    resp = _rq.post(
+                        'https://api.perplexity.ai/chat/completions',
+                        headers={
+                            'Authorization': 'Bearer ' + api_key,
+                            'Content-Type': 'application/json',
+                        },
+                        data=json.dumps(body),
+                        timeout=300,
+                    )
+                except Exception as e:
+                    self._send_json({'error': 'Perplexity API request failed: ' + str(e)}, status=502)
+                    return
+
+                if resp.status_code != 200:
+                    self._send_json({
+                        'error': 'Perplexity API returned ' + str(resp.status_code),
+                        'detail': resp.text[:1000],
+                    }, status=502)
+                    return
+
+                try:
+                    data = resp.json()
+                    html_out = data.get('choices', [{}])[0].get('message', {}).get('content', '') or ''
+                except Exception as e:
+                    self._send_json({'error': 'Failed to parse Perplexity response: ' + str(e)}, status=502)
+                    return
+
+                # Strip accidental ```html fences if the model emits them despite the system rule.
+                stripped = html_out.strip()
+                if stripped.startswith('```'):
+                    import re as _re
+                    m = _re.match(r'^```(?:html)?\s*\n([\s\S]*?)\n```\s*$', stripped, _re.IGNORECASE)
+                    if m:
+                        stripped = m.group(1).strip()
+
+                self._send_json({'html': stripped, 'ticker': ticker, 'part': part})
+                return
+            except Exception as e:
+                try:
+                    self._send_json({'error': 'Internal error: ' + str(e)}, status=500)
+                except Exception:
+                    pass
+                return
+
+        # Unknown POST endpoint
+        self._send_json({'error': 'Unknown endpoint'}, status=404)
+
+    def _send_json(self, payload, status=200):
+        try:
+            body_bytes = json.dumps(payload).encode('utf-8')
+        except Exception:
+            body_bytes = b'{"error":"Failed to serialize response"}'
+            status = 500
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, *')
+        self.send_header('Content-Length', str(len(body_bytes)))
+        self.end_headers()
+        self.wfile.write(body_bytes)
+
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, *')
         self.end_headers()
 
 
