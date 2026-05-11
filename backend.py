@@ -80,6 +80,51 @@ SP500_SAMPLE = [
 SP500_SAMPLE = list(dict.fromkeys(SP500_SAMPLE))
 
 
+def _supabase_env():
+    import os
+    url = os.environ.get('SUPABASE_URL', '').rstrip('/')
+    key = os.environ.get('SUPABASE_SERVICE_KEY', '')
+    return url, key
+
+
+def _supabase_select_many(table, filters, order=None, limit=1):
+    """Return (rows, err, status) from a Supabase REST select."""
+    url, key = _supabase_env()
+    if not url or not key:
+        return None, 'supabase not configured', 500
+    try:
+        import requests as _rq
+    except ImportError:
+        import subprocess, sys as _s
+        subprocess.check_call([_s.executable, '-m', 'pip', 'install', 'requests', '-q'])
+        import requests as _rq
+    headers = {
+        'apikey': key,
+        'Authorization': f'Bearer {key}',
+        'Accept': 'application/json',
+    }
+    qp = dict(filters)
+    qp['select'] = '*'
+    qp['limit'] = str(limit)
+    if order:
+        qp['order'] = order
+    try:
+        resp = _rq.get(f'{url}/rest/v1/{table}', headers=headers, params=qp, timeout=12)
+        if resp.status_code >= 400:
+            return None, f'supabase {resp.status_code}: {resp.text[:200]}', resp.status_code
+        rows = resp.json() or []
+        return rows, None, 200
+    except Exception as exc:
+        return None, f'supabase error: {exc}', 500
+
+
+def _supabase_select_latest(table, filters, order='harvested_at.desc'):
+    rows, err, status = _supabase_select_many(table=table, filters=filters, order=order, limit=1)
+    if err:
+        return None, err, status
+    return (rows[0] if rows else None), None, status
+
+
 def cache_get(key, ttl):
     if key in _cache:
         entry = _cache[key]
@@ -1369,6 +1414,84 @@ class QuoteHandler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({'ticker': ticker, 'date': date, 'type': note_type, 'content': content}).encode())
             else:
                 self.wfile.write(json.dumps({'error': f'Note not found: {ticker}_{date}'}).encode())
+
+        elif parsed.path == '/transcript-intel':
+            ticker = (params.get('ticker', [''])[0] or '').strip().upper()
+            earnings_date = (params.get('earnings_date', [''])[0] or '').strip()
+            if not ticker:
+                self.wfile.write(json.dumps({'error': 'ticker param required'}).encode())
+                return
+            row, err, status = _supabase_select_latest(
+                table='transcript_intel',
+                filters={'ticker': f'eq.{ticker}', **({'earnings_date': f'eq.{earnings_date}'} if earnings_date else {})},
+                order='harvested_at.desc',
+            )
+            if err:
+                self.wfile.write(json.dumps({'error': err}).encode())
+                return
+            if not row:
+                self.wfile.write(json.dumps({'error': f'no transcript intel found for {ticker}'}).encode())
+                return
+            for col in ['mgmt_key_points', 'guidance_statements', 'qa_key_exchanges',
+                        'tone_signals', 'key_metrics_discussed', 'notable_quotes', 'risk_factors_cited']:
+                val = row.get(col)
+                if isinstance(val, str):
+                    try:
+                        row[col] = json.loads(val)
+                    except (json.JSONDecodeError, TypeError):
+                        row[col] = []
+                elif val is None:
+                    row[col] = []
+            self.wfile.write(json.dumps(row).encode())
+
+        elif parsed.path == '/estimate-revisions':
+            ticker = (params.get('ticker', [''])[0] or '').strip().upper()
+            if not ticker:
+                self.wfile.write(json.dumps({'error': 'ticker param required'}).encode())
+                return
+            history_param = (params.get('history', ['0'])[0] or '0').strip()
+            try:
+                limit = max(1, min(int(history_param), 26)) if history_param != '0' else 1
+            except ValueError:
+                limit = 1
+            rows, err, _status = _supabase_select_many(
+                table='revision_history',
+                filters={'ticker': f'eq.{ticker}'},
+                order='date.desc',
+                limit=limit,
+            )
+            if err:
+                self.wfile.write(json.dumps({'error': err}).encode())
+                return
+            if not rows:
+                self.wfile.write(json.dumps({'error': f'no estimate revisions found for {ticker}'}).encode())
+                return
+            self.wfile.write(json.dumps(rows[0] if history_param == '0' else {'ticker': ticker, 'history': rows}).encode())
+
+        elif parsed.path == '/private-intel':
+            name = (params.get('name', [''])[0] or '').strip()
+            if not name:
+                self.wfile.write(json.dumps({'error': 'name param required'}).encode())
+                return
+            row, err, _status = _supabase_select_latest(
+                table='private_intel',
+                filters={'name': f'eq.{name}'},
+                order='refresh_date.desc',
+            )
+            if err:
+                self.wfile.write(json.dumps({'error': err}).encode())
+                return
+            if not row:
+                self.wfile.write(json.dumps({'error': f'no private intel found for {name}'}).encode())
+                return
+            for col in ['investors', 'growth_signals', 'sources', 'valuation', 'last_funding_round', 'arr_or_revenue']:
+                val = row.get(col)
+                if isinstance(val, str):
+                    try:
+                        row[col] = json.loads(val)
+                    except (json.JSONDecodeError, TypeError):
+                        pass
+            self.wfile.write(json.dumps(row).encode())
 
         elif parsed.path == '/health':
             self.wfile.write(json.dumps({'status': 'ok'}).encode())

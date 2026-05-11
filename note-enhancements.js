@@ -769,22 +769,73 @@ function getTranscriptSearchUrl(ticker) {
 }
 
 async function fetchTranscript(ticker, date) {
-  // Try to fetch via alloy/corsproxy.io to get the Motley Fool transcript page
-  // If CORS fails gracefully, we surface a "view externally" link
-  const foolSearch = `https://www.fool.com/earnings-call-transcripts/?ticker=${encodeURIComponent(ticker)}`;
-  const saSearch = `https://seekingalpha.com/symbol/${encodeURIComponent(ticker)}/earnings/transcripts`;
+  // First try the backend-backed /transcript-intel endpoint (Skill 1: transcript_harvest).
+  try {
+    const qs = date ? `&earnings_date=${encodeURIComponent(date)}` : '';
+    const url = `/transcript-intel?ticker=${encodeURIComponent(ticker)}${qs}`;
+    const resp = (window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback)
+      ? await window.SignalSnapshot.fetchWithFallback(url)
+      : await fetch(url);
+    if (resp && resp.ok) {
+      const json = await resp.json();
+      if (json && !json.error && json.ticker) {
+        return { status: 'intel', intel: json };
+      }
+    }
+  } catch (e) { /* fall through */ }
 
+  // Fallback: surface external links so the panel is never empty.
+  const foolSearch = `https://www.fool.com/earnings-call-transcripts/?ticker=${encodeURIComponent(ticker)}`;
+  const saSearch  = `https://seekingalpha.com/symbol/${encodeURIComponent(ticker)}/earnings/transcripts`;
   return {
     status: 'link',
     sources: [
       { name: 'The Motley Fool', url: foolSearch },
-      { name: 'Seeking Alpha', url: saSearch },
-      { name: 'Quartr', url: `https://quartr.com/company/${ticker.toLowerCase()}` },
+      { name: 'Seeking Alpha',   url: saSearch },
+      { name: 'Quartr',          url: `https://quartr.com/company/${ticker.toLowerCase()}` },
     ]
   };
 }
 
-function renderTranscriptPanel(ticker, date, type) {
+async function fetchEstimateRevisions(ticker) {
+  // Skill 2: returns latest revision_history row for `ticker`, or null.
+  try {
+    const url = `/estimate-revisions?ticker=${encodeURIComponent(ticker)}`;
+    const resp = (window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback)
+      ? await window.SignalSnapshot.fetchWithFallback(url)
+      : await fetch(url);
+    if (!resp || !resp.ok) return null;
+    const json = await resp.json();
+    if (!json || json.error) return null;
+    return json;
+  } catch (e) { return null; }
+}
+
+async function fetchPrivateIntel(name) {
+  // Skill 3: returns latest private_intel row for `name`, or null.
+  try {
+    const url = `/private-intel?name=${encodeURIComponent(name)}`;
+    const resp = (window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback)
+      ? await window.SignalSnapshot.fetchWithFallback(url)
+      : await fetch(url);
+    if (!resp || !resp.ok) return null;
+    const json = await resp.json();
+    if (!json || json.error) return null;
+    return json;
+  } catch (e) { return null; }
+}
+
+if (typeof window !== 'undefined') {
+  window.fetchTranscript        = fetchTranscript;
+  window.fetchEstimateRevisions = fetchEstimateRevisions;
+  window.fetchPrivateIntel      = fetchPrivateIntel;
+}
+
+function renderTranscriptPanel(ticker, date, type, intelPayload) {
+  // If structured transcript intel is available, render that instead of bare links.
+  if (intelPayload && intelPayload.status === 'intel' && intelPayload.intel) {
+    return renderTranscriptIntelPanel(ticker, date, intelPayload.intel);
+  }
   if (type !== 'post') {
     // For pre-earnings, link to prior transcript
     return `
@@ -809,6 +860,90 @@ function renderTranscriptPanel(ticker, date, type) {
       <div class="transcript-qa-hint">
         <strong>Quick read tip:</strong> Search the transcript page for "management discussion", "question-and-answer", or key terms from this note (e.g., "MCR", "depletion", "NII") to jump to the relevant sections.
       </div>
+    </div>`;
+}
+
+function _escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderTranscriptIntelPanel(ticker, date, intel) {
+  const quarter        = intel.quarter || '';
+  const tone           = intel.management_tone || '';
+  const beatMiss       = intel.beat_miss_summary || '';
+  const keyPoints      = Array.isArray(intel.mgmt_key_points) ? intel.mgmt_key_points : [];
+  const guidance       = Array.isArray(intel.guidance_statements) ? intel.guidance_statements : [];
+  const qaExchanges    = Array.isArray(intel.qa_key_exchanges) ? intel.qa_key_exchanges : [];
+  const toneSignals    = Array.isArray(intel.tone_signals) ? intel.tone_signals : [];
+  const keyMetrics     = Array.isArray(intel.key_metrics_discussed) ? intel.key_metrics_discussed : [];
+  const notableQuotes  = Array.isArray(intel.notable_quotes) ? intel.notable_quotes : [];
+  const riskFactors    = Array.isArray(intel.risk_factors_cited) ? intel.risk_factors_cited : [];
+  const transcriptUrl  = intel.transcript_url || '';
+  const transcriptSrc  = intel.transcript_source || '';
+  const harvestedAt    = intel.harvested_at ? intel.harvested_at.slice(0, 10) : '';
+
+  const keyPointsHtml = keyPoints.length
+    ? `<ul class="transcript-bullets">${keyPoints.map(p => `<li>${_escapeHtml(p)}</li>`).join('')}</ul>`
+    : '';
+  const guidanceHtml = guidance.length
+    ? `<ul class="transcript-bullets">${guidance.map(g => `<li>${_escapeHtml(g)}</li>`).join('')}</ul>`
+    : '';
+  const qaHtml = qaExchanges.length
+    ? qaExchanges.slice(0, 5).map(q => `
+        <div class="transcript-qa-exchange">
+          <div class="transcript-qa-analyst"><strong>${_escapeHtml(q.analyst || 'Analyst')}</strong></div>
+          <div class="transcript-qa-q"><em>Q:</em> ${_escapeHtml(q.question || '')}</div>
+          <div class="transcript-qa-a"><em>A:</em> ${_escapeHtml(q.answer || '')}</div>
+        </div>`).join('')
+    : '';
+  const toneChipsHtml = toneSignals.length
+    ? `<div class="transcript-tone-chips">${toneSignals.map(s => `<span class="transcript-tone-chip">${_escapeHtml(s)}</span>`).join('')}</div>`
+    : '';
+  const keyMetricsHtml = keyMetrics.length
+    ? `<ul class="transcript-bullets">${keyMetrics.map(m => `<li>${_escapeHtml(m)}</li>`).join('')}</ul>`
+    : '';
+  const notableQuotesHtml = notableQuotes.length
+    ? notableQuotes.slice(0, 4).map(q => `
+        <blockquote class="transcript-quote">
+          <span class="transcript-quote-text">“${_escapeHtml(q.quote || '')}”</span>
+          <span class="transcript-quote-speaker">— ${_escapeHtml(q.speaker || '')}</span>
+        </blockquote>`).join('')
+    : '';
+  const risksHtml = riskFactors.length
+    ? `<ul class="transcript-bullets">${riskFactors.map(r => `<li>${_escapeHtml(r)}</li>`).join('')}</ul>`
+    : '';
+
+  const sourceLine = transcriptUrl
+    ? `<a href="${_escapeHtml(transcriptUrl)}" target="_blank" rel="noopener noreferrer" class="transcript-source-link">View full transcript on ${_escapeHtml(transcriptSrc || 'source')} &#8599;</a>`
+    : '';
+
+  const sections = [];
+  if (beatMiss) sections.push(`<section class="transcript-section"><h4>Headline</h4><p>${_escapeHtml(beatMiss)}</p></section>`);
+  if (keyPointsHtml) sections.push(`<section class="transcript-section"><h4>Management key points</h4>${keyPointsHtml}</section>`);
+  if (guidanceHtml) sections.push(`<section class="transcript-section"><h4>Guidance</h4>${guidanceHtml}</section>`);
+  if (qaHtml) sections.push(`<section class="transcript-section"><h4>Analyst Q&amp;A highlights</h4>${qaHtml}</section>`);
+  if (keyMetricsHtml) sections.push(`<section class="transcript-section"><h4>Key metrics discussed</h4>${keyMetricsHtml}</section>`);
+  if (toneChipsHtml) sections.push(`<section class="transcript-section"><h4>Tone signals</h4>${toneChipsHtml}</section>`);
+  if (notableQuotesHtml) sections.push(`<section class="transcript-section"><h4>Notable quotes</h4>${notableQuotesHtml}</section>`);
+  if (risksHtml) sections.push(`<section class="transcript-section"><h4>Risk factors cited</h4>${risksHtml}</section>`);
+
+  return `
+    <div class="note-transcript-panel transcript-intel-panel">
+      <div class="transcript-header">
+        <span class="transcript-title">Earnings call transcript — distilled</span>
+        <span class="transcript-period">${_escapeHtml(ticker)} • ${_escapeHtml(quarter || date || '')}${tone ? ' • tone: <strong>' + _escapeHtml(tone) + '</strong>' : ''}</span>
+      </div>
+      ${sections.join('')}
+      <div class="transcript-meta">
+        ${sourceLine}
+        ${harvestedAt ? `<span class="transcript-harvested">Last harvested ${_escapeHtml(harvestedAt)}</span>` : ''}
+      </div>
+      <details class="transcript-external-links"><summary>Open external transcripts</summary>${renderTranscriptLinks(ticker, date)}</details>
     </div>`;
 }
 
@@ -930,7 +1065,10 @@ async function enhanceNoteModal($noteContent, ticker, date, type, md) {
   // Build panel wrappers
   const notePanel = `<div class="note-panel active" id="note-panel-note">${confHeader}<div class="note-body-content">${noteBodyHtml}</div></div>`;
   const compsPanel = `<div class="note-panel" id="note-panel-comps"><div class="note-panel-loading">Loading comps...</div></div>`;
-  const transcriptPanel = `<div class="note-panel" id="note-panel-transcript">${renderTranscriptPanel(ticker, date, type)}</div>`;
+  // Fetch structured transcript intel (falls back to link-style render if not available)
+  let transcriptIntel = null;
+  try { transcriptIntel = await fetchTranscript(ticker, date); } catch (e) { transcriptIntel = null; }
+  const transcriptPanel = `<div class="note-panel" id="note-panel-transcript">${renderTranscriptPanel(ticker, date, type, transcriptIntel)}</div>`;
 
   $noteContent.innerHTML = tabBar + notePanel + compsPanel + transcriptPanel;
 

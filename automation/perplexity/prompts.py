@@ -90,6 +90,182 @@ Return ONLY this JSON. No prose. No markdown. No preamble.
 }}"""
 
 
+def build_transcript_distill_prompt(
+    ticker: str,
+    company: str,
+    earnings_date: str,
+    transcript_text: str,
+) -> tuple[str, str]:
+    """Distill a scraped earnings call transcript into structured JSON."""
+    system = (
+        "You are a senior buy-side equity research analyst. "
+        "Your job is to distill earnings call transcripts into structured, "
+        "actionable intelligence. Return ONLY a single valid JSON object "
+        "with the exact keys requested. No markdown fences, no commentary, no prose."
+    )
+    user = (
+        f"Below is the earnings call transcript for {company} ({ticker}), "
+        f"reported on {earnings_date}. Distill it into the following JSON structure.\n\n"
+        f"TRANSCRIPT:\n{transcript_text}\n\n"
+        f"Return ONLY this JSON object. No prose, no markdown, no preamble.\n\n"
+        + _transcript_schema_block(ticker, company, earnings_date)
+    )
+    return system, user
+
+
+def build_transcript_research_prompt(
+    ticker: str,
+    company: str,
+    earnings_date: str,
+) -> tuple[str, str]:
+    """Perplexity-native fallback: research and synthesize transcript content
+    without providing source text directly (used when Fool scraping fails)."""
+    system = (
+        "You are a senior buy-side equity research analyst. "
+        "Your job is to research earnings calls and distill key intelligence "
+        "into structured JSON. Return ONLY a single valid JSON object "
+        "with the exact keys requested. No markdown fences, no commentary, no prose."
+    )
+    user = (
+        f"Research the most recent earnings call for {company} ({ticker}), "
+        f"reported around {earnings_date}. "
+        f"Find the transcript or detailed coverage from Motley Fool, Seeking Alpha, "
+        f"Quartr, or any reliable financial media source. "
+        f"Then distill the content into the following JSON structure.\n\n"
+        f"Return ONLY this JSON object. No prose, no markdown, no preamble.\n\n"
+        + _transcript_schema_block(ticker, company, earnings_date)
+    )
+    return system, user
+
+
+def _transcript_schema_block(ticker: str, company: str, earnings_date: str) -> str:
+    """Shared JSON schema block embedded in both transcript prompt variants."""
+    return f"""{{
+  "ticker": "{ticker}",
+  "company_name": "{company}",
+  "earnings_date": "{earnings_date}",
+  "quarter": "<e.g. Q1 FY2026>",
+  "beat_miss_summary": "<1-sentence: beat/miss and what drove it>",
+  "management_tone": "<one of: bullish | cautious | neutral | mixed>",
+  "mgmt_key_points": [
+    "<key point 1 from prepared remarks — max 40 words>",
+    "<key point 2>",
+    "<key point 3>",
+    "<key point 4 (optional)>",
+    "<key point 5 (optional)>"
+  ],
+  "guidance_statements": [
+    "<verbatim or near-verbatim guidance quote 1>",
+    "<guidance quote 2 (optional)>",
+    "<guidance quote 3 (optional)>"
+  ],
+  "qa_key_exchanges": [
+    {{
+      "analyst": "<analyst name and firm>",
+      "question": "<1-sentence question summary>",
+      "answer": "<1-2 sentence answer summary>"
+    }}
+  ],
+  "tone_signals": [
+    "<language pattern signaling tone — e.g. 'macro uncertainty cited 4x'>"
+  ],
+  "key_metrics_discussed": [
+    "<metric: actual vs. est — e.g. 'Cloud revenue: $28.5B, beat est $27.9B'>",
+    "<metric 2>",
+    "<metric 3>"
+  ],
+  "notable_quotes": [
+    {{
+      "speaker": "<name and role>",
+      "quote": "<verbatim quote, max 50 words>"
+    }}
+  ],
+  "risk_factors_cited": [
+    "<risk 1 mentioned by management>",
+    "<risk 2 (optional)>"
+  ]
+}}"""
+
+
+def build_estimate_revision_prompt(ticker: str, company: str) -> str:
+    """Estimate revision research — pull current consensus and 1w/4w revision deltas."""
+    return f"""You are a buy-side equity analyst. Research current sell-side consensus estimates and recent revision activity for {company} ({ticker}).
+
+Return ONLY this JSON object. No markdown fences, no preamble, no prose.
+
+{{
+  "ticker": "{ticker}",
+  "fwd_eps_est": <number or null>,
+  "fwd_rev_est": <number in billions USD or null>,
+  "num_analysts": <integer or null>,
+  "eps_revision_1w": <percent change over last 1 week as decimal, e.g. 0.012 for +1.2%, or null>,
+  "eps_revision_4w": <percent change over last 4 weeks as decimal, or null>,
+  "rev_revision_1w": <percent change over last 1 week as decimal, or null>,
+  "rev_revision_4w": <percent change over last 4 weeks as decimal, or null>,
+  "direction": "<one of: upward | downward | stable | mixed>",
+  "narrative": "<1-2 sentences on what drove the recent revisions>",
+  "sources": ["url1", "url2"]
+}}
+
+Look at: Visible Alpha, Estimize free tier, Yahoo Finance analysis tab, MarketBeat consensus EPS history, recent sell-side notes within the past 30 days.
+If a number cannot be verified with reasonable confidence, return null. Do not invent revisions."""
+
+
+def build_private_company_prompt(name: str, subsector: str | None = None) -> str:
+    """Private-company enrichment prompt for `private_intel` Supabase rows."""
+    subsector_hint = f" (subsector: {subsector})" if subsector else ""
+    return f"""You are a buy-side equity research analyst covering private/pre-IPO companies. Research the private company {name!r}{subsector_hint}.
+
+Return ONLY this JSON object. No markdown fences, no commentary, no preamble.
+
+{{
+  "name": "{name}",
+  "subsector": "<best subsector classification>",
+  "valuation": {{"amount": <number or null>, "unit": "B|M", "as_of": "<YYYY-Q? or YYYY-MM>"}},
+  "last_funding_round": {{"series": "<e.g. Series D>", "amount": "<$XXXM>", "date": "<YYYY-MM>", "lead_investor": "<lead investor>"}},
+  "arr_or_revenue": {{"amount": "<$X.YB>", "type": "<ARR|Revenue|Bookings>", "as_of": "<YYYY or YYYY-Q?>"}},
+  "investors": ["<investor 1>", "<investor 2>"],
+  "growth_signals": ["<signal 1>", "<signal 2>"],
+  "ipo_signals": "<S-1 filed | rumored H? YYYY | no signal>",
+  "competitive_context": "<2-3 sentences on closest public comps and competitive positioning>",
+  "hq": "<city, state/country>",
+  "sources": ["url1", "url2"]
+}}
+
+Prefer Crunchbase, PitchBook coverage, recent press releases, S-1/F-1 filings (if any), credible tech press (TechCrunch, The Information). Do not fabricate funding amounts — return null if not verifiable."""
+
+
+def build_peer_read_across_prompt(
+    target_ticker: str,
+    target_company: str,
+    target_earnings_date: str,
+    peer_ticker: str,
+    peer_company: str,
+    peer_earnings_date: str,
+    peer_print_summary: str,
+) -> str:
+    """Cross-read prompt: how does PEER's print affect TARGET's setup."""
+    return f"""You are a buy-side equity analyst. {peer_company} ({peer_ticker}) reported earnings on {peer_earnings_date}.
+
+Peer print summary:
+{peer_print_summary}
+
+How does this print affect the setup for {target_company} ({target_ticker}) earnings on {target_earnings_date}? Be concrete about read-across to revenue, gross margin, opex leverage, guidance bar, multiple compression risk.
+
+Return ONLY this JSON. No prose, no markdown, no preamble.
+
+{{
+  "peer_ticker": "{peer_ticker}",
+  "target_ticker": "{target_ticker}",
+  "direction": "<bullish|bearish|neutral|mixed>",
+  "confidence": "<high|medium|low>",
+  "read_across": "<2-3 sentences explaining the direct read-across to TARGET>",
+  "affected_metrics": ["<metric 1, e.g. 'data center rev growth'>", "<metric 2>"],
+  "signal_status": "WATCHING",
+  "signal_label": "Peer read-across: <peer ticker>"
+}}"""
+
+
 def build_news_tagging_prompt(ticker: str, company: str, articles: list[dict]) -> str:
     """Buy-side news tagging brief.
 
