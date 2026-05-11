@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-08T22:22:21.674Z",
+  "generated": "2026-05-11T11:07:45.495Z",
   "pillars": {
     "growth": {
       "score": 0.75,
@@ -61,46 +61,46 @@
       ]
     },
     "inflation": {
-      "score": 0.343,
-      "label": "Rising",
-      "color": "green",
+      "score": 0.057,
+      "label": "Neutral",
+      "color": "yellow",
       "signals": [
         {
           "ticker": "CL=F",
           "name": "WTI Crude",
-          "price": 94.68,
-          "change1d": -0.13711376641836012,
-          "change1w": -7.121838299350072,
-          "change1m": -3.259428171945827,
-          "change3m": 48.9850534096641,
-          "change6m": 58.85906498183346,
-          "change1y": 58.037056495278236,
-          "trend": "up",
-          "direction": "↑"
+          "price": 97.92,
+          "change1d": 2.6199977772251954,
+          "change1w": -7.987220584711875,
+          "change1m": 1.397948098153974,
+          "change3m": 52.14418464936437,
+          "change6m": 64.76526613851863,
+          "change1y": 58.062949092850225,
+          "trend": "flat",
+          "direction": "→"
         },
         {
           "ticker": "HG=F",
           "name": "Copper",
-          "price": 6.282,
-          "change1d": 2.521418871265175,
-          "change1w": 5.9086247556933085,
-          "change1m": 9.298880162728556,
-          "change3m": 7.145896878751784,
-          "change6m": 26.58674223554296,
-          "change1y": 37.74391512486527,
+          "price": 6.3725,
+          "change1d": 1.9763150278177835,
+          "change1w": 9.965485054055806,
+          "change1m": 8.5512281328477,
+          "change3m": 7.190912679127743,
+          "change6m": 28.85451573138414,
+          "change1y": 39.18314359480139,
           "trend": "up",
           "direction": "↑"
         },
         {
           "ticker": "GC=F",
           "name": "Gold",
-          "price": 4723.7,
-          "change1d": 0.5085364548647833,
-          "change1w": 2.0259680543258907,
-          "change1m": -1.4294060600181815,
-          "change3m": -4.594845512717974,
-          "change6m": 18.676987598039148,
-          "change1y": 43.290058101704865,
+          "price": 4673.5,
+          "change1d": -0.9935578195496422,
+          "change1w": 3.407456577054984,
+          "change1m": -1.8563998436892937,
+          "change3m": -7.4719339056516745,
+          "change6m": 17.42757643848759,
+          "change1y": 45.13975155279503,
           "trend": "down",
           "direction": "↓"
         },
@@ -120,13 +120,13 @@
         {
           "ticker": "DX-Y.NYB",
           "name": "US Dollar (DXY)",
-          "price": 97.843,
-          "change1d": -0.4142493638676809,
-          "change1w": -0.37368574336413185,
-          "change1m": -0.9886636090927374,
-          "change3m": 0.21817583930179982,
-          "change6m": -2.3522901204515447,
-          "change1y": -2.779210142364321,
+          "price": 98.012,
+          "change1d": 0.17580096948834756,
+          "change1w": -0.4651164592543695,
+          "change1m": -0.6467313516603271,
+          "change3m": 1.231151979478016,
+          "change6m": -1.7226534257571504,
+          "change1y": -3.71156286860135,
           "trend": "flat",
           "direction": "→"
         }
@@ -205,13 +205,13 @@
         {
           "ticker": "DX-Y.NYB",
           "name": "US Dollar (DXY)",
-          "price": 97.843,
-          "change1d": -0.4142493638676809,
-          "change1w": -0.37368574336413185,
-          "change1m": -0.9886636090927374,
-          "change3m": 0.21817583930179982,
-          "change6m": -2.3522901204515447,
-          "change1y": -2.779210142364321,
+          "price": 98.012,
+          "change1d": 0.17580096948834756,
+          "change1w": -0.4651164592543695,
+          "change1m": -0.6467313516603271,
+          "change3m": 1.231151979478016,
+          "change6m": -1.7226534257571504,
+          "change1y": -3.71156286860135,
           "trend": "flat",
           "direction": "→"
         }
@@ -251,13 +251,13 @@
         {
           "ticker": "^VIX",
           "name": "VIX",
-          "price": 17.19,
-          "change1d": 0.644028552607151,
-          "change1w": 1.17716754345954,
-          "change1m": -11.800919774605996,
-          "change3m": -15.611193785770395,
-          "change6m": -4.553024344270811,
-          "change1y": -23.532024536920687,
+          "price": 18.16,
+          "change1d": 5.6428123083566835,
+          "change1w": -0.7107767173749545,
+          "change1m": -5.564221114379624,
+          "change3m": 4.60829037404248,
+          "change6m": -6.871795654296875,
+          "change1y": -1.2506772695478867,
           "trend": "down",
           "direction": "→"
         }
@@ -265,27 +265,24 @@
     }
   },
   "regime": {
-    "regime": "Reflation",
-    "color": "#22c55e",
-    "desc": "Growth accelerating with rising inflation. Favors Cyclicals, Value, Energy, Financials. Underweight long-duration growth.",
+    "regime": "Goldilocks",
+    "color": "#3b82f6",
+    "desc": "Strong growth, contained inflation. Best environment for equities. Favors Growth, Quality, broad exposure.",
     "favored_sectors": [
-      "XLE",
-      "XLF",
-      "XLB",
-      "XLI"
+      "XLK",
+      "XLC",
+      "XLY"
     ],
     "avoid_sectors": [
-      "XLU",
-      "XLRE"
+      "XLE",
+      "XLU"
     ],
     "favored_factors": [
-      "VLUE",
+      "QUAL",
       "MTUM",
-      "IWD"
+      "IWF"
     ],
-    "avoid_factors": [
-      "USMV"
-    ]
+    "avoid_factors": []
   },
   "sectors": {
     "XLK": {
@@ -515,103 +512,103 @@
       "name": "NASDAQ Composite",
       "price": 26247.076,
       "change1d": 1.7084142361021273,
-      "change_1w": 4.50990244422543,
-      "change_1m": 15.005666628355701,
-      "change_3m": 13.963074903451329,
-      "change_6m": 11.690632683222548,
-      "change_1y": 46.395188813638754
+      "change_1w": 4.5099179980266895,
+      "change_1m": 15.005683744200619,
+      "change_3m": 13.963091864131385,
+      "change_6m": 11.69064930570389,
+      "change_1y": 46.39521060106386
     },
     "^RUT": {
       "name": " Russell 2000 Index",
-      "price": 2861.2092,
-      "change1d": 0.759934149098566,
-      "change_1w": 1.7203076976222582,
-      "change_1m": 8.530831538147671,
-      "change_3m": 7.147746517027828,
-      "change_6m": 16.083755731006914,
-      "change_1y": 41.42908077716096
+      "price": 2861.209,
+      "change1d": 0.7599271059271598,
+      "change_1w": 1.7203337363256663,
+      "change_1m": 8.530859320231674,
+      "change_3m": 7.147773945065115,
+      "change_6m": 16.083785446513623,
+      "change_1y": 41.42911698064845
     },
     "^VIX": {
       "name": "CBOE Volatility Index",
-      "price": 17.19,
-      "change1d": 0.644028552607151,
-      "change_1w": 1.17716754345954,
-      "change_1m": -11.800919774605996,
-      "change_3m": -15.611193785770395,
-      "change_6m": -4.553024344270811,
-      "change_1y": -23.532024536920687
+      "price": 18.16,
+      "change1d": 5.6428123083566835,
+      "change_1w": -0.7107767173749545,
+      "change_1m": -5.564221114379624,
+      "change_3m": 4.60829037404248,
+      "change_6m": -6.871795654296875,
+      "change_1y": -1.2506772695478867
     }
   },
   "commodities": {
     "WTI": {
       "name": "Crude Oil Jun 26",
-      "price": 94.68,
-      "change1d": -0.13711376641836012,
-      "change_1w": -7.121838299350072,
-      "change_1m": -3.259428171945827,
-      "change_3m": 48.9850534096641,
-      "change_6m": 58.85906498183346,
-      "change_1y": 58.037056495278236,
+      "price": 97.92,
+      "change1d": 2.6199977772251954,
+      "change_1w": -7.987220584711875,
+      "change_1m": 1.397948098153974,
+      "change_3m": 52.14418464936437,
+      "change_6m": 64.76526613851863,
+      "change_1y": 58.062949092850225,
       "ticker": "CL=F",
       "commodityName": "WTI Crude"
     },
     "BRENT": {
       "name": "Brent Crude Oil Last Day Financ",
-      "price": 100.49,
-      "change1d": 0.42974460513497553,
-      "change_1w": -7.099935689358867,
-      "change_1m": 4.764386761950319,
-      "change_3m": 47.670820510233256,
-      "change_6m": 58.20213655475066,
-      "change_1y": 59.91406368516874,
+      "price": 103.82,
+      "change1d": 2.497777728901976,
+      "change_1w": -9.279974239793919,
+      "change_1m": 9.054625024062247,
+      "change_3m": 50.37659084311328,
+      "change_6m": 63.80561367180736,
+      "change_1y": 59.821430354115016,
       "ticker": "BZ=F",
       "commodityName": "Brent Crude"
     },
     "NATGAS": {
       "name": "Natural Gas Jun 26",
-      "price": 2.75,
-      "change1d": -0.6861702072700359,
-      "change_1w": -1.0791356726084065,
-      "change_1m": 2.9962517385803755,
-      "change_3m": -19.63763719519417,
-      "change_6m": -35.018901658755624,
-      "change_1y": -23.440980118067642,
+      "price": 2.812,
+      "change1d": 1.9949231456793683,
+      "change_1w": -1.9183838430878157,
+      "change_1m": 6.193354766395261,
+      "change_3m": -10.388781836060103,
+      "change_6m": -35.46017632578409,
+      "change_1y": -22.874379954738398,
       "ticker": "NG=F",
       "commodityName": "Natural Gas"
     },
     "COPPER": {
       "name": "Copper Jul 26",
-      "price": 6.282,
-      "change1d": 2.521418871265175,
-      "change_1w": 5.9086247556933085,
-      "change_1m": 9.298880162728556,
-      "change_3m": 7.145896878751784,
-      "change_6m": 26.58674223554296,
-      "change_1y": 37.74391512486527,
+      "price": 6.3725,
+      "change1d": 1.9763150278177835,
+      "change_1w": 9.965485054055806,
+      "change_1m": 8.5512281328477,
+      "change_3m": 7.190912679127743,
+      "change_6m": 28.85451573138414,
+      "change_1y": 39.18314359480139,
       "ticker": "HG=F",
       "commodityName": "Copper"
     },
     "GOLD": {
       "name": "Gold Jun 26",
-      "price": 4723.7,
-      "change1d": 0.5085364548647833,
-      "change_1w": 2.0259680543258907,
-      "change_1m": -1.4294060600181815,
-      "change_3m": -4.594845512717974,
-      "change_6m": 18.676987598039148,
-      "change_1y": 43.290058101704865,
+      "price": 4673.5,
+      "change1d": -0.9935578195496422,
+      "change_1w": 3.407456577054984,
+      "change_1m": -1.8563998436892937,
+      "change_3m": -7.4719339056516745,
+      "change_6m": 17.42757643848759,
+      "change_1y": 45.13975155279503,
       "ticker": "GC=F",
       "commodityName": "Gold"
     },
     "SILVER": {
       "name": "Silver Jul 26",
-      "price": 80.835,
-      "change1d": 1.422822363974231,
-      "change_1w": 6.430465585854976,
-      "change_1m": 5.975587177912215,
-      "change_3m": 5.3430617599656385,
-      "change_6m": 68.88828706276992,
-      "change_1y": 149.66027302102407,
+      "price": 81.01,
+      "change1d": 0.7649771535709607,
+      "change_1w": 10.863263209626787,
+      "change_1m": 6.139621603050558,
+      "change_3m": -1.2855666530066125,
+      "change_6m": 69.49827239560345,
+      "change_1y": 150.12350535668858,
       "ticker": "SI=F",
       "commodityName": "Silver"
     }
@@ -663,13 +660,13 @@
     },
     "DX-Y.NYB": {
       "name": "US Dollar Index",
-      "price": 97.843,
-      "change1d": -0.4142493638676809,
-      "change_1w": -0.37368574336413185,
-      "change_1m": -0.9886636090927374,
-      "change_3m": 0.21817583930179982,
-      "change_6m": -2.3522901204515447,
-      "change_1y": -2.779210142364321,
+      "price": 98.012,
+      "change1d": 0.17580096948834756,
+      "change_1w": -0.4651164592543695,
+      "change_1m": -0.6467313516603271,
+      "change_3m": 1.231151979478016,
+      "change_6m": -1.7226534257571504,
+      "change_1y": -3.71156286860135,
       "rateName": "US Dollar Index (DXY)"
     },
     "TLT": {
@@ -709,62 +706,86 @@
   "ideas": {
     "own": [
       {
-        "ticker": "COIN",
-        "name": "Coinbase",
-        "subsector": "Fintech",
-        "sectorEtf": "XLF",
-        "sectorName": "Financials",
-        "reason": "In favored sector (Financials) for Reflation regime"
+        "ticker": "AMZN",
+        "name": "Amazon",
+        "subsector": "Hyperscalers",
+        "sectorEtf": "XLK",
+        "sectorName": "Technology",
+        "reason": "In favored sector (Technology) for Goldilocks regime"
       },
       {
-        "ticker": "BILL",
-        "name": "Bill.com",
-        "subsector": "Fintech",
-        "sectorEtf": "XLF",
-        "sectorName": "Financials",
-        "reason": "In favored sector (Financials) for Reflation regime"
+        "ticker": "GOOG",
+        "name": "Google",
+        "subsector": "Hyperscalers",
+        "sectorEtf": "XLK",
+        "sectorName": "Technology",
+        "reason": "In favored sector (Technology) for Goldilocks regime"
       },
       {
-        "ticker": "FOUR",
-        "name": "Shift4 Payments",
-        "subsector": "Fintech",
-        "sectorEtf": "XLF",
-        "sectorName": "Financials",
-        "reason": "In favored sector (Financials) for Reflation regime"
+        "ticker": "META",
+        "name": "Meta",
+        "subsector": "Hyperscalers",
+        "sectorEtf": "XLK",
+        "sectorName": "Technology",
+        "reason": "In favored sector (Technology) for Goldilocks regime"
       },
       {
-        "ticker": "XYZ",
-        "name": "Block",
-        "subsector": "Fintech",
-        "sectorEtf": "XLF",
-        "sectorName": "Financials",
-        "reason": "In favored sector (Financials) for Reflation regime"
+        "ticker": "MSFT",
+        "name": "Microsoft",
+        "subsector": "Hyperscalers",
+        "sectorEtf": "XLK",
+        "sectorName": "Technology",
+        "reason": "In favored sector (Technology) for Goldilocks regime"
       },
       {
-        "ticker": "AFRM",
-        "name": "Affirm",
-        "subsector": "Fintech",
-        "sectorEtf": "XLF",
-        "sectorName": "Financials",
-        "reason": "In favored sector (Financials) for Reflation regime"
+        "ticker": "NVDA",
+        "name": "NVIDIA",
+        "subsector": "Semiconductors",
+        "sectorEtf": "XLK",
+        "sectorName": "Technology",
+        "reason": "In favored sector (Technology) for Goldilocks regime"
       }
     ],
     "avoid": [
+      {
+        "ticker": "SOC",
+        "name": "Sable Offshore",
+        "subsector": "Energy",
+        "sectorEtf": "XLE",
+        "sectorName": "Energy",
+        "reason": "In unfavored sector (Energy) for Goldilocks regime"
+      },
       {
         "ticker": "GEV",
         "name": "GE Vernova",
         "subsector": "Power & Utilities",
         "sectorEtf": "XLU",
         "sectorName": "Utilities",
-        "reason": "In unfavored sector (Utilities) for Reflation regime"
+        "reason": "In unfavored sector (Utilities) for Goldilocks regime"
       },
       {
-        "ticker": "GNRC",
-        "name": "Generac",
-        "subsector": "Power & Utilities",
-        "sectorEtf": "XLU",
-        "sectorName": "Utilities",
-        "reason": "In unfavored sector (Utilities) for Reflation regime"
+        "ticker": "VLO",
+        "name": "VLO",
+        "subsector": "Energy",
+        "sectorEtf": "XLE",
+        "sectorName": "Energy",
+        "reason": "In unfavored sector (Energy) for Goldilocks regime"
+      },
+      {
+        "ticker": "FANG",
+        "name": "FANG",
+        "subsector": "Energy",
+        "sectorEtf": "XLE",
+        "sectorName": "Energy",
+        "reason": "In unfavored sector (Energy) for Goldilocks regime"
+      },
+      {
+        "ticker": "BKR",
+        "name": "BKR",
+        "subsector": "Energy",
+        "sectorEtf": "XLE",
+        "sectorName": "Energy",
+        "reason": "In unfavored sector (Energy) for Goldilocks regime"
       }
     ]
   }
