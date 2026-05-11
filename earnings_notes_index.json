@@ -217,12 +217,12 @@
       "ticker": "FOUR"
     },
     {
-      "ticker": "IONQ",
       "company": "IONQ",
       "date": "2026-05-06",
       "day_post": 5,
       "expires": "2026-05-20",
-      "note_file": "notes/post_earnings/IONQ_2026-05-06.md"
+      "note_file": "notes/post_earnings/IONQ_2026-05-06.md",
+      "ticker": "IONQ"
     },
     {
       "company": "Datadog",
@@ -263,6 +263,22 @@
       "expires": "2026-05-21",
       "note_file": "notes/post_earnings/ZTS_2026-05-07.md",
       "ticker": "ZTS"
+    },
+    {
+      "ticker": "MNDY",
+      "company": "monday.com",
+      "date": "2026-05-11",
+      "day_post": 0,
+      "expires": "2026-05-25",
+      "note_file": "notes/post_earnings/MNDY_2026-05-11.md"
+    },
+    {
+      "ticker": "MOS",
+      "company": "MOS",
+      "date": "2026-05-11",
+      "day_post": 0,
+      "expires": "2026-05-25",
+      "note_file": "notes/post_earnings/MOS_2026-05-11.md"
     }
   ],
   "active_pre_earnings": [
@@ -785,25 +801,11 @@
       "ticker": "AKAM"
     },
     {
-      "company": "monday.com",
-      "date": "2026-05-11",
-      "days_until": 13,
-      "file": "notes/pre_earnings/MNDY_2026-05-11.md",
-      "ticker": "MNDY"
-    },
-    {
       "company": "Hims & Hers",
       "date": "2026-05-11",
       "days_until": 13,
       "file": "notes/pre_earnings/HIMS_2026-05-11.md",
       "ticker": "HIMS"
-    },
-    {
-      "company": "MOS",
-      "date": "2026-05-11",
-      "days_until": 13,
-      "file": "notes/pre_earnings/MOS_2026-05-11.md",
-      "ticker": "MOS"
     },
     {
       "company": "Sea Limited",
@@ -1095,5 +1097,5 @@
       "ticker": "AMD"
     }
   ],
-  "updated": "2026-05-11T11:11:00.424925"
+  "updated": "2026-05-11T13:18:03.948842"
 }
