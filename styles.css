@@ -2733,28 +2733,6 @@ body.wb-drawer-open { overflow: hidden; }
   color: #9ca3af;
   line-height: 1.4;
 }
-.wb-update-why {
-  font-weight: 700;
-  font-size: 0.82rem;
-  color: #f3f4f6;
-  line-height: 1.35;
-  margin-bottom: 6px;
-}
-.wb-update-card.wb-up .wb-update-why { color: #d1fae5; }
-.wb-update-card.wb-down .wb-update-why { color: #fecaca; }
-.wb-update-bullets {
-  margin: 0;
-  padding-left: 16px;
-  font-size: 0.76rem;
-  color: #9ca3af;
-  line-height: 1.45;
-}
-.wb-update-bullets li {
-  margin-bottom: 3px;
-}
-.wb-update-bullets li:last-child {
-  margin-bottom: 0;
-}
 .wb-updates-compact {
   display: flex;
   flex-direction: column;

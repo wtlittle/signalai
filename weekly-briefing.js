@@ -605,36 +605,6 @@ function renderWeeklyBriefing() {
       </h3>`;
 
     if (majorMovers.length > 0) {
-      const _esc = (s) => String(s == null ? '' : s)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      const _splitSentences = (txt) => {
-        if (!txt) return [];
-        return String(txt)
-          .split(/(?<=[.!?])\s+(?=[A-Z0-9])/)
-          .map(s => s.trim())
-          .filter(s => s.length > 25);
-      };
-      const _whyLine = (u) => {
-        if (u.signal && String(u.signal).trim()) return String(u.signal).trim();
-        const first = _splitSentences(u.thesis_update)[0];
-        if (first) return first.replace(/\.$/, '');
-        return _truncate(u.headline || '', 120);
-      };
-      const _bullets = (u) => {
-        const out = [];
-        const seen = new Set();
-        const push = (s) => {
-          const t = String(s || '').trim().replace(/\s+/g,' ');
-          if (!t || t.length < 20) return;
-          const k = t.toLowerCase().slice(0, 60);
-          if (seen.has(k)) return;
-          seen.add(k);
-          out.push(t);
-        };
-        push(u.earnings_result);
-        _splitSentences(u.thesis_update).forEach(push);
-        return out.slice(0, 5);
-      };
       html += `<div class="wb-sub-header">Major Movers (>10% in 30 days)</div>
         <div class="wb-updates-grid">`;
       majorMovers.forEach(u => {
@@ -642,11 +612,9 @@ function renderWeeklyBriefing() {
         const mNum = _thirtyNum(u);
         const wStr = _resolveWeekly(u);
         const mStr = _resolveThirty(u);
-        const why = _whyLine(u);
-        const bullets = _bullets(u);
-        const bulletsHtml = bullets.length
-          ? `<ul class="wb-update-bullets">${bullets.map(b => `<li>${_esc(b)}</li>`).join('')}</ul>`
-          : '';
+        const headline = _truncate(u.headline, 120);
+        const detail = u.detail || '';
+        const signal = u.signal ? `<span class="wb-signal-chip">${u.signal}</span>` : '';
         html += `
           <div class="wb-update-card ${mNum >= 0 ? 'wb-up' : 'wb-down'}">
             <div class="wb-update-header">
@@ -654,10 +622,11 @@ function renderWeeklyBriefing() {
               <div class="wb-update-perfs">
                 <span class="wb-perf ${wNum >= 0 ? 'positive' : 'negative'}">1W: ${wStr}</span>
                 <span class="wb-perf ${mNum >= 0 ? 'positive' : 'negative'}">30D: ${mStr}</span>
+                ${signal}
               </div>
             </div>
-            <div class="wb-update-why">${_esc(why)}</div>
-            ${bulletsHtml}
+            <div class="wb-update-headline">${headline}</div>
+            <div class="wb-update-detail">${detail}</div>
           </div>`;
       });
       html += `</div>`;
