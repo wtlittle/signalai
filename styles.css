@@ -3349,6 +3349,8 @@ body.wb-drawer-open { overflow: hidden; }
 .pillar-signals {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
 }
 .pillar-signals .pillar-signal {
   min-width: 480px;
@@ -3356,6 +3358,54 @@ body.wb-drawer-open { overflow: hidden; }
 .hm-scroll-wrap, .commodity-scroll-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+}
+
+/* Slim, aesthetic scrollbars for macro panel horizontal overflow */
+.pillar-signals::-webkit-scrollbar,
+.hm-scroll-wrap::-webkit-scrollbar,
+.commodity-scroll-wrap::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+  background: transparent;
+}
+.pillar-signals::-webkit-scrollbar-track,
+.hm-scroll-wrap::-webkit-scrollbar-track,
+.commodity-scroll-wrap::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 0 4px;
+}
+.pillar-signals::-webkit-scrollbar-thumb,
+.hm-scroll-wrap::-webkit-scrollbar-thumb,
+.commodity-scroll-wrap::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.22);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.18s ease;
+}
+.pillar-signals:hover::-webkit-scrollbar-thumb,
+.hm-scroll-wrap:hover::-webkit-scrollbar-thumb,
+.commodity-scroll-wrap:hover::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.45);
+}
+.pillar-signals::-webkit-scrollbar-thumb:hover,
+.hm-scroll-wrap::-webkit-scrollbar-thumb:hover,
+.commodity-scroll-wrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.65);
+}
+.pillar-signals::-webkit-scrollbar-button,
+.hm-scroll-wrap::-webkit-scrollbar-button,
+.commodity-scroll-wrap::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.pillar-signals::-webkit-scrollbar-corner,
+.hm-scroll-wrap::-webkit-scrollbar-corner,
+.commodity-scroll-wrap::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Mobile responsive */
