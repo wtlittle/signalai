@@ -721,7 +721,12 @@
           '<div class="dd-step-num">1</div>' +
           '<div class="dd-step-body">' +
             '<div class="dd-step-title">Run the two-stage drilldown prompt</div>' +
-            '<div class="dd-step-sub">Opens a fresh Perplexity <strong>Deep Research</strong> thread for <strong>' + _esc(t) + '</strong> and copies the prompt with the <code>[SIGNAL_DATA_BLOCK]</code> pre-filled from live Supabase data. <em>Paste it as your first message in the new tab.</em> Run Part\u00a01 first (valuation, KPIs, industry, catalysts, earnings setup), then Part\u00a02 (management, competitive landscape, risks, financials, diligence).</div>' +
+            '<div class="dd-step-sub">' +
+              (global.SignalAIApi && global.SignalAIApi.hasKey()
+                ? '<strong>API key detected.</strong> Runs the canonical drilldown directly via the Perplexity API (model + effort set in API Settings). The HTML returns into the paste box below for review and save. No new tab needed.'
+                : 'Opens a fresh Perplexity <strong>Deep Research</strong> thread for <strong>' + _esc(t) + '</strong> and copies the prompt with the <code>[SIGNAL_DATA_BLOCK]</code> pre-filled from live Supabase data. <em>Paste it as your first message in the new tab.</em>') +
+              ' Run Part\u00a01 first (valuation, KPIs, industry, catalysts, earnings setup), then Part\u00a02 (management, competitive landscape, risks, financials, diligence).' +
+            '</div>' +
             '<div class="dd-run-step-actions">' +
               '<button type="button" class="btn-primary" data-dd-act="run">Run Part\u00a01 for ' + _esc(t) + '</button>' +
               '<button type="button" class="btn-primary" data-dd-act="run-p2">Run Part\u00a02 for ' + _esc(t) + '</button>' +
@@ -729,9 +734,13 @@
               '<button type="button" class="btn-sm" data-dd-act="copy-p2-prompt" title="Copy the Part 2 prompt to your clipboard without opening a new tab">Copy Part\u00a02 prompt</button>' +
             '</div>' +
             '<div class="dd-run-fallback">' +
-              'Prefer a regular Perplexity tab (not Deep Research)? ' +
-              '<a href="#" data-dd-act="run-fallback" data-part="p1">Copy Part\u00a01 prompt instead</a> &nbsp;\u00b7&nbsp; ' +
-              '<a href="#" data-dd-act="run-fallback" data-part="p2">Copy Part\u00a02 prompt instead</a>' +
+              (global.SignalAIApi && global.SignalAIApi.hasKey()
+                ? 'Force the paste-back flow instead? ' +
+                  '<a href="#" data-dd-act="run-deeplink">Open Deep Research tab (P1)</a> &nbsp;\u00b7&nbsp; ' +
+                  '<a href="#" data-dd-act="run-deeplink-p2">Open Deep Research tab (P2)</a>'
+                : 'Prefer a regular Perplexity tab (not Deep Research)? ' +
+                  '<a href="#" data-dd-act="run-fallback" data-part="p1">Copy Part\u00a01 prompt instead</a> &nbsp;\u00b7&nbsp; ' +
+                  '<a href="#" data-dd-act="run-fallback" data-part="p2">Copy Part\u00a02 prompt instead</a>') +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -1063,11 +1072,26 @@
       return;
     }
     if (act === 'run' || act === 'refresh') {
-      _runDrilldownApi(act === 'refresh' ? 'refresh' : 'manual', 'p1');
+      // Prefer the API path if a key is stored; otherwise use the Deep
+      // Research deeplink flow that requires the analyst to paste back.
+      if (global.SignalAIApi && global.SignalAIApi.hasKey()) {
+        _runDrilldownViaApi(act === 'refresh' ? 'refresh' : 'manual', 'p1');
+      } else {
+        _runDrilldownApi(act === 'refresh' ? 'refresh' : 'manual', 'p1');
+      }
       return;
     }
     if (act === 'run-p2') {
-      _runDrilldownApi('manual', 'p2');
+      if (global.SignalAIApi && global.SignalAIApi.hasKey()) {
+        _runDrilldownViaApi('manual', 'p2');
+      } else {
+        _runDrilldownApi('manual', 'p2');
+      }
+      return;
+    }
+    if (act === 'run-deeplink' || act === 'run-deeplink-p2') {
+      // Force the paste-back flow even if a key is set (escape hatch).
+      _runDrilldownApi('manual', act === 'run-deeplink-p2' ? 'p2' : 'p1');
       return;
     }
     if (act === 'merge-parts') {
@@ -1236,6 +1260,96 @@
       'https://www.perplexity.ai/search/new?mode=research&q=' +
       encodeURIComponent(_buildShortPrefill(ticker))
     );
+  }
+
+  // NEW: Run the drilldown by calling the Perplexity REST API directly
+  // using the analyst's stored key. Posts the canonical prompt as a single
+  // chat completion, then writes the returned HTML into the dd-html-input
+  // textarea so the existing Save flow can persist it (Library + backend +
+  // Supabase). Falls back to a clear error message if anything fails.
+  function _runDrilldownViaApi(trigger, part) {
+    if (!state.ticker) return;
+    part = part || 'p1';
+    var partKey = part === 'p2' ? 'p2' : 'p1';
+    state.showRunPanel = true;
+    state.lastRunPart = partKey;
+    state.lastRunTrigger = trigger;
+    render();
+
+    var API = global.SignalAIApi;
+    var defaults = (API && API.getDefaults && API.getDefaults()) || {};
+    var model = defaults.drilldownModel || 'sonar-deep-research';
+    var effort = defaults.defaultEffort || 'medium';
+    var ticker = state.ticker;
+
+    _setRunButtonState(partKey, 'fetching', 'Preparing ticker data\u2026');
+
+    function whenReady(cb) {
+      if (isTickerDataReady(ticker)) { cb(true); return; }
+      var attempts = 0;
+      var timer = setInterval(function () {
+        attempts++;
+        if (isTickerDataReady(ticker)) { clearInterval(timer); cb(true); }
+        else if (attempts >= 15) { clearInterval(timer); cb(false); }
+      }, 1000);
+    }
+
+    whenReady(function (ready) {
+      if (!ready) {
+        _setRunButtonState(partKey, 'error',
+          'Live ticker data didn\u2019t load in 15s. Try again, or use "Copy prompt instead" below.');
+        return;
+      }
+
+      _loadPrompt().then(function (txt) {
+        var fullPrompt = partKey === 'p2'
+          ? _buildPart2Prompt(ticker, txt)
+          : _buildFullPrompt(ticker, txt, 'p1');
+
+        var label = partKey === 'p2' ? 'Part\u00a02' : 'Part\u00a01';
+        _setRunButtonState(partKey, 'generating',
+          'Calling ' + model + ' (effort=' + effort + '). Deep Research can take 2\u20135 min. The HTML will land in the paste box below when done.');
+
+        API.call({
+          model: model,
+          system: 'You are running the Signal Stack institutional drilldown engine. Return only the requested HTML inside a single ```html fenced block. No prose outside the block.',
+          prompt: fullPrompt,
+          max_tokens: 8000,
+          reasoning_effort: effort,
+          timeout_ms: 600000
+        }).then(function (res) {
+          if (!res.ok) {
+            _setRunButtonState(partKey, 'error', 'API error: ' + (res.error || 'unknown') + ' \u2014 try "Run via Deep Research" below for the paste-back flow.');
+            return;
+          }
+          // The model is asked to return an ```html fenced block; extract it.
+          var html = _extractHtmlBlock(res.content) || res.content;
+          var ta = document.getElementById('dd-html-input');
+          if (ta) {
+            ta.value = html;
+            ta.focus();
+          }
+          var sel = document.getElementById('dd-trigger-input');
+          if (sel) {
+            var v = trigger === 'refresh' ? 'refresh' : 'deep-research';
+            var found = false;
+            for (var i = 0; i < sel.options.length; i++) {
+              if (sel.options[i].value === v) { found = true; break; }
+            }
+            if (!found) {
+              var opt = document.createElement('option');
+              opt.value = v; opt.textContent = v === 'deep-research' ? 'Deep Research' : 'Refresh';
+              sel.appendChild(opt);
+            }
+            sel.value = v;
+          }
+          var costStr = API.formatCost(res.cost_estimate);
+          var usageStr = (res.usage && res.usage.completion_tokens) ? (res.usage.completion_tokens + ' completion tok') : '';
+          _setRunButtonState(partKey, 'done',
+            label + ' generated via API (' + res.model + ', ~' + costStr + (usageStr ? ', ' + usageStr : '') + '). Review the HTML in the paste box below, then click "Save to library".');
+        });
+      });
+    });
   }
 
   function _runDrilldownApi(trigger, part) {

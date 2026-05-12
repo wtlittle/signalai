@@ -22,9 +22,30 @@ from automation.shared.cache import (
     save_research_cache,
 )
 
-PERPLEXITY_API_KEY = os.environ.get("PERPLEXITY_API_KEY", "")
+# Accept either PERPLEXITY_API_KEY (legacy) or PPLX_API_KEY (matches the
+# client-side localStorage convention used in pplx-api.js).
+PERPLEXITY_API_KEY = (
+    os.environ.get("PERPLEXITY_API_KEY")
+    or os.environ.get("PPLX_API_KEY")
+    or ""
+)
 MODEL = os.environ.get("PERPLEXITY_MODEL", "sonar-pro")
 BASE_URL = "https://api.perplexity.ai/chat/completions"
+
+# Per-task model map. Earnings notes need depth (numbers, scenarios, sources)
+# but not exhaustive deep-research treatment, so sonar-reasoning-pro is the
+# sweet spot. Drilldowns (when run server-side) escalate to sonar-deep-research.
+# Callers can override by passing model=... explicitly.
+TASK_MODEL_MAP = {
+    "pre_earnings": os.environ.get("PERPLEXITY_MODEL_PRE_EARNINGS", "sonar-reasoning-pro"),
+    "post_earnings": os.environ.get("PERPLEXITY_MODEL_POST_EARNINGS", "sonar-reasoning-pro"),
+    "drilldown": os.environ.get("PERPLEXITY_MODEL_DRILLDOWN", "sonar-deep-research"),
+    "weekly_briefing": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
+    "news_tag": os.environ.get("PERPLEXITY_MODEL_NEWS", "sonar"),
+}
+# reasoning_effort applies only to sonar-deep-research. Default to low to keep
+# automated daily/weekly costs predictable; override per-call when needed.
+DEFAULT_REASONING_EFFORT = os.environ.get("PERPLEXITY_REASONING_EFFORT", "low")
 
 # --- Queue location (Computer handoff) ---
 _QUEUE_DIR = Path(__file__).resolve().parent.parent / "queue"
@@ -36,8 +57,18 @@ MIN_CALL_INTERVAL = 0.6  # seconds between calls
 
 
 def _use_api_fallback() -> bool:
-    """Return True only if USE_API_FALLBACK is explicitly enabled."""
-    return os.environ.get("USE_API_FALLBACK", "false").lower() == "true"
+    """Return True if the operator has opted into direct API calls.
+
+    Accepts either USE_API_FALLBACK=true (legacy) or USE_PPLX_API=true.
+    Also auto-enables when a key is present AND USE_PPLX_API is not
+    explicitly 'false' — this matches the user's request that 'most of
+    these processes use the API' as long as a key is configured.
+    """
+    flag = os.environ.get("USE_PPLX_API") or os.environ.get("USE_API_FALLBACK")
+    if flag is not None:
+        return flag.strip().lower() == "true"
+    # No explicit flag: auto-enable when a key is present.
+    return bool(PERPLEXITY_API_KEY)
 
 
 def _queue_task(
@@ -139,8 +170,11 @@ def call_perplexity(
         "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
         "Content-Type": "application/json",
     }
+    # Per-task model selection. Callers can also override via extra_meta['model'].
+    model_override = (extra_meta or {}).get("model")
+    chosen_model = model_override or TASK_MODEL_MAP.get(task) or MODEL
     body = {
-        "model": MODEL,
+        "model": chosen_model,
         "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": prompt},
@@ -149,6 +183,8 @@ def call_perplexity(
         "temperature": temperature,
         "return_citations": False,
     }
+    if chosen_model == "sonar-deep-research":
+        body["reasoning_effort"] = (extra_meta or {}).get("reasoning_effort", DEFAULT_REASONING_EFFORT)
 
     dry_run = os.environ.get("DRY_RUN", "false").lower() == "true"
     if dry_run:
@@ -156,11 +192,12 @@ def call_perplexity(
         print(f"            Model: {MODEL}, max_tokens: {max_tokens}")
         return {"dry_run": True, "ticker": ticker, "task": task}
 
-    print(f"  [API CALL] {ticker} / {task} — calling Perplexity ({MODEL})...")
+    timeout_s = 600 if chosen_model == "sonar-deep-research" else 120
+    print(f"  [API CALL] {ticker} / {task} — calling Perplexity ({chosen_model}, timeout={timeout_s}s)...")
     _last_call_time = time.time()
 
     try:
-        resp = requests.post(BASE_URL, headers=headers, json=body, timeout=90)
+        resp = requests.post(BASE_URL, headers=headers, json=body, timeout=timeout_s)
         resp.raise_for_status()
     except requests.exceptions.HTTPError as e:
         if resp.status_code == 429:
@@ -186,7 +223,24 @@ def call_perplexity(
     try:
         parsed = json.loads(text)
     except json.JSONDecodeError:
-        parsed = {"raw": raw_content}
+        # Repair attempt: strip trailing commas, retry
+        try:
+            import re
+            cleaned = re.sub(r",\s*([}\]])", r"\1", text)
+            parsed = json.loads(cleaned)
+        except Exception:
+            parsed = {"raw": raw_content}
+
+    # Surface usage + cost to callers/logs if available.
+    try:
+        usage = resp.json().get("usage", {}) or {}
+        if usage:
+            print(f"  [USAGE] {ticker}/{task}: prompt={usage.get('prompt_tokens',0)} "
+                  f"completion={usage.get('completion_tokens',0)} "
+                  f"reasoning={usage.get('reasoning_tokens',0)} "
+                  f"queries={usage.get('num_search_queries',0)}")
+    except Exception:
+        pass
 
     save_research_cache(ticker, task, parsed)
     return parsed

@@ -25,9 +25,16 @@ on:
         default: 'false'
 
 env:
-  # PERPLEXITY_API_KEY intentionally omitted.
-  # All LLM work is queued to automation/queue/pending_tasks.json and
-  # processed by Perplexity Computer. See automation/queue/README.md.
+  # API mode: when PERPLEXITY_API_KEY is set, automation/perplexity/client.py
+  # routes calls directly to api.perplexity.ai with the per-task model map
+  # (sonar-reasoning-pro for earnings notes, sonar-deep-research for weekly
+  # briefing). When the secret is absent, calls fall back to queuing into
+  # automation/queue/pending_tasks.json for Perplexity Computer to handle.
+  PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+  USE_PPLX_API: 'true'
+  # Keep automated runs on low reasoning effort to control monthly spend.
+  # Override via workflow_dispatch input or per-job env if needed.
+  PERPLEXITY_REASONING_EFFORT: 'low'
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
   FORCE_REGENERATE: ${{ github.event.inputs.force_regenerate || 'false' }}

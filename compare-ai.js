@@ -226,10 +226,17 @@
       savedHtml = '<div class="cmp-ai-empty">No AI read yet for this comp set. Click <strong>Run AI Read</strong> to generate one.</div>';
     }
 
+    var API = global.SignalAIApi;
+    var hasApi = !!(API && API.hasKey && API.hasKey());
+    var apiModel = (API && API.getDefaults && API.getDefaults().compareModel) || 'sonar-reasoning-pro';
+    var apiBtnHtml = hasApi
+      ? '<button type="button" class="btn-sm btn-primary" id="cmp-ai-run-api" title="Call ' + apiModel + ' via your stored API key">Run via API (' + apiModel + ')</button>'
+      : '<button type="button" class="btn-sm btn-link" id="cmp-ai-open-settings" title="Set your Perplexity API key to enable one-click AI Read">Set API key for one-click</button>';
     body.innerHTML = (
       '<div class="cmp-ai-shell">'
       + '<div class="cmp-ai-toolbar">'
-      + '<button type="button" class="btn-sm btn-primary" id="cmp-ai-run">Run AI Read &rarr; Deep Research</button>'
+      + apiBtnHtml
+      + '<button type="button" class="btn-sm ' + (hasApi ? 'btn-ghost' : 'btn-primary') + '" id="cmp-ai-run">Open Deep Research (paste-back)</button>'
       + '<button type="button" class="btn-sm btn-ghost" id="cmp-ai-copy">Copy comp-pack prompt</button>'
       + '<span class="cmp-ai-status" id="cmp-ai-status"></span>'
       + '</div>'
@@ -249,6 +256,8 @@
     );
 
     var runBtn = body.querySelector('#cmp-ai-run');
+    var runApiBtn = body.querySelector('#cmp-ai-run-api');
+    var openSettingsBtn = body.querySelector('#cmp-ai-open-settings');
     var copyBtn = body.querySelector('#cmp-ai-copy');
     var status = body.querySelector('#cmp-ai-status');
     var saveBtn = body.querySelector('#cmp-ai-save');
@@ -256,6 +265,67 @@
     var pasteHint = body.querySelector('#cmp-ai-paste-hint');
     var clearBtn = body.querySelector('#cmp-ai-clear');
     var pasteDetails = body.querySelector('#cmp-ai-paste-details');
+
+    if (openSettingsBtn && global.ApiSettings) {
+      openSettingsBtn.addEventListener('click', function () { global.ApiSettings.open(); });
+    }
+
+    if (runApiBtn) {
+      runApiBtn.addEventListener('click', function () {
+        if (!API || !API.hasKey()) { setStatus('No API key. Open Settings.', 'error'); return; }
+        runApiBtn.disabled = true;
+        var prevLabel = runApiBtn.textContent;
+        runApiBtn.textContent = 'Calling ' + apiModel + '...';
+        setStatus('Calling Perplexity API (' + apiModel + ', ~10-30s)...', '');
+        var prompt = buildPrompt(tickers, rows);
+        var responseFormat = null;
+        // sonar-reasoning-pro + sonar-pro support response_format; sonar-deep-research does not.
+        if (apiModel === 'sonar-pro' || apiModel === 'sonar-reasoning-pro' || apiModel === 'sonar') {
+          // Use json_schema-like loose hint; doc supports response_format: {type:"json_schema", ...}
+          // For broad compatibility we omit response_format and rely on the prompt's fenced JSON contract.
+          responseFormat = null;
+        }
+        var defaults = (API.getDefaults && API.getDefaults()) || {};
+        API.call({
+          model: apiModel,
+          system: 'You are a buy-side equity analyst. Return only valid JSON inside a single ```json fenced block. No prose outside the block.',
+          prompt: prompt,
+          max_tokens: 2200,
+          reasoning_effort: defaults.defaultEffort,
+          response_format: responseFormat
+        }).then(function (res) {
+          runApiBtn.disabled = false;
+          runApiBtn.textContent = prevLabel;
+          if (!res.ok) {
+            setStatus(res.error, 'error');
+            return;
+          }
+          var parsed = tryParse(res.content) || (API.parseJsonLoose && API.parseJsonLoose(res.content));
+          saveResult(tickers, {
+            raw: res.content,
+            parsed: parsed,
+            source: 'api',
+            model: res.model,
+            usage: res.usage,
+            cost_estimate: res.cost_estimate
+          });
+          var costStr = API.formatCost(res.cost_estimate);
+          var usageStr = (res.usage && res.usage.completion_tokens) ? (res.usage.completion_tokens + ' tok') : '';
+          setStatus('Done. ' + res.model + ' — ' + costStr + (usageStr ? ' (' + usageStr + ')' : ''), 'ok');
+          var content = body.querySelector('#cmp-ai-content');
+          if (content) {
+            content.innerHTML = parsed
+              ? '<div class="cmp-ai-saved-meta">' + res.model + ' &middot; ' + new Date().toLocaleString() + ' &middot; est. ' + costStr + '. <button type="button" class="btn-link" id="cmp-ai-clear">Clear</button></div>' + renderResult(parsed)
+              : '<div class="cmp-ai-saved-meta">' + res.model + ' &middot; ' + new Date().toLocaleString() + ' &middot; est. ' + costStr + ' &middot; JSON parse failed. <button type="button" class="btn-link" id="cmp-ai-clear">Clear</button></div><pre class="cmp-ai-raw">' + escapeHtml(res.content) + '</pre>';
+            var cb = content.querySelector('#cmp-ai-clear');
+            if (cb) cb.addEventListener('click', function () {
+              localStorage.removeItem(STORAGE_PREFIX + compKey(tickers));
+              render(body, tickers, rows);
+            });
+          }
+        });
+      });
+    }
 
     function setStatus(msg, cls) {
       if (!status) return;
