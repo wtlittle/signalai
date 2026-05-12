@@ -1,18 +1,16 @@
-# Signal Stack AI — Drilldown Engine Prompt
+# Signal Stack AI — Drilldown Engine Prompt (One-Step)
 
 > Canonical research template used by the Drilldown surface. Any time an
 > analyst routes to `#/drilldown/{TICKER}`, the system uses this prompt to
-> generate a full institutional-grade note. Edit this file to change how
-> drilldowns are produced — no code changes required.
+> generate ONE complete institutional-grade primer in a single API call.
 >
-> **ARCHITECTURE NOTE (v2):**  
-> The surface now injects a `[SIGNAL_DATA_BLOCK]` of pre-fetched Supabase
+> **ARCHITECTURE NOTE (v3 — one-step):**
+> The surface injects a `[SIGNAL_DATA_BLOCK]` of pre-fetched Supabase
 > data directly into the prompt before sending to Perplexity. The model
 > MUST treat this block as ground truth for all financial figures and spend
 > its context budget on synthesis, judgment, and sourcing — not fetching.
-> The prompt is split into PART 1 and PART 2. The surface sends them as two
-> separate clipboard copies with a UI step between them so neither part
-> exceeds ~6,000 tokens of output.
+> The output is a SINGLE self-contained HTML document covering all 14
+> sections below. No multi-part workflow.
 
 ---
 
@@ -69,44 +67,57 @@ ADDITIONAL DATA TO COLLECT (search only for what is MISSING or unlisted)
 Collect the following ONLY if not already covered by the data block above:
 
 1. Most recent earnings call transcript (for verbatim management quotes
-   and forward guidance color) — use finance_earnings_transcript tool
+   and forward guidance color)
 2. Recent analyst upgrades/downgrades and price target changes (last 90 days)
 3. Competitive news, product launches, partnership announcements (last 60 days)
 4. Short interest and institutional positioning changes (if not in data block)
 5. If market_intel is MISSING: TAM and category growth rate via web search
    (cite Gartner, IDC, or Statista; do not fabricate figures)
+6. Management bios for CEO and CFO if not common knowledge (LinkedIn or
+   company website citations only)
 
 Do NOT re-fetch anything already present in [SIGNAL_DATA_BLOCK].
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-OUTPUT STRUCTURE — PART 1 of 2
+OUTPUT STRUCTURE — ONE COMPLETE INSTITUTIONAL PRIMER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Deliver PART 1 as a self-contained HTML file. Do not stop mid-section.
-Sections 1–6 must all be complete before you output the closing </html> tag.
+Deliver the entire note as ONE self-contained HTML document. Do not stop
+mid-section. All 14 sections below must be present before the closing
+`</html>` tag. The note should be ~3,500–6,000 words of analytical content.
 
-── HEADER BLOCK ──
+── 1. HEADER / METADATA ──
 - Company name | Ticker | Exchange
 - Signal Stack AI | [Date] | [Sector] | [Sub-sector] | For Institutional Use
 - Current price | Consensus target | Implied upside/downside | Consensus rating
 - KPI CARD ROW: 6 stat cards — choose the 6 most critical live metrics for
   this specific business (e.g., Market Cap, ARR Growth, NRR, FCF Margin,
   EV/Revenue NTM, Next Earnings Date). Pull all values from the data block.
-- One-line investment verdict: ≤25 words, specific to this company and moment
 
-── SECTION 1: INVESTMENT OVERVIEW ──
-- One paragraph: long thesis, bear thesis, and the core debate
-- Quantify the setup: price action from high, current multiple, what the
-  market is discounting
-- End with: the single question whose answer determines if the thesis works
+── 2. ONE-SENTENCE DEBATE FRAMING ──
+- ≤30 words. State the single most important investor question whose
+  answer determines whether the long works over the next 12–24 months.
+- This is the elevator pitch for the debate, NOT a recommendation.
 
-── SECTION 2: VALUATION ──
+── 3. CATALYSTS AND WATCH ITEMS ──
+- Table with columns: Date | Event | What to Watch | Bull Signal | Bear Signal
+- Include: next 4 earnings dates, analyst days, product launches, lock-up
+  expiries, regulatory events, conference appearances
+- Mark the single most important near-term catalyst with ★
+- One paragraph on the highest-probability tape-moving event of the next
+  90 days and what it would look like for bulls vs. bears
+
+── 4. VALUATION AND WHAT THE MARKET IS UNDERWRITING ──
 - Table: Market Cap, EV, EV/Revenue (LTM + NTM), P/FCF, FCF Yield, P/E (NTM),
   Revenue Growth (LTM + NTM est.), Gross Margin, FCF Margin
   — populate entirely from the data block
 - 150-word narrative: where is the stock vs. its historical multiple range?
-  What does re-rating require? What is being priced in?
+  What revenue / margin / FCF trajectory does the current multiple imply?
+  What does a re-rating require? What is being priced in?
+- End with: "At today's multiple the market is implicitly underwriting…"
+  followed by the specific 3-year top-line / margin scenario embedded
+  in the price.
 
-── SECTION 3: BUSINESS MODEL & KPIs ──
+── 5. BUSINESS MODEL AND KPI DASHBOARD ──
 - Explain how the company makes money (revenue model mechanics, 3–4 sentences)
 - Table: 6–8 operating KPIs most critical for THIS specific business
   (ARR, NRR, RPO, CAC, LTV, DAU, GMV, NPS — whatever drives value)
@@ -115,88 +126,110 @@ Sections 1–6 must all be complete before you output the closing </html> tag.
 - Flag any model transition in progress (e.g., perpetual → SaaS, spot →
   subscription, owned stores → franchise)
 
-── SECTION 4: INDUSTRY CONTEXT ──
+── 6. INVESTMENT OVERVIEW — BULL / BASE / BEAR ──
+- Three-column layout (Bull | Base | Bear) — each column 100–150 words
+- Each column must state: (1) the 12–24m price target, (2) the 2–3 KPI
+  or financial outcomes that produce that target, (3) the probability
+  weight you assign (must sum to 100%).
+- Below the table: one paragraph defending the probability weighting.
+
+── 7. FINANCIAL MODEL SNAPSHOT ──
+- Table: 5-year history + 2 forward years (marked E)
+- Columns: Revenue | Growth % | Gross Margin | Operating Income | FCF |
+  FCF Margin | Non-GAAP EPS
+  — populate from data block (estimates for forward years)
+- Flag GAAP vs. non-GAAP divergence if SBC > 5% of revenue
+- One paragraph on revenue mix shift, margin trajectory, and the gap
+  between sell-side consensus and what the data implies.
+
+── 8. SENSITIVITY TABLE ──
+- 5×5 grid showing implied price under varying NTM revenue growth (rows:
+  e.g. 10% / 15% / 20% / 25% / 30%) and NTM EV/Revenue multiple (columns:
+  e.g. 4x / 6x / 8x / 10x / 12x).
+- Highlight today's intersection. Show upside/downside relative to
+  current price.
+- One sentence on which cell of the grid base-case investors are at.
+
+── 9. INDUSTRY STRUCTURE AND COMPETITIVE POSITIONING ──
 - TAM with source (use market_intel from data block if present; otherwise
   cite Gartner / IDC from search)
 - Growth rate of the category and the 2–3 structural drivers
 - Structured table: key competitors and their Gartner/Forrester position
   (Leader / Challenger / Visionary / Niche Player) with one-line rationale
+- Comps table: Competitor | Revenue | Revenue Growth | Gross Margin |
+  FCF Margin | EV/Revenue | Primary Competitive Threat to Subject Company
+  — use comps data from the data block for financials
 - One structural tailwind and one structural headwind for the category
+- 150-word analysis: who is gaining share, who is losing, and why.
+  Platform consolidation question: consolidator or target?
 
-── SECTION 5: CATALYST CALENDAR ──
-- Table with columns: Date | Event | What to Watch | Bull Signal | Bear Signal
-- Include: next 4 earnings dates, analyst days, product launches, lock-up
-  expiries, regulatory events, conference appearances
-- Mark the single most important near-term catalyst with ★
-
-── SECTION 6: EARNINGS & ESTIMATE SETUP ──
+── 10. EARNINGS SETUP AND REVISION DEBATE ──
 - Table: last 6–8 quarters showing Revenue beat/miss %, EPS beat/miss %,
   1-day stock move, guidance tone (raised/in-line/cut)
   — pull from analyst_summary.earningsHistory in the data block
 - Annualized beat rate on revenue and EPS
 - Identify the behavioral pattern: does this stock react to results,
   guidance, or margin?
+- Estimate revision trend: are revisions trending positive or negative
+  in the past 30 / 90 days? (use epsTrend / revisionsUp/Down fields)
 - Flag any quarter where guidance was the driver of a major move
+- One paragraph: what does buyside positioning into the next print
+  likely look like (long crowd vs. short crowd)?
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-OUTPUT FORMAT — PART 1
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Deliver Part 1 as a self-contained HTML file:
-- Signal Stack AI branding in header
-- Light/dark mode toggle
-- KPI stat card row at top
-- NO embedded Chart.js charts in Part 1 (tables only; charts in Part 2 if needed)
-- Print-optimized CSS (@media print)
-- Satoshi or Inter font via CDN
-- Warm neutral color palette; teal accent; no gradient buttons
-- Mobile-responsive layout
-- End with a visible banner: "→ Part 2 (Management · Competitive Landscape ·
-  Risks · Financial Summary · Diligence Questions) available via Signal Stack"
-
-Output the entire Part 1 HTML inside a single fenced ```html block.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-OUTPUT STRUCTURE — PART 2 of 2
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-When the analyst asks for Part 2, deliver the following sections as a
-continuation note in a second self-contained HTML file. Use the same
-branding, CSS, and color palette as Part 1.
-
-── SECTION 7: MANAGEMENT ──
+── 11. MANAGEMENT, CAPITAL ALLOCATION, AND EXECUTION ──
 - For CEO and CFO (minimum): prior roles, domain expertise, tenure, key
   decisions made
 - Structured table: Technical Credibility | Execution Track Record |
   Guidance Precision | Capital Allocation | Insider Alignment |
   Communication Quality — rate each High/Medium/Low with one-line evidence
-- Verbatim quote from most recent earnings call (from transcript)
+- Verbatim quote from most recent earnings call (with date + speaker)
 - Recent insider buys/sells: names, amounts, dates
+- Capital allocation history: M&A, buybacks, dividends, R&D intensity
 - Assessment: Is management quality a reason to own or a reason for caution?
 
-── SECTION 8: COMPETITIVE LANDSCAPE ──
-- Table: Competitor | Revenue | Revenue Growth | Gross Margin | FCF Margin |
-  EV/Revenue | Primary Competitive Threat to Subject Company
-  — use comps data from the data block for financials
-- 200-word analysis: who is gaining share, who is losing, and why
-- Platform consolidation question: consolidator or target?
-- Win/loss signals: G2/Gartner Peer Insights trends, job posting velocity
-
-── SECTION 9: RISKS ──
+── 12. RISKS AND DEBATE MONITOR ──
 - Bear case — 4–6 specific, falsifiable, quantified risks. Each must state
   a potential magnitude (e.g., "-20% to revenue if X"). No boilerplate.
-- Bull case — 3–5 direct rebuttals to bear arguments, each with evidence
+- Bull case — 3–5 direct rebuttals to bear arguments, each with evidence.
 - Present as two-column layout: Bear | Bull
+- "Debate monitor" closing bullets: 3 specific data points or events that,
+  if they print, would tilt the debate definitively toward one side.
 
-── SECTION 10: FINANCIAL SUMMARY ──
-- Table: 5-year history + 2 forward years (marked E)
-- Columns: Revenue | Growth % | Gross Margin | Operating Income | FCF |
-  FCF Margin | Non-GAAP EPS
-  — populate from data block (estimates for forward years)
-- Flag GAAP vs. non-GAAP divergence if SBC > 5% of revenue
-
-── SECTION 11: DILIGENCE QUESTIONS ──
+── 13. PRIMARY DILIGENCE QUESTIONS ──
 - 5 questions a senior analyst would ask on a management call or channel
   check — each targeting a specific data gap, bear concern, or forward
-  inflection point not answerable from public filings alone
+  inflection point not answerable from public filings alone.
+- Each question should specify which side of the debate it would resolve.
+
+── 14. SOURCES / DATA QUALITY NOTES ──
+- Brief inline-cited sources list for the primary external claims used
+  (transcripts, analyst notes, industry reports, regulatory filings).
+- Note which `[SIGNAL_DATA_BLOCK]` fields were MISSING and how you
+  filled them (search source, freshness, confidence).
+- If any figure was estimated rather than retrieved, mark it E and explain.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OUTPUT FORMAT — STANDALONE HTML DOCUMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Deliver as ONE self-contained HTML file with all CSS embedded inline.
+NO external JS dependencies (no Chart.js, no analytics, no fonts that
+require network beyond a single Google Fonts link). The file must render
+correctly inside an iframe with `sandbox="allow-popups"`.
+
+Required formatting:
+- Signal Stack AI branding in header
+- Print-optimized CSS via `@media print`
+- Inter or system-ui sans-serif (a single Google Fonts CDN link is fine)
+- Warm neutral color palette; teal accent (#14b8a6); no gradient buttons
+- Mobile-responsive layout (one-column under 720px)
+- KPI stat card row near top
+- Tables use semantic `<table>` with `<thead>` / `<tbody>`
+- Section anchors (id="section-1", id="section-2", …) for quick nav
+- Section 14 (Sources) should render as a compact footer block
+
+Do NOT include any `<script>` tags. Do NOT inject external CSS frameworks.
+Do NOT include any prose outside the fenced block. Output the entire
+HTML inside a single fenced ```html block.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 WRITING RULES
@@ -212,12 +245,15 @@ WRITING RULES
 - Write like a senior analyst at a top-20 hedge fund, not a chatbot
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FINAL QUALITY CHECK — PART 1
+FINAL QUALITY CHECK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Does Section 1 lead with the most investor-relevant framing?
-- Does Section 2 valuation table use data block figures verbatim?
-- Are all 6 sections complete before the closing </html> tag?
-- Is the Part 2 continuation banner present?
+- Do all 14 sections render before `</html>`?
+- Does Section 2 frame the debate in ≤30 words?
+- Does Section 4 explicitly state what the multiple implies?
+- Does Section 6 sum probabilities to 100%?
+- Does Section 8 highlight the current grid intersection?
+- Does Section 11 include a verbatim transcript quote with attribution?
+- Does Section 14 disclose data-quality gaps honestly?
 - Would a hedge fund analyst find this useful before a morning meeting?
 
 If any check fails, complete the missing element before delivering the file.
@@ -232,27 +268,10 @@ Library with the following metadata:
 - company_name: full company name
 - generated_at: ISO 8601 timestamp
 - version: integer, auto-incremented per ticker, starting at 1
-- trigger: one of "manual" | "refresh" | "earnings_alert"
+- trigger: one of "api" | "refresh" | "manual" | "earnings_alert"
 - price_at_generation: current stock price at time of generation
 - consensus_target_at_generation: consensus target at time of generation
-- part: "1" | "2" | "full" (Part 1, Part 2, or merged)
+- part: "full" (new format) | "p1" | "p2" | "merged" (legacy)
 
 If a drilldown for this ticker already exists in the user's library, do NOT
 overwrite it. Save as a new version and retain all prior versions.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-REFRESH DRILLDOWN BUTTON
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Every saved drilldown note must include a "↻ Refresh Drilldown" button in
-the header block, next to the generation date.
-
-When the user clicks Refresh:
-- Re-run the full data collection pipeline for that ticker
-- Generate a new version of the note with the latest data
-- Save it to the library as version N+1 with trigger = "refresh"
-- Display the new note and mark changed data points with a subtle visual
-  diff indicator (e.g., ↑ or ↓ badge next to values that changed)
-
-NOTE: Full diff rendering between versions will be implemented in a future
-release. For now, Refresh regenerates the note and increments the version
-counter. The version history is preserved for future diffing.

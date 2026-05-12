@@ -173,9 +173,6 @@
       'so I can paste it into my Drilldown Library.'
     );
   }
-  function _buildPplxUrl(ticker /* , promptText (unused — see clipboard path) */) {
-    return 'https://www.perplexity.ai/?q=' + encodeURIComponent(_buildShortPrefill(ticker));
-  }
 
   // Build a structured pre-fill block from the live app state. Injected into
   // the [SIGNAL_DATA_BLOCK] placeholder in the canonical prompt so the model
@@ -300,49 +297,28 @@
     return lines.join('\n');
   }
 
-  // Build the FULL prompt text (header + instruction + canonical body) that
-  // we copy to the clipboard. This is what the analyst pastes into the new
-  // Perplexity thread to run the canonical drilldown. When `part === 'p2'`,
-  // strips the Part 1 output spec so only Part 2 sections (7-11) remain.
-  function _buildFullPrompt(ticker, promptText, part) {
-    part = part || 'p1';
+  // Build the FULL one-step prompt: canonical body with [SIGNAL_DATA_BLOCK]
+  // pre-filled. The model is instructed to return one complete standalone
+  // HTML document covering all 14 sections in a single fenced ```html block.
+  function _buildOneStepPrompt(ticker, promptText) {
     var dataBlock = _buildSignalDataBlock(ticker);
-
-    // Splice the data block into the prompt text by replacing the
-    // [SIGNAL_DATA_BLOCK] placeholder token.
     var body = (promptText || '').replace('[SIGNAL_DATA_BLOCK]', dataBlock);
-
-    // For Part 2, strip everything from "OUTPUT STRUCTURE \u2014 PART 1" down
-    // to (but not including) "OUTPUT STRUCTURE \u2014 PART 2" so the model
-    // only sees the Part 2 output spec, writing rules, and quality check.
-    if (part === 'p2') {
-      var p2Marker = 'OUTPUT STRUCTURE \u2014 PART 2 of 2';
-      var idx = body.indexOf(p2Marker);
-      if (idx !== -1) {
-        // Keep the preamble (audience, data block, data collection rules) +
-        // everything from Part 2 onward.
-        var preambleEnd = body.indexOf('OUTPUT STRUCTURE \u2014 PART 1');
-        var preamble = preambleEnd !== -1 ? body.slice(0, preambleEnd) : '';
-        body = preamble + body.slice(idx);
-      }
-      body = 'This is PART 2 of the Signal Stack institutional drilldown for ' + ticker + '. ' +
-             'Part 1 (Sections 1\u20136) has already been generated. ' +
-             'Produce only the Part 2 sections (7\u201311) as a self-contained HTML file ' +
-             'using the same branding and CSS as Part 1.\n\n' + body;
-    }
-
-    var header = 'Run the canonical Signal Stack drilldown engine on ' + ticker +
-      ' (' + (part === 'p2' ? 'PART 2 of 2' : 'PART 1 of 2') + '). ';
-    var instruction =
+    var header =
+      'Run the canonical Signal Stack institutional drilldown engine on ' + ticker + '. ' +
       'Use the prompt below verbatim. The [SIGNAL_DATA_BLOCK] has been pre-filled ' +
-      'with live data \u2014 treat it as ground truth. When you finish, output the full HTML ' +
-      'note in a single fenced ```html block.';
-    return header + instruction + '\n\n---\n\n' + body;
+      'with live data \u2014 treat it as ground truth. ' +
+      'Return ONE complete self-contained HTML document covering all 14 sections ' +
+      'inside a single fenced ```html block. No prose outside the block.';
+    return header + '\n\n---\n\n' + body;
   }
 
-  // Convenience wrapper that forces Part 2 framing.
+  // Legacy wrappers kept for backwards-compat in case other code paths call
+  // them; they now both produce the one-step prompt.
+  function _buildFullPrompt(ticker, promptText /*, part (ignored) */) {
+    return _buildOneStepPrompt(ticker, promptText);
+  }
   function _buildPart2Prompt(ticker, promptText) {
-    return _buildFullPrompt(ticker, promptText, 'p2');
+    return _buildOneStepPrompt(ticker, promptText);
   }
 
   // Best-effort clipboard write — navigator.clipboard requires a secure
@@ -667,7 +643,7 @@
       : '';
     var saveBtn   = '<button type="button" class="btn-sm" data-dd-act="save-html">Save HTML to library</button>';
     var runBtn    = t
-      ? '<button type="button" class="btn-sm btn-primary" data-dd-act="run">Run institutional drilldown</button>'
+      ? '<button type="button" class="btn-sm btn-primary" data-dd-act="run">Generate drilldown</button>'
       : '';
 
     return (
@@ -696,12 +672,13 @@
       '<div class="dd-empty">' +
         '<div class="dd-empty-card">' +
           '<div class="dd-empty-eyebrow">Institutional drilldown</div>' +
-          '<div class="dd-empty-title">Generate a buyside-grade research note in one click</div>' +
+          '<div class="dd-empty-title">Generate a complete buyside-grade stock primer in one click</div>' +
           '<div class="dd-empty-body">' +
-            'Drilldowns are two-stage notes pre-filled with live Supabase data (quote, ' +
-            'estimates, comps). Part\u00a01 covers valuation, KPIs, industry, catalysts, and ' +
-            'earnings setup. Part\u00a02 covers management, competitive landscape, risks, ' +
-            'financials, and diligence questions. Both parts are saved with version history.' +
+            'One Perplexity Deep Research call returns a 14-section institutional ' +
+            'primer pre-filled with live Supabase data (quote, estimates, comps): ' +
+            'valuation, KPIs, bull/base/bear, sensitivity, industry structure, ' +
+            'earnings setup, management, risks, and diligence questions. ' +
+            'Every run is saved to the library with version history.' +
           '</div>' +
           '<div class="dd-empty-actions">' +
             '<input type="text" id="dd-empty-ticker" placeholder="Enter ticker (e.g. ZS, NVDA, 1364.HK)" autocomplete="off" spellcheck="false">' +
@@ -715,40 +692,85 @@
 
   function _renderRunPanel(state) {
     var t = state.ticker;
+    var hasKey = !!(global.SignalAIApi && global.SignalAIApi.hasKey());
+    var defaults = (hasKey && global.SignalAIApi.getDefaults && global.SignalAIApi.getDefaults()) || {};
+    var model = defaults.drilldownModel || 'sonar-deep-research';
+    var effort = defaults.defaultEffort || 'medium';
+
+    if (hasKey) {
+      // Primary one-step API workflow. No textarea unless the call fails
+      // and the user explicitly opens the paste-back fallback.
+      return (
+        '<div class="dd-run-panel dd-run-panel-onestep">' +
+          '<div class="dd-run-step">' +
+            '<div class="dd-step-body">' +
+              '<div class="dd-step-title">Generate a complete buyside-grade stock primer in one click</div>' +
+              '<div class="dd-step-sub">' +
+                'One Perplexity API call returns a 14-section institutional ' +
+                'note for <strong>' + _esc(t) + '</strong> with the ' +
+                '<code>[SIGNAL_DATA_BLOCK]</code> pre-filled from live ' +
+                'Supabase data. Model: <code>' + _esc(model) + '</code> · ' +
+                'effort: <code>' + _esc(effort) + '</code>. ' +
+                'Deep Research can take 2–5 minutes; the note auto-saves and opens when ready.' +
+              '</div>' +
+              '<div class="dd-run-step-actions">' +
+                '<button type="button" class="btn-primary" data-dd-act="run">Generate drilldown for ' + _esc(t) + '</button>' +
+                '<button type="button" class="btn-sm" data-dd-act="copy-prompt" title="Copy the canonical prompt to your clipboard">Copy prompt</button>' +
+              '</div>' +
+              '<div id="dd-run-status" class="dd-run-status"></div>' +
+              '<div class="dd-run-fallback">' +
+                'Paste-back mode is available if the API call fails. ' +
+                '<a href="#" data-dd-act="run-deeplink">Open Deep Research paste-back flow</a>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          // Hidden paste-back panel — revealed by _runPasteBackDrilldown()
+          '<div class="dd-run-step dd-run-pasteback" id="dd-pasteback-panel" hidden>' +
+            '<div class="dd-step-body">' +
+              '<div class="dd-step-title">Paste the HTML back to save it</div>' +
+              '<div class="dd-step-sub">Fallback path. Paste the entire HTML block from the Deep Research output and save. The Library auto-versions every save and writes a <code>notes/drilldown/&lt;ticker&gt;_&lt;date&gt;_full.md</code> file plus best-effort Supabase upsert.</div>' +
+              '<textarea id="dd-html-input" class="dd-html-input" placeholder="Paste the full HTML note here…" rows="6"></textarea>' +
+              '<div class="dd-run-meta">' +
+                '<label>Trigger ' +
+                  '<select id="dd-trigger-input">' +
+                    '<option value="deep-research">Deep Research</option>' +
+                    '<option value="manual">Manual run</option>' +
+                    '<option value="refresh">Refresh</option>' +
+                    '<option value="earnings_alert">Earnings alert</option>' +
+                  '</select>' +
+                '</label>' +
+                '<button type="button" class="btn-sm btn-primary" data-dd-act="save-pasted">Save to library</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    // No API key — render the compact paste-back fallback as the default.
     return (
-      '<div class="dd-run-panel">' +
+      '<div class="dd-run-panel dd-run-panel-fallback">' +
         '<div class="dd-run-step">' +
-          '<div class="dd-step-num">1</div>' +
           '<div class="dd-step-body">' +
-            '<div class="dd-step-title">Run the two-stage drilldown prompt</div>' +
+            '<div class="dd-step-title">Set a Perplexity API key for one-click generation</div>' +
             '<div class="dd-step-sub">' +
-              (global.SignalAIApi && global.SignalAIApi.hasKey()
-                ? '<strong>API key detected.</strong> Runs the canonical drilldown directly via the Perplexity API (model + effort set in API Settings). The HTML returns into the paste box below for review and save. No new tab needed.'
-                : 'Opens a fresh Perplexity <strong>Deep Research</strong> thread for <strong>' + _esc(t) + '</strong> and copies the prompt with the <code>[SIGNAL_DATA_BLOCK]</code> pre-filled from live Supabase data. <em>Paste it as your first message in the new tab.</em>') +
-              ' Run Part\u00a01 first (valuation, KPIs, industry, catalysts, earnings setup), then Part\u00a02 (management, competitive landscape, risks, financials, diligence).' +
+              'No API key detected. Add one in <strong>API Settings</strong> to ' +
+              'generate the full institutional primer in a single click. ' +
+              'Otherwise use the paste-back flow below: open Perplexity Deep ' +
+              'Research, paste the canonical prompt as your first message, ' +
+              'then paste the resulting HTML back here to save.' +
             '</div>' +
             '<div class="dd-run-step-actions">' +
-              '<button type="button" class="btn-primary" data-dd-act="run">Run Part\u00a01 for ' + _esc(t) + '</button>' +
-              '<button type="button" class="btn-primary" data-dd-act="run-p2">Run Part\u00a02 for ' + _esc(t) + '</button>' +
-              '<button type="button" class="btn-sm" data-dd-act="copy-prompt" title="Copy the Part 1 prompt to your clipboard without opening a new tab">Copy Part\u00a01 prompt</button>' +
-              '<button type="button" class="btn-sm" data-dd-act="copy-p2-prompt" title="Copy the Part 2 prompt to your clipboard without opening a new tab">Copy Part\u00a02 prompt</button>' +
+              '<button type="button" class="btn-primary" data-dd-act="run">Open Deep Research for ' + _esc(t) + '</button>' +
+              '<button type="button" class="btn-sm" data-dd-act="copy-prompt" title="Copy the canonical prompt to your clipboard">Copy prompt</button>' +
             '</div>' +
-            '<div class="dd-run-fallback">' +
-              (global.SignalAIApi && global.SignalAIApi.hasKey()
-                ? 'Force the paste-back flow instead? ' +
-                  '<a href="#" data-dd-act="run-deeplink">Open Deep Research tab (P1)</a> &nbsp;\u00b7&nbsp; ' +
-                  '<a href="#" data-dd-act="run-deeplink-p2">Open Deep Research tab (P2)</a>'
-                : 'Prefer a regular Perplexity tab (not Deep Research)? ' +
-                  '<a href="#" data-dd-act="run-fallback" data-part="p1">Copy Part\u00a01 prompt instead</a> &nbsp;\u00b7&nbsp; ' +
-                  '<a href="#" data-dd-act="run-fallback" data-part="p2">Copy Part\u00a02 prompt instead</a>') +
-            '</div>' +
+            '<div id="dd-run-status" class="dd-run-status"></div>' +
           '</div>' +
         '</div>' +
         '<div class="dd-run-step">' +
-          '<div class="dd-step-num">2</div>' +
           '<div class="dd-step-body">' +
             '<div class="dd-step-title">Paste the HTML back to save it</div>' +
-            '<div class="dd-step-sub">Copy the entire HTML block from the Deep Research output, paste below, and save. The Library auto-versions every save so you can compare drafts later. Saving also writes a <code>notes/drilldown/&lt;ticker&gt;_&lt;date&gt;_&lt;part&gt;.md</code> file and upserts to the Supabase <code>drilldown_intel</code> table if the backend is reachable.</div>' +
+            '<div class="dd-step-sub">The Library auto-versions every save and writes a <code>notes/drilldown/&lt;ticker&gt;_&lt;date&gt;_full.md</code> file plus best-effort Supabase upsert.</div>' +
             '<textarea id="dd-html-input" class="dd-html-input" placeholder="Paste the full HTML note here…" rows="6"></textarea>' +
             '<div class="dd-run-meta">' +
               '<label>Trigger ' +
@@ -767,52 +789,10 @@
     );
   }
 
-  // Find the most recent Part 1 and Part 2 versions in a versions array.
-  // Falls back to legacy entries (no `part` field) by inferring from the html:
-  // Part 1 contains the Part 1 output spec markers, Part 2 contains Part 2.
-  function _findLatestParts(versions) {
-    var p1 = null, p2 = null;
-    var sorted = versions.slice().sort(function (a, b) { return b.version - a.version; });
-    for (var i = 0; i < sorted.length; i++) {
-      var v = sorted[i];
-      var part = v.part;
-      if (!part && v.html) {
-        // Legacy inference — Part 2 notes typically start with a Sections 7-11
-        // marker; default everything else to Part 1.
-        if (/PART\s*2/i.test(v.html.slice(0, 2000))) part = 'p2';
-        else part = 'p1';
-      }
-      if (part === 'p1' && !p1) p1 = v;
-      if (part === 'p2' && !p2) p2 = v;
-      if (p1 && p2) break;
-    }
-    return { p1: p1, p2: p2 };
-  }
-
-  // Merge two HTML drilldown documents by splicing Part 2's <body> contents
-  // immediately before Part 1's </body>. If either document lacks <body>,
-  // we wrap accordingly so the result is still a valid standalone document.
-  function _mergePartsHtml(p1Html, p2Html) {
-    if (!p1Html) return p2Html || '';
-    if (!p2Html) return p1Html;
-
-    function extractBody(html) {
-      var m = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-      return m ? m[1] : null;
-    }
-    var p2Body = extractBody(p2Html);
-    if (p2Body == null) {
-      // Treat the entire p2 doc as a fragment.
-      p2Body = p2Html;
-    }
-    var divider = '\n<hr class="dd-part-divider" style="margin:32px 0; border:none; border-top:1px solid #444;">\n' +
-                  '<!-- ==== Part 2 (Sections 7\u201311) merged in ==== -->\n';
-    if (/<\/body>/i.test(p1Html)) {
-      return p1Html.replace(/<\/body>/i, divider + p2Body + '\n</body>');
-    }
-    // No </body> tag — just append.
-    return p1Html + divider + p2Body;
-  }
+  // NOTE: Legacy _findLatestParts and _mergePartsHtml helpers were removed
+  // when the drilldown became one-step. Legacy saved notes with part: 'p1' /
+  // 'p2' / 'merged' are still displayed in the versions table with their
+  // badges; they simply can't be merged through the UI anymore.
 
   function _renderVersionsTable(state) {
     var rec = _lib().getTicker(state.ticker);
@@ -838,17 +818,10 @@
       );
     }).join('');
 
-    // Merge-eligibility — require at least one Part\u00a01 + one Part\u00a02.
-    var parts = _findLatestParts(rec.versions);
-    var canMerge = !!(parts.p1 && parts.p2);
-    var mergeBar = canMerge
-      ? (
-          '<div class="dd-card-foot" style="display:flex; gap:10px; align-items:center; padding:10px 14px; border-top:1px solid var(--border-light);">' +
-            '<button type="button" class="btn-sm btn-primary" data-dd-act="merge-parts">Merge Part\u00a01 + Part\u00a02 into single note</button>' +
-            '<span style="font-size:11px; color:var(--text-secondary)">Will combine v' + parts.p1.version + ' (P1) + v' + parts.p2.version + ' (P2) into a new merged version.</span>' +
-          '</div>'
-        )
-      : '';
+    // Legacy notes saved as 'p1' / 'p2' still get their badges in the
+    // versions table (above), but the merge bar is gone from the default UX
+    // — new runs save as 'full' so there's nothing to merge.
+    var mergeBar = '';
 
     return (
       '<div class="dd-card">' +
@@ -1072,57 +1045,28 @@
       return;
     }
     if (act === 'run' || act === 'refresh') {
-      // Prefer the API path if a key is stored; otherwise use the Deep
-      // Research deeplink flow that requires the analyst to paste back.
+      // One-step flow when an API key is configured; otherwise the
+      // paste-back fallback (which opens Deep Research + copies the prompt).
+      var trig = act === 'refresh' ? 'refresh' : 'api';
       if (global.SignalAIApi && global.SignalAIApi.hasKey()) {
-        _runDrilldownViaApi(act === 'refresh' ? 'refresh' : 'manual', 'p1');
+        _runOneStepDrilldown(trig);
       } else {
-        _runDrilldownApi(act === 'refresh' ? 'refresh' : 'manual', 'p1');
+        _runPasteBackDrilldown(act === 'refresh' ? 'refresh' : 'manual');
       }
       return;
     }
-    if (act === 'run-p2') {
-      if (global.SignalAIApi && global.SignalAIApi.hasKey()) {
-        _runDrilldownViaApi('manual', 'p2');
-      } else {
-        _runDrilldownApi('manual', 'p2');
-      }
-      return;
-    }
-    if (act === 'run-deeplink' || act === 'run-deeplink-p2') {
-      // Force the paste-back flow even if a key is set (escape hatch).
-      _runDrilldownApi('manual', act === 'run-deeplink-p2' ? 'p2' : 'p1');
-      return;
-    }
-    if (act === 'merge-parts') {
-      _mergeParts();
-      return;
-    }
-    if (act === 'run-fallback') {
-      // Old window.open + clipboard flow — kept as a fallback for when the
-      // local backend (port 5001) isn't running.
-      var partAttr = (target.dataset && target.dataset.part) || 'p1';
-      _runDrilldown('manual', partAttr === 'p2' ? 'p2' : 'p1');
+    if (act === 'run-deeplink') {
+      // Force the paste-back flow even if an API key is set (escape hatch).
+      _runPasteBackDrilldown('manual');
       return;
     }
     if (act === 'copy-prompt') {
       if (!state.ticker) return;
       _loadPrompt().then(function (txt) {
-        var fullPrompt = _buildFullPrompt(state.ticker, txt, 'p1');
+        var fullPrompt = _buildOneStepPrompt(state.ticker, txt);
         _copyToClipboard(fullPrompt).then(function (ok) {
-          if (ok) _toast('Part 1 drilldown prompt copied to clipboard.', 'ok');
-          else    _toast('Clipboard blocked — try the Run button instead.', 'error');
-        });
-      });
-      return;
-    }
-    if (act === 'copy-p2-prompt') {
-      if (!state.ticker) return;
-      _loadPrompt().then(function (txt) {
-        var fullPrompt = _buildPart2Prompt(state.ticker, txt);
-        _copyToClipboard(fullPrompt).then(function (ok) {
-          if (ok) _toast('Part 2 drilldown prompt copied to clipboard.', 'ok');
-          else    _toast('Clipboard blocked — try the Run button instead.', 'error');
+          if (ok) _toast('Drilldown prompt copied to clipboard.', 'ok');
+          else    _toast('Clipboard blocked — try the Generate button instead.', 'error');
         });
       });
       return;
@@ -1149,40 +1093,6 @@
     }
   }
 
-  // Merge the most recent Part 1 + Part 2 versions for the current ticker
-  // into a single new version (trigger='merged') and load it in the iframe.
-  function _mergeParts() {
-    if (!state.ticker) return;
-    var lib = _lib();
-    var rec = lib.getTicker(state.ticker);
-    if (!rec || !rec.versions || !rec.versions.length) {
-      _toast('No saved versions to merge for ' + state.ticker + '.', 'error');
-      return;
-    }
-    var parts = _findLatestParts(rec.versions);
-    if (!parts.p1 || !parts.p2) {
-      _toast('Need both a Part\u00a01 and a Part\u00a02 version before merging.', 'error');
-      return;
-    }
-    var mergedHtml = _mergePartsHtml(parts.p1.html, parts.p2.html);
-    var live = _currentTickerData(state.ticker);
-    try {
-      var entry = lib.save(state.ticker, {
-        html: mergedHtml,
-        trigger: 'merged',
-        part: 'merged',
-        price: live ? live.price : null,
-        target: live ? live.priceTarget : null,
-      });
-      state.openVersion = entry.version;
-      state.showRunPanel = false;
-      render();
-      _toast('Merged v' + parts.p1.version + ' + v' + parts.p2.version + ' \u2192 v' + entry.version + '.', 'ok');
-    } catch (e) {
-      _toast('Merge save failed: ' + (e && e.message ? e.message : 'Library quota?'), 'error');
-    }
-  }
-
   // ---- Backend endpoint config (overridable for dev) ------------------
   var DRILLDOWN_BACKEND = (function () {
     try {
@@ -1192,97 +1102,87 @@
     return 'http://localhost:5001';
   })();
 
-  // Mutate the Run button DOM in place to reflect a phase of the API call.
-  // phase: 'idle' | 'fetching' | 'generating' | 'done' | 'error'
-  function _setRunButtonState(part, phase, msg) {
-    var sel = part === 'p2' ? '[data-dd-act="run-p2"]' : '[data-dd-act="run"]';
-    var btn = document.querySelector(sel);
-    if (!btn) return;
-    var label = part === 'p2' ? 'Part\u00a02' : 'Part\u00a01';
+  // Mutate the Generate button DOM in place to reflect a phase of the run.
+  // phase: 'idle' | 'preparing' | 'calling' | 'saving' | 'done' | 'error'
+  function _setRunButtonState(phase, msg) {
+    var btn = document.querySelector('[data-dd-act="run"]');
     var ticker = state.ticker || '';
-    btn.classList.remove('btn-loading');
-    btn.removeAttribute('disabled');
-    if (phase === 'fetching') {
-      btn.setAttribute('disabled', 'disabled');
-      btn.classList.add('btn-loading');
-      btn.innerHTML = '<span class="dd-spinner" aria-hidden="true"></span> Fetching data\u2026';
-    } else if (phase === 'generating') {
-      btn.setAttribute('disabled', 'disabled');
-      btn.classList.add('btn-loading');
-      btn.innerHTML = '<span class="dd-spinner" aria-hidden="true"></span> Generating ' + label + '\u2026';
-    } else if (phase === 'done') {
-      btn.textContent = 'Run ' + label + ' again';
-    } else if (phase === 'error') {
-      btn.textContent = 'Retry ' + label;
-    } else {
-      btn.textContent = 'Run ' + label + ' for ' + ticker;
-    }
-    // Render or clear the inline status node beneath the button group.
-    var status = document.getElementById('dd-run-status-' + (part === 'p2' ? 'p2' : 'p1'));
-    if (!status) {
-      var actionsBlock = btn.parentNode;
-      if (actionsBlock && actionsBlock.parentNode) {
-        status = document.createElement('div');
-        status.id = 'dd-run-status-' + (part === 'p2' ? 'p2' : 'p1');
-        status.className = 'dd-run-status';
-        actionsBlock.parentNode.insertBefore(status, actionsBlock.nextSibling);
-      }
-    }
-    if (status) {
-      if (phase === 'error') {
-        status.className = 'dd-run-status dd-run-status-error';
-        status.textContent = msg || 'Drilldown failed. Try "Copy prompt instead" below.';
-      } else if (phase === 'fetching') {
-        status.className = 'dd-run-status dd-run-status-info';
-        status.textContent = msg || 'Waiting for live ticker data\u2026';
-      } else if (phase === 'generating') {
-        status.className = 'dd-run-status dd-run-status-info';
-        status.textContent = msg || 'Calling Perplexity sonar-pro\u2026 this usually takes 30\u201360s.';
+    if (btn) {
+      btn.classList.remove('btn-loading');
+      btn.removeAttribute('disabled');
+      if (phase === 'preparing' || phase === 'calling' || phase === 'saving') {
+        btn.setAttribute('disabled', 'disabled');
+        btn.classList.add('btn-loading');
+        var inner = phase === 'preparing' ? 'Preparing ticker data\u2026'
+                  : phase === 'calling'   ? 'Calling Perplexity\u2026'
+                  :                          'Saving to library\u2026';
+        btn.innerHTML = '<span class="dd-spinner" aria-hidden="true"></span> ' + inner;
       } else if (phase === 'done') {
-        status.className = 'dd-run-status dd-run-status-ok';
-        status.textContent = msg || 'Saved to library.';
+        btn.textContent = 'Generate drilldown for ' + ticker;
+      } else if (phase === 'error') {
+        btn.textContent = 'Retry drilldown for ' + ticker;
       } else {
-        status.className = 'dd-run-status';
-        status.textContent = '';
+        btn.textContent = 'Generate drilldown for ' + ticker;
       }
+    }
+    var status = document.getElementById('dd-run-status');
+    if (status) {
+      status.className = 'dd-run-status' + (
+          phase === 'error' ? ' dd-run-status-error'
+        : phase === 'done'  ? ' dd-run-status-ok'
+        : (phase === 'preparing' || phase === 'calling' || phase === 'saving') ? ' dd-run-status-info'
+        : ''
+      );
+      status.textContent = msg || '';
     }
   }
 
-  // Deep Research deeplink flow: opens a fresh Perplexity Deep Research
-  // thread, copies the canonical prompt to the clipboard, and prompts the
-  // analyst to paste the resulting HTML back into the Save textarea. The
-  // Save step then POSTs to /drilldown/save which writes a markdown file
-  // AND upserts to the Supabase drilldown_intel table. No API key required.
+  // Build the Perplexity Deep Research deeplink URL used by the paste-back
+  // fallback. mode=research routes the new thread into Deep Research.
   function _buildDeepResearchUrl(ticker) {
-    // The mode=research param routes the new thread into Deep Research.
-    // We keep `q` short (just the short prefill) to avoid 414 URI Too Large.
     return (
       'https://www.perplexity.ai/search/new?mode=research&q=' +
       encodeURIComponent(_buildShortPrefill(ticker))
     );
   }
 
-  // NEW: Run the drilldown by calling the Perplexity REST API directly
-  // using the analyst's stored key. Posts the canonical prompt as a single
-  // chat completion, then writes the returned HTML into the dd-html-input
-  // textarea so the existing Save flow can persist it (Library + backend +
-  // Supabase). Falls back to a clear error message if anything fails.
-  function _runDrilldownViaApi(trigger, part) {
-    if (!state.ticker) return;
-    part = part || 'p1';
-    var partKey = part === 'p2' ? 'p2' : 'p1';
-    state.showRunPanel = true;
-    state.lastRunPart = partKey;
-    state.lastRunTrigger = trigger;
-    render();
+  // The model is asked to return the note inside ```html ... ``` fences.
+  // Strip them if present so the iframe renders cleanly. If no fence is
+  // found, assume the textarea already holds raw HTML.
+  function _extractHtmlBlock(s) {
+    if (!s) return '';
+    var fenceMatch = s.match(/```(?:html)?\s*\n([\s\S]*?)\n```/i);
+    if (fenceMatch) return fenceMatch[1].trim();
+    return s.trim();
+  }
 
+  // ─────────────────────────────────────────────────────────────────────
+  // ONE-STEP API DRILLDOWN
+  //
+  // Generate the complete institutional primer in a single Perplexity API
+  // call, save it to the library, persist it to the backend (best-effort),
+  // and open the viewer automatically. No paste step required.
+  // ─────────────────────────────────────────────────────────────────────
+  function _runOneStepDrilldown(trigger) {
+    if (!state.ticker) {
+      _toast('Pick a ticker first.', 'error');
+      return;
+    }
     var API = global.SignalAIApi;
-    var defaults = (API && API.getDefaults && API.getDefaults()) || {};
+    if (!API || !API.hasKey()) {
+      _toast('No API key configured. Use the paste-back flow.', 'error');
+      _runPasteBackDrilldown(trigger);
+      return;
+    }
+    var ticker = state.ticker;
+    var defaults = (API.getDefaults && API.getDefaults()) || {};
     var model = defaults.drilldownModel || 'sonar-deep-research';
     var effort = defaults.defaultEffort || 'medium';
-    var ticker = state.ticker;
 
-    _setRunButtonState(partKey, 'fetching', 'Preparing ticker data\u2026');
+    state.showRunPanel = true;
+    state.openVersion = null;
+    render();
+    _setRunButtonState('preparing', 'Preparing ticker data\u2026');
 
     function whenReady(cb) {
       if (isTickerDataReady(ticker)) { cb(true); return; }
@@ -1290,121 +1190,158 @@
       var timer = setInterval(function () {
         attempts++;
         if (isTickerDataReady(ticker)) { clearInterval(timer); cb(true); }
-        else if (attempts >= 15) { clearInterval(timer); cb(false); }
+        else if (attempts >= 15)       { clearInterval(timer); cb(false); }
       }, 1000);
     }
 
     whenReady(function (ready) {
       if (!ready) {
-        _setRunButtonState(partKey, 'error',
-          'Live ticker data didn\u2019t load in 15s. Try again, or use "Copy prompt instead" below.');
+        _setRunButtonState('error',
+          'Live ticker data didn\u2019t load in 15s. Try again, or use the paste-back fallback below.');
         return;
       }
 
       _loadPrompt().then(function (txt) {
-        var fullPrompt = partKey === 'p2'
-          ? _buildPart2Prompt(ticker, txt)
-          : _buildFullPrompt(ticker, txt, 'p1');
-
-        var label = partKey === 'p2' ? 'Part\u00a02' : 'Part\u00a01';
-        _setRunButtonState(partKey, 'generating',
-          'Calling ' + model + ' (effort=' + effort + '). Deep Research can take 2\u20135 min. The HTML will land in the paste box below when done.');
+        var fullPrompt = _buildOneStepPrompt(ticker, txt);
+        _setRunButtonState('calling',
+          'Calling ' + model + ' (effort=' + effort + '). Deep Research can take 2\u20135 min.');
 
         API.call({
           model: model,
-          system: 'You are running the Signal Stack institutional drilldown engine. Return only the requested HTML inside a single ```html fenced block. No prose outside the block.',
+          system: 'You are Signal Stack AI\u2019s institutional stock drilldown engine. Return only a complete standalone HTML document inside one ```html fenced block. No prose outside the block.',
           prompt: fullPrompt,
-          max_tokens: 8000,
+          max_tokens: 12000,
           reasoning_effort: effort,
           timeout_ms: 600000
         }).then(function (res) {
-          if (!res.ok) {
-            _setRunButtonState(partKey, 'error', 'API error: ' + (res.error || 'unknown') + ' \u2014 try "Run via Deep Research" below for the paste-back flow.');
+          if (!res || !res.ok) {
+            var errMsg = (res && res.error) || 'unknown error';
+            _setRunButtonState('error',
+              'API error: ' + errMsg + ' \u2014 use the paste-back fallback below.');
+            // Reveal the paste-back panel so the user has a clear next step.
+            _showPasteBackPanel();
             return;
           }
-          // The model is asked to return an ```html fenced block; extract it.
           var html = _extractHtmlBlock(res.content) || res.content;
-          var ta = document.getElementById('dd-html-input');
-          if (ta) {
-            ta.value = html;
-            ta.focus();
+          if (!html || html.length < 200) {
+            _setRunButtonState('error',
+              'Model returned an empty or very short response. Try again, or use the paste-back fallback below.');
+            _showPasteBackPanel();
+            return;
           }
-          var sel = document.getElementById('dd-trigger-input');
-          if (sel) {
-            var v = trigger === 'refresh' ? 'refresh' : 'deep-research';
-            var found = false;
-            for (var i = 0; i < sel.options.length; i++) {
-              if (sel.options[i].value === v) { found = true; break; }
-            }
-            if (!found) {
-              var opt = document.createElement('option');
-              opt.value = v; opt.textContent = v === 'deep-research' ? 'Deep Research' : 'Refresh';
-              sel.appendChild(opt);
-            }
-            sel.value = v;
+
+          _setRunButtonState('saving', 'Saving to library\u2026');
+          var live = _currentTickerData(ticker);
+          var entry;
+          try {
+            entry = _lib().save(ticker, {
+              html: html,
+              trigger: trigger || 'api',
+              part: 'full',
+              price: live ? live.price : null,
+              target: live ? live.priceTarget : null,
+              model: res.model,
+              usage: res.usage,
+              cost_estimate: res.cost_estimate
+            });
+          } catch (e) {
+            _setRunButtonState('error',
+              'Library save failed: ' + (e && e.message ? e.message : 'quota?'));
+            return;
           }
-          var costStr = API.formatCost(res.cost_estimate);
-          var usageStr = (res.usage && res.usage.completion_tokens) ? (res.usage.completion_tokens + ' completion tok') : '';
-          _setRunButtonState(partKey, 'done',
-            label + ' generated via API (' + res.model + ', ~' + costStr + (usageStr ? ', ' + usageStr : '') + '). Review the HTML in the paste box below, then click "Save to library".');
+
+          var costStr = API.formatCost ? API.formatCost(res.cost_estimate) : '';
+          _setRunButtonState('done',
+            'Saved v' + entry.version + ' \u2014 opening note\u2026 (' + (res.model || model) + (costStr ? ', ~' + costStr : '') + ')');
+          _toast(ticker + ' Drilldown generated and saved \u2014 v' + entry.version + '.', 'ok');
+
+          state.openVersion = entry.version;
+          state.showRunPanel = false;
+          state.lastRunPart = 'full';
+          state.lastRunTrigger = trigger || 'api';
+          render();
+
+          // Best-effort backend write (notes/drilldown markdown + Supabase
+          // drilldown_intel upsert). Non-blocking.
+          _saveDrilldownToBackend({
+            ticker: ticker,
+            part: 'full',
+            html: html,
+            trigger: trigger || 'api',
+            price_at_generation: live ? live.price : null,
+            model: res.model,
+            usage: res.usage,
+            cost_estimate: res.cost_estimate
+          });
+        }, function (err) {
+          _setRunButtonState('error',
+            'Request failed: ' + (err && err.message ? err.message : String(err)) +
+            ' \u2014 use the paste-back fallback below.');
+          _showPasteBackPanel();
         });
       });
     });
   }
 
-  function _runDrilldownApi(trigger, part) {
-    if (!state.ticker) return;
-    part = part || 'p1';
-    var partKey = part === 'p2' ? 'p2' : 'p1';
-    state.showRunPanel = true;
-    render();
+  // Reveal the hidden paste-back panel inside the run surface (used when the
+  // API run fails or the user clicks the explicit "Open Deep Research
+  // paste-back flow" link).
+  function _showPasteBackPanel() {
+    var panel = document.getElementById('dd-pasteback-panel');
+    if (panel) panel.hidden = false;
+    var ta = document.getElementById('dd-html-input');
+    if (ta) ta.focus();
+  }
 
+  // ─────────────────────────────────────────────────────────────────────
+  // PASTE-BACK FALLBACK
+  //
+  // Opens a fresh Perplexity Deep Research tab pre-filled with the short
+  // prompt, copies the canonical one-step prompt to the clipboard, and
+  // reveals the textarea so the analyst can paste the result back.
+  // ─────────────────────────────────────────────────────────────────────
+  function _runPasteBackDrilldown(trigger) {
+    if (!state.ticker) {
+      _toast('Pick a ticker first.', 'error');
+      return;
+    }
     var ticker = state.ticker;
+    state.showRunPanel = true;
+    state.lastRunPart = 'full';
+    state.lastRunTrigger = trigger || 'manual';
+    render();
+    _showPasteBackPanel();
 
-    // Open the Deep Research tab IMMEDIATELY inside the click gesture so
-    // Safari/Firefox don\u0027t block it (popup blockers only fire after a
-    // Promise.then resolves).
+    // Open the new tab IMMEDIATELY (still inside the user gesture) so popup
+    // blockers don\u2019t fire after a Promise.then.
     var newWin = null;
     try { newWin = global.open('about:blank', '_blank', 'noopener'); } catch (_) {}
 
     function whenReady(cb) {
       if (isTickerDataReady(ticker)) { cb(true); return; }
-      _setRunButtonState(partKey, 'fetching');
+      _setRunButtonState('preparing', 'Preparing ticker data\u2026');
       var attempts = 0;
       var timer = setInterval(function () {
         attempts++;
-        if (isTickerDataReady(ticker)) {
-          clearInterval(timer);
-          cb(true);
-        } else if (attempts >= 15) {
-          clearInterval(timer);
-          cb(false);
-        }
+        if (isTickerDataReady(ticker)) { clearInterval(timer); cb(true); }
+        else if (attempts >= 15)       { clearInterval(timer); cb(false); }
       }, 1000);
     }
 
     whenReady(function (ready) {
       if (!ready) {
-        _setRunButtonState(partKey, 'error',
-          'Live ticker data didn\u0027t load in 15s. Refresh the watchlist, then try again. ' +
-          'You can still use "Copy prompt instead" below.');
+        _setRunButtonState('error',
+          'Live ticker data didn\u2019t load in 15s. Refresh the watchlist and try again.');
         if (newWin && !newWin.closed) { try { newWin.close(); } catch (_) {} }
         return;
       }
 
-      _setRunButtonState(partKey, 'generating',
-        'Opening Deep Research for ' + ticker + ' (' + (partKey === 'p2' ? 'Part\u00a02' : 'Part\u00a01') + ')\u2026 paste the prompt as your first message.');
+      _setRunButtonState('calling',
+        'Opening Deep Research for ' + ticker + '\u2026 paste the prompt as your first message.');
 
       _loadPrompt().then(function (txt) {
-        var fullPrompt = partKey === 'p2'
-          ? _buildPart2Prompt(ticker, txt)
-          : _buildFullPrompt(ticker, txt, 'p1');
+        var fullPrompt = _buildOneStepPrompt(ticker, txt);
         var url = _buildDeepResearchUrl(ticker);
-        // Persist the per-part prompt + state for the Save step.
-        state.lastRunPart = partKey;
-        state.lastRunTrigger = trigger;
-
-        // Navigate the pre-opened tab; fallback to a same-gesture open.
         if (newWin && !newWin.closed) {
           try { newWin.location.href = url; } catch (_) { try { global.open(url, '_blank', 'noopener'); } catch (_) {} }
         } else {
@@ -1412,21 +1349,18 @@
         }
 
         _copyToClipboard(fullPrompt).then(function (ok) {
-          var label = partKey === 'p2' ? 'Part\u00a02' : 'Part\u00a01';
           if (ok) {
-            _setRunButtonState(partKey, 'done',
-              label + ' prompt copied. Paste it as your first message in the new Deep Research tab, then paste the HTML output below to save.');
+            _setRunButtonState('done',
+              'Prompt copied. Paste it as your first message in the new Deep Research tab, then paste the HTML output below to save.');
           } else {
-            _setRunButtonState(partKey, 'error',
-              'Clipboard blocked. Use "Copy ' + label + ' prompt instead" below to retry.');
+            _setRunButtonState('error',
+              'Clipboard blocked. Use the "Copy prompt" button to retry.');
           }
         });
 
-        // Default the Save trigger select to reflect Deep Research.
         var sel = document.getElementById('dd-trigger-input');
         if (sel) {
           var v = trigger === 'refresh' ? 'refresh' : 'deep-research';
-          // Add the option if it isn\u0027t already in the dropdown.
           var found = false;
           for (var i = 0; i < sel.options.length; i++) {
             if (sel.options[i].value === v) { found = true; break; }
@@ -1439,46 +1373,7 @@
           }
           sel.value = v;
         }
-        var ta = document.getElementById('dd-html-input');
-        if (ta) ta.focus();
       });
-    });
-  }
-
-  function _runDrilldown(trigger, part) {
-    if (!state.ticker) return;
-    part = part || 'p1';
-    state.showRunPanel = true;
-    render();
-    // Open the new tab IMMEDIATELY so the popup fires inside the click gesture
-    // (Safari/Firefox block window.open from inside a Promise.then callback).
-    var newWin = null;
-    try { newWin = global.open('about:blank', '_blank', 'noopener'); } catch (_) {}
-
-    _loadPrompt().then(function (txt) {
-      var url = _buildPplxUrl(state.ticker);
-      var fullPrompt = part === 'p2'
-        ? _buildPart2Prompt(state.ticker, txt)
-        : _buildFullPrompt(state.ticker, txt, 'p1');
-      var label = part === 'p2' ? 'Part 2' : 'Part 1';
-      // Navigate the pre-opened tab; if it was blocked, fall back to a same-
-      // tab open (rare — the user gesture should always succeed here).
-      if (newWin && !newWin.closed) {
-        try { newWin.location.href = url; } catch (_) { try { global.open(url, '_blank', 'noopener'); } catch (_) {} }
-      } else {
-        try { global.open(url, '_blank', 'noopener'); } catch (_) {}
-      }
-      // Copy the full canonical prompt to the clipboard so the analyst can
-      // paste it as their first message in the freshly-opened thread.
-      _copyToClipboard(fullPrompt).then(function (ok) {
-        if (ok) _toast(label + ' drilldown prompt copied — paste it into the new Perplexity tab.', 'ok');
-        else    _toast('Open the new tab and paste the ' + label + ' prompt manually (clipboard blocked).', 'error');
-      });
-      // Persist the trigger so the next save defaults to it.
-      var sel = document.getElementById('dd-trigger-input');
-      if (sel) sel.value = trigger;
-      var ta = document.getElementById('dd-html-input');
-      if (ta) ta.focus();
     });
   }
 
@@ -1493,8 +1388,10 @@
     var html = _extractHtmlBlock(ta.value);
     var live = _currentTickerData(state.ticker);
     var trigger = (sel && sel.value) || 'manual';
-    // Default part to whatever Run-last set; otherwise leave null (legacy).
-    var partKey = state.lastRunPart || null;
+    // New runs always save as 'full' (single-step output). Legacy notes
+    // saved earlier with part: 'p1' / 'p2' / 'merged' remain untouched in
+    // the library and still show their part badges in version history.
+    var partKey = 'full';
     try {
       var entry = _lib().save(state.ticker, {
         html: html,
@@ -1509,11 +1406,11 @@
       render();
 
       // Best-effort dual-write: post to backend so it lands in
-      // notes/drilldown/<TICKER>_<DATE>_<part>.md AND drilldown_intel
+      // notes/drilldown/<TICKER>_<DATE>_full.md AND drilldown_intel
       // table on Supabase. Backend failure does NOT block local save.
       _saveDrilldownToBackend({
         ticker: state.ticker,
-        part: partKey || 'p1',
+        part: partKey,
         html: html,
         trigger: trigger,
         price_at_generation: live ? live.price : null,
@@ -1552,16 +1449,6 @@
         _toast('Saved locally only \u2014 drilldown backend unreachable.', 'error');
       });
     } catch (_) { /* swallow */ }
-  }
-
-  // The model often returns the note inside ```html ... ``` fences. Strip
-  // them if present so the iframe renders cleanly. If no fence is found,
-  // assume the textarea already holds raw HTML.
-  function _extractHtmlBlock(s) {
-    if (!s) return '';
-    var fenceMatch = s.match(/```(?:html)?\s*\n([\s\S]*?)\n```/i);
-    if (fenceMatch) return fenceMatch[1].trim();
-    return s.trim();
   }
 
   function _exportLibrary() {
