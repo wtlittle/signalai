@@ -236,14 +236,133 @@ function renderEarningsIntelSkeletonBody() {
     </section>`;
 }
 
-/** Build the Earnings Intel HTML for a ticker. Returns '' if no intel exists. */
-function renderEarningsIntelHtml(ticker, intel) {
-  if (!intel) {
-    return `
+/**
+ * Markdown-note fallback. Loads earnings_notes_index.json, finds the most
+ * recent active pre- or post-earnings entry for this ticker, fetches the
+ * markdown, and renders it into the .ei-note-fallback placeholder created
+ * by renderEarningsIntelHtml(). Post-earnings entries win ties — the user
+ * almost always wants the most recent reaction, not the pre-print setup.
+ */
+let _notesIndexCache = null;
+let _notesIndexCacheFetched = 0;
+async function loadEarningsNotesIndex(forceFresh = false) {
+  const NOW = Date.now();
+  if (!forceFresh && _notesIndexCache && (NOW - _notesIndexCacheFetched) < 60_000) {
+    return _notesIndexCache;
+  }
+  let resp;
+  if (window.SignalSnapshot && typeof window.SignalSnapshot.fetchWithFallback === 'function') {
+    resp = await window.SignalSnapshot.fetchWithFallback('earnings_notes_index.json', { cacheBust: true });
+  } else {
+    resp = await fetch('earnings_notes_index.json?v=' + NOW);
+  }
+  if (!resp || !resp.ok) {
+    _notesIndexCache = { active_pre_earnings: [], active_post_earnings: [] };
+  } else {
+    _notesIndexCache = await resp.json();
+  }
+  _notesIndexCacheFetched = NOW;
+  return _notesIndexCache;
+}
+
+function _eiMdToHtml(md) {
+  if (typeof window.mdToHtml === 'function') return window.mdToHtml(md);
+  // Conservative minimal renderer for the rare case earnings.js hasn't loaded.
+  return md
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/^#### (.+)$/gm, '<h5>$1</h5>')
+    .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+    .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>')
+    .replace(/^---$/gm, '<hr>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^/, '<p>')
+    .replace(/$/, '</p>');
+}
+
+async function hydrateEarningsNoteFallback(container, ticker) {
+  const slot = container.querySelector(`[data-ei-note-ticker="${ticker}"]`);
+  if (!slot) return;
+
+  const idx = await loadEarningsNotesIndex();
+  const pre = (idx.active_pre_earnings || []).filter(e => e.ticker === ticker);
+  const post = (idx.active_post_earnings || []).filter(e => e.ticker === ticker);
+
+  // Prefer the most recent post-earnings entry; fall back to the soonest
+  // upcoming pre-earnings entry.
+  let entry = null;
+  let kind = null;
+  if (post.length) {
+    entry = post.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
+    kind = 'post';
+  } else if (pre.length) {
+    entry = pre.slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''))[0];
+    kind = 'pre';
+  }
+
+  if (!entry) {
+    slot.innerHTML = `
       <div class="ei-empty">
         <div class="ei-empty-icon">◇</div>
         <div class="ei-empty-title">No Earnings Intel yet for ${ticker}</div>
         <div class="ei-empty-body">This page will populate automatically as the next earnings window approaches, or when a pre-earnings refresh is scheduled.</div>
+      </div>`;
+    return;
+  }
+
+  const notePath = entry.file || entry.note_file ||
+    `notes/${kind === 'post' ? 'post_earnings' : 'pre_earnings'}/${ticker}_${entry.date}.md`;
+
+  let md = null;
+  for (const p of [notePath, notePath.replace('notes/', 'archive/')]) {
+    try {
+      const resp = await fetch(p + '?v=' + Date.now(), { signal: AbortSignal.timeout(5000) });
+      if (!resp.ok) continue;
+      const ct = resp.headers.get('content-type') || '';
+      if (ct.includes('html') && !ct.includes('text/plain')) continue;
+      const text = await resp.text();
+      if (text && (text.startsWith('#') || text.includes('## '))) {
+        md = text;
+        break;
+      }
+    } catch (_) { /* try next */ }
+  }
+
+  if (!md) {
+    slot.innerHTML = `
+      <div class="ei-empty">
+        <div class="ei-empty-icon">◇</div>
+        <div class="ei-empty-title">Earnings note unavailable for ${ticker}</div>
+        <div class="ei-empty-body">An index entry exists but the note file at <code>${notePath}</code> could not be loaded.</div>
+      </div>`;
+    return;
+  }
+
+  const kindLabel = kind === 'post' ? 'Post-earnings note' : 'Pre-earnings note';
+  slot.innerHTML = `
+    <div class="ei-note-banner">
+      <span class="ei-note-badge ${kind === 'post' ? 'inflection-post' : 'inflection-pre'}">${kindLabel}</span>
+      <span class="ei-note-banner-meta">Structured intel not yet generated for ${ticker} — showing the latest markdown note (${entry.date}).</span>
+    </div>
+    <div class="ei-note-body markdown-body">${_eiMdToHtml(md)}</div>`;
+}
+
+/** Build the Earnings Intel HTML for a ticker. Returns '' if no intel exists. */
+function renderEarningsIntelHtml(ticker, intel) {
+  if (!intel) {
+    // The structured earnings_intel.json may not yet cover this ticker, but a
+    // flat markdown note (pre- or post-earnings) frequently does. Show a
+    // placeholder + an async loader; renderEarningsIntelTab will swap in the
+    // markdown when it resolves. This keeps the panel useful even before the
+    // full intel pipeline has been run for a newer ticker.
+    return `
+      <div class="ei-note-fallback" data-ei-note-ticker="${ticker}">
+        <div class="ei-empty-loading">Loading earnings note for ${ticker}…</div>
       </div>`;
   }
 
@@ -495,6 +614,16 @@ async function renderEarningsIntelTab(container, ticker) {
     const intel = await getEarningsIntel(ticker);
     // Header may have changed; re-render whole thing for full fidelity
     container.innerHTML = renderEarningsIntelHtml(ticker, intel);
+    // If structured intel is absent, hydrate the markdown-note fallback we
+    // rendered as a placeholder. Best-effort: no spinner persistence on
+    // failure, just a clear empty state.
+    if (!intel) {
+      try {
+        await hydrateEarningsNoteFallback(container, ticker);
+      } catch (hErr) {
+        console.warn('Earnings note fallback failed for', ticker, hErr);
+      }
+    }
   } catch (e) {
     console.error('Earnings Intel render error:', e);
     const zone = document.getElementById(`ei-body-zone-${ticker}`);

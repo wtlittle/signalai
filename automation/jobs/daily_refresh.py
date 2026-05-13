@@ -239,6 +239,43 @@ def step_subsector_refresh():
     run_node_script("update_subsectors.mjs")
 
 
+def step_sync_earnings_intel():
+    """Step 6.4: Sync earnings_intel.json from markdown notes.
+
+    The pre/post-earnings note generators only write flat markdown files +
+    earnings_notes_index.json. The Earnings Intel tab in the dashboard reads
+    from earnings_intel.json, which historically was only seeded manually.
+    This step closes that loop so every ticker with a fresh note shows up in
+    the tab. Idempotent and safe to run on every tick.
+
+    Must run AFTER step_generate_notes (so new notes exist on disk) and
+    BEFORE step_compute_debate_scores (which reads earnings_intel.json).
+    """
+    print("\n=== Step 6.4: Sync Earnings Intel from Notes ===")
+    try:
+        import sys as _sys
+        import importlib.util as _ilu
+        _spec = _ilu.spec_from_file_location(
+            "sync_earnings_intel_from_notes",
+            ROOT_DIR / "scripts" / "sync_earnings_intel_from_notes.py",
+        )
+        if _spec is None or _spec.loader is None:
+            raise ImportError("sync_earnings_intel_from_notes.py not found")
+        _mod = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_mod)
+        # main() uses argparse on sys.argv; isolate it from daily_refresh's argv.
+        _saved_argv = _sys.argv
+        _sys.argv = ["sync_earnings_intel_from_notes.py"]
+        try:
+            _mod.main()
+        finally:
+            _sys.argv = _saved_argv
+    except SystemExit:
+        pass
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARN] earnings_intel sync failed: {exc}")
+
+
 def step_compute_debate_scores():
     """Compute Debate Intensity (Contested Velocity) scores in earnings_intel.json.
 
@@ -364,6 +401,12 @@ def run():
     # avoids a redundant Node spawn at 5:30 PM.
     if mode in ("bmo", "full"):
         step_subsector_refresh()
+
+    # Step 6.4: Sync earnings_intel.json from the markdown notes on disk.
+    # Must run AFTER step_generate_notes so the latest pre/post notes are
+    # reflected as tickers in earnings_intel.json before debate scores read
+    # from it. This is what makes the Earnings Intel tab self-healing.
+    step_sync_earnings_intel()
 
     # Step 6.5: Debate scores (derived from earnings_intel.json) —
     # always. Must run AFTER any step that writes earnings_intel.json.

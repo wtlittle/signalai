@@ -5118,6 +5118,54 @@ mark.search-highlight {
   color: var(--text-secondary);
 }
 
+/* Markdown-note fallback (when structured earnings_intel.json has no entry
+   but a generated note exists on disk). The fallback hydrates async after
+   the placeholder renders. */
+.ei-empty-loading {
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.ei-note-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  margin: 0 0 16px 0;
+  background: var(--surface-2, rgba(255,255,255,0.04));
+  border: 1px solid var(--border-light, rgba(255,255,255,0.08));
+  border-radius: 8px;
+  font-size: 12px;
+}
+.ei-note-badge {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.ei-note-banner-meta {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.ei-note-body {
+  padding: 0 4px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+.ei-note-body h2 { font-size: 18px; margin: 22px 0 8px; }
+.ei-note-body h3 { font-size: 15px; margin: 18px 0 6px; color: var(--text-primary); }
+.ei-note-body h4 { font-size: 13px; margin: 14px 0 4px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px; }
+.ei-note-body ul { margin: 6px 0 12px; padding-left: 22px; }
+.ei-note-body li { margin: 4px 0; font-size: 13px; }
+.ei-note-body p { font-size: 13px; margin: 6px 0; }
+.ei-note-body strong { color: var(--text-primary); }
+.ei-note-body hr { border: 0; border-top: 1px solid var(--border-light, rgba(255,255,255,0.08)); margin: 16px 0; }
+
 /* Header strip */
 .ei-header {
   display: flex;
