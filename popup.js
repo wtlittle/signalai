@@ -808,12 +808,24 @@ function buildGuidanceSection(est, ticker) {
         <tbody>`;
 
       revRows.forEach(r => {
+        // Normalize spread to a fractional value (0–1 scale).
+        //
+        // refresh_deep_dive.mjs stores spread already multiplied by 100
+        // (e.g. 2.37 means 2.37%). Older / external callers may store it
+        // as a fraction (0.0237). Heuristic: anything > 1 is treated as
+        // already-percent and divided by 100 before classification +
+        // display, so a WIX-style 2.37 doesn't render as 237%.
+        let spreadFrac = null;
+        if (r.spread != null && Number.isFinite(r.spread)) {
+          spreadFrac = r.spread > 1 ? r.spread / 100 : r.spread;
+        }
+
         // Spread classification for color coding
         let spreadClass = '';
         let spreadLabel = '';
-        if (r.spread != null) {
-          if (r.spread < 0.03) { spreadClass = 'spread-tight'; spreadLabel = 'Tight'; }
-          else if (r.spread < 0.08) { spreadClass = 'spread-normal'; spreadLabel = ''; }
+        if (spreadFrac != null) {
+          if (spreadFrac < 0.03) { spreadClass = 'spread-tight'; spreadLabel = 'Tight'; }
+          else if (spreadFrac < 0.08) { spreadClass = 'spread-normal'; spreadLabel = ''; }
           else { spreadClass = 'spread-wide'; spreadLabel = 'Wide'; }
         }
 
@@ -831,7 +843,7 @@ function buildGuidanceSection(est, ticker) {
             <td><strong>${fmtBig(r.est)}</strong></td>
             <td>${fmtBig(r.high)}</td>
             <td>${growthHtml}</td>
-            <td><span class="${spreadClass}">${r.spread != null ? (r.spread * 100).toFixed(1) + '%' : '\u2014'}${spreadLabel ? ' <small>' + spreadLabel + '</small>' : ''}</span></td>
+            <td><span class="${spreadClass}">${spreadFrac != null ? (spreadFrac * 100).toFixed(1) + '%' : '\u2014'}${spreadLabel ? ' <small>' + spreadLabel + '</small>' : ''}</span></td>
           </tr>`;
       });
 
