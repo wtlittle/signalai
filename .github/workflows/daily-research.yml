@@ -55,7 +55,10 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Bumped from 30 to 90: a force_regenerate run can call the Perplexity
+    # API ~100+ times (pre + post earnings windows combined) at ~10-15s per
+    # call, so 30 min wasn't enough headroom for the manual backfill path.
+    timeout-minutes: 90
 
     steps:
       - name: Set REFRESH_MODE
