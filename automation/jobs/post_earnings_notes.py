@@ -186,7 +186,10 @@ def run():
         prompt = build_post_earnings_prompt(
             ticker, company, earnings_date, actuals, pre_context=pre_cache
         )
-        result = call_perplexity(ticker, "post_earnings", prompt, max_tokens=2000)
+        # Reasoning models burn most of max_tokens on the <think> block, so
+        # 2000 was too tight — the model never emitted the JSON tail. 4000
+        # gives the chain-of-thought room while still keeping the cost bounded.
+        result = call_perplexity(ticker, "post_earnings", prompt, max_tokens=4000)
 
         # A queued result means the API key is not configured and the task
         # was handed off to Computer's pending_tasks queue. It is NOT a real
