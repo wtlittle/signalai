@@ -352,8 +352,66 @@ async function hydrateEarningsNoteFallback(container, ticker) {
     <div class="ei-note-body markdown-body">${_eiMdToHtml(md)}</div>`;
 }
 
+/** Detect a "stub" intel record produced by sync_earnings_intel_from_notes.py.
+ * These entries have a valid header (company name, state, dates, bottom_line)
+ * but no real bull/base/bear bullets and no signal_scorecard yet. For those
+ * we'd rather show the rich markdown note inline than render four empty case
+ * boxes. Errs on the side of "is stub" — a real intel record will always have
+ * at least one populated case bullet or scorecard entry. */
+function isStubIntel(intel) {
+  if (!intel) return false;
+  const rr = String(intel.refresh_reason || '');
+  if (!rr.startsWith('synced_from_')) return false;
+  const scorecard = Array.isArray(intel.signal_scorecard) ? intel.signal_scorecard : [];
+  if (scorecard.length > 0) return false;
+  const caseHasBullets = (c) => {
+    if (!c || typeof c !== 'object') return false;
+    const ph = Array.isArray(c.pushes_higher) ? c.pushes_higher : [];
+    const pl = Array.isArray(c.pushes_lower) ? c.pushes_lower : [];
+    return ph.length > 0 || pl.length > 0;
+  };
+  if (caseHasBullets(intel.bull_case)) return false;
+  if (caseHasBullets(intel.base_case)) return false;
+  if (caseHasBullets(intel.bear_case)) return false;
+  return true;
+}
+
 /** Build the Earnings Intel HTML for a ticker. Returns '' if no intel exists. */
 function renderEarningsIntelHtml(ticker, intel) {
+  // Treat sync-only stub records the same as "no intel" so the UI renders
+  // the markdown note inline instead of empty Bull/Base/Bear boxes.
+  if (intel && isStubIntel(intel)) {
+    const state = intel.state || 'idle';
+    const inflection = inflectionBadge(intel.inflection_status || 'NONE');
+    let stubHtml = `<div class="ei-root">`;
+    stubHtml += `
+      <div class="ei-header">
+        <div class="ei-header-left">
+          <span class="ei-inflection ${inflection.cls}" title="${inflection.title}">${inflection.label}</span>
+          <div class="ei-header-meta">
+            <div class="ei-company-line">
+              <strong>${intel.company_name || ticker}</strong>
+              <span class="ei-state-pill ei-state-${state}">${state.replace('_', ' ')}</span>
+            </div>
+            <div class="ei-header-sub">
+              ${freshNextEarningsDate(intel.next_earnings_date) ? `<span>Next earnings: <strong>${intel.next_earnings_date}</strong></span>` : ''}
+              ${intel.last_earnings_date ? `<span>Last: ${intel.last_earnings_date}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="ei-header-right">
+          <div class="ei-updated-label">Updated</div>
+          <div class="ei-updated-value">${relativeTime(intel.intel_updated_at) || '\u2014'}</div>
+        </div>
+      </div>`;
+    stubHtml += `
+      <div class="ei-note-fallback" data-ei-note-ticker="${ticker}">
+        <div class="ei-empty-loading">Loading earnings note for ${ticker}\u2026</div>
+      </div>`;
+    stubHtml += `</div>`;
+    return stubHtml;
+  }
+
   if (!intel) {
     // The structured earnings_intel.json may not yet cover this ticker, but a
     // flat markdown note (pre- or post-earnings) frequently does. Show a
@@ -614,10 +672,10 @@ async function renderEarningsIntelTab(container, ticker) {
     const intel = await getEarningsIntel(ticker);
     // Header may have changed; re-render whole thing for full fidelity
     container.innerHTML = renderEarningsIntelHtml(ticker, intel);
-    // If structured intel is absent, hydrate the markdown-note fallback we
-    // rendered as a placeholder. Best-effort: no spinner persistence on
-    // failure, just a clear empty state.
-    if (!intel) {
+    // If structured intel is absent OR is a sync-only stub, hydrate the
+    // markdown-note fallback we rendered as a placeholder. Best-effort: no
+    // spinner persistence on failure, just a clear empty state.
+    if (!intel || isStubIntel(intel)) {
       try {
         await hydrateEarningsNoteFallback(container, ticker);
       } catch (hErr) {
@@ -642,5 +700,6 @@ async function renderEarningsIntelTab(container, ticker) {
 window.loadEarningsIntel = loadEarningsIntel;
 window.getEarningsIntel = getEarningsIntel;
 window.renderEarningsIntelTab = renderEarningsIntelTab;
+window.isStubIntel = isStubIntel;
 window.inflectionBadge = inflectionBadge;
 window.signalSummary = signalSummary;
