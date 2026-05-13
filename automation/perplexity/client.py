@@ -215,21 +215,39 @@ def call_perplexity(
 
     raw_content = resp.json()["choices"][0]["message"]["content"]
 
-    # Try to parse JSON; strip markdown fences if present
-    text = raw_content.strip()
+    # Reasoning models (sonar-reasoning, sonar-reasoning-pro, sonar-deep-research)
+    # wrap their internal chain-of-thought in <think>...</think> blocks BEFORE
+    # the actual JSON payload. Strip them before parsing or every reasoning
+    # call ends up as {"raw": ...} and gets rejected by the orchestrator.
+    import re as _re
+    text = _re.sub(r"<think>.*?</think>\s*", "", raw_content, flags=_re.DOTALL).strip()
+
+    # Strip markdown fences if present (with or without language hint).
     if text.startswith("```"):
         text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
 
-    try:
-        parsed = json.loads(text)
-    except json.JSONDecodeError:
-        # Repair attempt: strip trailing commas, retry
+    def _try_parse(t: str):
         try:
-            import re
-            cleaned = re.sub(r",\s*([}\]])", r"\1", text)
-            parsed = json.loads(cleaned)
-        except Exception:
-            parsed = {"raw": raw_content}
+            return json.loads(t)
+        except json.JSONDecodeError:
+            return None
+
+    parsed = _try_parse(text)
+    if parsed is None:
+        # Repair attempt 1: strip trailing commas.
+        cleaned = _re.sub(r",\s*([}\]])", r"\1", text)
+        parsed = _try_parse(cleaned)
+    if parsed is None:
+        # Repair attempt 2: extract the first {...} JSON object substring.
+        # Reasoning models sometimes emit trailing commentary after the JSON.
+        match = _re.search(r"\{.*\}", text, flags=_re.DOTALL)
+        if match:
+            candidate = _re.sub(r",\s*([}\]])", r"\1", match.group(0))
+            parsed = _try_parse(candidate)
+    if parsed is None:
+        print(f"  [PARSE FAIL] {ticker}/{task} \u2014 returning raw payload "
+              f"({len(raw_content)} chars); first 200: {raw_content[:200]!r}")
+        parsed = {"raw": raw_content}
 
     # Surface usage + cost to callers/logs if available.
     try:
