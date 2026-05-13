@@ -182,7 +182,24 @@ def run():
         )
         result = call_perplexity(ticker, "pre_earnings", prompt, max_tokens=1800)
 
-        if result and not result.get("dry_run") and not result.get("skipped"):
+        # A queued result means the API key is not configured and the task
+        # was handed off to Computer's pending_tasks queue. It is NOT a real
+        # research result — writing it would produce an all-"N/A" stub note,
+        # which then poisons the index and blocks future regeneration. Treat
+        # it as skipped.
+        if result and result.get("queued"):
+            print(f"  [QUEUED] {ticker} pre-earnings — handed to Computer queue; no note written")
+            skipped += 1
+        elif result and not result.get("dry_run") and not result.get("skipped"):
+            has_content = any(
+                result.get(k)
+                for k in ("setup", "key_debates", "what_matters", "guidance_watch",
+                          "options_implied_move", "scenario_grid", "recent_news")
+            )
+            if not has_content:
+                print(f"  [SKIP] {ticker} pre-earnings result has no usable fields — not writing stub")
+                skipped += 1
+                continue
             write_pre_earnings_note(ticker, company, earnings_date, days_until, result)
             update_index(ticker, company, earnings_date, days_until)
             generated += 1
