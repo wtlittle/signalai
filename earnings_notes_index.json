@@ -177,14 +177,6 @@
       "ticker": "AVT"
     },
     {
-      "company": "Confluent",
-      "date": "2026-04-29",
-      "day_post": 14,
-      "expires": "2026-05-13",
-      "note_file": "notes/post_earnings/CFLT_2026-04-29.md",
-      "ticker": "CFLT"
-    },
-    {
       "company": "CTSH",
       "date": "2026-04-29",
       "day_post": 14,
@@ -753,14 +745,6 @@
       "ticker": "NET"
     },
     {
-      "company": "OneStream",
-      "date": "2026-05-07",
-      "day_post": 6,
-      "expires": "2026-05-21",
-      "note_file": "notes/post_earnings/OS_2026-05-07.md",
-      "ticker": "OS"
-    },
-    {
       "company": "RingCentral",
       "date": "2026-05-07",
       "day_post": 6,
@@ -1213,5 +1197,27 @@
       "ticker": "AMD"
     }
   ],
-  "updated": "2026-05-14T11:50:23.301040"
+  "updated": "2026-05-14T11:50:23.301040",
+  "archived": [
+    {
+      "ticker": "CFLT",
+      "company": "Confluent",
+      "earnings_date": "2026-04-29",
+      "archived_at": "2026-05-14T13:44:10.656481Z",
+      "archived_reason": "acquired_and_delisted",
+      "archive_path": "archive/post_earnings/CFLT_2026-04-29.md",
+      "note_path": "archive/post_earnings/CFLT_2026-04-29.md",
+      "type": "post_earnings"
+    },
+    {
+      "ticker": "OS",
+      "company": "OneStream",
+      "earnings_date": "2026-05-07",
+      "archived_at": "2026-05-14T13:44:10.656504Z",
+      "archived_reason": "acquired_and_delisted",
+      "archive_path": "archive/post_earnings/OS_2026-05-07.md",
+      "note_path": "archive/post_earnings/OS_2026-05-07.md",
+      "type": "post_earnings"
+    }
+  ]
 }

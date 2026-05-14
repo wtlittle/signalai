@@ -1,0 +1,98 @@
+{
+  "_meta": {
+    "description": "M&A status registry for watchlist tickers. Drives ACQ/BID/RUMOR pills + deal blurbs in drilldown popup, replacing the earnings note slot. Only tickers with verified Tier-1 sourcing (SEC filings, issuer press releases) reach status='closed' or 'pending'. Rumors require 4 gates (see schema).",
+    "schema_version": 1,
+    "updated_at": "2026-05-14T13:45:00Z",
+    "status_values": ["closed", "pending", "announced", "bid", "rumor", "pending_review"],
+    "pill_mapping": {
+      "closed": "ACQ",
+      "pending": "ACQ",
+      "announced": "ACQ",
+      "bid": "BID",
+      "rumor": "RUMOR"
+    },
+    "rumor_gates": [
+      "Intraday move >= 3%",
+      "Tier-1 source (Reuters/WSJ/Bloomberg/FT/CNBC) within last 24h",
+      "Story names specific buyer or transaction",
+      "Story published before or coincident with the move"
+    ]
+  },
+  "deals": {
+    "CFLT": {
+      "ticker": "CFLT",
+      "company": "Confluent",
+      "status": "closed",
+      "buyer": "IBM",
+      "buyer_ticker": "IBM",
+      "deal_type": "strategic",
+      "structure": "all-cash",
+      "price_per_share_usd": 31.00,
+      "enterprise_value_usd": 11000000000,
+      "equity_value_usd": null,
+      "premium_pct": null,
+      "announced_date": "2025-12-08",
+      "closed_date": "2026-03-17",
+      "expected_close": null,
+      "delisted": true,
+      "strategic_rationale": "Acquires Kafka franchise as the real-time data backbone for IBM's enterprise AI/agent platform. Confluent slots beside Red Hat in IBM Software, giving IBM control of streaming infrastructure underneath gen-AI workloads.",
+      "pros": [
+        "All-cash deal at $31/share — clean exit, no IBM equity risk",
+        "~30% premium to undisturbed (Dec 5, 2025) close",
+        "Buyer is investment-grade — closing risk near zero post-announce"
+      ],
+      "cons": [
+        "Locks Confluent into IBM's GTM motion; cloud-native customers may slow Kafka spend pending integration clarity",
+        "Loss of pure-play streaming public comp removes a key data-infrastructure reference"
+      ],
+      "competitor_impact": [
+        {"ticker": "MSFT", "note": "Azure Event Hubs sees less competitive pressure from a hyperscaler-neutral Confluent; modest tailwind"},
+        {"ticker": "SNOW", "note": "Loses an independent partner; Snowflake-Confluent integrations now run through IBM's roadmap priorities"},
+        {"ticker": "DDOG", "note": "Observability of Kafka streams becomes more strategic as IBM consolidates the layer"}
+      ],
+      "sources": [
+        {"label": "IBM Newsroom (closing announcement)", "url": "https://newsroom.ibm.com/2026-03-17-ibm-completes-acquisition-of-confluent,-making-real-time-data-the-engine-of-enterprise-ai-and-agents", "tier": 1},
+        {"label": "CFLT 8-K (SEC)", "url": "https://www.stocktitan.net/sec-filings/CFLT/8-k-confluent-inc-reports-material-event-985ba876fded.html", "tier": 1},
+        {"label": "WSJ CIO Journal", "url": "https://www.wsj.com/cio-journal/ibm-closes-11-billion-deal-for-confluent-13fcbea0", "tier": 3}
+      ]
+    },
+    "OS": {
+      "ticker": "OS",
+      "company": "OneStream",
+      "status": "closed",
+      "buyer": "Hg",
+      "buyer_ticker": null,
+      "deal_type": "take-private",
+      "structure": "all-cash",
+      "price_per_share_usd": 24.00,
+      "enterprise_value_usd": null,
+      "equity_value_usd": 6400000000,
+      "premium_pct": 31.0,
+      "announced_date": "2026-01-06",
+      "closed_date": "2026-04-01",
+      "expected_close": null,
+      "delisted": true,
+      "strategic_rationale": "Hg take-private with General Atlantic and Tidemark as minority co-investors. KKR (prior majority shareholder) approved as voting majority; no separate shareholder vote required. Restores OneStream as a long-duration sponsor-backed CPM platform free from quarterly print pressure.",
+      "pros": [
+        "All-cash $24/share — 31% premium to undisturbed",
+        "Hg is a deep CPM/finance-software specialist (Visma, IRIS) — operational fit is high",
+        "Closing risk minimized by KKR's pre-committed approval"
+      ],
+      "cons": [
+        "Removes a scarce mid-cap CPM pure-play from the public comp set",
+        "Take-private cuts off public-disclosure visibility into CPM growth + retention trends",
+        "Hg-led leverage profile may tighten reinvestment vs. prior public model"
+      ],
+      "competitor_impact": [
+        {"ticker": "WDAY", "note": "Adaptive Planning loses an independent comparable; pricing power on CPM modestly stronger"},
+        {"ticker": "ORCL", "note": "Oracle EPM Cloud removes a key public-market scoreboard reference"},
+        {"ticker": "SAP", "note": "SAP Group Reporting / Datasphere face a private, patient OneStream rather than a quarterly-print competitor — net neutral"}
+      ],
+      "sources": [
+        {"label": "Hg \u2014 announcement", "url": "https://hgcapital.com/insights/onestream-to-be-acquired-by-hg", "tier": 1},
+        {"label": "OneStream \u2014 deal closing press release (PR Newswire)", "url": "https://www.prnewswire.com/news-releases/onestream-announces-completion-of-acquisition-by-hg-for-6-4-billion-302731460.html", "tier": 1},
+        {"label": "Reuters", "url": "https://www.reuters.com/legal/transactional/hg-will-buy-onestream-64-billion-deal-2026-01-06/", "tier": 3}
+      ]
+    }
+  }
+}

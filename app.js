@@ -273,6 +273,7 @@ function renderTable() {
         <td class="cell-ticker pin-col pin-col-1" data-ticker="${ticker}">${ticker}</td>
         <td class="cell-name pin-col pin-col-2" title="${getCommonName(ticker, d.name)}">
           <span class="cell-name-text">${getCommonName(ticker, d.name)}</span>
+          ${(window.MaStatus && window.MaStatus.pillHtml) ? window.MaStatus.pillHtml(ticker, { compact: true }) : ''}
           ${hqHtml}
         </td>
         <td><span class="subsector-badge" data-ticker="${ticker}">${d.subsector || getSubsector(ticker)}</span></td>
@@ -1707,6 +1708,14 @@ window.fetchNews = fetchNews;
 renderTable();
 renderPrivateTable();
 loadAllData();
+
+// Re-render the table once ma_status.json loads so ACQ/BID/RUMOR pills paint
+// even if MaStatus finishes after the first renderTable() pass.
+if (window.MaStatus && typeof window.MaStatus.onLoaded === 'function') {
+  window.MaStatus.onLoaded(function () {
+    try { renderTable(); } catch (e) { /* ignore */ }
+  });
+}
 
 // Calculate table-wrapper top offset for proper sticky thead inside scroll container
 (function setTableTopOffset() {

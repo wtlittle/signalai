@@ -182,9 +182,10 @@ function renderRecentEarnings(recent) {
     else sinceLabel = `${r.days_since}d ago`;
     const timingLabel = (r.timing && r.timing !== 'TBD') ? ` · ${r.timing}` : '';
 
+    const maPill = (window.MaStatus && window.MaStatus.pillHtml) ? window.MaStatus.pillHtml(r.ticker, { compact: true }) : '';
     return `<div class="earnings-card reported" data-ticker="${r.ticker}" data-date="${r.earnings_date}" data-type="post">
       <div class="earnings-card-header">
-        <span class="earnings-card-ticker">${r.ticker}</span>
+        <span class="earnings-card-ticker">${r.ticker}${maPill}</span>
         <span class="earnings-card-name">${name}</span>
         <span class="earnings-card-date">${r.earnings_date} · ${sinceLabel}${timingLabel}</span>
       </div>
@@ -286,7 +287,7 @@ function renderUpcomingEarnings(upcoming) {
 
       return `<div class="earnings-card upcoming${isWatch ? ' is-watchlist' : ''}" data-ticker="${u.ticker}" data-date="${u.earnings_date}" data-type="pre">
         <div class="earnings-card-header">
-          <span class="earnings-card-ticker">${starHtml}${u.ticker}</span>
+          <span class="earnings-card-ticker">${starHtml}${u.ticker}${(window.MaStatus && window.MaStatus.pillHtml) ? window.MaStatus.pillHtml(u.ticker, { compact: true }) : ''}</span>
           <span class="earnings-card-name">${name}</span>
           <span class="earnings-card-date">${u.earnings_date} · ${headerDays}</span>
           ${urg}
@@ -373,6 +374,21 @@ async function openEarningsNote(ticker, date, type) {
   $earningsNoteContent.innerHTML = '<div class="earnings-note-loading">Loading note...</div>';
   $earningsNoteOverlay.classList.add('active');
   document.body.style.overflow = 'hidden';
+
+  // M&A short-circuit: if this ticker has a verified deal blurb (closed/pending/
+  // announced), show the deal blurb panel instead of the earnings note. Earnings
+  // notes are not generated for ACQ-status names.
+  try {
+    if (window.MaStatus) {
+      if (typeof window.MaStatus.load === 'function') {
+        await window.MaStatus.load();
+      }
+      if (window.MaStatus.hasBlurb && window.MaStatus.hasBlurb(ticker)) {
+        $earningsNoteContent.innerHTML = window.MaStatus.dealBlurbHtml(ticker);
+        return;
+      }
+    }
+  } catch (e) { /* fall through to normal note flow */ }
 
   try {
     // Strategy 1: Look up the note path from the index
