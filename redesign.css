@@ -504,7 +504,7 @@
 /* ----- Summary strip --------------------------------------------- */
 .summary-strip {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 14px;
 }
@@ -525,6 +525,9 @@
   color: var(--text-muted);
   font-weight: 600;
   margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .summary-tile .summary-value {
   font-size: 18px;
@@ -738,7 +741,9 @@
 }
 @media (max-width: 1200px) {
   .coverage-layout { grid-template-columns: minmax(0, 1fr) 260px; }
-  .summary-strip { grid-template-columns: repeat(5, 1fr); }
+  .summary-strip { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+  .summary-tile { padding: 8px 10px; }
+  .summary-tile .summary-value { font-size: 16px; }
 }
 @media (max-width: 960px) {
   .global-topbar {
@@ -750,11 +755,13 @@
   .topbar-search { width: 100%; }
   .coverage-layout { grid-template-columns: minmax(0, 1fr); }
   .coverage-context { position: static; max-height: none; }
-  .summary-strip { grid-template-columns: repeat(2, 1fr); }
+  .summary-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .summary-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
   .surface { padding: 12px; }
-  .summary-strip { grid-template-columns: 1fr; }
 }
 
 /* ===== Coverage Controller (v20260430) ====================== */
