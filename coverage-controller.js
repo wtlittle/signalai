@@ -587,10 +587,127 @@
       sector: _v(stored.sector, 'All'),
       minMcap: _v(stored.minMcap, ''),
       maxEvSales: _v(stored.maxEvSales, ''),
-      minRev: _v(stored.minRev, '')
+      minRev: _v(stored.minRev, ''),
+      // Macro idea-engine signals (hydrate from window.macroDataCache.signals)
+      minRegimeScore: _v(stored.minRegimeScore, ''),
+      minAlpha1m: _v(stored.minAlpha1m, ''),
+      maxAlpha1m: _v(stored.maxAlpha1m, ''),
+      maxValueGrowthPctile: _v(stored.maxValueGrowthPctile, ''),
+      earningsMomentum: _v(stored.earningsMomentum, 'All'),
+      passThroughTag: _v(stored.passThroughTag, 'All')
     };
   }
   function _screenerSet(s) { _safeSet(SCREENER_KEY, s); }
+
+  // Lookup macro signal for a ticker. Returns null if cache absent.
+  function _macroSignal(ticker) {
+    var mc = global.macroDataCache;
+    if (!mc || !mc.signals) return null;
+    return mc.signals[ticker] || null;
+  }
+  function _currentRegime() {
+    var mc = global.macroDataCache;
+    return (mc && mc.regime && mc.regime.regime) || null;
+  }
+  function _availablePassThroughTags() {
+    var mc = global.macroDataCache;
+    if (!mc || !mc.signals) return [];
+    var set = {};
+    Object.values(mc.signals).forEach(function (s) {
+      if (s && Array.isArray(s.passthrough_tags)) {
+        s.passthrough_tags.forEach(function (t) { if (t) set[t] = true; });
+      }
+    });
+    return Object.keys(set).sort();
+  }
+  function _tagLabel(tag) {
+    var L = (global.RegimeFactors && global.RegimeFactors.TAG_LABELS) || {};
+    return L[tag] || tag;
+  }
+
+  // Regime preset packs — applied to the MVP screener form on click.
+  var REGIME_PRESET_PACKS = [
+    {
+      id: 'reflation-long',
+      name: 'Reflation Long',
+      regimes: ['Reflation', 'Goldilocks'],
+      blurb: 'Positive alpha + favorable regime score + constructive earnings.',
+      values: { minRegimeScore: 60, minAlpha1m: 0, earningsMomentum: 'tailwind' }
+    },
+    {
+      id: 'restrictive-short',
+      name: 'Restrictive Short',
+      regimes: ['Restrictive', 'Stagflation', 'Risk-Off'],
+      blurb: 'Negative alpha + stretched value-for-growth + earnings breaking.',
+      values: { maxAlpha1m: 0, maxValueGrowthPctile: 30, earningsMomentum: 'breaking' }
+    },
+    {
+      id: 'stagflation-hedges',
+      name: 'Stagflation Hedges',
+      regimes: ['Stagflation'],
+      blurb: 'Pricing-power energy/materials/staples via pass-through tags.',
+      values: { passThroughTag: 'pricing-power' }
+    },
+    {
+      id: 'risk-off-defensive',
+      name: 'Risk-Off Defensive',
+      regimes: ['Risk-Off', 'Restrictive'],
+      blurb: 'Defensives with positive earnings momentum and strong regime fit.',
+      values: { minRegimeScore: 55, earningsMomentum: 'tailwind' }
+    }
+  ];
+
+  // Render the regime preset pack buttons into #regime-packs-row. Highlights
+  // the pack that matches the currently-detected macro regime with a SUGGESTED
+  // badge so the user has an opinionated starting point.
+  function _renderRegimePresetPacks() {
+    var row = document.getElementById('regime-packs-row');
+    var currentEl = document.getElementById('regime-packs-current');
+    if (!row) return;
+    var regime = _currentRegime();
+    if (currentEl) {
+      currentEl.textContent = regime ? ('Current regime: ' + regime) : 'Regime: loading…';
+    }
+    row.innerHTML = '';
+    REGIME_PRESET_PACKS.forEach(function (pack) {
+      var suggested = regime && pack.regimes.indexOf(regime) >= 0;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'regime-pack-btn' + (suggested ? ' suggested' : '');
+      btn.title = pack.blurb;
+      btn.setAttribute('data-pack-id', pack.id);
+      btn.innerHTML =
+        (suggested ? '<span class="regime-pack-badge">SUGGESTED</span>' : '') +
+        '<span class="regime-pack-name">' + pack.name + '</span>' +
+        '<span class="regime-pack-blurb">' + pack.blurb + '</span>';
+      btn.addEventListener('click', function () {
+        // Merge pack values into current state, persist, then re-render the
+        // surface so the form picks up new values and results refresh.
+        var cur = _screenerState();
+        var merged = Object.assign({}, cur, pack.values);
+        _screenerSet(merged);
+        // Force form rebuild by emptying the pane innerHTML markers? No —
+        // renderScreenerSurface() detects the form via #screener-mvp-form and
+        // takes the re-hydrate path, which now reads from storage.
+        renderScreenerSurface();
+      });
+      row.appendChild(btn);
+    });
+  }
+
+  // When macro data loads after first render, rebuild the passthrough-tag
+  // dropdown options (initially empty). Idempotent.
+  function _rehydrateMacroDependents(pane) {
+    if (!pane) return;
+    var $pthru = pane.querySelector('#screener-passthrough');
+    if (!$pthru) return;
+    var tags = _availablePassThroughTags();
+    if (!tags.length) return;
+    var prev = $pthru.value;
+    $pthru.innerHTML = '<option value="All">All</option>' +
+      tags.map(function (t) { return '<option value="' + t + '">' + _tagLabel(t) + '</option>'; }).join('');
+    $pthru.value = prev || (_screenerState().passThroughTag) || 'All';
+  }
 
   function renderScreenerSurface() {
     var pane = _ensureScreenerPane();
@@ -608,9 +725,19 @@
 
     var sectors = Array.from(new Set(Object.keys(data).map(function (t) { return _subsectorFor(t, data[t]); }))).sort();
 
+    var passThroughTags = _availablePassThroughTags();
+    var earningsTags = ['All', 'tailwind', 'inflecting', 'watching', 'neutral', 'headwind', 'breaking'];
+
     // Build the form once, then re-render results into a sub-pane on input.
     if (!pane.querySelector('#screener-mvp-form')) {
       pane.innerHTML =
+        '<div class="screener-regime-packs" id="screener-regime-packs">' +
+          '<div class="regime-packs-header">' +
+            '<span class="regime-packs-title">Regime Presets</span>' +
+            '<span class="regime-packs-current" id="regime-packs-current"></span>' +
+          '</div>' +
+          '<div class="regime-packs-row" id="regime-packs-row"></div>' +
+        '</div>' +
         '<div class="screener-mvp-toolbar" id="screener-mvp-form">' +
           '<label class="screener-mvp-field"><span>Sector</span>' +
             '<select id="screener-sector"><option value="All">All</option>' +
@@ -622,45 +749,78 @@
             '<input type="number" id="screener-max-evsales" step="0.5" placeholder="e.g. 8"></label>' +
           '<label class="screener-mvp-field"><span>Min Rev. growth (%)</span>' +
             '<input type="number" id="screener-min-rev" step="1" placeholder="e.g. 10"></label>' +
+          '<label class="screener-mvp-field"><span>Min Regime Score</span>' +
+            '<input type="number" id="screener-min-regime" step="5" min="0" max="100" placeholder="e.g. 60"></label>' +
+          '<label class="screener-mvp-field"><span>Min 1M Alpha (%)</span>' +
+            '<input type="number" id="screener-min-alpha" step="1" placeholder="e.g. 0"></label>' +
+          '<label class="screener-mvp-field"><span>Max 1M Alpha (%)</span>' +
+            '<input type="number" id="screener-max-alpha" step="1" placeholder="e.g. 0"></label>' +
+          '<label class="screener-mvp-field"><span>Max Value-Growth Pctile</span>' +
+            '<input type="number" id="screener-max-valuegrowth" step="5" min="0" max="100" placeholder="e.g. 30"></label>' +
+          '<label class="screener-mvp-field"><span>Earnings Momentum</span>' +
+            '<select id="screener-earnings-mom">' +
+              earningsTags.map(function (t) { return '<option value="' + t + '">' + (t === 'All' ? 'All' : t) + '</option>'; }).join('') +
+            '</select></label>' +
+          '<label class="screener-mvp-field"><span>Pass-Through Tag</span>' +
+            '<select id="screener-passthrough"><option value="All">All</option>' +
+              passThroughTags.map(function (t) { return '<option value="' + t + '">' + _tagLabel(t) + '</option>'; }).join('') +
+            '</select></label>' +
           '<button type="button" class="btn-sm" id="screener-reset">Reset</button>' +
           '<span class="screener-mvp-count" id="screener-count">— results</span>' +
         '</div>' +
         '<div class="screener-mvp-empty" id="screener-mvp-empty" style="display:none;">Coverage data still loading. Open Coverage first to populate the universe.</div>' +
         '<div class="screener-mvp-results" id="screener-mvp-results"></div>';
+      _renderRegimePresetPacks();
 
       var $sector = pane.querySelector('#screener-sector');
       var $mc = pane.querySelector('#screener-min-mcap');
       var $ev = pane.querySelector('#screener-max-evsales');
       var $rev = pane.querySelector('#screener-min-rev');
+      var $minRegime = pane.querySelector('#screener-min-regime');
+      var $minAlpha = pane.querySelector('#screener-min-alpha');
+      var $maxAlpha = pane.querySelector('#screener-max-alpha');
+      var $maxVG = pane.querySelector('#screener-max-valuegrowth');
+      var $earnMom = pane.querySelector('#screener-earnings-mom');
+      var $pthru = pane.querySelector('#screener-passthrough');
       // Use string fallbacks (preserve '0' if user explicitly typed it)
       $sector.value = (st.sector != null && st.sector !== '') ? st.sector : 'All';
       $mc.value  = (st.minMcap     != null) ? String(st.minMcap)     : '';
       $ev.value  = (st.maxEvSales  != null) ? String(st.maxEvSales)  : '';
       $rev.value = (st.minRev      != null) ? String(st.minRev)      : '';
+      if ($minRegime) $minRegime.value = (st.minRegimeScore != null) ? String(st.minRegimeScore) : '';
+      if ($minAlpha)  $minAlpha.value  = (st.minAlpha1m     != null) ? String(st.minAlpha1m)     : '';
+      if ($maxAlpha)  $maxAlpha.value  = (st.maxAlpha1m     != null) ? String(st.maxAlpha1m)     : '';
+      if ($maxVG)     $maxVG.value     = (st.maxValueGrowthPctile != null) ? String(st.maxValueGrowthPctile) : '';
+      if ($earnMom)   $earnMom.value   = st.earningsMomentum || 'All';
+      if ($pthru)     $pthru.value     = st.passThroughTag || 'All';
 
-      function refresh() {
-        var ns = {
+      function gather() {
+        return {
           sector: $sector.value,
           minMcap: $mc.value,
           maxEvSales: $ev.value,
-          minRev: $rev.value
+          minRev: $rev.value,
+          minRegimeScore: $minRegime ? $minRegime.value : '',
+          minAlpha1m: $minAlpha ? $minAlpha.value : '',
+          maxAlpha1m: $maxAlpha ? $maxAlpha.value : '',
+          maxValueGrowthPctile: $maxVG ? $maxVG.value : '',
+          earningsMomentum: $earnMom ? $earnMom.value : 'All',
+          passThroughTag: $pthru ? $pthru.value : 'All'
         };
+      }
+      function refresh() {
+        var ns = gather();
         _screenerSet(ns);
         _renderScreenerResults(ns);
       }
-      $sector.addEventListener('change', refresh);
+      [$sector, $earnMom, $pthru].forEach(function (el) {
+        if (el) el.addEventListener('change', refresh);
+      });
       // C11 FIX: persist immediately on every keystroke (no debounce on save),
       // debounce only the heavy results re-render. Also save on blur as a safety.
-      [$mc, $ev, $rev].forEach(function (el) {
-        function persistNow() {
-          var ns = {
-            sector: $sector.value,
-            minMcap: $mc.value,
-            maxEvSales: $ev.value,
-            minRev: $rev.value
-          };
-          _screenerSet(ns);
-        }
+      [$mc, $ev, $rev, $minRegime, $minAlpha, $maxAlpha, $maxVG].forEach(function (el) {
+        if (!el) return;
+        function persistNow() { _screenerSet(gather()); }
         el.addEventListener('input', function () {
           persistNow();                       // immediate persist
           clearTimeout(el._t);
@@ -671,15 +831,46 @@
       });
       pane.querySelector('#screener-reset').addEventListener('click', function () {
         $sector.value = 'All'; $mc.value = ''; $ev.value = ''; $rev.value = '';
+        if ($minRegime) $minRegime.value = '';
+        if ($minAlpha)  $minAlpha.value  = '';
+        if ($maxAlpha)  $maxAlpha.value  = '';
+        if ($maxVG)     $maxVG.value     = '';
+        if ($earnMom)   $earnMom.value   = 'All';
+        if ($pthru)     $pthru.value     = 'All';
         refresh();
       });
+
+      // Trigger macro data load if not yet cached so the new filters work.
+      if (!global.macroDataCache && typeof global.loadMacroData === 'function') {
+        try {
+          global.loadMacroData().then(function () {
+            _rehydrateMacroDependents(pane);
+            _renderRegimePresetPacks();
+            refresh();
+          });
+        } catch (e) { /* noop */ }
+      }
     } else {
       // C11 FIX: form already exists — re-hydrate input values from storage on
       // every activation so navigation never silently resets typed filters.
+      _rehydrateMacroDependents(pane);
+      _renderRegimePresetPacks();
       var $sector2 = pane.querySelector('#screener-sector');
       var $mc2  = pane.querySelector('#screener-min-mcap');
       var $ev2  = pane.querySelector('#screener-max-evsales');
       var $rev2 = pane.querySelector('#screener-min-rev');
+      var $minRegime2 = pane.querySelector('#screener-min-regime');
+      var $minAlpha2 = pane.querySelector('#screener-min-alpha');
+      var $maxAlpha2 = pane.querySelector('#screener-max-alpha');
+      var $maxVG2 = pane.querySelector('#screener-max-valuegrowth');
+      var $earnMom2 = pane.querySelector('#screener-earnings-mom');
+      var $pthru2 = pane.querySelector('#screener-passthrough');
+      if ($minRegime2) $minRegime2.value = (st.minRegimeScore != null) ? String(st.minRegimeScore) : '';
+      if ($minAlpha2)  $minAlpha2.value  = (st.minAlpha1m     != null) ? String(st.minAlpha1m)     : '';
+      if ($maxAlpha2)  $maxAlpha2.value  = (st.maxAlpha1m     != null) ? String(st.maxAlpha1m)     : '';
+      if ($maxVG2)     $maxVG2.value     = (st.maxValueGrowthPctile != null) ? String(st.maxValueGrowthPctile) : '';
+      if ($earnMom2)   $earnMom2.value   = st.earningsMomentum || 'All';
+      if ($pthru2)     $pthru2.value     = st.passThroughTag || 'All';
       // Repopulate sector options if universe expanded since first build
       if ($sector2 && sectors.length) {
         var existingSectors = Array.from($sector2.options).map(function (o) { return o.value; });
@@ -719,6 +910,18 @@
     var maxEvSales = parseFloat(st.maxEvSales);
     var minRev = parseFloat(st.minRev);
 
+    // Macro-signal filter values (parsed once)
+    var minRegime  = parseFloat(st.minRegimeScore);
+    var minAlpha   = parseFloat(st.minAlpha1m);
+    var maxAlpha   = parseFloat(st.maxAlpha1m);
+    var maxVG      = parseFloat(st.maxValueGrowthPctile);
+    var earnMomSel = st.earningsMomentum || 'All';
+    var pthruSel   = st.passThroughTag   || 'All';
+    var anyMacroActive =
+      !isNaN(minRegime) || !isNaN(minAlpha) || !isNaN(maxAlpha) ||
+      !isNaN(maxVG) || (earnMomSel && earnMomSel !== 'All') ||
+      (pthruSel && pthruSel !== 'All');
+
     var matches = Object.keys(data).filter(function (t) {
       var d = data[t]; if (!d) return false;
       var sub = _subsectorFor(t, d);
@@ -732,6 +935,31 @@
       if (!isNaN(minRev)) {
         if (typeof d.revenueGrowth !== 'number' || d.revenueGrowth < minRev) return false;
       }
+
+      // Macro-signal filters. If ANY macro filter is active and this ticker has
+      // no signal in the macro cache, reject (we can't evaluate the filter).
+      if (anyMacroActive) {
+        var sig = _macroSignal(t);
+        if (!sig) return false;
+        if (!isNaN(minRegime)) {
+          if (typeof sig.regime_factor_score !== 'number' || sig.regime_factor_score < minRegime) return false;
+        }
+        if (!isNaN(minAlpha)) {
+          if (typeof sig.alpha_1m !== 'number' || sig.alpha_1m < minAlpha) return false;
+        }
+        if (!isNaN(maxAlpha)) {
+          if (typeof sig.alpha_1m !== 'number' || sig.alpha_1m > maxAlpha) return false;
+        }
+        if (!isNaN(maxVG)) {
+          if (typeof sig.value_for_growth_percentile !== 'number' || sig.value_for_growth_percentile > maxVG) return false;
+        }
+        if (earnMomSel && earnMomSel !== 'All') {
+          if (sig.earnings_momentum_tag !== earnMomSel) return false;
+        }
+        if (pthruSel && pthruSel !== 'All') {
+          if (!Array.isArray(sig.passthrough_tags) || sig.passthrough_tags.indexOf(pthruSel) < 0) return false;
+        }
+      }
       return true;
     });
 
@@ -744,9 +972,15 @@
       return;
     }
 
+    function _fmtSigScore(v) { return (typeof v === 'number' && isFinite(v)) ? Math.round(v) : '—'; }
+    function _fmtSigAlpha(v) { return (typeof v === 'number' && isFinite(v)) ? (v > 0 ? '+' : '') + v.toFixed(1) + '%' : '—'; }
+    function _fmtSigPctile(v) { return (typeof v === 'number' && isFinite(v)) ? Math.round(v) : '—'; }
+
     var rowsHtml = matches.slice(0, 80).map(function (t) {
       var d = data[t];
       var name = _commonName(t, d.name);
+      var sig = _macroSignal(t) || {};
+      var earnTag = sig.earnings_momentum_tag || '';
       return '<tr data-ticker="' + t + '">' +
         '<td class="screener-cell-ticker">' + t + '</td>' +
         '<td>' + name + '</td>' +
@@ -756,6 +990,10 @@
         '<td class="num">' + _fmtMult(d.evSales) + '</td>' +
         '<td class="num">' + _fmtPct(d.revenueGrowth) + '</td>' +
         '<td class="num">' + _fmtPct(d.m1) + '</td>' +
+        '<td class="num screener-sig-cell">' + _fmtSigScore(sig.regime_factor_score) + '</td>' +
+        '<td class="num screener-sig-cell">' + _fmtSigAlpha(sig.alpha_1m) + '</td>' +
+        '<td class="num screener-sig-cell">' + _fmtSigPctile(sig.value_for_growth_percentile) + '</td>' +
+        '<td class="screener-sig-cell">' + (earnTag ? '<span class="earn-mom-pill earn-mom-' + earnTag + '">' + earnTag + '</span>' : '—') + '</td>' +
       '</tr>';
     }).join('');
 
@@ -766,7 +1004,12 @@
         '<table class="screener-mvp-table">' +
           '<thead><tr><th>Ticker</th><th>Name</th><th>Sector</th>' +
             '<th class="num">Price</th><th class="num">Mkt Cap</th><th class="num">EV/Sales</th>' +
-            '<th class="num">Rev gr.</th><th class="num">1M</th></tr></thead>' +
+            '<th class="num">Rev gr.</th><th class="num">1M</th>' +
+            '<th class="num" title="Regime factor score 0-100">Regime</th>' +
+            '<th class="num" title="1M alpha vs sector">α1m</th>' +
+            '<th class="num" title="Value-for-growth percentile (lower = cheaper for growth)">VG%</th>' +
+            '<th title="Earnings momentum tag">Earn</th>' +
+          '</tr></thead>' +
           '<tbody>' + rowsHtml + '</tbody>' +
         '</table>' +
       '</div>' + more;

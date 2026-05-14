@@ -7327,9 +7327,13 @@ mark.search-highlight {
 }
 .regime-pack-btn {
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 6px 10px;
+  min-width: 160px;
+  max-width: 220px;
+  text-align: left;
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -7339,6 +7343,13 @@ mark.search-highlight {
   cursor: pointer;
   transition: background 0.12s, border-color 0.12s, transform 0.12s;
   font-family: var(--font-sans);
+}
+.regime-pack-blurb {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+  white-space: normal;
+  line-height: 1.3;
 }
 .regime-pack-btn:hover {
   background: var(--bg-surface);
@@ -7364,7 +7375,29 @@ mark.search-highlight {
 }
 .regime-pack-name {
   white-space: nowrap;
+  font-weight: 600;
 }
+
+/* ===== Screener macro-signal cells / earnings-momentum pills ===== */
+.screener-mvp-table .screener-sig-cell {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+.earn-mom-pill {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.earn-mom-tailwind   { background: rgba(34,197,94,0.16);  color: var(--green); }
+.earn-mom-inflecting { background: rgba(59,130,246,0.16); color: #3b82f6; }
+.earn-mom-watching   { background: rgba(234,179,8,0.16);  color: #ca8a04; }
+.earn-mom-neutral    { background: rgba(107,114,128,0.16); color: var(--text-muted); }
+.earn-mom-headwind   { background: rgba(249,115,22,0.16); color: #ea580c; }
+.earn-mom-breaking   { background: rgba(239,68,68,0.16);  color: var(--red); }
 
 /* ===== Screener save/load toolbar ===== */
 .screener-save-bar {
