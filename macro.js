@@ -3,6 +3,7 @@
 
 let macroDataCache = null;
 
+
 // ── MacroReconciliation in-memory store ──
 // Intentionally short-lived. Cleared and re-fetched on every Macro tab mount
 // and every Drilldown open. Never served stale across tab changes.
@@ -58,6 +59,7 @@ async function loadMacroData() {
       if (rows?.length && rows[0].value) {
         const parsed = typeof rows[0].value === 'string' ? JSON.parse(rows[0].value) : rows[0].value;
         macroDataCache = parsed;
+        window.macroDataCache = parsed;
         return parsed;
       }
     } catch (e) {
@@ -74,12 +76,16 @@ async function loadMacroData() {
     }
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     macroDataCache = await resp.json();
+    window.macroDataCache = macroDataCache;
     return macroDataCache;
   } catch (e) {
     console.warn('macro_data.json fetch failed:', e.message);
     return null;
   }
 }
+
+// Expose for cross-script access (e.g. screener prefetch)
+window.loadMacroData = loadMacroData;
 
 function renderMacroTab() {
   const container = document.getElementById('macro-content');

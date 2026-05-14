@@ -11,6 +11,9 @@
   let activeFilters = []; // currently applied
 
   // Available filter columns — match data keys from tickerData
+  // Columns with `source: 'macroSignal'` are sourced from macroDataCache.signals
+  // (populated by refresh_macro.mjs). They become available once macro data
+  // loads; tickers without a signal fail the filter gracefully.
   const FILTER_COLUMNS = [
     { key: 'subsector', label: 'Subsector', type: 'select' },
     { key: 'marketCap', label: 'Market Cap', type: 'range', format: 'largeMoney' },
@@ -29,7 +32,32 @@
     { key: 'price', label: 'Price', type: 'range', format: 'money' },
     { key: 'qualityScore', label: 'Quality Score', type: 'range', format: 'number' },
     { key: 'debateScore', label: 'Debate Intensity', type: 'range', format: 'number' },
+    // Macro idea-engine signals (hydrate from macroDataCache.signals)
+    { key: 'alpha_1m', label: '1M Sector Alpha %', type: 'range', format: 'percent', source: 'macroSignal' },
+    { key: 'regime_factor_score', label: 'Regime Factor Score', type: 'range', format: 'number', source: 'macroSignal' },
+    { key: 'value_for_growth_percentile', label: 'Value-for-Growth Pctile', type: 'range', format: 'number', source: 'macroSignal' },
+    { key: 'earnings_momentum_tag', label: 'Earnings Momentum', type: 'select', source: 'macroSignal', enum: ['tailwind', 'inflecting', 'watching', 'neutral', 'headwind', 'breaking'] },
+    { key: 'passthrough_tags', label: 'Pass-Through Tags', type: 'select', source: 'macroSignal', isArray: true },
   ];
+
+  // Lookup macro signal for a ticker. Returns null if cache absent or no entry.
+  function macroSignal(ticker) {
+    var mc = window.macroDataCache;
+    if (!mc || !mc.signals) return null;
+    return mc.signals[ticker] || null;
+  }
+
+  // Eagerly load macro data the first time the screener panel is opened so
+  // signal filters/presets work even if the user never visited the Macro tab.
+  let _macroPrefetched = false;
+  function prefetchMacro() {
+    if (_macroPrefetched) return;
+    _macroPrefetched = true;
+    var loader = window.loadMacroData;
+    if (typeof loader === 'function') {
+      try { loader().then(() => { if (typeof applyFilters === 'function') applyFilters(); }); } catch (e) { /* noop */ }
+    }
+  }
 
   // Inject the screener toolbar into the public section header
   const sectionHeader = document.querySelector('.public-section .section-header-bar');
@@ -76,6 +104,7 @@
     screenerOpen = !screenerOpen;
     document.getElementById('screener-panel').style.display = screenerOpen ? 'block' : 'none';
     document.getElementById('screener-toggle').classList.toggle('active', screenerOpen);
+    if (screenerOpen) prefetchMacro();
   });
 
   // Add filter
@@ -266,7 +295,22 @@
   }
 
   function getUniqueValues(key) {
+    const col = FILTER_COLUMNS.find(c => c.key === key);
+    // For enum-defined macro signal columns, use the curated list directly.
+    if (col && col.enum) return col.enum.slice();
     const vals = new Set();
+    // Macro signal columns hydrate from macroDataCache.signals
+    if (col && col.source === 'macroSignal') {
+      var mc = window.macroDataCache;
+      if (mc && mc.signals) {
+        Object.values(mc.signals).forEach(sig => {
+          var v = sig && sig[key];
+          if (Array.isArray(v)) v.forEach(item => { if (item != null && item !== '') vals.add(item); });
+          else if (v != null && v !== '' && v !== 'N/A') vals.add(v);
+        });
+      }
+      return [...vals].sort();
+    }
     if (typeof tickerList === 'undefined') return [];
     tickerList.forEach(t => {
       const d = tickerData[t] || {};
@@ -293,8 +337,13 @@
       let pass = true;
 
       for (const filter of activeFilters) {
+        const col = FILTER_COLUMNS.find(c => c.key === filter.key);
         let val;
-        if (filter.key === 'subsector') {
+        let isArray = !!(col && col.isArray);
+        if (col && col.source === 'macroSignal') {
+          const sig = macroSignal(ticker);
+          val = sig ? sig[filter.key] : null;
+        } else if (filter.key === 'subsector') {
           val = d.subsector || getSubsector(ticker);
         } else {
           val = d[filter.key];
@@ -308,7 +357,12 @@
             if (val == null || isNaN(val) || val > filter.max) { pass = false; break; }
           }
         } else if (filter.type === 'select' && filter.values.length > 0) {
-          if (!filter.values.includes(val)) { pass = false; break; }
+          if (isArray) {
+            // Tag array: pass if any selected value is present in the ticker's array.
+            if (!Array.isArray(val) || !val.some(v => filter.values.includes(v))) { pass = false; break; }
+          } else {
+            if (!filter.values.includes(val)) { pass = false; break; }
+          }
         }
       }
 
