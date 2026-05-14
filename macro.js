@@ -442,20 +442,61 @@ function netStancePill(ticker) {
   return `<span class="macro-net-stance-pill" title="${headline}" style="background:${c.bg};color:${c.fg};border:1px solid ${c.fg};border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;margin-left:6px;cursor:default;">${stance}</span>`;
 }
 
+function renderReasonBullets(bullets) {
+  if (!bullets || !bullets.length) return '';
+  // Color-code: each bullet's first verb cue maps to a polarity.
+  const polarity = (txt) => {
+    if (/cheap|leading|tailwind|inflection confirmed|cheap-for-growth|R40-positive|positive\)/i.test(txt)) return 'val-pos';
+    if (/expensive|lagging|headwind|breaking|R40-deficit|expensive-for-growth|rich-for-growth/i.test(txt)) return 'val-neg';
+    return 'val-neutral';
+  };
+  return '<ul class="idea-reason-bullets">' +
+    bullets.map(b => `<li class="${polarity(b)}">${escapeHtml(b)}</li>`).join('') +
+    '</ul>';
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+function renderRegimeScorePill(score) {
+  if (score == null) return '';
+  const cls = score >= 70 ? 'val-pos' : score <= 30 ? 'val-neg' : 'val-neutral';
+  return `<span class="idea-score-pill ${cls}" title="Regime factor score (0\u2013100)">${score}</span>`;
+}
+
+function renderTagChips(tags) {
+  if (!tags || !tags.length) return '';
+  const labelFor = (t) => (window.RegimeFactors && window.RegimeFactors.TAG_LABELS && window.RegimeFactors.TAG_LABELS[t]) || t;
+  return '<div class="idea-tag-row">' +
+    tags.slice(0, 4).map(t => `<span class="idea-tag" title="${escapeHtml(t)}">${escapeHtml(labelFor(t))}</span>`).join('') +
+    '</div>';
+}
+
 function renderIdeaRow(i, regime, rationaleMap, kind) {
   const lookupKey = `${i.ticker}|${(regime?.regime || '').toLowerCase()}`;
   const supaRec = rationaleMap[lookupKey] || rationaleMap[`${i.ticker}|*`];
-  const rationale = i.rationale || (supaRec && supaRec.rationale) || fallbackRationale(i, regime);
   const popoverId = `idea-pop-${kind}-${i.ticker}`;
+  // Prefer structured bullets when present (new schema). Fall back to legacy
+  // single-line rationale (Supabase manual override or auto-generated).
+  const bullets = Array.isArray(i.reason_bullets) ? i.reason_bullets : null;
+  const rationale = bullets
+    ? renderReasonBullets(bullets) +
+      renderTagChips(i.passthrough_tags)
+    : (i.rationale || (supaRec && supaRec.rationale) || fallbackRationale(i, regime));
   const stancePill = netStancePill(i.ticker);
-  return `<div class="idea-row idea-${kind}">
-    <span class="idea-ticker">${i.ticker}${stancePill}</span>
-    <span class="idea-name">${i.name || ''}</span>
-    <span class="idea-subsector">${i.subsector || ''}</span>
-    <span class="idea-reason">${rationale}
+  const scorePill = renderRegimeScorePill(i.regime_factor_score);
+  return `<div class="idea-row idea-${kind} idea-row-rich">
+    <div class="idea-row-head">
+      <span class="idea-ticker">${i.ticker}${stancePill}${scorePill}</span>
+      <span class="idea-name">${escapeHtml(i.name || '')}</span>
+      <span class="idea-subsector">${escapeHtml(i.subsector || '')}</span>
       <button class="idea-info-btn" type="button" aria-label="Regime breakdown for ${i.ticker}" data-pop="${popoverId}">&#9432;</button>
       <span class="idea-pop" id="${popoverId}" role="tooltip">${regimeScoreBreakdownHtml(regime)}</span>
-    </span>
+    </div>
+    <div class="idea-row-body">${rationale}</div>
   </div>`;
 }
 

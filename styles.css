@@ -3458,6 +3458,111 @@ body.wb-drawer-open { overflow: hidden; }
 .idea-own { border-left: 2px solid var(--green); padding-left: 8px; }
 .idea-avoid { border-left: 2px solid var(--red); padding-left: 8px; }
 
+/* Rich idea rows (idea engine output) */
+.idea-row-rich {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 7px 0 8px;
+  font-size: 11px;
+  border-bottom: 1px solid rgba(30,41,59,0.3);
+}
+.idea-row-rich:last-child { border-bottom: none; }
+.idea-row-rich.idea-own { border-left: 2px solid var(--green); padding-left: 8px; }
+.idea-row-rich.idea-avoid { border-left: 2px solid var(--red); padding-left: 8px; }
+.idea-row-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.idea-row-head .idea-ticker { font-size: 12px; }
+.idea-row-head .idea-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+}
+.idea-row-head .idea-subsector { white-space: nowrap; }
+.idea-score-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(100,116,139,0.15);
+  color: var(--text-secondary);
+  border: 1px solid rgba(100,116,139,0.3);
+}
+.idea-score-pill.val-pos {
+  background: rgba(34,197,94,0.12);
+  color: var(--green);
+  border-color: rgba(34,197,94,0.35);
+}
+.idea-score-pill.val-neg {
+  background: rgba(239,68,68,0.12);
+  color: var(--red);
+  border-color: rgba(239,68,68,0.35);
+}
+.idea-score-pill.val-neutral {
+  background: rgba(100,116,139,0.12);
+  color: var(--text-secondary);
+  border-color: rgba(100,116,139,0.3);
+}
+.idea-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.idea-reason-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+.idea-reason-bullets li {
+  position: relative;
+  padding-left: 12px;
+}
+.idea-reason-bullets li::before {
+  content: '•';
+  position: absolute;
+  left: 2px;
+  top: 0;
+  color: var(--text-muted);
+}
+.idea-reason-bullets li.val-pos { color: var(--green); }
+.idea-reason-bullets li.val-pos::before { color: var(--green); }
+.idea-reason-bullets li.val-neg { color: var(--red); }
+.idea-reason-bullets li.val-neg::before { color: var(--red); }
+.idea-reason-bullets li.val-neutral { color: var(--text-secondary); }
+.idea-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+.idea-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 8px;
+  font-size: 9.5px;
+  font-weight: 500;
+  background: rgba(56,189,248,0.10);
+  color: var(--text-secondary);
+  border: 1px solid rgba(56,189,248,0.25);
+  white-space: nowrap;
+}
+
 /* Commodities & Rates */
 .commodity-header, .commodity-row {
   display: flex;

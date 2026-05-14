@@ -6,6 +6,11 @@ import https from 'https';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+// Load shared regime factor matrix + idea engine (both isomorphic UMD modules)
+const RegimeFactors = require('./regime_factors.js');
+const IdeaEngine = require('./idea_engine.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim() || 'https://wcyirdvvuetzodiedzss.supabase.co';
@@ -492,29 +497,118 @@ async function main() {
   const tickerSectorMap = {};
   for (const t of uniqueWatchlist) tickerSectorMap[t] = mapTickerToSector(t, subsectorMap);
 
-  const { favored_sectors, avoid_sectors, favored_factors, avoid_factors } = macroData.regime;
+  const { favored_sectors, avoid_sectors } = macroData.regime;
 
-  const ownCandidates = uniqueWatchlist.filter(t => favored_sectors.includes(tickerSectorMap[t]));
-  const avoidCandidates = uniqueWatchlist.filter(t => avoid_sectors.includes(tickerSectorMap[t]));
+  // ── Pull per-stock fundamentals from Supabase quotes table ───────────
+  // We need: revenueGrowth, operatingMargins, evSales, forwardPE, beta,
+  // marketCap, fcfYield, m1 (1M %), price. Fall back to defaults on miss.
+  let quotesByTicker = {};
+  try {
+    quotesByTicker = await fetchQuotesFundamentals(uniqueWatchlist);
+    console.log(`  Loaded fundamentals for ${Object.keys(quotesByTicker).length} watchlist tickers`);
+  } catch (e) {
+    console.warn('  ! Could not load fundamentals from Supabase, idea engine will degrade:', e.message);
+  }
 
-  macroData.ideas.own = ownCandidates.slice(0, 5).map(t => ({
-    ticker: t, name: commonNames[t] || t,
-    subsector: subsectorMap[t] || 'Other',
-    sectorEtf: tickerSectorMap[t],
-    sectorName: SECTOR_ETFS[tickerSectorMap[t]] || tickerSectorMap[t],
-    reason: `In favored sector (${SECTOR_ETFS[tickerSectorMap[t]]}) for ${macroData.regime.regime} regime`,
-  }));
+  // ── Pull earnings_intel.json for earnings momentum classification ────
+  let earningsIntelMap = {};
+  try {
+    const intelPath = path.join(__dirname, 'earnings_intel.json');
+    if (fs.existsSync(intelPath)) {
+      const intelDoc = JSON.parse(fs.readFileSync(intelPath, 'utf-8'));
+      earningsIntelMap = intelDoc.tickers || {};
+      console.log(`  Loaded earnings intel for ${Object.keys(earningsIntelMap).length} tickers`);
+    }
+  } catch (e) {
+    console.warn('  ! earnings_intel.json read failed:', e.message);
+  }
 
-  macroData.ideas.avoid = avoidCandidates.slice(0, 5).map(t => ({
-    ticker: t, name: commonNames[t] || t,
-    subsector: subsectorMap[t] || 'Other',
-    sectorEtf: tickerSectorMap[t],
-    sectorName: SECTOR_ETFS[tickerSectorMap[t]] || tickerSectorMap[t],
-    reason: `In unfavored sector (${SECTOR_ETFS[tickerSectorMap[t]]}) for ${macroData.regime.regime} regime`,
-  }));
+  // ── Build rows in the shape the idea engine expects ──────────────────
+  const rows = uniqueWatchlist.map(t => {
+    const q = quotesByTicker[t] || {};
+    return {
+      ticker: t,
+      name: commonNames[t] || q.long_name || t,
+      subsector: subsectorMap[t] || null,
+      sector: q.sector || null,
+      revenueGrowth: q.revenue_growth,
+      operatingMargins: q.operating_margins,
+      fcfMargin: q.fcf_margin,  // may be null; engine falls back
+      fcfYield: q.fcf_yield,
+      evSales: q.enterprise_to_revenue,
+      forwardPE: q.forward_pe,
+      beta: q.beta,
+      marketCap: q.market_cap,
+      debtEquity: q.debt_to_equity,
+      qualityScore: q.quality_score,
+      m1: q.change_1m,
+      ytd: q.change_ytd,
+      price: q.price,
+    };
+  });
 
-  console.log(`  Own:   ${macroData.ideas.own.map(i => i.ticker).join(', ') || '(none)'}`);
-  console.log(`  Avoid: ${macroData.ideas.avoid.map(i => i.ticker).join(', ') || '(none)'}`);
+  const ideaResult = IdeaEngine.rankIdeas(rows, {
+    regimeFactorsApi: RegimeFactors,
+    regimeName: macroData.regime.regime,
+    favoredSectors: favored_sectors,
+    avoidSectors: avoid_sectors,
+    sectorEtfFor: (ticker) => tickerSectorMap[ticker] || 'XLK',
+    sectorMonthFor: (etf) => (macroData.sectors[etf] || {}).change_1m,
+    sectorEtfName: (etf) => SECTOR_ETFS[etf] || etf,
+    subsectorMap,
+    intelMap: earningsIntelMap,
+  });
+
+  // Adapt scored entries to the legacy `ideas.own / ideas.avoid` schema while
+  // adding new fields the dashboard will use. Legacy `reason` is kept as the
+  // first bullet for backward-compatible rendering.
+  const adaptIdea = (s) => {
+    const etf = s.row._sectorEtf;
+    return {
+      ticker: s.ticker,
+      name: s.row.name,
+      subsector: s.row.subsector || 'Other',
+      sectorEtf: etf,
+      sectorName: SECTOR_ETFS[etf] || etf,
+      // Legacy single-line fallback (joined bullets)
+      reason: (s.reasonBullets && s.reasonBullets[0]) ||
+              `In ${SECTOR_ETFS[etf] || etf} for ${macroData.regime.regime} regime`,
+      // New rich fields
+      reason_bullets: s.reasonBullets,
+      regime_factor_score: s.regimeFactorScore,
+      regime_components: s.regimeComponents,
+      regime_tags_applied: s.regimeTagsApplied,
+      passthrough_tags: s.passthroughTags,
+      alpha_1m: s.alpha1m,
+      r40: s.r40,
+      r40_formula: s.r40_formula,
+      value_for_growth_percentile: s.valueForGrowthPercentile,
+      value_for_growth_details: s.valueForGrowthDetails,
+      earnings_momentum_tag: s.earningsMomentumTag,
+      earnings_momentum_note: s.earningsMomentumNote,
+    };
+  };
+
+  macroData.ideas.own = ideaResult.own.slice(0, 5).map(adaptIdea);
+  macroData.ideas.avoid = ideaResult.avoid.slice(0, 5).map(adaptIdea);
+
+  // Persist the full scored universe so the screener can hydrate filter
+  // columns (alpha_1m, regime_factor_score, etc.) without re-running the
+  // engine in the browser.
+  macroData.signals = {};
+  for (const s of ideaResult.scored) {
+    macroData.signals[s.ticker] = {
+      alpha_1m: s.alpha1m,
+      r40: s.r40,
+      value_for_growth_percentile: s.valueForGrowthPercentile,
+      earnings_momentum_tag: s.earningsMomentumTag,
+      regime_factor_score: s.regimeFactorScore,
+      passthrough_tags: s.passthroughTags,
+    };
+  }
+
+  console.log(`  Own:   ${macroData.ideas.own.map(i => `${i.ticker}(${i.regime_factor_score})`).join(', ') || '(none)'}`);
+  console.log(`  Avoid: ${macroData.ideas.avoid.map(i => `${i.ticker}(${i.regime_factor_score})`).join(', ') || '(none)'}`);
 
   // ── Save ──
   const outPath = path.join(__dirname, 'macro_data.json');
@@ -605,6 +699,57 @@ function buildPillarSignals(pillar, allData, macroData) {
     });
   }
   return signals;
+}
+
+// ── Supabase: read fundamentals for the watchlist ──
+// Returns { TICKER: { revenue_growth, operating_margins, enterprise_to_revenue,
+//   forward_pe, beta, market_cap, fcf_margin, fcf_yield, change_1m,
+//   change_ytd, quality_score, debt_to_equity, price, sector, long_name } }
+async function fetchQuotesFundamentals(tickers) {
+  if (!SUPABASE_KEY || !tickers || !tickers.length) return {};
+  const select = 'ticker,long_name,price,sector,beta,market_cap,enterprise_value,total_revenue,free_cashflow,revenue_growth,operating_margins,forward_pe,enterprise_to_revenue,enterprise_to_ebitda,change_1m,change_ytd';
+  // Supabase IN filter can take all 130-ish tickers in one URL
+  const inList = tickers.map(t => encodeURIComponent(t)).join(',');
+  const urlStr = `${SUPABASE_URL}/rest/v1/quotes?select=${select}&ticker=in.(${inList})`;
+  const rows = await new Promise((resolve, reject) => {
+    const u = new URL(urlStr);
+    const req = https.request({
+      hostname: u.hostname, path: u.pathname + u.search, method: 'GET',
+      headers: {
+        apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`,
+        Accept: 'application/json',
+      },
+    }, res => {
+      let d = ''; res.on('data', c => d += c);
+      res.on('end', () => {
+        if (res.statusCode >= 300) return reject(new Error(`HTTP ${res.statusCode}: ${d.slice(0,200)}`));
+        try { resolve(JSON.parse(d)); } catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject); req.end();
+  });
+
+  const out = {};
+  for (const r of (rows || [])) {
+    if (!r || !r.ticker) continue;
+    // Derive FCF margin and FCF yield. enterprise_value sometimes 0 / null.
+    const fcf = Number(r.free_cashflow);
+    const rev = Number(r.total_revenue);
+    const mcap = Number(r.market_cap);
+    const fcf_margin = (Number.isFinite(fcf) && Number.isFinite(rev) && rev > 0)
+      ? (fcf / rev) * 100 : null;
+    const fcf_yield = (Number.isFinite(fcf) && Number.isFinite(mcap) && mcap > 0)
+      ? (fcf / mcap) * 100 : null;
+    out[r.ticker] = {
+      ...r,
+      fcf_margin,
+      fcf_yield,
+      // qualityScore comes from scores.js at runtime; not in this table — keep null
+      quality_score: null,
+      debt_to_equity: null,
+    };
+  }
+  return out;
 }
 
 // ── Supabase upsert ──
