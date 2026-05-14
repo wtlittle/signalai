@@ -214,6 +214,19 @@ def run():
             write_post_earnings_note(ticker, company, earnings_date, days_since, result)
             update_index(ticker, company, earnings_date, days_since)
             generated += 1
+            # Emit subscriber alert (Phase 2)
+            try:
+                from automation.alerts import emit_alert
+                headline = (result.get("headline") or f"{company} earnings note refreshed").strip()
+                emit_alert(
+                    alert_type="post_earnings_note",
+                    summary=f"{ticker} post-earnings note: {headline}",
+                    ticker=ticker,
+                    severity="info",
+                    extra={"earnings_date": earnings_date, "days_since": days_since},
+                )
+            except Exception as _exc:
+                print(f"  [{ticker}] emit_alert failed: {_exc}")
         elif result and result.get("skipped"):
             skipped += 1
 

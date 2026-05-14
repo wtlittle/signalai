@@ -280,6 +280,33 @@
     global.document.addEventListener('DOMContentLoaded', function () { load(); });
   }
 
+  // Inject an approved rumor entry into the in-memory deals map so the
+  // RUMOR pill renders immediately without waiting for the next server
+  // commit. Called by ma-pending.js when the user approves a candidate.
+  function injectRumor(entry) {
+    if (!entry || !entry.ticker) return;
+    var t = entry.ticker;
+    _state.deals[t] = {
+      ticker: t,
+      company: entry.company || t,
+      status: 'rumor',
+      buyer: entry.buyer || null,
+      deal_type: entry.deal_type || null,
+      price_per_share_usd: null,
+      enterprise_value_usd: null,
+      premium_pct: null,
+      announced_date: entry.flagged_at || null,
+      closed_date: null,
+      delisted: false,
+      strategic_rationale: entry.rationale || entry.headline || '',
+      pros: [],
+      cons: [],
+      competitor_impact: [],
+      sources: entry.sources || []
+    };
+    _emit();
+  }
+
   global.MaStatus = {
     load: load,
     get: get,
@@ -287,6 +314,7 @@
     pillHtml: pillHtml,
     hasBlurb: hasBlurb,
     dealBlurbHtml: dealBlurbHtml,
-    onLoaded: onLoaded
+    onLoaded: onLoaded,
+    injectRumor: injectRumor
   };
 })(typeof window !== 'undefined' ? window : this);

@@ -82,6 +82,28 @@ def run():
     print(f"  Momentum picks: {len(briefing['momentum_picks'])}")
     print(f"  Trends: {len(briefing['trends'])}")
 
+    # Emit subscriber alert (Phase 2)
+    try:
+        from automation.alerts import emit_alert
+        wk = briefing.get("week_ending") or _date.today().isoformat()
+        narrative = (briefing.get("narrative") or "Fresh weekly briefing available").strip()
+        if len(narrative) > 180:
+            narrative = narrative[:177] + "..."
+        emit_alert(
+            alert_type="weekly_briefing",
+            summary=f"Week ending {wk}: {narrative}",
+            ticker=None,
+            severity="info",
+            link="https://www.perplexity.ai/computer/a/stock-watchlist-terminal-qBSMi5vnQ1OezaO1hksi5A",
+            extra={
+                "week_ending": wk,
+                "value_count": len(briefing["value_picks"]),
+                "momentum_count": len(briefing["momentum_picks"]),
+            },
+        )
+    except Exception as _exc:
+        print(f"  [weekly_briefing] emit_alert failed: {_exc}")
+
     return briefing
 
 

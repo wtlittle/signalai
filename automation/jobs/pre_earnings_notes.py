@@ -205,6 +205,22 @@ def run():
             write_pre_earnings_note(ticker, company, earnings_date, days_until, result)
             update_index(ticker, company, earnings_date, days_until)
             generated += 1
+            # Emit subscriber alert (Phase 2)
+            try:
+                from automation.alerts import emit_alert
+                setup = (result.get("setup") or f"{company} pre-earnings note refreshed").strip()
+                # Trim long setups for the summary line
+                if len(setup) > 140:
+                    setup = setup[:137] + "..."
+                emit_alert(
+                    alert_type="pre_earnings_note",
+                    summary=f"{ticker} pre-earnings ({earnings_date}, T-{days_until}d): {setup}",
+                    ticker=ticker,
+                    severity="info",
+                    extra={"earnings_date": earnings_date, "days_until": days_until},
+                )
+            except Exception as _exc:
+                print(f"  [{ticker}] emit_alert failed: {_exc}")
         elif result and result.get("skipped"):
             skipped += 1
 

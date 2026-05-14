@@ -8533,3 +8533,165 @@ mark.search-highlight {
   color: var(--text-muted);
   margin: 6px 0 0;
 }
+
+/* ============================================================
+   M&A Rumor Pending Review (News tab)
+   ============================================================ */
+.ma-pending-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid rgba(255, 165, 0, 0.25);
+  border-radius: 12px;
+  background: rgba(255, 165, 0, 0.04);
+}
+.ma-pending-section .section-header-bar h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+.badge.badge-pending {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 11px;
+  background: #ff8c00;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.ma-pending-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.ma-pending-card {
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 10px;
+  background: var(--surface, rgba(255, 255, 255, 0.02));
+  padding: 14px 16px;
+}
+.ma-pending-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.ma-pending-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.ma-pending-title strong {
+  font-size: 17px;
+  letter-spacing: 0.4px;
+}
+.ma-pending-company {
+  font-size: 13px;
+  color: var(--muted, rgba(255, 255, 255, 0.6));
+}
+.ma-pending-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.ma-pending-conf {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.ma-pending-conf.high { background: rgba(46, 160, 67, 0.18); color: #4ac26b; }
+.ma-pending-conf.mid  { background: rgba(255, 165, 0, 0.18); color: #ff9d2b; }
+.ma-pending-conf.low  { background: rgba(255, 80, 80, 0.18); color: #ff7676; }
+.ma-pending-move {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted, rgba(255, 255, 255, 0.7));
+}
+.ma-pending-when {
+  color: var(--muted, rgba(255, 255, 255, 0.55));
+}
+.ma-pending-body { font-size: 13px; line-height: 1.5; }
+.ma-pending-headline { font-weight: 600; margin-bottom: 4px; }
+.ma-pending-rationale {
+  color: var(--muted, rgba(255, 255, 255, 0.75));
+  margin-bottom: 8px;
+}
+.ma-pending-buyer { margin-bottom: 8px; }
+.ma-pending-label { color: var(--muted, rgba(255, 255, 255, 0.55)); margin-right: 4px; }
+.ma-pending-sep { margin: 0 8px; color: var(--muted, rgba(255, 255, 255, 0.35)); }
+.ma-pending-gates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.ma-gate {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ma-gate.pass { background: rgba(46, 160, 67, 0.16); color: #4ac26b; }
+.ma-gate.fail { background: rgba(255, 80, 80, 0.16); color: #ff7676; }
+.ma-pending-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.ma-pending-source {
+  font-size: 12px;
+  text-decoration: none;
+  color: var(--accent, #6ea8ff);
+  background: rgba(110, 168, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.ma-pending-source:hover { background: rgba(110, 168, 255, 0.2); }
+.ma-pending-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.06));
+}
+.ma-pending-actions .btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ma-pending-actions .btn:disabled { opacity: 0.6; cursor: progress; }
+.btn-approve {
+  background: rgba(255, 165, 0, 0.18);
+  color: #ff9d2b;
+  border-color: rgba(255, 165, 0, 0.35);
+}
+.btn-approve:hover { background: rgba(255, 165, 0, 0.28); }
+.btn-reject {
+  background: transparent;
+  color: var(--muted, rgba(255, 255, 255, 0.7));
+  border-color: var(--border, rgba(255, 255, 255, 0.15));
+}
+.btn-reject:hover { background: rgba(255, 255, 255, 0.05); }
+
+/* Live-quotes row update flash */
+@keyframes row-flash-anim {
+  0%   { background-color: rgba(110, 168, 255, 0.18); }
+  100% { background-color: transparent; }
+}
+.row-flash {
+  animation: row-flash-anim 0.6s ease-out 1;
+}

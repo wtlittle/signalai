@@ -276,6 +276,134 @@ def step_sync_earnings_intel():
         print(f"  [WARN] earnings_intel sync failed: {exc}")
 
 
+def step_emit_alerts(pre: list[dict], post: list[dict]):
+    """Emit subscriber alerts based on freshly-refreshed market data and
+    today's earnings calendar.
+
+    Emits:
+      * big_move_10pct  — any watchlist ticker with |change1d| >= 10%
+      * earnings_day    — every ticker reporting today (days_until=0 or
+                          days_since=0 in post if BMO)
+      * sector_rotation — a sector with >= 5 tickers moving in the same
+                          direction by >= 2% on the day
+
+    All failures are caught and logged — alerts must never break the
+    refresh pipeline.
+    """
+    try:
+        from automation.alerts import emit_alert
+    except Exception as exc:
+        print(f"[alerts] import failed: {exc}")
+        return
+
+    snap_path = ROOT_DIR / "data-snapshot.json"
+    if not snap_path.exists():
+        print("[alerts] data-snapshot.json missing — skip")
+        return
+
+    try:
+        snap = json.loads(snap_path.read_text())
+    except Exception as exc:
+        print(f"[alerts] snapshot read failed: {exc}")
+        return
+
+    quotes = snap.get("quotes", {}) or {}
+    today_iso = TODAY.isoformat()
+
+    # --- big_move_10pct ---
+    big_movers = []
+    for ticker, q in quotes.items():
+        change1d = q.get("change1d")
+        if change1d is None:
+            continue
+        if abs(float(change1d)) >= 10.0:
+            big_movers.append((ticker, float(change1d), q.get("longName") or ticker))
+
+    for ticker, move, name in big_movers:
+        direction = "+" if move > 0 else ""
+        try:
+            emit_alert(
+                alert_type="big_move_10pct",
+                summary=f"{ticker} ({name}) {direction}{move:.1f}% on the day",
+                ticker=ticker,
+                severity="warning" if abs(move) >= 15 else "info",
+                extra={"change1d": move, "date": today_iso},
+            )
+        except Exception as exc:
+            print(f"[alerts] big_move_10pct {ticker} failed: {exc}")
+
+    # --- earnings_day ---
+    reporting_today = []
+    for entry in (pre or []):
+        if entry.get("days_until") == 0 or entry.get("date") == today_iso:
+            reporting_today.append(entry)
+    for entry in (post or []):
+        if entry.get("days_since") == 0 or entry.get("date") == today_iso:
+            reporting_today.append(entry)
+
+    seen = set()
+    for entry in reporting_today:
+        ticker = entry.get("ticker")
+        if not ticker or ticker in seen:
+            continue
+        seen.add(ticker)
+        timing = entry.get("timing") or "TBD"
+        company = entry.get("company") or ticker
+        try:
+            emit_alert(
+                alert_type="earnings_day",
+                summary=f"{ticker} ({company}) reports today ({timing})",
+                ticker=ticker,
+                severity="info",
+                extra={"timing": timing, "date": today_iso},
+            )
+        except Exception as exc:
+            print(f"[alerts] earnings_day {ticker} failed: {exc}")
+
+    # --- sector_rotation ---
+    by_sector_pos: dict[str, int] = {}
+    by_sector_neg: dict[str, int] = {}
+    for ticker, q in quotes.items():
+        sector = q.get("sector")
+        change1d = q.get("change1d")
+        if not sector or change1d is None:
+            continue
+        c = float(change1d)
+        if c >= 2.0:
+            by_sector_pos[sector] = by_sector_pos.get(sector, 0) + 1
+        elif c <= -2.0:
+            by_sector_neg[sector] = by_sector_neg.get(sector, 0) + 1
+
+    for sector, n in by_sector_pos.items():
+        if n >= 5:
+            try:
+                emit_alert(
+                    alert_type="sector_rotation",
+                    summary=f"Rotation INTO {sector}: {n} watchlist names up >2% today",
+                    ticker=None,
+                    severity="info",
+                    extra={"sector": sector, "direction": "up", "count": n, "date": today_iso},
+                )
+            except Exception as exc:
+                print(f"[alerts] sector_rotation up {sector} failed: {exc}")
+    for sector, n in by_sector_neg.items():
+        if n >= 5:
+            try:
+                emit_alert(
+                    alert_type="sector_rotation",
+                    summary=f"Rotation OUT OF {sector}: {n} watchlist names down >2% today",
+                    ticker=None,
+                    severity="warning",
+                    extra={"sector": sector, "direction": "down", "count": n, "date": today_iso},
+                )
+            except Exception as exc:
+                print(f"[alerts] sector_rotation down {sector} failed: {exc}")
+
+    print(f"[alerts] big_movers={len(big_movers)} earnings_day={len(seen)} "
+          f"sector_pos={sum(1 for v in by_sector_pos.values() if v >= 5)} "
+          f"sector_neg={sum(1 for v in by_sector_neg.values() if v >= 5)}")
+
+
 def step_compute_debate_scores():
     """Compute Debate Intensity (Contested Velocity) scores in earnings_intel.json.
 
@@ -413,6 +541,15 @@ def run():
     # Supabase writes are already performed inside each refresh_*.mjs
     # script invoked above, so there is no separate Supabase-push step.
     step_compute_debate_scores()
+
+    # Step 6.6: Subscriber alerts — emit big-move / earnings-day /
+    # sector-rotation events. Pure side-effect step; only AMC + full
+    # have fresh intraday data, BMO would emit before the market opens.
+    if mode in ("amc", "full"):
+        step_emit_alerts(pre, post)
+    else:
+        # BMO can still emit earnings_day alerts (no market data needed)
+        step_emit_alerts([], post + pre)
 
     # Step 7: Market intel harvest (Perplexity, Sunday-only) — BMO + full.
     # The harvester self-skips when today is not Sunday, but we additionally
