@@ -170,7 +170,7 @@ function renderPillarTile(name, pillar, icon) {
     signalRows = pillar.signals.map(s => {
       return `<div class="pillar-signal">
         <span class="signal-name">${s.name}</span>
-        <span class="signal-price">${fmtNum(s.price)}</span>
+        <span class="signal-price">${fmtNum(s.price)}${s.unit || ''}</span>
         <span class="signal-dir ${s.trend === 'up' ? 'val-pos' : s.trend === 'down' ? 'val-neg' : 'val-neutral'}">${s.direction}</span>
         <span class="signal-chg ${pctCls(s.change1d)}">${fmtPctS(s.change1d)}</span>
         <span class="signal-chg ${pctCls(s.change1w)}">${fmtPctS(s.change1w)}</span>

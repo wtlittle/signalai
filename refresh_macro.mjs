@@ -57,8 +57,13 @@ const COMMODITY_TICKERS = {
 
 // Inflation proxy tickers
 const INFLATION_TICKERS = {
-  'TIP':  { name: 'TIPS ETF (Inflation-Protected)', pillar: 'inflation' },
   'RINF': { name: 'ProShares Inflation Expectations', pillar: 'inflation' },
+};
+
+// FRED series (fetched via FRED public CSV — no API key required)
+// Each entry: { name, fmt: 'pct'|'num', decimals }
+const FRED_SERIES = {
+  'DFII10': { name: '10Y TIPS Real Yield', fmt: 'pct', decimals: 2 },
 };
 
 // Sentiment/Breadth proxies
@@ -83,6 +88,67 @@ function httpGet(url) {
     req.on('error', reject);
     req.setTimeout(15000, () => { req.destroy(); reject(new Error('Timeout')); });
   });
+}
+
+// ── FRED CSV fetch (no API key required) ──
+// Note: Node's https module hangs against fred.stlouisfed.org in this environment.
+// Use built-in fetch (undici) which works reliably.
+async function fredFetchText(url, timeoutMs = 30000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+        'Accept': 'text/csv,*/*',
+      },
+      signal: ctrl.signal,
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function fetchFred(seriesId, displayName, attempts = 3) {
+  // Fetch ~13 months of daily observations so 1Y change is available
+  const end = new Date();
+  const start = new Date();
+  start.setFullYear(end.getFullYear() - 1);
+  start.setDate(start.getDate() - 14); // small buffer
+  const fmt = (d) => d.toISOString().slice(0, 10);
+  const url = `https://fred.stlouisfed.org/graph/fredgraph.csv?id=${encodeURIComponent(seriesId)}&cosd=${fmt(start)}&coed=${fmt(end)}`;
+  let lastErr;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const text = await fredFetchText(url, 30000);
+      const lines = text.trim().split('\n').slice(1); // skip header
+      const closes = []; const timestamps = [];
+      for (const line of lines) {
+        const [dateStr, valStr] = line.split(',');
+        if (!valStr || valStr === '.') continue;
+        const v = parseFloat(valStr);
+        if (Number.isNaN(v)) continue;
+        closes.push(v);
+        timestamps.push(Math.floor(new Date(dateStr).getTime() / 1000));
+      }
+      if (closes.length < 2) return null;
+      const price = closes[closes.length - 1];
+      const prevDayClose = closes[closes.length - 2];
+      const change1d = prevDayClose ? ((price - prevDayClose) / prevDayClose * 100) : null;
+      return {
+        ticker: seriesId, name: displayName || seriesId,
+        price, previousClose: prevDayClose, change1d,
+        timestamps, closes, _fredSource: true,
+      };
+    } catch (e) {
+      lastErr = e;
+      if (attempt < attempts) await sleep(500 * attempt);
+    }
+  }
+  console.warn(`  ✗ FRED ${seriesId}: ${lastErr?.message || 'unknown error'}`);
+  return null;
 }
 
 // ── Yahoo Finance chart fetch ──
@@ -274,6 +340,16 @@ async function main() {
     ...Object.keys(SENTIMENT_TICKERS),
   ];
 
+  // Fetch FRED series (rates / breakevens / real yields)
+  console.log(`Fetching ${Object.keys(FRED_SERIES).length} FRED series...`);
+  for (const [sid, cfg] of Object.entries(FRED_SERIES)) {
+    const r = await fetchFred(sid, cfg.name);
+    if (r) {
+      allData[sid] = r;
+      console.log(`  \u2713 ${cfg.name} (${sid}): ${r.price?.toFixed(cfg.decimals || 2)}${cfg.fmt === 'pct' ? '%' : ''}, 1d ${r.change1d?.toFixed(2)}%`);
+    }
+  }
+
   console.log(`Fetching ${allTickers.length} tickers from Yahoo Finance...`);
   const batchSize = 4;
   for (let i = 0; i < allTickers.length; i += batchSize) {
@@ -322,12 +398,12 @@ async function main() {
     { ticker: 'XLU', weight: 0.5, invert: true }, // utilities up = defensive
   ]);
 
-  // Inflation: commodities + TIPS direction
+  // Inflation: commodities + 10Y TIPS real yield direction
   const inflationScore = scorePillarFromETFs(allData, [
     { ticker: 'CL=F', weight: 1 },    // oil up = inflation
     { ticker: 'HG=F', weight: 0.7 },  // copper up = inflation
     { ticker: 'GC=F', weight: 0.5 },  // gold up = inflation hedge
-    { ticker: 'TIP', weight: 0.8 },   // TIPS up = inflation expectations
+    { ticker: 'DFII10', weight: 0.8, invert: true }, // 10Y TIPS real yield down = inflationary / easier policy
     { ticker: 'DX-Y.NYB', weight: 0.5, invert: true }, // dollar down = inflationary
   ]);
 
@@ -462,6 +538,11 @@ async function main() {
 // ── Build pillar signal details for frontend ──
 function buildPillarSignals(pillar, allData, macroData) {
   const signals = [];
+  // Tickers that should display a unit suffix after the level (e.g. "1.99%")
+  const UNIT_MAP = {
+    'DFII10': '%',
+    '^TNX': '%', '^FVX': '%', '^TYX': '%', '^IRX': '%',
+  };
   const addSignal = (ticker, customName) => {
     const d = allData[ticker];
     if (!d) return;
@@ -474,6 +555,7 @@ function buildPillarSignals(pillar, allData, macroData) {
       change3m: perf.change_3m, change6m: perf.change_6m,
       change1y: perf.change_1y,
       trend, direction: trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→',
+      unit: UNIT_MAP[ticker] || '',
     });
   };
 
@@ -497,7 +579,7 @@ function buildPillarSignals(pillar, allData, macroData) {
     addSignal('CL=F', 'WTI Crude');
     addSignal('HG=F', 'Copper');
     addSignal('GC=F', 'Gold');
-    addSignal('TIP', 'TIPS ETF');
+    addSignal('DFII10', '10Y TIPS Real Yield');
     addSignal('DX-Y.NYB', 'US Dollar (DXY)');
   } else if (pillar === 'policy') {
     addSignal('^TNX', '10Y Treasury Yield');
