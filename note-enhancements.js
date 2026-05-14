@@ -994,6 +994,56 @@ function renderTranscriptLinks(ticker, date) {
 // Store state for current open note
 let _currentNote = { ticker: null, date: null, type: null, md: null };
 
+/* ------------------------------------------------------------------
+   FALLBACK CONTEXT INFERENCE
+   When a note is opened via a code path that doesn't pre-populate
+   _currentNote (e.g. archived notes, programmatic opens, deep-links),
+   we recover ticker/type/date by parsing the rendered markdown heading.
+   Returns { ticker, type, date } or null if no match.
+------------------------------------------------------------------ */
+function inferNoteContextFromMarkdown(md) {
+  if (!md || typeof md !== 'string') return null;
+
+  // Strategy: scan the first ~30 non-empty lines for context signals.
+  // We handle two heading conventions:
+  //   (a) Spec-form: "# TICKER — Pre-Earnings (YYYY-MM-DD)"
+  //                  "# TICKER — Post-Earnings (YYYY-MM-DD)"
+  //   (b) On-disk form (current generator):
+  //       "# Company Name (TICKER) — Post-Earnings Note"
+  //       followed by "**Reported:** YYYY-MM-DD ..."
+  const head = md.split('\n').slice(0, 30).join('\n');
+
+  // (a) Spec-form, single-line heading with embedded date
+  // Tolerate em dash, en dash, or hyphen between ticker and label.
+  const specMatch = head.match(/^#\s+([A-Z][A-Z0-9.\-]{0,9})\s*[—–\-]+\s*(Pre|Post)[\- ]?Earnings\s*\((\d{4}-\d{2}-\d{2})\)/im);
+  if (specMatch) {
+    return {
+      ticker: specMatch[1].toUpperCase(),
+      type:   specMatch[2].toLowerCase(),
+      date:   specMatch[3],
+    };
+  }
+
+  // (b) On-disk form: ticker in parens, type in heading, date on Reported line
+  const headingMatch = head.match(/^#\s+[^\n]*?\(([A-Z][A-Z0-9.\-]{0,9})\)\s*[—–\-]+\s*(Pre|Post)[\- ]?Earnings/im);
+  const reportedMatch = head.match(/\*\*?Reported:?\*?\*?\s*:?\s*(\d{4}-\d{2}-\d{2})/i)
+    || head.match(/Reported:\s*(\d{4}-\d{2}-\d{2})/i)
+    || head.match(/\((\d{4}-\d{2}-\d{2})\)/);
+  if (headingMatch && reportedMatch) {
+    return {
+      ticker: headingMatch[1].toUpperCase(),
+      type:   headingMatch[2].toLowerCase(),
+      date:   reportedMatch[1],
+    };
+  }
+
+  return null;
+}
+
+if (typeof window !== 'undefined') {
+  window.inferNoteContextFromMarkdown = inferNoteContextFromMarkdown;
+}
+
 // Override openEarningsNote once DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   // Wait for earnings.js to define its globals, then patch
@@ -1025,11 +1075,28 @@ function patchOpenEarningsNote() {
         // Check if we've already enhanced this content
         if ($noteContent.querySelector('.note-tab-bar')) continue;
 
-        // Extract ticker/date/type from the overlay's state or from the note heading
-        const { ticker, date, type } = _currentNote;
+        // Extract ticker/date/type from the overlay's state or from the note heading.
+        // Primary path: _currentNote was populated by installNoteProxy on click.
+        // Fallback path: derive context by parsing the rendered note's text/markdown
+        // (covers archived notes, programmatic opens, and any code path that
+        // bypassed the click-proxy).
+        let { ticker, date, type } = _currentNote;
+        if (!ticker) {
+          const rawText = ($noteContent.textContent || '').trim();
+          const inferred = inferNoteContextFromMarkdown(rawText);
+          if (inferred && inferred.ticker) {
+            _currentNote = { ticker: inferred.ticker, date: inferred.date, type: inferred.type, md: null };
+            ticker = inferred.ticker;
+            date   = inferred.date;
+            type   = inferred.type;
+          }
+        }
         if (!ticker) continue;
 
-        // Get the raw markdown — wait briefly for async fetch to complete if needed
+        // Get the raw markdown — wait briefly for async fetch to complete if needed.
+        // If we still have no markdown after the eager fetch window, fall back to
+        // the textContent of the rendered note (degrades confidence parsing
+        // gracefully but keeps the tab shell + comps/transcript panels functional).
         let md = _currentNote.md || '';
         if (!md) {
           // Give the eagerly-started fetch up to 800ms to finish
@@ -1037,6 +1104,18 @@ function patchOpenEarningsNote() {
           md = _currentNote.md || '';
           if (!md) await new Promise(resolve => setTimeout(resolve, 400));
           md = _currentNote.md || '';
+        }
+        if (!md) {
+          // Last resort: kick off a direct fetch using the inferred context.
+          const prefix = type === 'post' ? 'notes/post_earnings' : 'notes/pre_earnings';
+          const path   = `${prefix}/${ticker}_${date}.md`;
+          try {
+            const fetched = await fetchNoteContent(path);
+            if (fetched) {
+              md = fetched;
+              _currentNote.md = fetched;
+            }
+          } catch (e) { /* leave md empty; enhanceNoteModal tolerates it */ }
         }
 
         await enhanceNoteModal($noteContent, ticker, date, type, md);
@@ -1048,6 +1127,11 @@ function patchOpenEarningsNote() {
 }
 
 async function enhanceNoteModal($noteContent, ticker, date, type, md) {
+  // Idempotency guard — never double-enhance the same content. The MutationObserver
+  // in patchOpenEarningsNote also checks this, but enhanceNoteModal may be invoked
+  // from the fallback path below, so we re-check here.
+  if ($noteContent.querySelector('.note-tab-bar')) return;
+
   // Snapshot existing HTML (the rendered note body)
   const noteBodyHtml = $noteContent.innerHTML;
 
@@ -1097,51 +1181,103 @@ async function enhanceNoteModal($noteContent, ticker, date, type, md) {
 // that carries data-ticker + data-date + data-type attributes (cards, chips, archive items).
 // This fires BEFORE earnings.js's click handlers resolve the note modal, so _currentNote
 // is always set by the time the MutationObserver fires.
+function _primeCurrentNote(ticker, date, type) {
+  if (!ticker || !date || !type) return;
+  _currentNote = { ticker, date, type, md: null };
+  const prefix = type === 'post' ? 'notes/post_earnings' : 'notes/pre_earnings';
+  const path   = `${prefix}/${ticker}_${date}.md`;
+  fetchNoteContent(path).then(md => {
+    if (md && _currentNote.ticker === ticker) {
+      _currentNote.md = md;
+      noteSearchCache[path] = md;
+    }
+  });
+}
+
+// Class names used by archive list items (see earnings.js renderArchiveCard).
+// Kept here as a constant so the proxy keeps working if new archive variants are added.
+const ARCHIVE_ITEM_CLASSES = ['archive-note-card', 'earnings-archive-item', 'archive-note-row'];
+
+function _isArchiveItem(el) {
+  if (!el || !el.classList) return false;
+  return ARCHIVE_ITEM_CLASSES.some(c => el.classList.contains(c));
+}
+
+function _extractArchiveContext(el) {
+  // 1. Prefer data attributes when present.
+  let ticker = el.dataset && el.dataset.ticker;
+  let date   = el.dataset && (el.dataset.date || el.dataset.earningsDate);
+  let type   = el.dataset && el.dataset.type;
+  if (ticker && date && type) {
+    return { ticker: ticker.toUpperCase(), date, type: type.toLowerCase() };
+  }
+  // 2. Fall back to scraping visible text content from known child class names.
+  const tickerEl = el.querySelector('.archive-card-ticker, .archive-item-ticker, [data-archive-ticker]');
+  const dateEl   = el.querySelector('.archive-card-date, .archive-item-date, [data-archive-date]');
+  const typeEl   = el.querySelector('.archive-card-type, .archive-item-type, [data-archive-type]');
+  ticker = ticker || (tickerEl && tickerEl.textContent.trim());
+  date   = date   || (dateEl   && (dateEl.textContent.match(/\d{4}-\d{2}-\d{2}/) || [])[0]);
+  if (typeEl && !type) {
+    const t = typeEl.textContent.trim().toLowerCase();
+    if (t.startsWith('post')) type = 'post';
+    else if (t.startsWith('pre')) type = 'pre';
+  }
+  // 3. As a last resort, look at the card's full text for a YYYY-MM-DD + Pre/Post token.
+  if (!type || !date) {
+    const text = el.textContent || '';
+    if (!date) date = (text.match(/\d{4}-\d{2}-\d{2}/) || [])[0];
+    if (!type) {
+      if (/\bpost[- ]?earnings\b|\bPost\b/i.test(text)) type = 'post';
+      else if (/\bpre[- ]?earnings\b|\bPre\b/i.test(text)) type = 'pre';
+    }
+  }
+  if (ticker && date && type) {
+    return { ticker: ticker.toUpperCase(), date, type: type.toLowerCase() };
+  }
+  return null;
+}
+
 function installNoteProxy() {
   // Event delegation: capture data attributes from any click that will trigger openEarningsNote
   document.addEventListener('click', (e) => {
-    // Walk up the DOM to find the element carrying note identifiers
+    // First pass: walk up the DOM to find the element carrying note identifiers.
     let el = e.target;
+    let primed = false;
     while (el && el !== document.body) {
       const ticker = el.dataset && el.dataset.ticker;
       const date   = el.dataset && el.dataset.date;
       const type   = el.dataset && el.dataset.type;
       if (ticker && date && type) {
         // Pre-set _currentNote so when MutationObserver fires, it already has context
-        _currentNote = { ticker, date, type, md: null };
-        // Eagerly fetch note markdown for confidence parsing (non-blocking)
-        const prefix = type === 'post' ? 'notes/post_earnings' : 'notes/pre_earnings';
-        const path   = `${prefix}/${ticker}_${date}.md`;
-        fetchNoteContent(path).then(md => {
-          if (md && _currentNote.ticker === ticker) {
-            _currentNote.md = md;
-            noteSearchCache[path] = md;
-          }
-        });
+        _primeCurrentNote(ticker, date, type);
+        primed = true;
         break;
       }
       // Also handle the note button itself (its parent card has the attrs)
       if (el.classList && el.classList.contains('earnings-note-btn')) {
         const card = el.closest('[data-ticker]');
         if (card) {
-          const ticker = card.dataset.ticker;
-          const date   = card.dataset.date;
-          const type   = card.dataset.type;
-          if (ticker && date && type) {
-            _currentNote = { ticker, date, type, md: null };
-            const prefix = type === 'post' ? 'notes/post_earnings' : 'notes/pre_earnings';
-            const path   = `${prefix}/${ticker}_${date}.md`;
-            fetchNoteContent(path).then(md => {
-              if (md && _currentNote.ticker === ticker) {
-                _currentNote.md = md;
-                noteSearchCache[path] = md;
-              }
-            });
-          }
+          _primeCurrentNote(card.dataset.ticker, card.dataset.date, card.dataset.type);
+          primed = true;
         }
         break;
       }
       el = el.parentElement;
+    }
+
+    if (primed) return;
+
+    // Second pass: catch archive item clicks even when data attributes are missing
+    // or live on a sibling/child element (covers archived notes opened from the
+    // archive overlay or any list view that uses one of ARCHIVE_ITEM_CLASSES).
+    let cursor = e.target;
+    while (cursor && cursor !== document.body) {
+      if (_isArchiveItem(cursor)) {
+        const ctx = _extractArchiveContext(cursor);
+        if (ctx) _primeCurrentNote(ctx.ticker, ctx.date, ctx.type);
+        break;
+      }
+      cursor = cursor.parentElement;
     }
   }, true); // use capture so we run before stopPropagation
 }
