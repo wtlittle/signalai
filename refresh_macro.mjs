@@ -510,6 +510,19 @@ async function main() {
     console.warn('  ! Could not load fundamentals from Supabase, idea engine will degrade:', e.message);
   }
 
+  // ── Pull Street FY1 revenue growth from Supabase estimates_data ──────
+  // refresh_deep_dive.mjs writes yfinance analyst-consensus FY1/FY2 growth
+  // there. We use FY1 as the forward growth input for ERG. Falls back to
+  // trailing revenue_growth (from quotes) if FY1 is missing.
+  let estimatesByTicker = {};
+  try {
+    estimatesByTicker = await fetchEstimatesGrowth(uniqueWatchlist);
+    const coverage = Object.values(estimatesByTicker).filter(e => e && e.fy1_rev_growth != null).length;
+    console.log(`  Loaded Street FY1 rev growth for ${coverage}/${uniqueWatchlist.length} tickers`);
+  } catch (e) {
+    console.warn('  ! Could not load estimates_data, falling back to trailing rev growth:', e.message);
+  }
+
   // ── Pull earnings_intel.json for earnings momentum classification ────
   let earningsIntelMap = {};
   try {
@@ -524,14 +537,19 @@ async function main() {
   }
 
   // ── Build rows in the shape the idea engine expects ──────────────────
+  // Use Street FY1 rev growth when available (idea_engine's ERG metric reads
+  // row.forwardRevenueGrowth first, then falls back to row.revenueGrowth).
   const rows = uniqueWatchlist.map(t => {
     const q = quotesByTicker[t] || {};
+    const est = estimatesByTicker[t] || {};
     return {
       ticker: t,
       name: commonNames[t] || q.long_name || t,
       subsector: subsectorMap[t] || null,
       sector: q.sector || null,
       revenueGrowth: q.revenue_growth,
+      forwardRevenueGrowth: est.fy1_rev_growth, // Street consensus FY1 growth
+      fy2RevGrowth: est.fy2_rev_growth,         // for future use
       operatingMargins: q.operating_margins,
       fcfMargin: q.fcf_margin,  // may be null; engine falls back
       fcfYield: q.fcf_yield,
@@ -699,6 +717,37 @@ function buildPillarSignals(pillar, allData, macroData) {
     });
   }
   return signals;
+}
+
+// ── Supabase: read Street FY1/FY2 revenue growth from estimates_data ──
+async function fetchEstimatesGrowth(tickers) {
+  if (!SUPABASE_KEY || !tickers || !tickers.length) return {};
+  const select = 'ticker,fy1_rev_growth,fy2_rev_growth,next_q_rev_growth';
+  const inList = tickers.map(t => encodeURIComponent(t)).join(',');
+  const urlStr = `${SUPABASE_URL}/rest/v1/estimates_data?select=${select}&ticker=in.(${inList})`;
+  const rows = await new Promise((resolve, reject) => {
+    const u = new URL(urlStr);
+    const req = https.request({
+      hostname: u.hostname, path: u.pathname + u.search, method: 'GET',
+      headers: {
+        apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`,
+        Accept: 'application/json',
+      },
+    }, res => {
+      let d = ''; res.on('data', c => d += c);
+      res.on('end', () => {
+        if (res.statusCode >= 300) return reject(new Error(`HTTP ${res.statusCode}: ${d.slice(0,200)}`));
+        try { resolve(JSON.parse(d)); } catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject); req.end();
+  });
+  const out = {};
+  for (const r of (rows || [])) {
+    if (!r || !r.ticker) continue;
+    out[r.ticker] = r;
+  }
+  return out;
 }
 
 // ── Supabase: read fundamentals for the watchlist ──

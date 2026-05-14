@@ -10,7 +10,8 @@
  *   2. regimeFactorScore    0..100 composite of regime-weighted factor z-scores
  *   3. earningsMomentumTag  tailwind | headwind | watching | inflecting | breaking | neutral
  *   4. valueForGrowthPctile 0..100 subsector-aware value-vs-growth percentile
- *                           (R40 / EV_Sales for multiple names; PEG-yield etc.)
+ *                           (ERG = EV/Sales ÷ rev growth for multiple names;
+ *                           PEG-yield for earnings names; FCF yield for yield names)
  *   5. passthroughTags      array of categorical macro-exposure tags
  *
  * Inputs (one ticker):
@@ -127,51 +128,110 @@
     'Independent Power', 'Copper Mining', 'Gold Mining', 'Fertilizers',
   ]);
 
+  // Growth source for ERG/PEG: prefer Street FY1 consensus rev growth
+  // (row.forwardRevenueGrowth, populated by refresh_macro from Supabase
+  // estimates_data), fall back to trailing revenueGrowth from yfinance quotes.
+  function resolveGrowth(row) {
+    const fwd = pctOf(row.forwardRevenueGrowth);
+    if (fwd != null) return { value: fwd, source: 'Street FY1' };
+    const ttm = pctOf(row.revenueGrowth);
+    if (ttm != null) return { value: ttm, source: 'TTM' };
+    return { value: null, source: null };
+  }
+
   function valueForGrowthScore(row) {
     const subsector = row.subsector || '';
     const evSales = num(row.evSales);
     const fwdPE = num(row.forwardPE);
-    const rg = pctOf(row.revenueGrowth);
-    const r40 = computeR40(row).value;
+    const g = resolveGrowth(row);
+    const rg = g.value;
+    const gSrc = g.source;
     const fcfYield = num(row.fcfYield);
-    const opM = pctOf(row.operatingMargins);
 
     if (SOFTWARE_SUBSECTORS.has(subsector)) {
-      if (evSales != null && evSales > 0 && r40 != null) {
-        return { score: parseFloat((r40 / evSales).toFixed(2)), formula: 'R40 / EV·Sales (higher = better)', kind: 'r40_yield' };
+      // ERG = EV/Sales ÷ rev growth (lower = cheaper for the growth you're paying for).
+      // Skip when growth is non-positive — ERG breaks down and these names
+      // should fall through to the R40-deficit bullet.
+      if (evSales != null && evSales > 0 && rg != null && rg > 0) {
+        return {
+          score: parseFloat((evSales / rg).toFixed(2)),
+          formula: `EV/Sales ÷ ${gSrc} rev growth (ERG; lower = cheaper)`,
+          kind: 'erg',
+          lowerIsBetter: true,
+          growthSource: gSrc,
+          growthValue: rg,
+        };
       }
     }
     if (EARNINGS_SUBSECTORS.has(subsector)) {
       if (fwdPE != null && fwdPE > 0 && rg != null) {
         // PEG-yield: growth per dollar of P/E
-        return { score: parseFloat((rg / fwdPE).toFixed(2)), formula: 'Growth / Fwd P/E (PEG-yield)', kind: 'peg_yield' };
+        return {
+          score: parseFloat((rg / fwdPE).toFixed(2)),
+          formula: `${gSrc} growth / Fwd P/E (PEG-yield)`,
+          kind: 'peg_yield',
+          lowerIsBetter: false,
+          growthSource: gSrc,
+          growthValue: rg,
+        };
       }
     }
     if (YIELD_SUBSECTORS.has(subsector)) {
       const yld = fcfYield != null ? fcfYield : null;
       if (yld != null) {
         const growthFactor = 1 + Math.max(0, (rg || 0) / 100);
-        return { score: parseFloat((yld * growthFactor).toFixed(2)), formula: 'FCF yield × (1 + growth) — yield-style', kind: 'fcf_yield' };
+        return {
+          score: parseFloat((yld * growthFactor).toFixed(2)),
+          formula: `FCF yield × (1 + ${gSrc || 'TTM'} growth) — yield-style`,
+          kind: 'fcf_yield',
+          lowerIsBetter: false,
+          growthSource: gSrc,
+          growthValue: rg,
+        };
       }
     }
-    // Generic fallback: prefer R40 yield if EV/Sales exists, else PEG-yield, else FCF yield
-    if (evSales != null && evSales > 0 && r40 != null) {
-      return { score: parseFloat((r40 / evSales).toFixed(2)), formula: 'R40 / EV·Sales (generic)', kind: 'r40_yield' };
+    // Generic fallback: prefer ERG if EV/Sales + positive growth, else PEG-yield, else FCF yield
+    if (evSales != null && evSales > 0 && rg != null && rg > 0) {
+      return {
+        score: parseFloat((evSales / rg).toFixed(2)),
+        formula: `EV/Sales ÷ ${gSrc} rev growth (ERG; generic)`,
+        kind: 'erg',
+        lowerIsBetter: true,
+        growthSource: gSrc,
+        growthValue: rg,
+      };
     }
     if (fwdPE != null && fwdPE > 0 && rg != null) {
-      return { score: parseFloat((rg / fwdPE).toFixed(2)), formula: 'Growth / Fwd P/E (generic)', kind: 'peg_yield' };
+      return {
+        score: parseFloat((rg / fwdPE).toFixed(2)),
+        formula: `${gSrc} growth / Fwd P/E (generic)`,
+        kind: 'peg_yield',
+        lowerIsBetter: false,
+        growthSource: gSrc,
+        growthValue: rg,
+      };
     }
     if (fcfYield != null) {
-      return { score: parseFloat(fcfYield.toFixed(2)), formula: 'FCF yield (fallback)', kind: 'fcf_yield' };
+      return {
+        score: parseFloat(fcfYield.toFixed(2)),
+        formula: 'FCF yield (fallback)',
+        kind: 'fcf_yield',
+        lowerIsBetter: false,
+        growthSource: null,
+        growthValue: null,
+      };
     }
-    return { score: null, formula: 'insufficient data', kind: null };
+    return { score: null, formula: 'insufficient data', kind: null, lowerIsBetter: false, growthSource: null, growthValue: null };
   }
 
   // ── Signal 4: value-for-growth percentile within subsector ─────────────
+  // Convention: higher percentile = cheaper / better value. For ERG (lower =
+  // better) we invert the raw percentile so the downstream bullet
+  // ("cheap-for-growth at >=70th pctile") still reads correctly.
   function computeValueForGrowthPercentile(row, peers) {
     const me = valueForGrowthScore(row);
     if (me.score == null) return { percentile: null, details: me };
-    // Only compare to peers using the same scoring kind (mixing PEG-yield and
+    // Only compare to peers using the same scoring kind (mixing ERG and
     // FCF-yield would be apples-to-oranges).
     const peerScores = peers
       .filter(p => p.ticker !== row.ticker)
@@ -179,10 +239,11 @@
       .filter(p => p.kind === me.kind && p.score != null)
       .map(p => p.score);
     if (peerScores.length < 3) {
-      // Not enough peers for a meaningful percentile — fall back to universe
+      // Not enough peers for a meaningful percentile
       return { percentile: null, details: me, peerCount: peerScores.length };
     }
-    const pct = percentileRank(peerScores, me.score);
+    let pct = percentileRank(peerScores, me.score);
+    if (me.lowerIsBetter && pct != null) pct = 100 - pct;
     return { percentile: pct, details: me, peerCount: peerScores.length };
   }
 
@@ -307,9 +368,17 @@
     if (signals.valueForGrowth.percentile != null) {
       const p = signals.valueForGrowth.percentile;
       const det = signals.valueForGrowth.details;
-      const r40Str = signals.r40.value != null ? ` R40 ${signals.r40.value >= 0 ? '+' : ''}${signals.r40.value.toFixed(0)}` : '';
+      let detailStr = '';
+      if (det.kind === 'erg' && det.score != null) {
+        const gStr = det.growthValue != null ? ` on ${det.growthValue.toFixed(0)}% ${det.growthSource || ''} growth` : '';
+        detailStr = ` ERG ${det.score.toFixed(2)}x${gStr}`;
+      } else if (det.kind === 'peg_yield' && det.score != null) {
+        detailStr = ` PEG-yield ${det.score.toFixed(2)}`;
+      } else if (det.kind === 'fcf_yield' && det.score != null) {
+        detailStr = ` FCF-yld ${det.score.toFixed(1)}%`;
+      }
       const verdict = p >= 70 ? 'cheap-for-growth' : p >= 50 ? 'fair-for-growth' : p >= 30 ? 'rich-for-growth' : 'expensive-for-growth';
-      bullets.push(`${verdict} (${p}th pctile peers,${r40Str}; ${det.formula})`);
+      bullets.push(`${verdict} (${p}th pctile peers,${detailStr}; ${det.formula})`);
     } else if (signals.r40.value != null) {
       const r = signals.r40.value;
       const verdict = r >= 40 ? 'R40-positive' : r >= 20 ? 'sub-R40 (mid-cycle margin)' : 'R40-deficit';
