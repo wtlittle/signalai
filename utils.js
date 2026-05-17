@@ -139,6 +139,9 @@ const SUBSECTOR_MAP = {
   'CLX': 'Consumer Staples', 'MHK': 'Building Products', 'LKQ': 'Auto Parts',
   // Weekly Briefing Picks (Week 9: 2026-05-09)
   'MDT': 'Medical Devices', 'IONQ': 'Quantum Computing',
+  // Weekly Briefing Picks (Week 10: 2026-05-15)
+  'OMC': 'Digital Advertising', 'CNH': 'Industrials', 'PVH': 'Retail',
+  'LITE': 'Semiconductors', 'TSEM': 'Semiconductors',
 };
 
 // Subsector display order
@@ -414,6 +417,9 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 9: 2026-05-09) ---
   'MDT',                              // Value pick (medtech near 52-week low; PFA ablation catalyst) -- GIS, NKE, ADBE, HD already in watchlist
   'IONQ',                             // Momentum pick (quantum computing; +755% YoY rev) -- MU, STX, DDOG, FTNT already in watchlist
+  // --- Weekly Briefing Picks (Week 10: 2026-05-15) ---
+  'OMC','CNH','PVH',                  // Value picks (advertising post-IPG / ag-equipment trough / premium apparel) -- DVN, ELV already in watchlist
+  'LITE','TSEM',                      // Momentum picks (Lumentum / Tower Semi silicon-photonics) -- QCOM, GEV, AVGO already in watchlist
 ];
 
 // --- Default private companies ---
