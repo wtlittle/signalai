@@ -38,6 +38,10 @@
     { key: 'value_for_growth_percentile', label: 'Value-for-Growth Pctile', type: 'range', format: 'number', source: 'macroSignal' },
     { key: 'earnings_momentum_tag', label: 'Earnings Momentum', type: 'select', source: 'macroSignal', enum: ['tailwind', 'inflecting', 'watching', 'neutral', 'headwind', 'breaking'] },
     { key: 'passthrough_tags', label: 'Pass-Through Tags', type: 'select', source: 'macroSignal', isArray: true },
+    // Political exposure signals (hydrate from tickerData.political_exposure)
+    { key: 'political_exposure_score_min', label: 'Political Exposure Score', type: 'range', format: 'number', source: 'political' },
+    { key: 'has_political_trade', label: 'Has Political Trade (90d)', type: 'select', source: 'political', enum: ['true', 'false'] },
+    { key: 'political_committee_overlap', label: 'Committee Overlap', type: 'select', source: 'political', isArray: true },
   ];
 
   // Lookup macro signal for a ticker. Returns null if cache absent or no entry.
@@ -299,6 +303,20 @@
     // For enum-defined macro signal columns, use the curated list directly.
     if (col && col.enum) return col.enum.slice();
     const vals = new Set();
+    // Political exposure columns hydrate from tickerData.political_exposure
+    if (col && col.source === 'political') {
+      if (typeof tickerList !== 'undefined') {
+        tickerList.forEach(t => {
+          var d = tickerData[t] || {};
+          var pe = d.political_exposure;
+          if (!pe) return;
+          if (key === 'political_committee_overlap' && Array.isArray(pe.committee_overlap)) {
+            pe.committee_overlap.forEach(c => { if (c) vals.add(c); });
+          }
+        });
+      }
+      return [...vals].sort();
+    }
     // Macro signal columns hydrate from macroDataCache.signals
     if (col && col.source === 'macroSignal') {
       var mc = window.macroDataCache;
@@ -343,6 +361,15 @@
         if (col && col.source === 'macroSignal') {
           const sig = macroSignal(ticker);
           val = sig ? sig[filter.key] : null;
+        } else if (col && col.source === 'political') {
+          const pe = d.political_exposure || null;
+          if (filter.key === 'political_exposure_score_min') {
+            val = pe ? pe.exposure_score : null;
+          } else if (filter.key === 'has_political_trade') {
+            val = (pe && pe.trade_count_90d > 0) ? 'true' : 'false';
+          } else if (filter.key === 'political_committee_overlap') {
+            val = pe ? pe.committee_overlap : null;
+          }
         } else if (filter.key === 'subsector') {
           val = d.subsector || getSubsector(ticker);
         } else {

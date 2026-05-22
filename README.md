@@ -30,6 +30,14 @@ A buy-side equity research terminal for tracking public and private technology c
 
 ![Earnings Section](screenshots/earnings.png)
 
+### Political Intelligence
+- **Congressional trade tracking** via QuiverQuant, filtered to watchlist tickers over the last 90 days
+- **Committee-overlap scoring**: trades are scored 1-3 based on whether the politician sits on an oversight committee relevant to the stock's sector (STOCK Act disclosure context)
+- **Screener presets**: "Committee Aligned Trades" and "Any Political Activity (90d)" presets in the screener panel
+- **Popup integration**: per-ticker Political Activity section with party-colored trade cards and QuiverQuant deep links
+- **Alert support**: `political_trade` subscription type fires for new filings with exposure score >= 2
+- Env vars: `CONGRESS_GOV_API_KEY` (recommended) for committee membership; `PROPUBLICA_API_KEY` (optional, retired 2024). Refresh cadence: weekly (Sundays, `0 5 * * 1`) aligned with the STOCK Act 45-day disclosure window
+
 ### Additional Features
 - **Market News** feed aggregated from watchlist tickers
 - **Deep-dive popup** with quantitative factors, short interest, S&P 500 outperformance, and cross-sector comps (requires backend)

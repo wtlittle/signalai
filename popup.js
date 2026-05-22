@@ -378,6 +378,9 @@ async function renderPopupContent(ticker, data, summary, chart, estimatesData) {
     html += `</tbody></table></div>`;
   }
 
+  // Section: Political Activity (conditional on political_exposure data)
+  html += buildPoliticalActivitySection(ticker, data);
+
   // Add See More button
   html += createSeeMoreButton();
 
@@ -910,5 +913,73 @@ function buildGuidanceSection(est, ticker) {
   }
 
   html += `</div>`;
+  return html;
+}
+
+// --- Political Activity section for popup ---
+function buildPoliticalActivitySection(ticker, data) {
+  // Only render when political_exposure data exists with trades
+  var pe = null;
+  if (typeof tickerData !== 'undefined' && tickerData[ticker]) {
+    pe = tickerData[ticker].political_exposure;
+  }
+  if (!pe || !pe.trade_count_90d || pe.trade_count_90d <= 0) return '';
+
+  // Fetch full trade list from political_data.json cache if available
+  var trades = [];
+  if (window._politicalDataCache && window._politicalDataCache.trades) {
+    trades = window._politicalDataCache.trades.filter(function (t) {
+      return t.ticker === ticker;
+    }).slice(0, 5);
+  }
+
+  var headerBadge = pe.exposure_score >= 3
+    ? ' <span style="background:rgba(234,179,8,0.15);color:#eab308;padding:2px 8px;border-radius:4px;font-size:11px;margin-left:8px;">\u26A0\uFE0F Committee Aligned</span>'
+    : '';
+
+  var html = '<div class="popup-section">';
+  html += '<div class="popup-section-title">\u{1F3DB}\uFE0F POLITICAL ACTIVITY' + headerBadge + '</div>';
+
+  if (trades.length > 0) {
+    trades.forEach(function (t) {
+      var partyColor = t.party === 'R' ? 'rgba(239,68,68,0.08)' : t.party === 'D' ? 'rgba(59,130,246,0.08)' : 'transparent';
+      var partyBorder = t.party === 'R' ? '#ef4444' : t.party === 'D' ? '#3b82f6' : '#6b7280';
+      // Build QuiverQuant link from politician name
+      var nameSlug = (t.politician || '').replace(/\s*\(family\)\s*$/, '').trim().replace(/\s+/g, '-');
+      var politicianLink = nameSlug
+        ? '<a href="https://www.quiverquant.com/congresstrading/' + nameSlug + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted;">' + (t.politician || 'Unknown') + '</a>'
+        : (t.politician || 'Unknown');
+      var committeePart = t.committees && t.committees.length > 0 ? ' &middot; ' + t.committees[0] : '';
+      var daysBadge = t.days_since_trade != null
+        ? '<span style="color:var(--text-muted);font-size:11px;">' + t.days_since_trade + ' days ago</span>'
+        : '';
+
+      html += '<div style="background:' + partyColor + ';border-left:3px solid ' + partyBorder + ';padding:8px 12px;margin-bottom:6px;border-radius:4px;">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+      html += '<span>' + politicianLink + ' <span style="color:var(--text-muted);">(' + (t.party || '?') + ')</span>' + committeePart + '</span>';
+      html += daysBadge;
+      html += '</div>';
+      html += '<div style="color:var(--text-secondary);font-size:12px;margin-top:2px;">';
+      html += (t.transaction_type || 'Trade') + ' &middot; ' + (t.amount_range || 'N/A');
+      if (t.trade_date) html += ' &middot; ' + t.trade_date;
+      html += '</div>';
+      html += '</div>';
+    });
+  } else {
+    // Fallback: render from summary data
+    var allTraders = (pe.recent_buyers || []).concat(pe.recent_sellers || []);
+    allTraders.slice(0, 5).forEach(function (label) {
+      html += '<div style="padding:4px 0;color:var(--text-secondary);font-size:13px;">&bull; ' + label + '</div>';
+    });
+  }
+
+  // Footer: committee overlap
+  if (pe.committee_overlap && pe.committee_overlap.length > 0) {
+    html += '<div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06);color:var(--text-muted);font-size:12px;">';
+    html += 'Committee overlap: ' + pe.committee_overlap.join(', ');
+    html += '</div>';
+  }
+
+  html += '</div>';
   return html;
 }

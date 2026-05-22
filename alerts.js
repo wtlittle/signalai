@@ -88,6 +88,13 @@ const SUBSCRIPTION_CATALOG = [
     detail: 'A watchlist subsector beats or lags the S&P by 5%+ in a week.',
     group: 'Price',
     default: { enabled: true, channels: ['in_app'] }
+  },
+  {
+    key: 'political_trade',
+    title: 'Congressional trade detected',
+    detail: 'A politician (exposure score >= 2) filed a trade in a watchlist name. Committee-aligned trades flagged as high severity.',
+    group: 'Political',
+    default: { enabled: true, channels: ['in_app'] }
   }
 ];
 
@@ -568,9 +575,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.renderAlertsTab = renderAlertsTab;
 window.openNewAlertModal = openNewAlertModal;
+
+// ---------- Political trade alert checking ----------
+// Dedup key: localStorage stores last-seen {ticker, politician, trade_date} triples
+// so the same filing doesn't fire repeatedly across page reloads.
+const POLITICAL_SEEN_KEY = 'ss_political_seen_trades';
+
+function _loadSeenPoliticalTrades() {
+  try {
+    return (typeof Storage !== 'undefined' && Storage.get(POLITICAL_SEEN_KEY)) || [];
+  } catch (e) { return []; }
+}
+
+function _saveSeenPoliticalTrades(list) {
+  try {
+    if (typeof Storage !== 'undefined') Storage.set(POLITICAL_SEEN_KEY, list.slice(-500));
+  } catch (e) { /* swallow */ }
+}
+
+function checkPoliticalTradeAlerts() {
+  if (typeof tickerData === 'undefined') return;
+  var cache = window._politicalDataCache;
+  if (!cache || !cache.trades || !cache.trades.length) return;
+
+  var seen = _loadSeenPoliticalTrades();
+  var seenSet = new Set(seen.map(function (s) { return s.ticker + '|' + s.politician + '|' + s.trade_date; }));
+  var newSeen = seen.slice();
+  var fired = false;
+
+  cache.trades.forEach(function (trade) {
+    if (!trade.ticker || !trade.politician) return;
+    if (trade.exposure_score < 2) return;
+    // Only alert for tickers in the user's watchlist (tickerData)
+    if (!tickerData[trade.ticker]) return;
+
+    var key = trade.ticker + '|' + trade.politician + '|' + trade.trade_date;
+    if (seenSet.has(key)) return;
+    seenSet.add(key);
+    newSeen.push({ ticker: trade.ticker, politician: trade.politician, trade_date: trade.trade_date });
+
+    var nameSlug = (trade.politician || '').replace(/\s*\(family\)\s*$/, '').trim().replace(/\s+/g, '-');
+    var severity = trade.exposure_score === 3 ? 'high' : 'medium';
+    var chamberNote = trade.chamber ? trade.chamber + ' member ' : '';
+    var amountNote = trade.amount_range && trade.amount_range !== 'N/A' ? ' of ' + trade.amount_range : '';
+    var daysNote = trade.days_since_trade != null ? ' \u00B7 ' + trade.days_since_trade + ' days since trade date' : '';
+
+    emitAlert({
+      type: 'political_trade',
+      ticker: trade.ticker,
+      summary: '\u{1F3DB}\uFE0F ' + chamberNote + trade.politician + ' filed a ' + (trade.transaction_type || 'Trade') + amountNote + ' in ' + trade.ticker + daysNote,
+      severity: severity,
+      link: nameSlug ? 'https://www.quiverquant.com/congresstrading/' + nameSlug : null,
+    });
+    fired = true;
+  });
+
+  if (fired || newSeen.length !== seen.length) {
+    _saveSeenPoliticalTrades(newSeen);
+  }
+}
+
+// Run political trade check after data loads (hooked via loadAllData or on demand)
+window._checkPoliticalTradeAlerts = checkPoliticalTradeAlerts;
+
 window.SignalAlerts = {
   emitAlert: emitAlert,
   loadSubscriptions: loadSubscriptions,
   saveSubscriptions: saveSubscriptions,
+  checkPoliticalTradeAlerts: checkPoliticalTradeAlerts,
   SUBSCRIPTION_CATALOG: SUBSCRIPTION_CATALOG
 };
