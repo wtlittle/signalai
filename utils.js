@@ -142,6 +142,9 @@ const SUBSECTOR_MAP = {
   // Weekly Briefing Picks (Week 10: 2026-05-15)
   'OMC': 'Digital Advertising', 'CNH': 'Industrials', 'PVH': 'Retail',
   'LITE': 'Semiconductors', 'TSEM': 'Semiconductors',
+  // Weekly Briefing Picks (Week 11: 2026-05-22)
+  'PFE': 'Pharma', 'EMN': 'Specialty Chemicals', 'CTVA': 'Agriculture',
+  'ROST': 'Retail', 'SITM': 'Semiconductors',
 };
 
 // Subsector display order
@@ -420,6 +423,9 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 10: 2026-05-15) ---
   'OMC','CNH','PVH',                  // Value picks (advertising post-IPG / ag-equipment trough / premium apparel) -- DVN, ELV already in watchlist
   'LITE','TSEM',                      // Momentum picks (Lumentum / Tower Semi silicon-photonics) -- QCOM, GEV, AVGO already in watchlist
+  // --- Weekly Briefing Picks (Week 11: 2026-05-22) ---
+  'PFE','EMN','CTVA',                 // Value picks (pharma FCF anchor / specialty chem destock / ag genetics) -- GPN, STZ already in watchlist
+  'ROST','SITM',                      // Momentum picks (off-price retail beat / MEMS timing into AI racks) -- ARM, MRVL, WDAY already in watchlist
 ];
 
 // --- Default private companies ---
