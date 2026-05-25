@@ -152,11 +152,23 @@ async function fetchCongressionalTrades() {
 }
 
 // --- Step 2: Fetch committee membership ---
-// Try ProPublica first, then Congress.gov fallback
+// PRIMARY: keyless GitHub YAML feed (unitedstates/congress-legislators)
+// FALLBACKS (opt-in via env): ProPublica (retired 2024), Congress.gov
 async function fetchCommitteeMembership() {
   console.log('\n--- Fetching committee membership ---');
 
-  // Try ProPublica first (may be retired)
+  // PRIMARY PATH — no API key needed
+  try {
+    const committees = await fetchUnitedStatesCommitteeFeed();
+    if (committees && Object.keys(committees).length > 0) {
+      return committees;
+    }
+    console.log('  GitHub feed returned empty; trying fallback sources');
+  } catch (err) {
+    console.warn(`  GitHub feed failed: ${err.message}; trying fallback sources`);
+  }
+
+  // FALLBACK 1: ProPublica (legacy)
   const propublicaKey = (process.env.PROPUBLICA_API_KEY || '').trim();
   if (propublicaKey) {
     console.log('  Trying ProPublica Congress API...');
@@ -166,11 +178,9 @@ async function fetchCommitteeMembership() {
       return committees;
     }
     console.log('  ProPublica failed or returned empty, falling back to Congress.gov');
-  } else {
-    console.log('  PROPUBLICA_API_KEY not set, using Congress.gov');
   }
 
-  // Congress.gov fallback
+  // FALLBACK 2: Congress.gov
   const congressKey = (process.env.CONGRESS_GOV_API_KEY || '').trim();
   if (congressKey) {
     const committees = await fetchCongressGovCommittees(congressKey);
@@ -180,8 +190,63 @@ async function fetchCommitteeMembership() {
     }
   }
 
-  console.log('  Both committee sources failed; proceeding without committee data');
+  console.log('  All committee sources failed; proceeding without committee data');
   return {};
+}
+
+// Keyless committee feed via unitedstates/congress-legislators GitHub Pages
+// Returns { fullName: [committeeName, ...] } — same shape as ProPublica/Congress.gov
+async function fetchUnitedStatesCommitteeFeed() {
+  console.log('  Trying unitedstates/congress-legislators (keyless GitHub feed)...');
+  const base = 'https://unitedstates.github.io/congress-legislators/';
+  const [committees, membership, legislators] = await Promise.all([
+    fetchJson(base + 'committees-current.json', { timeoutMs: 25000 }),
+    fetchJson(base + 'committee-membership-current.json', { timeoutMs: 25000 }),
+    fetchJson(base + 'legislators-current.json', { timeoutMs: 30000 }),
+  ]);
+  if (!committees || !membership || !legislators) {
+    console.warn('  GitHub feed: one or more endpoints returned no data');
+    return {};
+  }
+
+  // Build committee_id -> display name (recurse subcommittees as "Parent - Child")
+  const committeeNameById = {};
+  function walk(c) {
+    const id = c.thomas_id;
+    const rawName = (c.name || '').trim();
+    // Keep full name ("Senate Committee on Finance") so downstream fuzzy match works
+    if (id) committeeNameById[id] = rawName;
+    for (const sub of (c.subcommittees || [])) {
+      const sid = (id || '') + (sub.thomas_id || '');
+      if (sid) committeeNameById[sid] = `${rawName} - ${sub.name}`;
+    }
+  }
+  for (const c of committees) walk(c);
+
+  // Build bioguide -> { fullName }
+  const legByBioguide = {};
+  for (const l of legislators) {
+    const bg = (l.id || {}).bioguide;
+    if (!bg) continue;
+    const nm = l.name || {};
+    const fn = nm.official_full || `${nm.first || ''} ${nm.last || ''}`.trim();
+    if (fn) legByBioguide[bg] = fn;
+  }
+
+  // Compose name -> [committee names]
+  const nameMap = {};
+  for (const [cid, members] of Object.entries(membership)) {
+    const cname = committeeNameById[cid];
+    if (!cname || !Array.isArray(members)) continue;
+    for (const m of members) {
+      const fn = legByBioguide[m.bioguide];
+      if (!fn) continue;
+      if (!nameMap[fn]) nameMap[fn] = [];
+      if (!nameMap[fn].includes(cname)) nameMap[fn].push(cname);
+    }
+  }
+  console.log(`  GitHub feed: ${Object.keys(nameMap).length} legislators across ${Object.keys(committeeNameById).length} committees`);
+  return nameMap;
 }
 
 async function fetchProPublicaCommittees(apiKey) {
