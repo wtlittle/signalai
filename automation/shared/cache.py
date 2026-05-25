@@ -11,26 +11,32 @@ from automation.shared.paths import CACHE_DIR, PRE_EARNINGS_DIR, POST_EARNINGS_D
 def note_already_exists(ticker: str, earnings_date: str, note_type: str) -> bool:
     """Return True if a note for this ticker/date/type was already generated.
 
-    Checks both the file system and the earnings_notes_index.json.
-    A note counts as "existing" only if it has > 500 bytes of content
-    (guards against empty/stub files).
+    Checks the file system and the earnings_notes_index.json. A note counts
+    as "existing" only if it has > 500 bytes of content (guards against
+    empty/stub files).
+
+    IMPORTANT: only scans the index list that matches note_type. Previously
+    this checked BOTH active_pre_earnings and active_post_earnings, which
+    meant a stale pre-earnings entry blocked post-earnings note generation
+    for the same ticker/date forever (the NVDA-stuck-in-pre bug).
     """
     if note_type == "pre":
         note_path = PRE_EARNINGS_DIR / f"{ticker}_{earnings_date}.md"
+        index_key = "active_pre_earnings"
     else:
         note_path = POST_EARNINGS_DIR / f"{ticker}_{earnings_date}.md"
+        index_key = "active_post_earnings"
 
     if note_path.exists() and note_path.stat().st_size > 500:
         return True
 
-    # Also check earnings_notes_index.json
+    # Only check the index list that matches this note_type.
     from automation.shared.paths import EARNINGS_INDEX
     try:
         index = json.loads(EARNINGS_INDEX.read_text())
-        for key in ("active_pre_earnings", "active_post_earnings"):
-            for entry in index.get(key, []):
-                if entry.get("ticker") == ticker and entry.get("date") == earnings_date:
-                    return True
+        for entry in index.get(index_key, []) or []:
+            if entry.get("ticker") == ticker and entry.get("date") == earnings_date:
+                return True
     except Exception:
         pass
     return False

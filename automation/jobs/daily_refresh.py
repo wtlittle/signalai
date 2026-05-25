@@ -223,6 +223,50 @@ def step_news_tagging(news_updates: list[dict]) -> int:
     return queued
 
 
+def step_migrate_pre_to_post():
+    """Step 4c: Promote tickers from active_pre_earnings -> active_post_earnings
+    once their print has happened. Runs BEFORE note generation so the freshly
+    promoted post entries pass note_already_exists() and get fresh notes.
+    """
+    print("\n=== Step 4c: Migrate pre->post (same-day + stale promotion) ===")
+    import subprocess
+    script = ROOT_DIR / "scripts" / "migrate_pre_to_post.py"
+    try:
+        subprocess.run(["python3", str(script)], check=True, cwd=str(ROOT_DIR))
+    except Exception as exc:
+        print(f"  [WARN] migrate_pre_to_post failed: {exc}")
+
+
+def step_enrich_notes():
+    """Step 5b: Enrichment passes (transcript distill, estimate revisions, diff
+    injection). Each enrichment is idempotent and self-skips when its inputs
+    are not ready, so it's safe to call from every cron tick.
+    """
+    print("\n=== Step 5b: Enrichments (transcripts, estimates, diff) ===")
+    # Transcript harvest: pulls and distills earnings call transcripts for
+    # post-earnings tickers within window. Self-skips if transcripts already
+    # cached or ticker is outside post-earnings window.
+    try:
+        from automation.jobs.transcript_harvest import run as run_transcripts
+        run_transcripts()
+    except Exception as exc:
+        print(f"  [WARN] transcript_harvest failed: {exc}")
+    # Estimate revision tracker: tags pre-earnings tickers with recent
+    # consensus revisions. Self-skips when no pre tickers in window.
+    try:
+        from automation.jobs.estimate_revision_tracker import run as run_estimates
+        run_estimates()
+    except Exception as exc:
+        print(f"  [WARN] estimate_revision_tracker failed: {exc}")
+    # Note diff injector: appends a "what changed since last note" delta to
+    # the latest pre/post notes. Self-skips when no prior note exists.
+    try:
+        from automation.jobs.note_diff_injector import run as run_diff
+        run_diff()
+    except Exception as exc:
+        print(f"  [WARN] note_diff_injector failed: {exc}")
+
+
 def step_generate_notes():
     """Step 5: Generate/update earnings notes (Perplexity, with guards)."""
     print("\n=== Step 5: Earnings Note Generation ===")
@@ -517,12 +561,23 @@ def run():
         news_updates = step_news_scan(active)
         step_news_tagging(news_updates)
 
+    # Step 4c: Migrate pre->post BEFORE note generation. Without this, a
+    # ticker that just reported is still sitting in active_pre_earnings,
+    # which causes note_already_exists() to short-circuit the post-earnings
+    # generation (the historical NVDA-stuck-in-pre bug).
+    step_migrate_pre_to_post()
+
     # Step 5: Notes (Perplexity, with skip guards) — always. Both
     # pre_earnings_notes and post_earnings_notes already filter their
     # own work using the freshly-detected calendar; running in both BMO
     # and AMC slots ensures same-day BMO/AMC reporters get post-earnings
     # notes generated within hours of their print.
     step_generate_notes()
+
+    # Step 5b: Enrichments (transcripts, estimate revisions, note diff)
+    # — wired in 2026-05-25. Each is idempotent and self-skips when its
+    # inputs are not ready, so it's safe at every cron tick.
+    step_enrich_notes()
 
     # Step 6: Subsectors (no LLM) — BMO + full only. Subsector
     # classifications change at most once per day; pinning them to BMO
@@ -556,6 +611,17 @@ def run():
     # gate on mode so AMC runs never trigger the import even on a Sunday.
     if mode in ("bmo", "full"):
         step_market_intel_harvest()
+
+    # Step 7.5: Drain the pending_tasks queue. Without an API key in cron,
+    # daily_news / news_tag / pre_earnings / post_earnings tasks accumulate
+    # forever. The drainer prunes stale entries (>7d), dedupes by
+    # (ticker, task), and caps each task type. Safe to fail.
+    try:
+        from automation.jobs.drain_queue import run as _drain_run
+        print("\n--- step: drain pending tasks queue ---")
+        _drain_run()
+    except Exception as exc:
+        print(f"  [WARN] drain_queue skipped: {exc}")
 
     # --- Queue summary: tasks written to automation/queue/pending_tasks.json ---
     queue_file = ROOT_DIR / "automation" / "queue" / "pending_tasks.json"

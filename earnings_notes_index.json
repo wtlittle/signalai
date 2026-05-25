@@ -817,6 +817,22 @@
       "ticker": "MOS"
     },
     {
+      "ticker": "CSU.TO",
+      "company": "Constellation Software",
+      "date": "2026-05-12",
+      "day_post": 13,
+      "expires": "2026-05-26",
+      "note_file": "notes/post_earnings/CSU.TO_2026-05-12.md"
+    },
+    {
+      "ticker": "SE",
+      "company": "Sea Limited",
+      "date": "2026-05-12",
+      "day_post": 13,
+      "expires": "2026-05-26",
+      "note_file": "notes/post_earnings/SE_2026-05-12.md"
+    },
+    {
       "company": "TSEM",
       "date": "2026-05-13",
       "day_post": 5,
@@ -825,92 +841,87 @@
       "ticker": "TSEM"
     },
     {
-      "ticker": "ROST",
+      "ticker": "GLBE",
+      "company": "Global-E Online Ltd.",
+      "date": "2026-05-13",
+      "day_post": 12,
+      "expires": "2026-05-27",
+      "note_file": "notes/post_earnings/GLBE_2026-05-13.md"
+    },
+    {
+      "ticker": "WIX",
+      "company": "Wix",
+      "date": "2026-05-13",
+      "day_post": 12,
+      "expires": "2026-05-27",
+      "note_file": "notes/post_earnings/WIX_2026-05-13.md"
+    },
+    {
+      "ticker": "DT",
+      "company": "Dynatrace",
+      "date": "2026-05-13",
+      "day_post": 12,
+      "expires": "2026-05-27",
+      "note_file": "notes/post_earnings/DT_2026-05-13.md"
+    },
+    {
+      "ticker": "HD",
+      "company": "Home Depot",
+      "date": "2026-05-19",
+      "day_post": 6,
+      "expires": "2026-06-02",
+      "note_file": "notes/post_earnings/HD_2026-05-19.md"
+    },
+    {
+      "ticker": "NVDA",
+      "company": "NVIDIA",
+      "date": "2026-05-20",
+      "day_post": 5,
+      "expires": "2026-06-03",
+      "note_file": "notes/post_earnings/NVDA_2026-05-20.md"
+    },
+    {
+      "ticker": "INTU",
+      "company": "Intuit",
+      "date": "2026-05-20",
+      "day_post": 5,
+      "expires": "2026-06-03",
+      "note_file": "notes/post_earnings/INTU_2026-05-20.md"
+    },
+    {
       "company": "ROST",
       "date": "2026-05-21",
       "day_post": 4,
       "expires": "2026-06-04",
-      "note_file": "notes/post_earnings/ROST_2026-05-21.md"
+      "note_file": "notes/post_earnings/ROST_2026-05-21.md",
+      "ticker": "ROST"
+    },
+    {
+      "ticker": "WDAY",
+      "company": "Workday",
+      "date": "2026-05-21",
+      "day_post": 4,
+      "expires": "2026-06-04",
+      "note_file": "notes/post_earnings/WDAY_2026-05-21.md"
+    },
+    {
+      "ticker": "ZM",
+      "company": "Zoom",
+      "date": "2026-05-21",
+      "day_post": 4,
+      "expires": "2026-06-04",
+      "note_file": "notes/post_earnings/ZM_2026-05-21.md"
+    },
+    {
+      "ticker": "RAMP",
+      "company": "LiveRamp",
+      "date": "2026-05-21",
+      "day_post": 4,
+      "expires": "2026-06-04",
+      "note_file": "notes/post_earnings/RAMP_2026-05-21.md"
     }
   ],
   "active_pre_earnings": [
-    {
-      "company": "Constellation Software",
-      "date": "2026-05-12",
-      "days_until": 0,
-      "file": "notes/pre_earnings/CSU.TO_2026-05-12.md",
-      "ticker": "CSU.TO"
-    },
-    {
-      "company": "Sea Limited",
-      "date": "2026-05-12",
-      "days_until": 0,
-      "file": "notes/pre_earnings/SE_2026-05-12.md",
-      "ticker": "SE"
-    },
-    {
-      "company": "Dynatrace",
-      "date": "2026-05-13",
-      "days_until": 0,
-      "file": "notes/pre_earnings/DT_2026-05-13.md",
-      "ticker": "DT"
-    },
-    {
-      "company": "Global-E",
-      "date": "2026-05-13",
-      "days_until": 0,
-      "file": "notes/pre_earnings/GLBE_2026-05-13.md",
-      "ticker": "GLBE"
-    },
-    {
-      "company": "Wix",
-      "date": "2026-05-13",
-      "days_until": 0,
-      "file": "notes/pre_earnings/WIX_2026-05-13.md",
-      "ticker": "WIX"
-    },
-    {
-      "company": "Home Depot",
-      "date": "2026-05-19",
-      "days_until": 6,
-      "file": "notes/pre_earnings/HD_2026-05-19.md",
-      "ticker": "HD"
-    },
-    {
-      "company": "Intuit",
-      "date": "2026-05-20",
-      "days_until": 7,
-      "file": "notes/pre_earnings/INTU_2026-05-20.md",
-      "ticker": "INTU"
-    },
-    {
-      "company": "NVIDIA",
-      "date": "2026-05-20",
-      "days_until": 7,
-      "file": "notes/pre_earnings/NVDA_2026-05-20.md",
-      "ticker": "NVDA"
-    },
-    {
-      "company": "LiveRamp",
-      "date": "2026-05-21",
-      "days_until": 8,
-      "file": "notes/pre_earnings/RAMP_2026-05-21.md",
-      "ticker": "RAMP"
-    },
-    {
-      "company": "Workday",
-      "date": "2026-05-21",
-      "days_until": 8,
-      "file": "notes/pre_earnings/WDAY_2026-05-21.md",
-      "ticker": "WDAY"
-    },
-    {
-      "company": "Zoom",
-      "date": "2026-05-21",
-      "days_until": 8,
-      "file": "notes/pre_earnings/ZM_2026-05-21.md",
-      "ticker": "ZM"
-    },
     {
       "company": "Zscaler",
       "date": "2026-05-26",
@@ -1101,11 +1112,11 @@
       "ticker": "PVH"
     },
     {
-      "ticker": "AI",
       "company": "C3.ai",
       "date": "2026-06-03",
       "days_until": 12,
-      "file": "notes/pre_earnings/AI_2026-06-03.md"
+      "file": "notes/pre_earnings/AI_2026-06-03.md",
+      "ticker": "AI"
     },
     {
       "company": "Rubrik",
@@ -1377,5 +1388,5 @@
       "ticker": "AMD"
     }
   ],
-  "updated": "2026-05-25T12:59:13.956146"
+  "updated": "2026-05-25T21:55:01.867819"
 }

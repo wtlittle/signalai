@@ -241,6 +241,11 @@ def run():
                 "ticker": e["ticker"],
                 "company": e["name"],
                 "date": e["earnings_date"],
+                # Bug 6 fix: also persist earnings_date so downstream
+                # consumers (transcript_harvest, estimate_revision_tracker,
+                # note_diff_injector, migrate_pre_to_post) can resolve
+                # entries by entry.get("earnings_date").
+                "earnings_date": e["earnings_date"],
                 "days_until": e["days_until"],
                 "timing": _timing_for(e),
             }
@@ -251,6 +256,7 @@ def run():
                 "ticker": e["ticker"],
                 "company": e["name"],
                 "date": e["earnings_date"],
+                "earnings_date": e["earnings_date"],
                 "days_since": e["days_since"],
                 "timing": _timing_for(e),
             }
