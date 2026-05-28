@@ -1,0 +1,177 @@
+{
+  "ticker": "NVDA",
+  "snapshot_type": "pre",
+  "fiscal_period": "Q1 FY2027",
+  "snapshot_ts": "2026-05-15T14:00:00Z",
+  "_tier": "T1",
+  "quote": {
+    "price": 135.72,
+    "change_1d_pct": -1.23,
+    "wk52_high": 153.13,
+    "wk52_low": 86.62,
+    "pct_off_52w_high": -11.4,
+    "market_cap": 3320000000000
+  },
+  "consensus_forward": {
+    "fq_revenue": "43.2B",
+    "fq_eps": "0.88",
+    "fy_revenue": "200.5B",
+    "fy_eps": "4.10",
+    "source": "finance_estimates"
+  },
+  "implied_move": {
+    "method": "straddle",
+    "value_pct": 8.5,
+    "source": "options_chain"
+  },
+  "history_8q": [
+    {
+      "period": "Q4 FY2026",
+      "date": "2026-02-26",
+      "actual_revenue": "39.3B",
+      "estimated_revenue": "38.1B",
+      "revenue_surprise_pct": 3.1,
+      "actual_eps": "0.89",
+      "estimated_eps": "0.85",
+      "eps_surprise_pct": 4.7,
+      "post_earnings_move_1d_pct": 3.2,
+      "expected_move_pct": 7.8
+    },
+    {
+      "period": "Q3 FY2026",
+      "date": "2025-11-20",
+      "actual_revenue": "35.1B",
+      "estimated_revenue": "33.2B",
+      "revenue_surprise_pct": 5.7,
+      "actual_eps": "0.81",
+      "estimated_eps": "0.75",
+      "eps_surprise_pct": 8.0,
+      "post_earnings_move_1d_pct": -2.5,
+      "expected_move_pct": 8.6
+    },
+    {
+      "period": "Q2 FY2026",
+      "date": "2025-08-27",
+      "actual_revenue": "30.0B",
+      "estimated_revenue": "28.7B",
+      "revenue_surprise_pct": 4.5,
+      "actual_eps": "0.68",
+      "estimated_eps": "0.64",
+      "eps_surprise_pct": 6.3,
+      "post_earnings_move_1d_pct": 1.8,
+      "expected_move_pct": 9.1
+    },
+    {
+      "period": "Q1 FY2026",
+      "date": "2025-05-28",
+      "actual_revenue": "44.1B",
+      "estimated_revenue": "43.3B",
+      "revenue_surprise_pct": 1.8,
+      "actual_eps": "0.96",
+      "estimated_eps": "0.92",
+      "eps_surprise_pct": 4.3,
+      "post_earnings_move_1d_pct": -0.5,
+      "expected_move_pct": 7.5
+    },
+    {
+      "period": "Q4 FY2025",
+      "date": "2025-02-26",
+      "actual_revenue": "39.3B",
+      "estimated_revenue": "38.2B",
+      "revenue_surprise_pct": 2.9,
+      "actual_eps": "0.89",
+      "estimated_eps": "0.85",
+      "eps_surprise_pct": 4.7,
+      "post_earnings_move_1d_pct": 8.5,
+      "expected_move_pct": 8.2
+    },
+    {
+      "period": "Q3 FY2025",
+      "date": "2024-11-20",
+      "actual_revenue": "35.1B",
+      "estimated_revenue": "33.1B",
+      "revenue_surprise_pct": 6.0,
+      "actual_eps": "0.81",
+      "estimated_eps": "0.75",
+      "eps_surprise_pct": 8.0,
+      "post_earnings_move_1d_pct": -1.0,
+      "expected_move_pct": 8.5
+    },
+    {
+      "period": "Q2 FY2025",
+      "date": "2024-08-28",
+      "actual_revenue": "30.0B",
+      "estimated_revenue": "28.9B",
+      "revenue_surprise_pct": 3.8,
+      "actual_eps": "0.68",
+      "estimated_eps": "0.65",
+      "eps_surprise_pct": 4.6,
+      "post_earnings_move_1d_pct": -6.4,
+      "expected_move_pct": 9.8
+    },
+    {
+      "period": "Q1 FY2025",
+      "date": "2024-05-22",
+      "actual_revenue": "26.0B",
+      "estimated_revenue": "24.7B",
+      "revenue_surprise_pct": 5.3,
+      "actual_eps": "0.61",
+      "estimated_eps": "0.58",
+      "eps_surprise_pct": 5.2,
+      "post_earnings_move_1d_pct": 9.3,
+      "expected_move_pct": 8.0
+    }
+  ],
+  "post_earnings_move_avg_1d_pct": 1.6,
+  "recommendation_drift": [
+    {"period": "2026-05", "strong_buy": 35, "buy": 10, "hold": 5, "sell": 1, "strong_sell": 0},
+    {"period": "2026-04", "strong_buy": 33, "buy": 12, "hold": 5, "sell": 1, "strong_sell": 0},
+    {"period": "2026-03", "strong_buy": 32, "buy": 13, "hold": 5, "sell": 2, "strong_sell": 0},
+    {"period": "2026-02", "strong_buy": 30, "buy": 14, "hold": 6, "sell": 2, "strong_sell": 0}
+  ],
+  "analyst_research_narrative": "Sell-side remains overwhelmingly bullish on NVDA heading into the Q1 FY2027 print. Key themes: (1) data center revenue acceleration driven by Blackwell GB200 ramp, (2) hyperscaler capex guidance from MSFT/GOOG/META all pointing to continued AI infrastructure spend, (3) supply chain checks suggesting TSMC CoWoS capacity expansion is on track. Bears focus on China export restrictions tightening, potential GPU pricing pressure from AMD MI350, and sovereign AI spend sustainability. Morgan Stanley (OW, PT $170) sees Q1 as a 'beat and raise' setup. Goldman Sachs (Buy, PT $160) flags Blackwell gross margin trajectory as the key swing factor.",
+  "adj_metrics_8q": [
+    {"period": "Q4 FY2026", "adj_eps": "0.89", "adj_ebitda": "24.5B", "fcf": "18.2B", "gross_margin_pct": 73.0, "operating_margin_pct": 62.0},
+    {"period": "Q3 FY2026", "adj_eps": "0.81", "adj_ebitda": "21.8B", "fcf": "16.1B", "gross_margin_pct": 74.6, "operating_margin_pct": 62.5},
+    {"period": "Q2 FY2026", "adj_eps": "0.68", "adj_ebitda": "18.5B", "fcf": "13.5B", "gross_margin_pct": 75.1, "operating_margin_pct": 61.8},
+    {"period": "Q1 FY2026", "adj_eps": "0.96", "adj_ebitda": "28.5B", "fcf": "21.0B", "gross_margin_pct": 78.4, "operating_margin_pct": 64.9},
+    {"period": "Q4 FY2025", "adj_eps": "0.89", "adj_ebitda": "24.0B", "fcf": "17.8B", "gross_margin_pct": 73.0, "operating_margin_pct": 61.2},
+    {"period": "Q3 FY2025", "adj_eps": "0.81", "adj_ebitda": "22.0B", "fcf": "16.8B", "gross_margin_pct": 74.6, "operating_margin_pct": 62.0},
+    {"period": "Q2 FY2025", "adj_eps": "0.68", "adj_ebitda": "18.7B", "fcf": "14.9B", "gross_margin_pct": 75.1, "operating_margin_pct": 62.2},
+    {"period": "Q1 FY2025", "adj_eps": "0.61", "adj_ebitda": "16.5B", "fcf": "14.0B", "gross_margin_pct": 78.9, "operating_margin_pct": 64.0}
+  ],
+  "segments_4q": [
+    {"period": "Q4 FY2026", "segments": [{"name": "Data Center", "revenue": "35.6B"}, {"name": "Gaming", "revenue": "2.5B"}, {"name": "Professional Visualization", "revenue": "0.5B"}, {"name": "Automotive", "revenue": "0.7B"}]},
+    {"period": "Q3 FY2026", "segments": [{"name": "Data Center", "revenue": "30.8B"}, {"name": "Gaming", "revenue": "3.0B"}, {"name": "Professional Visualization", "revenue": "0.5B"}, {"name": "Automotive", "revenue": "0.5B"}]},
+    {"period": "Q2 FY2026", "segments": [{"name": "Data Center", "revenue": "26.3B"}, {"name": "Gaming", "revenue": "2.9B"}, {"name": "Professional Visualization", "revenue": "0.4B"}, {"name": "Automotive", "revenue": "0.3B"}]},
+    {"period": "Q1 FY2026", "segments": [{"name": "Data Center", "revenue": "39.2B"}, {"name": "Gaming", "revenue": "3.5B"}, {"name": "Professional Visualization", "revenue": "0.6B"}, {"name": "Automotive", "revenue": "0.6B"}]}
+  ],
+  "peers": [
+    {"ticker": "AMD", "relation": "core", "last_print": {"period": "Q1 FY2026", "revenue_surprise_pct": 2.1, "eps_surprise_pct": 3.5, "post_earnings_move_1d_pct": -4.2}, "forward_consensus": {"fq_revenue": "7.5B", "fq_eps": "1.12"}},
+    {"ticker": "AVGO", "relation": "core", "last_print": {"period": "Q2 FY2026", "revenue_surprise_pct": 1.8, "eps_surprise_pct": 2.0, "post_earnings_move_1d_pct": 5.1}, "forward_consensus": {"fq_revenue": "15.2B", "fq_eps": "1.65"}},
+    {"ticker": "TSM", "relation": "read-through", "last_print": {"period": "Q1 2026", "revenue_surprise_pct": 3.2, "eps_surprise_pct": 4.1, "post_earnings_move_1d_pct": 2.8}, "forward_consensus": {"fq_revenue": "28.5B", "fq_eps": "2.15"}},
+    {"ticker": "MRVL", "relation": "core", "last_print": {"period": "Q4 FY2026", "revenue_surprise_pct": 1.5, "eps_surprise_pct": 2.8, "post_earnings_move_1d_pct": -1.2}, "forward_consensus": {"fq_revenue": "2.1B", "fq_eps": "0.62"}}
+  ],
+  "insider_tx_90d": {
+    "n_buys": 0,
+    "n_sells": 3,
+    "net_value_usd": -12500000,
+    "raw": []
+  },
+  "industry_pack": {
+    "subsector": "Semiconductors",
+    "week_of": "2026-05-12",
+    "pack": {
+      "demand_signal": "strong",
+      "supply_chain": "TSMC CoWoS expansion on track; lead times stable at 16-20 weeks",
+      "pricing_trend": "ASPs stable to up on Blackwell transition",
+      "key_datapoints": [
+        "Hyperscaler capex guides: MSFT +40% YoY, GOOG +35%, META +30%",
+        "TSMC April rev +38% YoY, beating expectations",
+        "China restrictions: new BIS rules effective June 1, ~5% NVDA rev at risk"
+      ]
+    },
+    "sources": ["TSMC monthly rev", "hyperscaler earnings calls", "BIS.gov"]
+  },
+  "errors": []
+}
