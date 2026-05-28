@@ -43,6 +43,9 @@ TASK_MODEL_MAP = {
     "post_earnings": os.environ.get("PERPLEXITY_MODEL_POST_EARNINGS", "sonar-reasoning-pro"),
     "drilldown": os.environ.get("PERPLEXITY_MODEL_DRILLDOWN", "sonar-deep-research"),
     "weekly_briefing": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
+    "weekly_value": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
+    "weekly_momentum": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
+    "weekly_trends": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
     "news_tag": os.environ.get("PERPLEXITY_MODEL_NEWS", "sonar"),
 }
 # reasoning_effort applies only to sonar-deep-research. Default to low to keep
@@ -137,6 +140,9 @@ _TASK_SOURCE_MAP = {
     "weekly_value": "weekly_briefing",
     "weekly_momentum": "weekly_briefing",
     "weekly_trends": "weekly_briefing",
+    "weekly_briefing_value": "weekly_briefing",
+    "weekly_briefing_momentum": "weekly_briefing",
+    "weekly_briefing_trends": "weekly_briefing",
     "drilldown": "drilldown",
     "transcript_distill": "transcript_harvest",
     "transcript_research": "transcript_harvest",
