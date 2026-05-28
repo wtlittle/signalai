@@ -55,6 +55,29 @@ def fetch_rows(
         return []
 
 
+def insert_row(
+    table: str,
+    row: dict[str, Any],
+    timeout: int = 30,
+) -> bool:
+    """Insert a single row (no upsert). Returns True on success."""
+    url, key = _get_creds()
+    if not key:
+        return False
+    hdrs = _headers(key)
+    hdrs["Prefer"] = "return=minimal"
+    try:
+        resp = requests.post(
+            f"{url}/rest/v1/{table}",
+            headers=hdrs,
+            data=json.dumps(row, default=str),
+            timeout=timeout,
+        )
+        return resp.status_code < 300
+    except Exception:
+        return False
+
+
 def upsert_row(
     table: str,
     row: dict[str, Any],
