@@ -116,34 +116,13 @@ def run() -> dict:
         else:
             fresh_active_pre.append(entry)
 
-    # --- Rebuild active_post_earnings, adding all moved tickers (idempotent) ---
-    existing_post_idx = {(x.get("ticker"), x.get("date")): x for x in active_post}
-    for m in moved_from_cal:
-        t = m.get("ticker")
-        d = m.get("earnings_date") or today
-        key = (t, d)
-        if key not in existing_post_idx:
-            existing_post_idx[key] = {
-                "ticker": t,
-                "company": m.get("company") or m.get("name") or t,
-                "date": d,
-                "day_post": 0,
-                "expires": None,
-                "note_file": f"notes/post_earnings/{t}_{d}.md",
-            }
-    for sp in stale_promoted:
-        t = sp["ticker"]
-        d = sp["date"]
-        key = (t, d)
-        if key not in existing_post_idx:
-            existing_post_idx[key] = {
-                "ticker": t,
-                "company": t,
-                "date": d,
-                "day_post": 0,
-                "expires": None,
-                "note_file": f"notes/post_earnings/{t}_{d}.md",
-            }
+    # --- DO NOT pre-populate active_post_earnings here ---
+    # Previously this block inserted stub entries into the index without a
+    # backing .md file. cache.note_already_exists then trusted the index and
+    # skipped real note generation forever (the phantom-stub bug, 2026-05-27).
+    # The index for active_post_earnings is now owned exclusively by
+    # post_earnings_notes.py, which writes the entry only AFTER a real .md
+    # file lands on disk. We just clean active_pre here.
 
     # --- Delete stale pre-earnings markdown for any promoted ticker ---
     deleted_files = []
@@ -158,10 +137,10 @@ def run() -> dict:
             if _delete_pre_note(t, d):
                 deleted_files.append(f"{t}_{d}.md")
 
-    # --- Write index ---
+    # --- Write index (active_post_earnings preserved as-is, not stubbed) ---
     idx["active_pre_earnings"] = sorted(fresh_active_pre, key=lambda x: x.get("date", ""))
     idx["active_post_earnings"] = sorted(
-        existing_post_idx.values(), key=lambda x: x.get("date", "")
+        active_post, key=lambda x: x.get("date", "")
     )
     IDX_PATH.write_text(json.dumps(idx, indent=2, sort_keys=True) + "\n")
 
