@@ -137,6 +137,10 @@ async function enrichRecentFromIntel(recent) {
         if (v) { r.eps_actual = v; break; }
       }
     }
+    // Stock reaction pct — prominent number from post_earnings_review
+    if (rev.stock_reaction_pct != null && r.stock_reaction_pct == null) {
+      r.stock_reaction_pct = rev.stock_reaction_pct;
+    }
     // Stock reaction fallback — use takeaways_headline so card body isn't "No data"
     if (!r.stock_reaction && rev.takeaways_headline) {
       r.stock_reaction = rev.takeaways_headline.slice(0, 180);
@@ -229,9 +233,6 @@ function renderRecentEarnings(recent) {
     const epsBeat = (r.eps_beat_miss || '').toLowerCase();
     const revClass = revBeat.includes('beat') ? 'beat' : revBeat.includes('miss') ? 'miss' : 'inline';
     const epsClass = epsBeat.includes('beat') ? 'beat' : epsBeat.includes('miss') ? 'miss' : 'inline';
-    const stockRx = r.stock_reaction || '';
-    const stockClass = stockRx.includes('+') ? 'positive' : stockRx.includes('-') ? 'negative' : '';
-
     // Human-friendly "days since" phrase:
     //   0 → "Reported today", 1 → "Reported yesterday", n → "nd ago"
     let sinceLabel;
@@ -262,7 +263,10 @@ function renderRecentEarnings(recent) {
       ${_renderGuideRow('FY Guide', r.fy_rev_guide_change_vs_consensus_pct, r.fy_eps_guide_change_vs_consensus_pct)}
       ${_renderGuideRow('Next Q Guide', r.next_q_rev_guide_vs_consensus_pct, r.next_q_eps_guide_vs_consensus_pct)}
       ${r.fiscal_quarter ? `<div class="earnings-card-fq">${r.fiscal_quarter}</div>` : ''}
-      <div class="earnings-card-reaction ${stockClass}">${stockRx || 'Awaiting post-earnings note'}</div>
+      <div class="earnings-card-reaction-row">
+        ${r.stock_reaction_pct != null ? `<span class="reaction-pct ${r.stock_reaction_pct >= 0 ? 'positive' : 'negative'}">${r.stock_reaction_pct >= 0 ? '+' : ''}${r.stock_reaction_pct.toFixed(1)}% post-print</span>` : ''}
+        ${r.stock_reaction ? `<span class="reaction-text">${r.stock_reaction}</span>` : (r.stock_reaction_pct == null ? `<span class="reaction-text muted">Awaiting post-earnings note</span>` : '')}
+      </div>
       <div class="earnings-card-footer">
         <span class="earnings-card-inflection-slot" data-ticker="${r.ticker}"></span>
         <button class="earnings-intel-btn" title="Open Earnings Intel">Open Earnings Intel →</button>

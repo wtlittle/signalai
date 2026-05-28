@@ -2097,15 +2097,30 @@ tbody tr:hover .comps-sticky-col {
   color: #6b7280;
   margin-bottom: 4px;
 }
-.earnings-card-reaction {
+/* --- Stock reaction row (pct + narrative) on post-earnings cards --- */
+.earnings-card-reaction-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+.reaction-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.reaction-pct.positive { color: #22c55e; }
+.reaction-pct.negative { color: #ef4444; }
+.reaction-text {
   font-size: 11px;
   color: #9ca3af;
   font-family: 'JetBrains Mono', monospace;
-  margin-bottom: 8px;
   line-height: 1.4;
 }
-.earnings-card-reaction.positive { color: #22c55e; }
-.earnings-card-reaction.negative { color: #ef4444; }
+.reaction-text.muted {
+  color: #4b5563;
+}
 .earnings-card-countdown {
   font-size: 12px;
   color: #f59e0b;
@@ -8928,6 +8943,18 @@ mark.search-highlight {
   border-color: var(--border, rgba(255, 255, 255, 0.15));
 }
 .btn-reject:hover { background: rgba(255, 255, 255, 0.05); }
+
+/* --- Peer ticker links in earnings-intel drilldown --- */
+.peer-ticker-link {
+  color: #60a5fa;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.peer-ticker-link:hover {
+  text-decoration: underline;
+  color: #93bbfc;
+}
 
 /* Live-quotes row update flash */
 @keyframes row-flash-anim {
