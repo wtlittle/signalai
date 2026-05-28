@@ -122,7 +122,11 @@ function _normalizeLabel(label) {
   }
   s = _removeUnbalancedParens(s);
   s = _stripStopTail(s);
-  if (s.length > 38) s = _trimToMax(s, 38);
+  if (s.length > 38) {
+    s = _trimToMax(s, 38);
+    s = _removeUnbalancedParens(s);
+    s = _stripStopTail(s);
+  }
   s = s ? _titleCasePreserve(s) : s;
   if (s && s[0] === s[0].toLowerCase()) s = s[0].toUpperCase() + s.slice(1);
   return _isCleanLabel(s) ? s : null;

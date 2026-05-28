@@ -166,6 +166,9 @@ def normalize_label(label: str) -> str | None:
     s = strip_trailing_stop_and_punct(s)
     if len(s) > 38:
         s = trim_to_max(s, 38)
+        # Trimming can re-open parens; clean them up.
+        s = remove_unbalanced_parens(s)
+        s = strip_trailing_stop_and_punct(s)
     s = title_case_preserve(s) if s else s
     if s and s[0].islower():
         s = s[0].upper() + s[1:]

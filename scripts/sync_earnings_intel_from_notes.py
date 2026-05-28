@@ -213,9 +213,29 @@ def _signal_id(label: str, idx: int) -> str:
 
 
 def _short_label(text: str, words: int = 6) -> str:
-    parts = re.sub(r"\s+", " ", text).split(" ")
-    label = " ".join(parts[:words]).rstrip(".,:;\u2014-")
-    return label[:80] if label else "Signal"
+    """Derive a concise Title-Case topic label (<=38 chars) from a bullet.
+
+    Older versions of this function returned the first N words of the bullet,
+    which produced truncated sentence-fragments (e.g.
+    "Whether Cloud Security TAM Expansion Can"). Now we delegate to the same
+    cleaner used by the dashboard renderer + backfill script so producers,
+    renderers, and historical data all share one canonical label format.
+    """
+    if not text:
+        return "Signal"
+    cleaned = re.sub(r"\s+", " ", text).strip()
+    try:
+        from automation.jobs.fix_intel_labels import clean_label
+    except Exception:
+        # Fallback if import fails: legacy 6-word truncate (rare)
+        parts = cleaned.split(" ")
+        label = " ".join(parts[:words]).rstrip(".,:;\u2014-")
+        return label[:80] if label else "Signal"
+    # clean_label expects a scorecard-shaped dict with at minimum the label
+    # or a note field. Pass the full bullet as both so the cleaner can use
+    # the "before-first-colon" head extraction strategy.
+    label = clean_label({"label": cleaned, "note": cleaned, "signal_id": ""})
+    return label or "Signal"
 
 
 # ---------------------------------------------------------------------------
