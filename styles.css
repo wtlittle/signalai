@@ -2060,6 +2060,38 @@ tbody tr:hover .comps-sticky-col {
   background: rgba(107, 114, 128, 0.15);
   color: #9ca3af;
 }
+/* --- FY / Next Q guide row on post-earnings cards --- */
+.earnings-guide-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  margin-bottom: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.guide-label {
+  font-size: 10px;
+  color: #6b7280;
+  text-transform: uppercase;
+  min-width: 62px;
+}
+.guide-metric {
+  font-size: 11px;
+  font-weight: 600;
+}
+.guide-metric.guide-positive {
+  color: #22c55e;
+}
+.guide-metric.guide-negative {
+  color: #ef4444;
+}
+.guide-metric.guide-neutral {
+  color: #9ca3af;
+}
+.guide-sep {
+  color: #4b5563;
+  margin: 0 2px;
+}
 .earnings-card-fq {
   font-size: 10px;
   color: #6b7280;
