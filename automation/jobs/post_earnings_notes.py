@@ -5,8 +5,17 @@ Only calls Perplexity for tickers that:
   2. Reported within the post-earnings window
   3. Haven't been researched today (cache check)
 Reuses pre-earnings cache to avoid re-researching known context.
+
+Phase 3: wires Stage 1 (context builders) and Stage 2 (prompt schema)
+into the note-generation pipeline.
+
+Flow:
+  calendar → skip guards → build_post_earnings_context → sanity_check gate
+  → persist snapshot to Supabase → build_post_earnings_prompt_v2
+  → call_perplexity → write note + upsert index → emit alert
 """
 import json
+import logging
 import os
 import sys
 from datetime import date, datetime
@@ -17,11 +26,18 @@ from automation.shared.paths import POST_EARNINGS_DIR, EARNINGS_CALENDAR, EARNIN
 from automation.shared.cache import note_already_exists, load_research_cache
 from automation.shared.tickers import load_common_names
 from automation.shared.io_helpers import read_json, write_json
+from automation.shared import supabase_client as _sb
 from automation.perplexity.client import call_perplexity
-from automation.perplexity.prompts import build_post_earnings_prompt
+from automation.perplexity.prompts import build_post_earnings_prompt_v2
+from automation.earnings.post_earnings_context import build_post_earnings_context
+from automation.earnings.sanity_check import sanity_check
+
+logger = logging.getLogger(__name__)
 
 TODAY = date.today()
 MAX_DAYS = int(os.environ.get("MAX_POST_EARNINGS_DAYS", 14))
+
+_SNAPSHOT_TABLE = "earnings_context_snapshots"
 
 
 def get_post_earnings_tickers() -> list[dict]:
@@ -143,6 +159,25 @@ def update_index(ticker: str, company: str, earnings_date: str, days_since: int)
     write_json(EARNINGS_INDEX, index)
 
 
+def _persist_snapshot(ticker: str, earnings_date: str, context: dict) -> bool:
+    """Persist the Stage 1 context to Supabase earnings_context_snapshots."""
+    row = {
+        "ticker": ticker,
+        "earnings_date": earnings_date,
+        "note_type": "post",
+        "generated_at": datetime.now().astimezone().isoformat(),
+        "context": json.dumps(context, default=str),
+        "ticker_tier": context.get("_tier", "T2"),
+    }
+    # Include consensus_at_print if available
+    cap = context.get("consensus_at_print")
+    if cap:
+        row["consensus_at_print"] = json.dumps(cap, default=str)
+    return _sb.upsert_row(
+        _SNAPSHOT_TABLE, row, on_conflict="ticker,earnings_date,note_type"
+    )
+
+
 def run():
     """Main entry: generate post-earnings notes with skip guards."""
     tickers = get_post_earnings_tickers()
@@ -170,26 +205,44 @@ def run():
             skipped += 1
             continue
 
-        # --- GUARD 3: Reuse pre-earnings research if available ---
-        pre_cache = load_research_cache(ticker, "pre_earnings")
+        # --- STAGE 1: Build deterministic context ---
+        print(f"  [CONTEXT] {ticker} — building post-earnings context...")
+        context = build_post_earnings_context(ticker)
 
-        actuals = {
-            "rev_actual": entry.get("rev_actual", "?"),
-            "rev_est": entry.get("rev_est", "?"),
-            "rev_beat_miss": entry.get("rev_beat_miss", "?"),
-            "eps_actual": entry.get("eps_actual", "?"),
-            "eps_est": entry.get("eps_est", "?"),
-            "eps_beat_miss": entry.get("eps_beat_miss", "?"),
-            "stock_reaction": entry.get("stock_reaction", "?"),
-        }
+        # --- SANITY CHECK GATE ---
+        ok, issues = sanity_check(context)
+        if not ok:
+            for issue in issues:
+                logger.warning("[%s] sanity_check: %s", ticker, issue)
+                print(f"  [WARN] {ticker} sanity_check: {issue}")
+            # Write a stub note so the ticker isn't retried every run
+            stub_path = POST_EARNINGS_DIR / f"{ticker}_{earnings_date}.md"
+            stub_path.write_text(
+                f"# {company} ({ticker}) — Post-Earnings Note\n"
+                f"**Reported:** {earnings_date} | **Day Post:** {days_since}\n"
+                f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
+                f"---\n\n"
+                f"*Context sanity check failed — insufficient data for full note.*\n\n"
+                f"Issues:\n" + "\n".join(f"- {i}" for i in issues) + "\n"
+            )
+            print(f"  [STUB] {ticker} — wrote stub note (sanity check failed)")
+            skipped += 1
+            continue
 
-        prompt = build_post_earnings_prompt(
-            ticker, company, earnings_date, actuals, pre_context=pre_cache
-        )
+        # --- PERSIST CONTEXT SNAPSHOT ---
+        _persist_snapshot(ticker, earnings_date, context)
+
+        # --- STAGE 2: Build prompt from context ---
+        system_prompt, user_prompt = build_post_earnings_prompt_v2(ticker, context)
+
+        # --- LLM CALL ---
         # Reasoning models burn most of max_tokens on the <think> block, so
         # 2000 was too tight — the model never emitted the JSON tail. 4000
         # gives the chain-of-thought room while still keeping the cost bounded.
-        result = call_perplexity(ticker, "post_earnings", prompt, max_tokens=4000)
+        result = call_perplexity(
+            ticker, "post_earnings", user_prompt,
+            system=system_prompt, max_tokens=4000,
+        )
 
         # A queued result means the API key is not configured and the task
         # was handed off to Computer's pending_tasks queue. It is NOT a real
