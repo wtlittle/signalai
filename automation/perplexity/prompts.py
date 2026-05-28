@@ -108,7 +108,9 @@ _SYSTEM_PRE = (
     "NEVER fabricate numbers -- only use the data provided in the EARNINGS CONTEXT below. "
     "If a field says NOT AVAILABLE, say so explicitly in your note. "
     "All numbers below come from finance_earnings_history, finance_estimates, and Finnhub. "
-    "Use them as-is. Do NOT search the web for numbers."
+    "Use them as-is. Do NOT search the web for numbers. "
+    "Always populate every field in the required output blocks. "
+    "Use null only when a value is truly unknown. Never use em-dash placeholders."
 )
 
 _SYSTEM_POST = (
@@ -117,7 +119,11 @@ _SYSTEM_POST = (
     "NEVER fabricate numbers -- only use the data provided in the EARNINGS CONTEXT below. "
     "If a field says NOT AVAILABLE, say so explicitly in your note. "
     "All numbers below come from finance_earnings_history, finance_estimates, and Finnhub. "
-    "Use them as-is. Do NOT search the web for numbers."
+    "Use them as-is. Do NOT search the web for numbers. "
+    "If the company has reported the quarter, you MUST extract actuals from the "
+    "provided context. Do NOT write 'no reported numbers' for a company that "
+    "actually reported. Always populate every field in the required output blocks. "
+    "Use null only when a value is truly unknown. Never use em-dash placeholders."
 )
 
 # Pre-earnings required output sections (matches existing notes/ convention).
@@ -128,7 +134,26 @@ Required sections (match the existing note format exactly):
 3. What Matters This Print (table: Metric | Consensus/Guidance | Why It Matters)
 4. Scenario Grid (table: Scenario | EPS | Revenue | Key Assumptions | Price Target | Probability)
 
-Include a *Sources:* line at the end listing data sources used."""
+Label format for Key Debates and What Matters bullets:
+- Each bullet MUST start with a short Title Case noun-phrase label (<=30 chars),
+  followed by a colon, then the detail. Example: "Data Center Growth: ..."
+- Labels must NOT be questions or full sentences. Good: "Blackwell Ramp Timing".
+  Bad: "Is guidance conservative?" or "Whether cloud growth accelerates".
+
+Include a *Sources:* line at the end listing data sources used.
+
+After the note body, emit a fenced JSON block labeled ```json setup_vs_consensus
+with these exact keys (use null when unknown, never em-dashes):
+{
+  "street_rev_estimate": "<next-Q revenue consensus, e.g. 43.2B>",
+  "street_eps_estimate": "<next-Q EPS consensus, e.g. 0.88>",
+  "last_q_rev_surprise_pct": <number or null>,
+  "last_q_eps_surprise_pct": <number or null>,
+  "current_fy_consensus_rev": "<FY revenue consensus, e.g. 200.5B>",
+  "current_fy_consensus_eps": "<FY EPS consensus, e.g. 4.10>",
+  "prior_fy_guide_vs_current_consensus_pct": <number or null>
+}
+```"""
 
 # Post-earnings required output sections.
 _POST_SECTIONS = """\
@@ -144,7 +169,47 @@ Required sections (match the existing note format exactly):
 For T1 tickers also include:
 8. Read-Through to Peers (how this print affects peer setups)
 
-Include a *Sources:* line at the end listing data sources used."""
+Include a *Sources:* line at the end listing data sources used.
+
+After the note body, emit TWO fenced JSON blocks.
+
+Block 1 -- ```json results_vs_consensus
+{
+  "in_quarter_rev_actual": "<e.g. 44.5B>",
+  "in_quarter_rev_consensus": "<e.g. 43.2B>",
+  "in_quarter_rev_surprise_pct": <number>,
+  "in_quarter_rev_yoy_pct": <number or null>,
+  "in_quarter_eps_actual": "<e.g. 0.92>",
+  "in_quarter_eps_consensus": "<e.g. 0.88>",
+  "in_quarter_eps_surprise_pct": <number>
+}
+```
+
+Block 2 -- ```json guide_vs_consensus
+{
+  "next_q_rev_guide_midpoint": "<e.g. 48.0B or null>",
+  "next_q_rev_consensus_prior": "<e.g. 44.0B or null>",
+  "next_q_rev_guide_vs_consensus_pct": <number or null>,
+  "next_q_eps_guide_midpoint": "<or null>",
+  "next_q_eps_consensus_prior": "<or null>",
+  "next_q_eps_guide_vs_consensus_pct": <number or null>,
+  "fy_rev_guide_midpoint_new": "<or null>",
+  "fy_rev_guide_midpoint_prior": "<or null>",
+  "fy_rev_consensus_prior": "<or null>",
+  "fy_rev_guide_change_vs_consensus_pct": <number or null>,
+  "fy_rev_guide_change_vs_prior_pct": <number or null>,
+  "fy_eps_guide_midpoint_new": "<or null>",
+  "fy_eps_guide_midpoint_prior": "<or null>",
+  "fy_eps_consensus_prior": "<or null>",
+  "fy_eps_guide_change_vs_consensus_pct": <number or null>,
+  "fy_eps_guide_change_vs_prior_pct": <number or null>
+}
+```
+
+IMPORTANT: You MUST populate the results_vs_consensus block with actual numbers
+from the THIS QUARTER ACTUALS and FORWARD CONSENSUS data provided. If the
+company reported, every field in results_vs_consensus must have a value.
+Use null only when the data is genuinely not provided in the context."""
 
 
 def _safe(val, fmt: str = "", fallback: str = "?") -> str:

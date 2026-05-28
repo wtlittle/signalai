@@ -305,6 +305,37 @@ function signalSummary(scorecard) {
   return `${c}C · ${f}F · ${w}W`;
 }
 
+/**
+ * Linkify ticker-like tokens in free text that match known coverage tickers.
+ * Skips the current ticker (no self-links). Returns HTML with <a> tags.
+ */
+function _linkifyPeerTickers(text, currentTicker) {
+  if (!text || typeof text !== 'string') return text;
+  const known = (typeof tickerList !== 'undefined' && Array.isArray(tickerList)) ? new Set(tickerList) : null;
+  if (!known || known.size === 0) return text;
+  return text.replace(/\b([A-Z]{1,5}(?:\.[A-Z])?)\b/g, (match, sym) => {
+    if (sym === currentTicker) return match;
+    if (!known.has(sym)) return match;
+    return `<a class="peer-ticker-link" data-peer-ticker="${sym}" href="#" role="button">${sym}</a>`;
+  });
+}
+
+// Delegated click handler for peer-ticker links in drilldown
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('.peer-ticker-link');
+  if (!link) return;
+  e.preventDefault();
+  const sym = link.getAttribute('data-peer-ticker');
+  if (!sym) return;
+  if (typeof openPopup === 'function') {
+    openPopup(sym, { initialTab: 'earnings-intel' });
+  } else {
+    const card = document.querySelector(`.earnings-card[data-ticker="${sym}"] .earnings-intel-btn`);
+    if (card) { card.click(); return; }
+    window.location.hash = `intel/${sym}`;
+  }
+});
+
 /** Build only the header strip (fast, no heavy sections) from any intel record. */
 function renderEarningsIntelHeaderHtml(ticker, intel) {
   if (!intel) {
@@ -594,13 +625,13 @@ function renderEarningsIntelHtml(ticker, intel) {
         <div class="ei-review-grid">
           <div class="ei-review-col">
             <div class="ei-subhead">Takeaways</div>
-            ${review.takeaways_headline ? `<div class="ei-headline">${review.takeaways_headline}</div>` : ''}
-            ${Array.isArray(review.takeaways_bullets) && review.takeaways_bullets.length ? `<ul class="ei-bullets">${review.takeaways_bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
+            ${review.takeaways_headline ? `<div class="ei-headline">${_linkifyPeerTickers(review.takeaways_headline, ticker)}</div>` : ''}
+            ${Array.isArray(review.takeaways_bullets) && review.takeaways_bullets.length ? `<ul class="ei-bullets">${review.takeaways_bullets.map(b => `<li>${_linkifyPeerTickers(b, ticker)}</li>`).join('')}</ul>` : ''}
           </div>
           <div class="ei-review-col">
             <div class="ei-subhead">What Happened</div>
-            ${review.what_happened_headline ? `<div class="ei-headline">${review.what_happened_headline}</div>` : ''}
-            ${Array.isArray(review.what_happened_bullets) && review.what_happened_bullets.length ? `<ul class="ei-bullets">${review.what_happened_bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
+            ${review.what_happened_headline ? `<div class="ei-headline">${_linkifyPeerTickers(review.what_happened_headline, ticker)}</div>` : ''}
+            ${Array.isArray(review.what_happened_bullets) && review.what_happened_bullets.length ? `<ul class="ei-bullets">${review.what_happened_bullets.map(b => `<li>${_linkifyPeerTickers(b, ticker)}</li>`).join('')}</ul>` : ''}
             ${review.stock_reaction_pct != null ? `<div class="ei-stock-reaction ${review.stock_reaction_pct >= 0 ? 'val-pos' : 'val-neg'}">Stock reaction: ${review.stock_reaction_pct >= 0 ? '+' : ''}${review.stock_reaction_pct.toFixed(1)}%</div>` : ''}
           </div>
         </div>
@@ -641,17 +672,17 @@ function renderEarningsIntelHtml(ticker, intel) {
       html += `
         <div class="ei-case ${c.cls}">
           <div class="ei-case-title">${c.label}</div>
-          ${headline ? `<div class="ei-case-headline">${headline}</div>` : ''}
-          ${d.pattern ? `<div class="ei-case-pattern">${d.pattern}</div>` : ''}
+          ${headline ? `<div class="ei-case-headline">${_linkifyPeerTickers(headline, ticker)}</div>` : ''}
+          ${d.pattern ? `<div class="ei-case-pattern">${_linkifyPeerTickers(d.pattern, ticker)}</div>` : ''}
           ${Array.isArray(d.pushes_higher) && d.pushes_higher.length ? `
             <div class="ei-push-block">
               <div class="ei-push-label ei-push-higher">Pushes higher</div>
-              <ul class="ei-bullets">${d.pushes_higher.map(b => `<li>${bulletText(b)}</li>`).join('')}</ul>
+              <ul class="ei-bullets">${d.pushes_higher.map(b => `<li>${_linkifyPeerTickers(bulletText(b), ticker)}</li>`).join('')}</ul>
             </div>` : ''}
           ${Array.isArray(d.pushes_lower) && d.pushes_lower.length ? `
             <div class="ei-push-block">
               <div class="ei-push-label ei-push-lower">Pushes lower</div>
-              <ul class="ei-bullets">${d.pushes_lower.map(b => `<li>${bulletText(b)}</li>`).join('')}</ul>
+              <ul class="ei-bullets">${d.pushes_lower.map(b => `<li>${_linkifyPeerTickers(bulletText(b), ticker)}</li>`).join('')}</ul>
             </div>` : ''}
         </div>`;
     });
@@ -673,7 +704,7 @@ function renderEarningsIntelHtml(ticker, intel) {
             <span class="ei-signal-label">${cleanScorecardLabel(s)}</span>
             <span class="ei-status ei-status-${status}">${statusLabel}</span>
           </div>
-          ${s.note ? `<div class="ei-signal-note">${s.note}</div>` : ''}
+          ${s.note ? `<div class="ei-signal-note">${_linkifyPeerTickers(s.note, ticker)}</div>` : ''}
           <div class="ei-signal-meta">
             ${s.watch_quarter ? `<span>Watch: <strong>${s.watch_quarter}</strong></span>` : ''}
             ${s.confirmed_threshold ? `<span class="ei-threshold val-pos">✓ ${s.confirmed_threshold}</span>` : ''}

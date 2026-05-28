@@ -137,6 +137,10 @@ async function enrichRecentFromIntel(recent) {
         if (v) { r.eps_actual = v; break; }
       }
     }
+    // Stock reaction pct — prominent number from post_earnings_review
+    if (rev.stock_reaction_pct != null && r.stock_reaction_pct == null) {
+      r.stock_reaction_pct = rev.stock_reaction_pct;
+    }
     // Stock reaction fallback — use takeaways_headline so card body isn't "No data"
     if (!r.stock_reaction && rev.takeaways_headline) {
       r.stock_reaction = rev.takeaways_headline.slice(0, 180);
@@ -150,8 +154,66 @@ async function enrichRecentFromIntel(recent) {
         r.fiscal_quarter = `${q} ${m[1]}`;
       }
     }
+
+    // Guide fields from guide_vs_consensus envelope
+    const gvc = intel.guide_vs_consensus;
+    if (gvc) {
+      if (r.fy_rev_guide_change_vs_consensus_pct == null && gvc.fy_rev_guide_change_vs_consensus_pct != null) {
+        r.fy_rev_guide_change_vs_consensus_pct = gvc.fy_rev_guide_change_vs_consensus_pct;
+      }
+      if (r.fy_eps_guide_change_vs_consensus_pct == null && gvc.fy_eps_guide_change_vs_consensus_pct != null) {
+        r.fy_eps_guide_change_vs_consensus_pct = gvc.fy_eps_guide_change_vs_consensus_pct;
+      }
+      if (r.next_q_rev_guide_vs_consensus_pct == null && gvc.next_q_rev_guide_vs_consensus_pct != null) {
+        r.next_q_rev_guide_vs_consensus_pct = gvc.next_q_rev_guide_vs_consensus_pct;
+      }
+      if (r.next_q_eps_guide_vs_consensus_pct == null && gvc.next_q_eps_guide_vs_consensus_pct != null) {
+        r.next_q_eps_guide_vs_consensus_pct = gvc.next_q_eps_guide_vs_consensus_pct;
+      }
+    }
+
+    // Results fields from results_vs_consensus envelope
+    const rvc = intel.results_vs_consensus;
+    if (rvc) {
+      if (!r.revenue_actual && rvc.in_quarter_rev_actual) r.revenue_actual = rvc.in_quarter_rev_actual;
+      if (!r.eps_actual && rvc.in_quarter_eps_actual) r.eps_actual = rvc.in_quarter_eps_actual;
+      if (!r.revenue_beat_miss && rvc.in_quarter_rev_surprise_pct != null) {
+        const s = rvc.in_quarter_rev_surprise_pct;
+        r.revenue_beat_miss = s > 1 ? `beat (+${s.toFixed(1)}%)` : s < -1 ? `miss (${s.toFixed(1)}%)` : 'in-line';
+      }
+      if (!r.eps_beat_miss && rvc.in_quarter_eps_surprise_pct != null) {
+        const s = rvc.in_quarter_eps_surprise_pct;
+        r.eps_beat_miss = s > 1 ? `beat (+${s.toFixed(1)}%)` : s < -1 ? `miss (${s.toFixed(1)}%)` : 'in-line';
+      }
+    }
   });
   return recent;
+}
+
+// --- Guide row helper for post-earnings cards ---
+function _guideColor(pct) {
+  if (pct == null) return 'guide-neutral';
+  if (pct > 0.5) return 'guide-positive';
+  if (pct < -0.5) return 'guide-negative';
+  return 'guide-neutral';
+}
+
+function _fmtGuidePct(pct) {
+  if (pct == null) return null;
+  const sign = pct > 0 ? '+' : '';
+  return sign + pct.toFixed(1) + '%';
+}
+
+function _renderGuideRow(label, revPct, epsPct) {
+  if (revPct == null && epsPct == null) return '';
+  const parts = [];
+  if (revPct != null) {
+    parts.push(`<span class="guide-metric ${_guideColor(revPct)}">Rev ${_fmtGuidePct(revPct)} vs cons</span>`);
+  }
+  if (epsPct != null) {
+    parts.push(`<span class="guide-metric ${_guideColor(epsPct)}">EPS ${_fmtGuidePct(epsPct)} vs cons</span>`);
+  }
+  return `<div class="earnings-guide-row"><span class="guide-label">${label}</span>${parts.join('<span class="guide-sep">&middot;</span>')}</div>`;
 }
 
 // --- Render earnings cards ---
@@ -171,9 +233,6 @@ function renderRecentEarnings(recent) {
     const epsBeat = (r.eps_beat_miss || '').toLowerCase();
     const revClass = revBeat.includes('beat') ? 'beat' : revBeat.includes('miss') ? 'miss' : 'inline';
     const epsClass = epsBeat.includes('beat') ? 'beat' : epsBeat.includes('miss') ? 'miss' : 'inline';
-    const stockRx = r.stock_reaction || '';
-    const stockClass = stockRx.includes('+') ? 'positive' : stockRx.includes('-') ? 'negative' : '';
-
     // Human-friendly "days since" phrase:
     //   0 → "Reported today", 1 → "Reported yesterday", n → "nd ago"
     let sinceLabel;
@@ -192,17 +251,22 @@ function renderRecentEarnings(recent) {
       <div class="earnings-card-metrics">
         <div class="earnings-metric">
           <span class="metric-label">Rev</span>
-          <span class="metric-value">${r.revenue_actual || '—'}</span>
+          <span class="metric-value">${r.revenue_actual || '\u2014'}</span>
           <span class="metric-tag ${revClass}">${r.revenue_beat_miss || ''}</span>
         </div>
         <div class="earnings-metric">
           <span class="metric-label">EPS</span>
-          <span class="metric-value">${r.eps_actual || '—'}</span>
+          <span class="metric-value">${r.eps_actual || '\u2014'}</span>
           <span class="metric-tag ${epsClass}">${r.eps_beat_miss || ''}</span>
         </div>
       </div>
+      ${_renderGuideRow('FY Guide', r.fy_rev_guide_change_vs_consensus_pct, r.fy_eps_guide_change_vs_consensus_pct)}
+      ${_renderGuideRow('Next Q Guide', r.next_q_rev_guide_vs_consensus_pct, r.next_q_eps_guide_vs_consensus_pct)}
       ${r.fiscal_quarter ? `<div class="earnings-card-fq">${r.fiscal_quarter}</div>` : ''}
-      <div class="earnings-card-reaction ${stockClass}">${stockRx || 'Awaiting post-earnings note'}</div>
+      <div class="earnings-card-reaction-row">
+        ${r.stock_reaction_pct != null ? `<span class="reaction-pct ${r.stock_reaction_pct >= 0 ? 'positive' : 'negative'}">${r.stock_reaction_pct >= 0 ? '+' : ''}${r.stock_reaction_pct.toFixed(1)}% post-print</span>` : ''}
+        ${r.stock_reaction ? `<span class="reaction-text">${r.stock_reaction}</span>` : (r.stock_reaction_pct == null ? `<span class="reaction-text muted">Awaiting post-earnings note</span>` : '')}
+      </div>
       <div class="earnings-card-footer">
         <span class="earnings-card-inflection-slot" data-ticker="${r.ticker}"></span>
         <button class="earnings-intel-btn" title="Open Earnings Intel">Open Earnings Intel →</button>
@@ -735,11 +799,15 @@ async function fetchEarnings() {
               days_since: daysSince,
               revenue_actual: revActual || (p.revenue_actual || ''),
               eps_actual: p.eps_actual != null ? '$' + p.eps_actual : '',
-              revenue_beat_miss: revBeat,
-              eps_beat_miss: epsBeat,
+              revenue_beat_miss: p.revenue_beat_miss || revBeat,
+              eps_beat_miss: p.eps_beat_miss || epsBeat,
               stock_reaction: p.note || '',
               fiscal_quarter: p.quarter || '',
-              timing: p.timing || 'TBD'
+              timing: p.timing || 'TBD',
+              fy_rev_guide_change_vs_consensus_pct: p.fy_rev_guide_change_vs_consensus_pct || null,
+              fy_eps_guide_change_vs_consensus_pct: p.fy_eps_guide_change_vs_consensus_pct || null,
+              next_q_rev_guide_vs_consensus_pct: p.next_q_rev_guide_vs_consensus_pct || null,
+              next_q_eps_guide_vs_consensus_pct: p.next_q_eps_guide_vs_consensus_pct || null
             });
           }
         }
