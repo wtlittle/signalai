@@ -20,6 +20,133 @@ function bulletText(b) {
 }
 
 /**
+ * Defensive fallback for Signal Scorecard labels. Older notes saved labels
+ * as truncated sentence fragments (e.g. "Whether Cloud Security TAM Expansion
+ * Can", "FY2027 Guidance And Management Commentary On"). The data backfill
+ * (automation/jobs/fix_intel_labels.py) rewrites stored labels, and the
+ * generation prompt now constrains label format, but this client-side cleaner
+ * keeps the dashboard readable if a regression slips through in future runs.
+ *
+ * Logic mirrors fix_intel_labels.py but is renderer-only: it never mutates the
+ * underlying data, just the displayed string.
+ */
+const _SCORECARD_STOP = new Set([
+  'and','or','on','of','to','for','with','a','an','in','at','by','but','mai','via',
+  'when','whether','does','do','into','amid','amidst','through','that','this',
+  'these','those','be','was','were','are','will','would','could','should','may',
+  'might','did','the','can','is','from','if','as','than','then','vs','versus','--','-'
+]);
+const _SCORECARD_ACRONYMS = new Set([
+  'EPS','NII','TAM','ARR','RPU','MRR','EBITDA','FCF','IPO','CAGR','YOY','QOQ','IB',
+  'GTM','CXM','OEM','ASIC','GPU','CPU','HBM','DRAM','LLM','AWS','GCP','GUI','KPI',
+  'GAAP','ASP','USD','CFO','CEO','COO','CTO','PT','FY2026','FY2027','FY2028','FY26',
+  'FY27','FY28','Q1','Q2','Q3','Q4','H1','H2','2NM','3NM','5NM','7NM','18A'
+]);
+const _SCORECARD_BRAND = {
+  turbotax:'TurboTax', quickbooks:'QuickBooks', mailchimp:'Mailchimp',
+  freestyle:'FreeStyle', rotce:'RoTCE', genai:'GenAI', yoy:'YoY', qoq:'QoQ',
+  ai:'AI', ml:'ML', us:'US', eu:'EU', uk:'UK'
+};
+function _fixTokenCase(word, isFirst) {
+  const m = word.match(/^([^A-Za-z0-9&]*)(.*?)([^A-Za-z0-9&%]*)$/);
+  if (!m || !m[2]) return word;
+  const [, pre, core, post] = m;
+  if (/\d/.test(core) || word.includes('$') || word.includes('%')) return word;
+  const upper = core.toUpperCase(), lower = core.toLowerCase();
+  if (_SCORECARD_ACRONYMS.has(upper)) return pre + upper + post;
+  if (_SCORECARD_BRAND[lower]) return pre + _SCORECARD_BRAND[lower] + post;
+  if (/[A-Z]/.test(core.slice(1))) return word;
+  if (_SCORECARD_STOP.has(lower) && !isFirst) return pre + lower + post;
+  return pre + core[0].toUpperCase() + core.slice(1).toLowerCase() + post;
+}
+function _titleCasePreserve(s) {
+  return s.split(' ').map((t, i) => _fixTokenCase(t, i === 0)).join(' ');
+}
+function _stripStopTail(s) {
+  const words = s.split(' ');
+  while (words.length) {
+    const w = words[words.length - 1].replace(/[^A-Za-z0-9&%$]/g, '').toLowerCase();
+    if (!w || _SCORECARD_STOP.has(w)) { words.pop(); continue; }
+    break;
+  }
+  return words.join(' ');
+}
+function _removeUnbalancedParens(s) {
+  const opens = (s.match(/\(/g) || []).length;
+  const closes = (s.match(/\)/g) || []).length;
+  if (opens > closes) {
+    let depth = 0, lastOpen = -1;
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i];
+      if (c === '(') { depth++; if (depth === 1) lastOpen = i; }
+      else if (c === ')') depth--;
+    }
+    if (depth > 0 && lastOpen >= 0) s = s.slice(0, lastOpen).trimEnd();
+  }
+  if ((s.match(/\)/g) || []).length > (s.match(/\(/g) || []).length) {
+    s = s.replace(/\)+(?=[^(]*$)/, '').trimEnd();
+  }
+  return s;
+}
+function _trimToMax(s, max) {
+  if (s.length <= max) return s;
+  const words = s.split(' ');
+  const out = [];
+  let n = 0;
+  for (const w of words) {
+    if (n + w.length + (out.length ? 1 : 0) > max) break;
+    out.push(w);
+    n += w.length + (out.length > 1 ? 1 : 0);
+  }
+  return _stripStopTail(out.join(' '));
+}
+function _isCleanLabel(label) {
+  if (!label || label.length < 3 || label.length > 40) return false;
+  if ((label.match(/\(/g) || []).length !== (label.match(/\)/g) || []).length) return false;
+  const words = label.split(' ');
+  if (!words.length) return false;
+  const last = words[words.length - 1].replace(/[^A-Za-z0-9&%$]/g, '').toLowerCase();
+  if (!last || _SCORECARD_STOP.has(last)) return false;
+  return true;
+}
+function _normalizeLabel(label) {
+  if (!label) return null;
+  let s = label.trim();
+  if (s.includes(':')) {
+    const head = s.split(':', 1)[0].trim();
+    if (head.length > 3 && head.length <= 50) s = head;
+  }
+  if (s.includes(';')) {
+    const head = s.split(';', 1)[0].trim();
+    if (head.length > 3 && head.length <= 50 && _isCleanLabel(head)) s = head;
+  }
+  s = _removeUnbalancedParens(s);
+  s = _stripStopTail(s);
+  if (s.length > 38) s = _trimToMax(s, 38);
+  s = s ? _titleCasePreserve(s) : s;
+  if (s && s[0] === s[0].toLowerCase()) s = s[0].toUpperCase() + s.slice(1);
+  return _isCleanLabel(s) ? s : null;
+}
+function _fromSignalId(sid) {
+  if (!sid) return null;
+  const peerMatch = sid.match(/^peer_read_([a-z.\-]+)_([a-z.\-]+)_(\d{8})$/i);
+  if (peerMatch) return `Peer Read: ${peerMatch[2].toUpperCase()}`;
+  let s = sid.replace(/^watch_(watch_)?/, '').replace(/_/g, ' ');
+  s = _stripStopTail(s);
+  s = _trimToMax(s, 38);
+  return s ? _titleCasePreserve(s) : null;
+}
+function cleanScorecardLabel(item) {
+  const label = (item && item.label || '').trim();
+  if (_isCleanLabel(label)) return label;
+  const salvaged = _normalizeLabel(label);
+  if (salvaged && _isCleanLabel(salvaged)) return salvaged;
+  const sid = _fromSignalId(item && item.signal_id || '');
+  if (sid && _isCleanLabel(sid)) return sid;
+  return salvaged || sid || (label.slice(0, 38) || (item && item.signal_id || '').slice(0, 38));
+}
+
+/**
  * `next_earnings_date` is set when a note is generated and never invalidated
  * after the date passes. Treat any past date as stale so the header doesn't
  * keep showing "Next earnings: 2026-04-29" three weeks later.
@@ -539,7 +666,7 @@ function renderEarningsIntelHtml(ticker, intel) {
       html += `
         <div class="ei-signal ei-signal-${status}">
           <div class="ei-signal-head">
-            <span class="ei-signal-label">${s.label || s.signal_id || ''}</span>
+            <span class="ei-signal-label">${cleanScorecardLabel(s)}</span>
             <span class="ei-status ei-status-${status}">${statusLabel}</span>
           </div>
           ${s.note ? `<div class="ei-signal-note">${s.note}</div>` : ''}
