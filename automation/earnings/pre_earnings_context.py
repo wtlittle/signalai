@@ -249,6 +249,27 @@ def _save_to_supabase(context: dict, earnings_date: str) -> None:
     ticker = context.get("ticker", "")
     note_type = context.get("snapshot_type", "pre")
     tier = context.get("_tier", "T2")
+
+    # Detect data provenance from cache _source fields.
+    # If any cache entry was served by factset_mcp, flag it.
+    # If yfinance was the sole source, flag yfinance_fallback.
+    sources_used = set()
+    try:
+        from automation.shared.cache import load_research_cache
+        from automation.jobs.execute_queue import PRE_EARNINGS_TASKS, POST_EARNINGS_TASKS
+        all_tasks = PRE_EARNINGS_TASKS + POST_EARNINGS_TASKS
+        for task in all_tasks:
+            cached = load_research_cache(ticker, task)
+            if cached and isinstance(cached, dict):
+                src = cached.get("_source")
+                if src:
+                    sources_used.add(src)
+    except Exception:
+        pass
+
+    factset_used = "factset_mcp" in sources_used
+    yfinance_only = sources_used == {"yfinance"} or not sources_used
+
     row = {
         "ticker": ticker,
         "earnings_date": earnings_date,
@@ -256,8 +277,8 @@ def _save_to_supabase(context: dict, earnings_date: str) -> None:
         "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
         "context": json.loads(json.dumps(context, default=str)),
         "ticker_tier": tier,
-        "yfinance_fallback": False,
-        "factset_used": False,
+        "yfinance_fallback": yfinance_only,
+        "factset_used": factset_used,
     }
     ok = _sb.upsert_row(
         _SNAPSHOT_TABLE,

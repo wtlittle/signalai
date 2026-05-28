@@ -1,11 +1,17 @@
 """
 Queue executor: populates research cache for finance/earnings tasks using
-yfinance + Finnhub, then rebuilds deterministic contexts and upserts to
-Supabase.
+a tiered provider chain: FactSet MCP > Finnhub > Perplexity > yfinance.
 
-Data source preference: Finnhub > yfinance (FactSet MCP not available in
-this runtime). Each fetcher writes to data/cache/{TICKER}_{DATE}_{TASK}.json
-so the context builders pick it up on their next call.
+Each fetcher tries providers in priority order and falls back automatically.
+The provider that served the data is recorded in the cache file via a
+``_source`` field so downstream consumers and cost-tracking can distinguish
+data provenance.
+
+Data source preference (user-stated):
+    1. FactSet MCP  -- highest fidelity, but requires Computer Agent runtime
+    2. Finnhub      -- free-tier REST, good for recommendations + insider tx
+    3. Perplexity   -- LLM-powered web search, good for transcripts + segments
+    4. yfinance     -- always-available fallback
 
 Usage:
     python -m automation.jobs.execute_queue
@@ -54,7 +60,252 @@ PEER_TASK = "finance_peer_snapshot"
 
 
 # ---------------------------------------------------------------------------
-# yfinance fetchers
+# Provider failure logging (structured, never blocks)
+# ---------------------------------------------------------------------------
+def _log_provider_failure(ticker: str, task: str, source: str, exc: Exception) -> None:
+    """Emit a structured log line for a provider failure. Never raises."""
+    try:
+        print(
+            f"  [PROVIDER FAIL] {ticker}/{task} source={source} "
+            f"error={str(exc)[:120]}"
+        )
+    except Exception:
+        pass
+
+
+# ---------------------------------------------------------------------------
+# FactSet MCP stubs
+#
+# FactSet MCP requires the Anthropic Computer Agent runtime to invoke tools.
+# In a cron/CLI context these stubs always return None, letting the chain
+# fall through to Finnhub or yfinance. When FactSet MCP becomes callable
+# from batch scripts (e.g. via an HTTP shim or subagent handoff), replace
+# the stub bodies with real MCP tool calls.
+# ---------------------------------------------------------------------------
+_FACTSET_AVAILABLE = False  # flip when MCP shim is wired up
+
+
+def _factset_stub(ticker: str, task: str) -> dict | None:
+    """Placeholder for all FactSet MCP calls. Always returns None."""
+    if not _FACTSET_AVAILABLE:
+        return None
+    # Future: call FactSet MCP tool via HTTP shim here
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Finnhub fetchers (free-tier endpoints)
+# ---------------------------------------------------------------------------
+def _finnhub_earnings_history(ticker: str) -> dict | None:
+    """Finnhub /stock/earnings -- basic EPS history."""
+    from automation.shared import finnhub as _fh
+    if not _fh._has_credential():
+        return None
+    import requests
+    try:
+        resp = requests.get(
+            f"{_fh.BASE_URL}/stock/earnings",
+            params=_fh._params_with_token({"symbol": ticker, "limit": 8}),
+            timeout=_fh._TIMEOUT,
+            verify=_fh._verify_setting(),
+        )
+        if resp.status_code != 200:
+            return None
+        data = resp.json()
+        if not isinstance(data, list) or not data:
+            return None
+        quarters = []
+        for item in data[:8]:
+            period_str = f"Q{item.get('quarter', '?')} {item.get('year', '?')}"
+            actual_eps = _safe_float(item.get("actual"))
+            est_eps = _safe_float(item.get("estimate"))
+            surprise = _safe_float(item.get("surprisePercent"))
+            quarters.append({
+                "period": period_str,
+                "date": item.get("period", ""),
+                "actual_revenue": None,
+                "estimated_revenue": None,
+                "revenue_surprise_pct": None,
+                "actual_eps": actual_eps,
+                "estimated_eps": est_eps,
+                "eps_surprise_pct": surprise,
+                "post_earnings_move_1d_pct": None,
+                "expected_move_pct": None,
+            })
+        if not quarters:
+            return None
+        return {
+            "quarters": quarters,
+            "average_post_earnings_move_1d_pct": None,
+            "expected_move_pct": None,
+        }
+    except Exception:
+        return None
+
+
+def _finnhub_basic_financials(ticker: str) -> dict | None:
+    """Finnhub /stock/metric -- basic financial metrics (free tier)."""
+    from automation.shared import finnhub as _fh
+    if not _fh._has_credential():
+        return None
+    import requests
+    try:
+        resp = requests.get(
+            f"{_fh.BASE_URL}/stock/metric",
+            params=_fh._params_with_token({"symbol": ticker, "metric": "all"}),
+            timeout=_fh._TIMEOUT,
+            verify=_fh._verify_setting(),
+        )
+        if resp.status_code != 200:
+            return None
+        data = resp.json()
+        metric = data.get("metric", {})
+        if not metric:
+            return None
+        return metric
+    except Exception:
+        return None
+
+
+# ---------------------------------------------------------------------------
+# Perplexity-powered fetchers (web search via LLM)
+# ---------------------------------------------------------------------------
+def _perplexity_available() -> bool:
+    """True if Perplexity API can be used for direct calls."""
+    from automation.perplexity.client import _use_api_fallback, PERPLEXITY_API_KEY
+    return _use_api_fallback() and bool(PERPLEXITY_API_KEY)
+
+
+def _pplx_call(ticker: str, task: str, prompt: str, max_tokens: int = 2000) -> dict | None:
+    """Call Perplexity API and return parsed result, or None on failure."""
+    if not _perplexity_available():
+        return None
+    try:
+        from automation.perplexity.client import call_perplexity
+        result = call_perplexity(
+            ticker=ticker,
+            task=task,
+            prompt=prompt,
+            max_tokens=max_tokens,
+        )
+        if not result:
+            return None
+        if result.get("queued") or result.get("skipped") or result.get("dry_run"):
+            return None
+        # Reject raw/unparsed responses
+        if isinstance(result, dict) and "raw" in result and len(result) == 1:
+            return None
+        return result
+    except Exception:
+        return None
+
+
+def _pplx_earnings_transcript(ticker: str) -> dict | None:
+    """Fetch earnings transcript via Perplexity web search."""
+    prompt = (
+        f"Retrieve the full text of the most recent earnings call transcript "
+        f"for {ticker}. Include both prepared remarks and Q&A. "
+        f"Return ONLY this JSON.\n\n"
+        f'{{"transcript": "<full transcript text>", '
+        f'"earnings_date": "YYYY-MM-DD", "quarter": "..."}}'
+    )
+    return _pplx_call(ticker, "finance_earnings_transcript", prompt, max_tokens=8000)
+
+
+def _pplx_segments(ticker: str) -> list | None:
+    """Fetch segment breakdowns via Perplexity web search."""
+    prompt = (
+        f"Look up the last 4 quarters of business segment revenue breakdowns "
+        f"for {ticker}. List each reporting segment with its revenue.\n\n"
+        f"Return ONLY a JSON array of quarterly objects.\n\n"
+        f'[{{"period": "Q1 2027", "segments": [{{"name": "...", '
+        f'"revenue": <float>}}, ...]}}, ...]'
+    )
+    result = _pplx_call(ticker, "finance_segments", prompt, max_tokens=2000)
+    if isinstance(result, list):
+        return result
+    return None
+
+
+def _pplx_segments_latest(ticker: str) -> dict | None:
+    """Fetch latest segment breakdown via Perplexity web search."""
+    prompt = (
+        f"Look up the most recently reported quarterly business segment "
+        f"revenue breakdown for {ticker}. List each reporting segment with "
+        f"its revenue, YoY growth, and % of total revenue.\n\n"
+        f"Return ONLY this JSON. No prose, no markdown.\n\n"
+        f'{{"period": "...", "segments": [{{"name": "...", '
+        f'"revenue": <float>, "yoy_growth_pct": <float>, '
+        f'"pct_of_total": <float>}}, ...]}}'
+    )
+    return _pplx_call(ticker, "finance_segments_latest", prompt, max_tokens=2000)
+
+
+def _pplx_estimates(ticker: str) -> dict | None:
+    """Fetch consensus estimates via Perplexity web search."""
+    prompt = (
+        f"Look up the current Wall Street consensus estimates for {ticker}. "
+        f"Return ONLY this JSON. No prose, no markdown.\n\n"
+        f'{{"fq_revenue": <next fiscal quarter revenue est in USD>, '
+        f'"fq_eps": <next FQ EPS est>, '
+        f'"fy_revenue": <current fiscal year revenue est in USD>, '
+        f'"fy_eps": <current FY EPS est>}}'
+    )
+    return _pplx_call(ticker, "finance_estimates", prompt, max_tokens=1500)
+
+
+def _pplx_earnings_history(ticker: str) -> dict | None:
+    """Fetch earnings history via Perplexity web search."""
+    prompt = (
+        f"Look up the last 8 quarters of earnings history for {ticker}. "
+        f"For each quarter include: period label, earnings date, actual and "
+        f"estimated revenue, revenue surprise %, actual and estimated EPS, "
+        f"EPS surprise %, the 1-day post-earnings stock move %, and the "
+        f"options-implied expected move % before the print.\n\n"
+        f"Return ONLY this JSON. No prose, no markdown.\n\n"
+        f'{{"quarters": [{{"period": "Q1 2027", "date": "2026-05-22", '
+        f'"actual_revenue": <float>, "estimated_revenue": <float>, '
+        f'"revenue_surprise_pct": <float>, "actual_eps": <float>, '
+        f'"estimated_eps": <float>, "eps_surprise_pct": <float>, '
+        f'"post_earnings_move_1d_pct": <float>, '
+        f'"expected_move_pct": <float>}}, ...], '
+        f'"average_post_earnings_move_1d_pct": <float>, '
+        f'"expected_move_pct": <float>}}'
+    )
+    return _pplx_call(ticker, "finance_earnings_history", prompt, max_tokens=3000)
+
+
+def _pplx_this_quarter_actuals(ticker: str) -> dict | None:
+    """Fetch most recent quarter actuals via Perplexity web search."""
+    prompt = (
+        f"Look up the most recently reported quarterly earnings result for "
+        f"{ticker}. Return the actual vs estimated figures.\n\n"
+        f"Return ONLY this JSON. No prose, no markdown.\n\n"
+        f'{{"period": "...", "date": "YYYY-MM-DD", '
+        f'"actual_revenue": <float>, "estimated_revenue": <float>, '
+        f'"revenue_surprise_pct": <float>, '
+        f'"actual_eps": <float>, "estimated_eps": <float>, '
+        f'"eps_surprise_pct": <float>, '
+        f'"post_earnings_move_1d_pct": <float>, '
+        f'"expected_move_pct": <float>}}'
+    )
+    return _pplx_call(ticker, "finance_this_quarter_actuals", prompt, max_tokens=1500)
+
+
+def _pplx_earnings_schedule_last(ticker: str) -> dict | None:
+    """Fetch last earnings date via Perplexity web search."""
+    prompt = (
+        f"Look up the most recently completed earnings report date for "
+        f"{ticker} (the last quarter they reported). "
+        f"Return ONLY this JSON.\n\n"
+        f'{{"last_earnings_date": "YYYY-MM-DD", '
+        f'"fiscal_quarter": <int 1-4>, "fiscal_year": <int>}}'
+    )
+    return _pplx_call(ticker, "earnings_schedule_last", prompt, max_tokens=500)
+
+
+# ---------------------------------------------------------------------------
+# yfinance fetchers (last resort)
 # ---------------------------------------------------------------------------
 def _yf_ticker(symbol: str):
     import yfinance as yf
@@ -70,7 +321,6 @@ def fetch_earnings_schedule(ticker: str) -> dict | None:
         return None
     from datetime import datetime, timezone
     dt_obj = datetime.fromtimestamp(ts, tz=timezone.utc)
-    # Estimate fiscal quarter from month
     month = dt_obj.month
     fq = (month - 1) // 3 + 1
     return {
@@ -127,11 +377,10 @@ def fetch_finance_estimates(ticker: str) -> dict | None:
     fy_eps = _safe_float(info.get("epsForward"))
     fq_rev = _safe_float(info.get("revenueEstimate"))
     fy_rev = _safe_float(info.get("totalRevenue"))
-    # Try analyst estimates
     try:
         est = t.analyst_price_targets
         if est and isinstance(est, dict):
-            pass  # no rev estimates here
+            pass
     except Exception:
         pass
     return {
@@ -232,7 +481,6 @@ def fetch_finance_analyst_research(ticker: str) -> dict | None:
             f"${target_high:.2f}), implying {upside:+.1f}% upside from the current "
             f"${current_price:.2f}."
         )
-    # Try upgrades/downgrades
     try:
         upgrades = t.upgrades_downgrades
         if upgrades is not None and not upgrades.empty:
@@ -279,7 +527,6 @@ def fetch_finance_adjusted_metrics(ticker: str) -> list | None:
         gross_margin = round(gross / rev * 100, 1) if gross and rev else None
         op_margin = round(op_income / rev * 100, 1) if op_income and rev else None
 
-        # FCF from cash flow statement
         fcf = None
         try:
             qcf = t.quarterly_cashflow
@@ -290,7 +537,7 @@ def fetch_finance_adjusted_metrics(ticker: str) -> list | None:
                     ocf = _safe_float(qcf.loc["Operating Cash Flow", col])
                     capex = _safe_float(_get_row(qcf, "Capital Expenditure", col))
                     if ocf is not None and capex is not None:
-                        fcf = ocf + capex  # capex is typically negative
+                        fcf = ocf + capex
         except Exception:
             pass
 
@@ -308,11 +555,8 @@ def fetch_finance_adjusted_metrics(ticker: str) -> list | None:
 
 def fetch_finance_segments(ticker: str) -> list | None:
     """Last 4 quarters of segment breakdowns (limited in yfinance)."""
-    # yfinance does not have segment data; return a best-effort stub
-    # so the context builder has something rather than nothing
     t = _yf_ticker(ticker)
     info = t.info
-    sector = info.get("sector", "Unknown")
     industry = info.get("industry", "Unknown")
 
     try:
@@ -341,7 +585,6 @@ def fetch_finance_peer_snapshot(ticker: str) -> dict | None:
     t = _yf_ticker(ticker)
     info = t.info
 
-    # Last print from earnings_dates
     last_print = None
     try:
         ed = t.earnings_dates
@@ -364,7 +607,6 @@ def fetch_finance_peer_snapshot(ticker: str) -> dict | None:
                     "estimated_revenue": None,
                     "revenue_surprise_pct": None,
                 }
-                # Try to get revenue for this quarter
                 try:
                     qi = t.quarterly_income_stmt
                     if qi is not None and not qi.empty and "Total Revenue" in qi.index:
@@ -425,7 +667,6 @@ def fetch_finance_this_quarter_actuals(ticker: str) -> dict | None:
         "expected_move_pct": None,
     }
 
-    # Get revenue
     try:
         qi = t.quarterly_income_stmt
         if qi is not None and not qi.empty and "Total Revenue" in qi.index:
@@ -443,8 +684,6 @@ def fetch_finance_this_quarter_actuals(ticker: str) -> dict | None:
 
 def fetch_finance_earnings_transcript(ticker: str) -> dict | None:
     """Transcript stub -- yfinance does not provide transcripts."""
-    # yfinance has no transcript API. Return a structured placeholder
-    # that the context builder can handle gracefully.
     t = _yf_ticker(ticker)
     try:
         ed = t.earnings_dates
@@ -482,31 +721,84 @@ def fetch_finance_segments_latest(ticker: str) -> dict | None:
     segments = fetch_finance_segments(ticker)
     if segments and len(segments) > 0:
         latest = segments[0]
-        # Enrich with yoy and pct_of_total
         for seg in latest.get("segments", []):
             seg["yoy_growth_pct"] = None
-            seg["pct_of_total"] = 100.0  # single consolidated segment
+            seg["pct_of_total"] = 100.0
         return latest
     return None
 
 
 # ---------------------------------------------------------------------------
-# Dispatch table
+# Provider chain: maps each task to an ordered list of (source, fetcher)
 # ---------------------------------------------------------------------------
+PROVIDER_CHAINS: dict[str, list[tuple[str, Any]]] = {
+    "earnings_schedule": [
+        ("factset_mcp", lambda t: _factset_stub(t, "earnings_schedule")),
+        ("yfinance", fetch_earnings_schedule),
+    ],
+    "finance_quote": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_quote")),
+        ("yfinance", fetch_finance_quote),
+    ],
+    "finance_estimates": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_estimates")),
+        ("perplexity", _pplx_estimates),
+        ("yfinance", fetch_finance_estimates),
+    ],
+    "finance_earnings_history": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_earnings_history")),
+        ("finnhub", _finnhub_earnings_history),
+        ("perplexity", _pplx_earnings_history),
+        ("yfinance", fetch_finance_earnings_history),
+    ],
+    "finance_analyst_research": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_analyst_research")),
+        ("yfinance", fetch_finance_analyst_research),
+    ],
+    "finance_adjusted_metrics": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_adjusted_metrics")),
+        ("yfinance", fetch_finance_adjusted_metrics),
+    ],
+    "finance_segments": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_segments")),
+        ("perplexity", _pplx_segments),
+        ("yfinance", fetch_finance_segments),
+    ],
+    "finance_peer_snapshot": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_peer_snapshot")),
+        ("yfinance", fetch_finance_peer_snapshot),
+    ],
+    "earnings_schedule_last": [
+        ("factset_mcp", lambda t: _factset_stub(t, "earnings_schedule_last")),
+        ("perplexity", _pplx_earnings_schedule_last),
+        ("yfinance", fetch_earnings_schedule_last),
+    ],
+    "finance_this_quarter_actuals": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_this_quarter_actuals")),
+        ("perplexity", _pplx_this_quarter_actuals),
+        ("yfinance", fetch_finance_this_quarter_actuals),
+    ],
+    "finance_earnings_transcript": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_earnings_transcript")),
+        ("perplexity", _pplx_earnings_transcript),
+        ("yfinance", fetch_finance_earnings_transcript),
+    ],
+    "finance_estimates_post_print": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_estimates_post_print")),
+        ("perplexity", _pplx_estimates),
+        ("yfinance", fetch_finance_estimates_post_print),
+    ],
+    "finance_segments_latest": [
+        ("factset_mcp", lambda t: _factset_stub(t, "finance_segments_latest")),
+        ("perplexity", _pplx_segments_latest),
+        ("yfinance", fetch_finance_segments_latest),
+    ],
+}
+
+# Legacy flat dispatch table (used by tests and backward compat)
 TASK_FETCHERS: dict[str, Any] = {
-    "earnings_schedule": fetch_earnings_schedule,
-    "finance_quote": fetch_finance_quote,
-    "finance_estimates": fetch_finance_estimates,
-    "finance_earnings_history": fetch_finance_earnings_history,
-    "finance_analyst_research": fetch_finance_analyst_research,
-    "finance_adjusted_metrics": fetch_finance_adjusted_metrics,
-    "finance_segments": fetch_finance_segments,
-    "finance_peer_snapshot": fetch_finance_peer_snapshot,
-    "earnings_schedule_last": fetch_earnings_schedule_last,
-    "finance_this_quarter_actuals": fetch_finance_this_quarter_actuals,
-    "finance_earnings_transcript": fetch_finance_earnings_transcript,
-    "finance_estimates_post_print": fetch_finance_estimates_post_print,
-    "finance_segments_latest": fetch_finance_segments_latest,
+    task: chain[-1][1]  # last provider in each chain (yfinance)
+    for task, chain in PROVIDER_CHAINS.items()
 }
 
 
@@ -535,6 +827,36 @@ def _get_row(df, label: str, col):
     return None
 
 
+def _run_provider_chain(ticker: str, task: str) -> tuple[Any, str]:
+    """Try each provider in the chain for a task.
+
+    Returns (data, source_name). If all providers fail, returns (None, "all_failed").
+    """
+    chain = PROVIDER_CHAINS.get(task)
+    if not chain:
+        return None, "no_chain"
+
+    for source, fn in chain:
+        try:
+            result = fn(ticker)
+            if result is not None:
+                return result, source
+        except Exception as exc:
+            _log_provider_failure(ticker, task, source, exc)
+
+    return None, "all_failed"
+
+
+def _add_source_field(data: Any, source: str) -> Any:
+    """Inject _source into the result for provenance tracking."""
+    if isinstance(data, dict):
+        data["_source"] = source
+    elif isinstance(data, list):
+        # Wrap list results in a dict with source metadata
+        return {"data": data, "_source": source}
+    return data
+
+
 # ---------------------------------------------------------------------------
 # Core executor
 # ---------------------------------------------------------------------------
@@ -547,14 +869,20 @@ def execute_tasks_for_ticker(
 ) -> dict:
     """Execute a set of tasks for a single ticker, populating the cache.
 
-    Returns a summary dict with counts of success/failure/skipped.
+    Returns a summary dict with counts of success/failure/skipped and
+    per-task source attribution.
     """
-    results = {"success": 0, "failed": 0, "skipped": 0, "errors": []}
+    results = {
+        "success": 0,
+        "failed": 0,
+        "skipped": 0,
+        "errors": [],
+        "sources": {},  # task -> source that served the data
+    }
 
     for task in task_list:
-        fetcher = TASK_FETCHERS.get(task)
-        if not fetcher:
-            print(f"  [SKIP] {ticker}/{task} -- no fetcher registered")
+        if task not in PROVIDER_CHAINS:
+            print(f"  [SKIP] {ticker}/{task} -- no provider chain registered")
             results["skipped"] += 1
             continue
 
@@ -570,28 +898,31 @@ def execute_tasks_for_ticker(
 
         try:
             print(f"  [FETCH] {ticker}/{task} ...")
-            data = fetcher(ticker)
+            data, source = _run_provider_chain(ticker, task)
+
             if data is None:
-                print(f"  [WARN] {ticker}/{task} -- fetcher returned None")
+                print(f"  [WARN] {ticker}/{task} -- all providers returned None")
                 results["errors"].append({
                     "ticker": ticker, "task": task,
-                    "error": "fetcher returned None",
+                    "error": "all providers returned None",
                 })
                 results["failed"] += 1
                 continue
 
+            # Stamp provenance and save
+            data = _add_source_field(data, source)
             save_research_cache(ticker, task, data)
-            print(f"  [OK] {ticker}/{task} -- cached")
+            print(f"  [OK] {ticker}/{task} -- cached (source={source})")
             results["success"] += 1
+            results["sources"][task] = source
         except Exception as exc:
-            tb = traceback.format_exc()
             print(f"  [ERROR] {ticker}/{task} -- {exc}")
             results["errors"].append({
                 "ticker": ticker, "task": task,
                 "error": str(exc)[:200],
             })
             results["failed"] += 1
-        # Rate limit: brief pause between yfinance calls
+        # Rate limit: brief pause between calls
         time.sleep(0.3)
 
     return results
@@ -605,7 +936,7 @@ def execute_peer_tasks(
     dry_run: bool = False,
 ) -> dict:
     """Execute finance_peer_snapshot for all peers of a T1 ticker."""
-    results = {"success": 0, "failed": 0, "skipped": 0, "errors": []}
+    results = {"success": 0, "failed": 0, "skipped": 0, "errors": [], "sources": {}}
     all_peers: list[str] = []
     seen = set()
     for key in ("core_peers", "competitive_overlap", "read_through"):
@@ -622,6 +953,7 @@ def execute_peer_tasks(
         results["failed"] += r["failed"]
         results["skipped"] += r["skipped"]
         results["errors"].extend(r["errors"])
+        results["sources"].update(r.get("sources", {}))
 
     return results
 
@@ -632,11 +964,7 @@ def rebuild_context(
     *,
     dry_run: bool = False,
 ) -> bool:
-    """Call the appropriate context builder with force=True.
-
-    The builder reads from cache (which we just populated) and upserts
-    to Supabase automatically.
-    """
+    """Call the appropriate context builder with force=True."""
     if dry_run:
         print(f"  [DRY RUN] Would rebuild {ticker}/{note_type} context")
         return True
@@ -671,15 +999,7 @@ def run(
     force: bool = False,
     dry_run: bool = False,
 ) -> dict:
-    """Execute all finance/earnings tasks for the given tickers.
-
-    Args:
-        pre_tickers: tickers that need pre-earnings contexts
-        post_tickers: tickers that need post-earnings contexts
-        force: bypass cache
-        dry_run: log but don't fetch or save
-    """
-    # Load tier and peer data for T1 peer resolution
+    """Execute all finance/earnings tasks for the given tickers."""
     tiers_path = Path(__file__).resolve().parents[2] / "data" / "ticker_tiers.json"
     peers_path = Path(__file__).resolve().parents[2] / "data" / "peer_overrides.json"
 
@@ -708,7 +1028,12 @@ def run(
         "contexts_built": 0,
         "contexts_failed": 0,
         "errors": [],
+        "source_counts": {},  # source_name -> count
     }
+
+    def _tally_sources(sources: dict) -> None:
+        for _task, src in sources.items():
+            summary["source_counts"][src] = summary["source_counts"].get(src, 0) + 1
 
     # -- Pre-earnings tickers
     for ticker in (pre_tickers or []):
@@ -724,6 +1049,7 @@ def run(
         summary["total_failed"] += r["failed"]
         summary["total_skipped"] += r["skipped"]
         summary["errors"].extend(r["errors"])
+        _tally_sources(r.get("sources", {}))
 
         # Peer snapshots for T1
         if tier == "T1" and ticker in peers_map:
@@ -735,6 +1061,7 @@ def run(
             summary["total_failed"] += pr["failed"]
             summary["total_skipped"] += pr["skipped"]
             summary["errors"].extend(pr["errors"])
+            _tally_sources(pr.get("sources", {}))
 
         # Rebuild context
         ok = rebuild_context(ticker, "pre", dry_run=dry_run)
@@ -750,7 +1077,6 @@ def run(
         print(f"[POST-EARNINGS] {ticker} (tier={tier})")
         print(f"{'='*60}")
 
-        # Post-earnings needs both pre + post tasks
         all_tasks = PRE_EARNINGS_TASKS + POST_EARNINGS_TASKS
         r = execute_tasks_for_ticker(
             ticker, all_tasks, force=force, dry_run=dry_run,
@@ -759,6 +1085,7 @@ def run(
         summary["total_failed"] += r["failed"]
         summary["total_skipped"] += r["skipped"]
         summary["errors"].extend(r["errors"])
+        _tally_sources(r.get("sources", {}))
 
         # Peer snapshots for T1
         if tier == "T1" and ticker in peers_map:
@@ -770,6 +1097,7 @@ def run(
             summary["total_failed"] += pr["failed"]
             summary["total_skipped"] += pr["skipped"]
             summary["errors"].extend(pr["errors"])
+            _tally_sources(pr.get("sources", {}))
 
         # Rebuild context
         ok = rebuild_context(ticker, "post", dry_run=dry_run)
@@ -787,6 +1115,10 @@ def run(
     print(f"  Tasks skipped:    {summary['total_skipped']}")
     print(f"  Contexts built:   {summary['contexts_built']}")
     print(f"  Contexts failed:  {summary['contexts_failed']}")
+    if summary["source_counts"]:
+        print(f"\n  Source attribution:")
+        for src, cnt in sorted(summary["source_counts"].items()):
+            print(f"    {src}: {cnt} tasks")
     if summary["errors"]:
         print(f"\n  Errors ({len(summary['errors'])}):")
         for err in summary["errors"][:20]:
