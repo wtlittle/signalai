@@ -16,6 +16,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from automation.jobs.execute_queue import (
     TASK_FETCHERS,
+    PROVIDER_CHAINS,
     PRE_EARNINGS_TASKS,
     POST_EARNINGS_TASKS,
     PEER_TASK,
@@ -33,6 +34,16 @@ def test_dispatch_table_completeness():
     for task in all_tasks:
         assert task in TASK_FETCHERS, f"Missing fetcher for task: {task}"
         assert callable(TASK_FETCHERS[task]), f"Fetcher for {task} is not callable"
+
+
+# -------------------------------------------------------------------
+# 1b. Provider chains cover all tasks
+# -------------------------------------------------------------------
+def test_provider_chains_completeness():
+    """Every task has a provider chain registered."""
+    all_tasks = PRE_EARNINGS_TASKS + POST_EARNINGS_TASKS + [PEER_TASK]
+    for task in all_tasks:
+        assert task in PROVIDER_CHAINS, f"Missing chain for: {task}"
 
 
 # -------------------------------------------------------------------
@@ -68,37 +79,37 @@ def test_execute_tasks_skips_cached():
 
 
 # -------------------------------------------------------------------
-# 4. execute_tasks_for_ticker handles None from fetcher
+# 4. execute_tasks_for_ticker handles None from all providers
 # -------------------------------------------------------------------
 def test_execute_tasks_records_none_as_failure():
-    """A fetcher returning None should be recorded as a failure."""
-    def _null_fetcher(ticker):
-        return None
-
+    """When all providers return None, task should be recorded as failure."""
     with patch(
         "automation.jobs.execute_queue.research_cache_exists",
         return_value=False,
-    ), patch.dict(TASK_FETCHERS, {"finance_quote": _null_fetcher}):
+    ), patch(
+        "automation.jobs.execute_queue._run_provider_chain",
+        return_value=(None, "all_failed"),
+    ):
         result = execute_tasks_for_ticker("TEST", ["finance_quote"])
 
     assert result["failed"] == 1
     assert result["success"] == 0
     assert len(result["errors"]) == 1
-    assert result["errors"][0]["error"] == "fetcher returned None"
+    assert "all providers" in result["errors"][0]["error"]
 
 
 # -------------------------------------------------------------------
 # 5. execute_tasks_for_ticker handles fetcher exceptions
 # -------------------------------------------------------------------
 def test_execute_tasks_records_exception_as_failure():
-    """A fetcher that raises should be caught and recorded."""
-    def _bad_fetcher(ticker):
-        raise ValueError("test error")
-
+    """An exception in the provider chain should be caught and recorded."""
     with patch(
         "automation.jobs.execute_queue.research_cache_exists",
         return_value=False,
-    ), patch.dict(TASK_FETCHERS, {"finance_quote": _bad_fetcher}):
+    ), patch(
+        "automation.jobs.execute_queue._run_provider_chain",
+        side_effect=ValueError("test error"),
+    ):
         result = execute_tasks_for_ticker("TEST", ["finance_quote"])
 
     assert result["failed"] == 1
@@ -122,6 +133,6 @@ def test_execute_tasks_dry_run():
 # 7. Unknown task type is skipped
 # -------------------------------------------------------------------
 def test_execute_tasks_unknown_task_skipped():
-    """A task type not in TASK_FETCHERS should be skipped."""
+    """A task type not in PROVIDER_CHAINS should be skipped."""
     result = execute_tasks_for_ticker("TEST", ["nonexistent_task_xyz"])
     assert result["skipped"] == 1
