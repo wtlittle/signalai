@@ -45,6 +45,7 @@ from typing import Iterable
 ROOT = Path(__file__).resolve().parents[1]
 INDEX_PATH = ROOT / "earnings_notes_index.json"
 INTEL_PATH = ROOT / "earnings_intel.json"
+CALENDAR_PATH = ROOT / "earnings_calendar.json"
 PRE_DIR = ROOT / "notes" / "pre_earnings"
 POST_DIR = ROOT / "notes" / "post_earnings"
 
@@ -192,6 +193,35 @@ def _detect_stock_reaction_pct(md: str) -> float | None:
     return None
 
 
+def _extract_json_envelope(md: str, label: str) -> dict | None:
+    """Extract a fenced JSON block labeled ```json <label> from the note.
+
+    Returns the parsed dict, or None if the block is missing or malformed.
+    """
+    pattern = rf"```json\s+{re.escape(label)}\s*\n(.*?)```"
+    m = re.search(pattern, md, flags=re.DOTALL)
+    if not m:
+        return None
+    try:
+        return json.loads(m.group(1))
+    except (json.JSONDecodeError, ValueError):
+        return None
+
+
+def _beat_miss_label(surprise_pct: float | None, threshold: float = 1.0) -> str:
+    """Derive 'beat (X%)' / 'miss (X%)' / 'in-line' from surprise percentage.
+
+    Threshold: >+1% = beat, < -1% = miss, else in-line.
+    """
+    if surprise_pct is None:
+        return ""
+    if surprise_pct > threshold:
+        return f"beat ({surprise_pct:+.1f}%)"
+    if surprise_pct < -threshold:
+        return f"miss ({surprise_pct:+.1f}%)"
+    return "in-line"
+
+
 def _split_sentences(text: str, max_items: int = 4) -> list[str]:
     """Split a paragraph into sentence-like chunks on `; ` or `. ` boundaries."""
     if not text:
@@ -322,7 +352,10 @@ def build_pre_intel(ticker: str, entry: dict, note_path: Path) -> dict:
 
     sources = _extract_urls(md, max_urls=6)
 
-    return {
+    # V2 envelope: setup_vs_consensus
+    setup_envelope = _extract_json_envelope(md, "setup_vs_consensus")
+
+    rec = {
         "ticker": ticker,
         "company_name": company,
         "state": state,
@@ -347,6 +380,9 @@ def build_pre_intel(ticker: str, entry: dict, note_path: Path) -> dict:
         "previous_bottom_line": None,
         "signal_changes": [],
     }
+    if setup_envelope:
+        rec["setup_vs_consensus"] = setup_envelope
+    return rec
 
 
 def build_post_intel(ticker: str, entry: dict, note_path: Path) -> dict:
@@ -470,6 +506,10 @@ def build_post_intel(ticker: str, entry: dict, note_path: Path) -> dict:
     stock_pct = _detect_stock_reaction_pct(outlook_body or md or "")
     sources = _extract_urls(md, max_urls=6)
 
+    # V2 envelopes: results_vs_consensus, guide_vs_consensus
+    results_envelope = _extract_json_envelope(md, "results_vs_consensus")
+    guide_envelope = _extract_json_envelope(md, "guide_vs_consensus")
+
     # Next earnings \u2014 approximate +90d unless we already know it.
     try:
         ed = datetime.strptime(earnings_date, "%Y-%m-%d").date()
@@ -479,7 +519,7 @@ def build_post_intel(ticker: str, entry: dict, note_path: Path) -> dict:
         next_ed = None
         visible_until = None
 
-    return {
+    rec = {
         "ticker": ticker,
         "company_name": company,
         "state": state,
@@ -530,6 +570,11 @@ def build_post_intel(ticker: str, entry: dict, note_path: Path) -> dict:
         "previous_bottom_line": None,
         "signal_changes": [],
     }
+    if results_envelope:
+        rec["results_vs_consensus"] = results_envelope
+    if guide_envelope:
+        rec["guide_vs_consensus"] = guide_envelope
+    return rec
 
 
 def _extract_company(md: str, fallback: str) -> str:
@@ -568,6 +613,9 @@ RICH_FIELDS = {
     "surprises",
     "analyst_reactions",
     "guidance_text",
+    "setup_vs_consensus",
+    "results_vs_consensus",
+    "guide_vs_consensus",
 }
 
 
@@ -663,6 +711,81 @@ def iter_note_entries(index: dict, only_ticker: str | None) -> Iterable[tuple[st
             yield kind, entry, note_path
 
 
+def _safe_float(val) -> float | None:
+    """Coerce a value to float, returning None on failure."""
+    if val is None:
+        return None
+    try:
+        return float(val)
+    except (TypeError, ValueError):
+        return None
+
+
+def sync_calendar_from_intel(tickers: dict, dry_run: bool = False) -> int:
+    """Push results/guide envelope fields onto earnings_calendar.json post_earnings[].
+
+    Returns the number of calendar entries updated.
+    """
+    if not CALENDAR_PATH.exists():
+        return 0
+    cal = json.loads(CALENDAR_PATH.read_text())
+    updated = 0
+
+    for entry in cal.get("post_earnings", []):
+        tk = entry.get("ticker")
+        if not tk or tk not in tickers:
+            continue
+        intel = tickers[tk]
+        rvc = intel.get("results_vs_consensus")
+        gvc = intel.get("guide_vs_consensus")
+        if not rvc and not gvc:
+            continue
+
+        changed = False
+
+        # Populate from results_vs_consensus
+        if rvc:
+            if rvc.get("in_quarter_rev_actual") and not entry.get("revenue_actual"):
+                entry["revenue_actual"] = rvc["in_quarter_rev_actual"]
+                changed = True
+            if rvc.get("in_quarter_eps_actual") and not entry.get("eps_actual"):
+                entry["eps_actual"] = rvc["in_quarter_eps_actual"]
+                changed = True
+            rev_surp = _safe_float(rvc.get("in_quarter_rev_surprise_pct"))
+            if rev_surp is not None and not entry.get("revenue_beat_miss"):
+                entry["revenue_beat_miss"] = _beat_miss_label(rev_surp)
+                changed = True
+            eps_surp = _safe_float(rvc.get("in_quarter_eps_surprise_pct"))
+            if eps_surp is not None and not entry.get("eps_beat_miss"):
+                entry["eps_beat_miss"] = _beat_miss_label(eps_surp)
+                changed = True
+
+        # Populate guide fields from guide_vs_consensus
+        if gvc:
+            guide_fields = [
+                "fy_rev_guide_change_vs_consensus_pct",
+                "fy_rev_guide_change_vs_prior_pct",
+                "fy_eps_guide_change_vs_consensus_pct",
+                "fy_eps_guide_change_vs_prior_pct",
+                "next_q_rev_guide_vs_consensus_pct",
+                "next_q_eps_guide_vs_consensus_pct",
+            ]
+            for field in guide_fields:
+                val = _safe_float(gvc.get(field))
+                if val is not None and field not in entry:
+                    entry[field] = val
+                    changed = True
+
+        if changed:
+            updated += 1
+
+    if updated > 0 and not dry_run:
+        cal["updated"] = NOW_ISO
+        CALENDAR_PATH.write_text(json.dumps(cal, indent=2))
+
+    return updated
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true",
@@ -728,7 +851,14 @@ def main():
         print(f"[DRY RUN] {msg}")
     else:
         INTEL_PATH.write_text(json.dumps(intel, indent=2))
-        print(f"[OK] earnings_intel.json synced \u2014 {msg}")
+        print(f"[OK] earnings_intel.json synced -- {msg}")
+
+    # Sync derived fields to earnings_calendar.json
+    cal_updated = sync_calendar_from_intel(tickers, dry_run=args.dry_run)
+    if cal_updated:
+        label = "[DRY RUN] " if args.dry_run else "[OK] "
+        print(f"{label}earnings_calendar.json -- {cal_updated} post_earnings entries updated")
+
     if seeded_t:
         print(f"  seeded:    {', '.join(sorted(seeded_t))}")
     if upgraded_t:
