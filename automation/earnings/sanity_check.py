@@ -68,6 +68,49 @@ _FIELD_MAP = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Lightweight sanity gate for the wiring layer (Phase 3).
+# ---------------------------------------------------------------------------
+
+# Fields that MUST be present (non-None) for a note to be useful.
+_REQUIRED_PRE = ("quote", "consensus_forward", "history_8q")
+_REQUIRED_POST = ("quote", "consensus_forward", "history_8q", "this_quarter_actuals")
+
+# If the errors list is this long, we have too many data gaps to write a note.
+_MAX_ACCEPTABLE_ERRORS = 4
+
+
+def sanity_check(context: dict) -> tuple[bool, list[str]]:
+    """Validate a Stage 1 context dict has enough data for a useful note.
+
+    Returns (ok, issues) where ok=True means the context is good enough to
+    send to the LLM, and issues is a list of human-readable problem strings.
+    """
+    issues: list[str] = []
+
+    if not context:
+        return False, ["context is empty or None"]
+
+    snapshot_type = context.get("snapshot_type", "pre")
+    required = _REQUIRED_POST if snapshot_type == "post" else _REQUIRED_PRE
+
+    for field in required:
+        val = context.get(field)
+        if val is None:
+            issues.append(f"required field '{field}' is None")
+        elif isinstance(val, (list, dict)) and len(val) == 0:
+            issues.append(f"required field '{field}' is empty")
+
+    errors = context.get("errors") or []
+    if len(errors) > _MAX_ACCEPTABLE_ERRORS:
+        issues.append(
+            f"too many data errors ({len(errors)} > {_MAX_ACCEPTABLE_ERRORS}): "
+            + ", ".join(e.get("field", "?") for e in errors[:6])
+        )
+
+    return (len(issues) == 0), issues
+
+
 def _fetch_latest_snapshot(ticker: str) -> dict | None:
     rows = _sb.fetch_rows(
         _SNAPSHOT_TABLE,
