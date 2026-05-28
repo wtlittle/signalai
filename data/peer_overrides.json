@@ -1,0 +1,216 @@
+{
+  "_meta": {
+    "schema_version": "v1",
+    "generated_at": "2026-05-28",
+    "philosophy": "Three dimensions per ticker. core_peers = where the Street benches it; competitive_overlap = direct product collision (often outside the GICS sub-industry); read_through = upstream/downstream tells. Curated by hand for the top 30 cover names; quarterly Computer wide_research will propose diffs.",
+    "instructions": "Add new tickers by following the three-key pattern. Keep core_peers <=6 (the consensus peer set), competitive_overlap unlimited (catalogue real product fights), read_through <=6 (upstream/downstream signal sources). Don't repeat the ticker itself in any list."
+  },
+
+  "NVDA": {
+    "subsector": "Semiconductors",
+    "core_peers": ["AMD", "AVGO", "INTC", "MRVL", "QCOM", "TXN"],
+    "competitive_overlap": ["AMD", "AVGO", "INTC", "GOOG", "AAPL"],
+    "read_through": ["TSM", "ASML", "MU", "DELL", "SMCI", "ANET"]
+  },
+  "AMD": {
+    "subsector": "Semiconductors",
+    "core_peers": ["NVDA", "INTC", "AVGO", "QCOM", "MRVL"],
+    "competitive_overlap": ["NVDA", "INTC", "AVGO"],
+    "read_through": ["TSM", "MU", "DELL", "SMCI", "ANET", "MSFT"]
+  },
+  "AVGO": {
+    "subsector": "Semiconductors",
+    "core_peers": ["NVDA", "AMD", "MRVL", "QCOM", "TXN"],
+    "competitive_overlap": ["MRVL", "NVDA", "ANET"],
+    "read_through": ["TSM", "GOOG", "META", "MSFT", "AAPL"]
+  },
+  "MRVL": {
+    "subsector": "Semiconductors",
+    "core_peers": ["AVGO", "NVDA", "AMD", "ARM", "QCOM"],
+    "competitive_overlap": ["AVGO", "NVDA", "ARM"],
+    "read_through": ["TSM", "GOOG", "AMZN", "META", "MSFT", "ANET"]
+  },
+  "SNPS": {
+    "subsector": "Semiconductors",
+    "core_peers": ["CDNS", "ANSS"],
+    "competitive_overlap": ["CDNS", "ANSS", "ARM"],
+    "read_through": ["NVDA", "AMD", "AVGO", "INTC", "TSM"]
+  },
+  "ARM": {
+    "subsector": "Semiconductors",
+    "core_peers": ["NVDA", "AVGO", "QCOM", "AMD", "INTC"],
+    "competitive_overlap": ["INTC", "QCOM", "NVDA"],
+    "read_through": ["AAPL", "AMZN", "GOOG", "MSFT", "TSM"]
+  },
+  "TSM": {
+    "subsector": "Semiconductors",
+    "core_peers": ["INTC", "ASML"],
+    "competitive_overlap": ["INTC", "SMCI"],
+    "read_through": ["NVDA", "AMD", "AVGO", "AAPL", "QCOM", "MRVL"]
+  },
+
+  "CRM": {
+    "subsector": "Application Software",
+    "core_peers": ["MSFT", "ORCL", "SAP", "NOW", "HUBS", "WDAY"],
+    "competitive_overlap": ["MSFT", "HUBS", "ORCL", "ZM", "ADBE"],
+    "read_through": ["DDOG", "MDB", "SNOW", "PLTR"]
+  },
+  "NOW": {
+    "subsector": "Application Software",
+    "core_peers": ["CRM", "MSFT", "ORCL", "WDAY", "SAP"],
+    "competitive_overlap": ["CRM", "ORCL", "MSFT"],
+    "read_through": ["DDOG", "PLTR", "PANW", "CRWD"]
+  },
+  "HUBS": {
+    "subsector": "Application Software",
+    "core_peers": ["CRM", "ZI", "BILL", "MNDY", "FROG"],
+    "competitive_overlap": ["CRM", "ZI", "FRSH", "PIPE"],
+    "read_through": ["MSFT", "GOOG", "META"]
+  },
+  "TEAM": {
+    "subsector": "Application Software",
+    "core_peers": ["MNDY", "ASAN", "MSFT", "GTLB"],
+    "competitive_overlap": ["MNDY", "ASAN", "GTLB", "MSFT", "NOW"],
+    "read_through": ["DDOG", "MDB", "ESTC"]
+  },
+  "WDAY": {
+    "subsector": "Application Software",
+    "core_peers": ["CRM", "ORCL", "ADP", "SAP", "PAYC"],
+    "competitive_overlap": ["ADP", "PAYC", "ORCL", "PCTY"],
+    "read_through": ["MSFT", "NOW"]
+  },
+  "MDB": {
+    "subsector": "Data Infrastructure",
+    "core_peers": ["SNOW", "DDOG", "ESTC", "CFLT", "NET"],
+    "competitive_overlap": ["AMZN", "MSFT", "GOOG", "ORCL"],
+    "read_through": ["AMZN", "MSFT", "GOOG"]
+  },
+  "SNOW": {
+    "subsector": "Data Infrastructure",
+    "core_peers": ["MDB", "DDOG", "ESTC", "CFLT", "PLTR"],
+    "competitive_overlap": ["MSFT", "GOOG", "AMZN", "DBRX-PRIVATE", "ORCL", "PLTR"],
+    "read_through": ["MSFT", "GOOG", "AMZN", "NVDA"]
+  },
+  "DDOG": {
+    "subsector": "Observability",
+    "core_peers": ["NET", "ESTC", "MDB", "SNOW", "PANW"],
+    "competitive_overlap": ["NET", "ESTC", "SPLK-MSFT", "NEWR-PRIVATE", "DT"],
+    "read_through": ["MSFT", "AMZN", "GOOG", "NVDA"]
+  },
+  "DT": {
+    "subsector": "Observability",
+    "core_peers": ["DDOG", "ESTC", "NEWR-PRIVATE"],
+    "competitive_overlap": ["DDOG", "ESTC", "SPLK-MSFT"],
+    "read_through": ["MSFT", "AMZN", "GOOG"]
+  },
+  "NET": {
+    "subsector": "Cybersecurity / Edge",
+    "core_peers": ["ZS", "AKAM", "PANW", "FTNT", "DDOG"],
+    "competitive_overlap": ["ZS", "AKAM", "AMZN", "PANW", "FFIV", "FSLY"],
+    "read_through": ["MSFT", "AMZN", "GOOG", "DDOG"]
+  },
+  "ZS": {
+    "subsector": "Cybersecurity",
+    "core_peers": ["NET", "PANW", "CRWD", "S", "CHKP"],
+    "competitive_overlap": ["NET", "PANW", "CRWD", "FTNT", "CHKP"],
+    "read_through": ["MSFT", "GOOG", "OKTA"]
+  },
+  "PANW": {
+    "subsector": "Cybersecurity",
+    "core_peers": ["CRWD", "FTNT", "ZS", "CHKP", "S"],
+    "competitive_overlap": ["CRWD", "FTNT", "ZS", "CHKP", "S", "NET"],
+    "read_through": ["MSFT", "CSCO"]
+  },
+  "CRWD": {
+    "subsector": "Cybersecurity",
+    "core_peers": ["PANW", "S", "ZS", "FTNT", "QLYS", "TENB"],
+    "competitive_overlap": ["MSFT", "PANW", "S", "RPD"],
+    "read_through": ["MSFT", "GOOG"]
+  },
+  "S": {
+    "subsector": "Cybersecurity",
+    "core_peers": ["CRWD", "PANW", "ZS", "TENB", "RPD"],
+    "competitive_overlap": ["CRWD", "MSFT", "PANW"],
+    "read_through": ["MSFT", "GOOG"]
+  },
+  "FTNT": {
+    "subsector": "Cybersecurity",
+    "core_peers": ["PANW", "CHKP", "CRWD", "ZS", "CSCO"],
+    "competitive_overlap": ["PANW", "CHKP", "CSCO", "ZS"],
+    "read_through": ["MSFT", "AKAM"]
+  },
+  "OKTA": {
+    "subsector": "Cybersecurity / Identity",
+    "core_peers": ["CRWD", "MSFT", "CYBR", "SAIL-PRIVATE"],
+    "competitive_overlap": ["MSFT", "PING-PRIVATE"],
+    "read_through": ["MSFT", "GOOG", "AWS"]
+  },
+
+  "PLTR": {
+    "subsector": "AI / Data Platforms",
+    "core_peers": ["SNOW", "MDB", "NOW", "C3.AI"],
+    "competitive_overlap": ["MSFT", "GOOG", "AMZN", "IBM"],
+    "read_through": ["MSFT", "GOOG", "AMZN", "NVDA"]
+  },
+  "GOOG": {
+    "subsector": "Hyperscaler / Megacap",
+    "core_peers": ["MSFT", "META", "AMZN", "AAPL"],
+    "competitive_overlap": ["MSFT", "META", "AMZN", "OPENAI-PRIVATE"],
+    "read_through": ["NVDA", "AVGO", "ARM", "TSM", "MRVL"]
+  },
+  "MSFT": {
+    "subsector": "Hyperscaler / Megacap",
+    "core_peers": ["GOOG", "AMZN", "META", "AAPL", "ORCL"],
+    "competitive_overlap": ["GOOG", "AMZN", "CRM", "ORCL", "NOW", "DDOG", "CRWD"],
+    "read_through": ["NVDA", "AVGO", "ARM", "TSM"]
+  },
+  "META": {
+    "subsector": "Hyperscaler / Megacap",
+    "core_peers": ["GOOG", "SNAP", "PINS", "NFLX", "AMZN"],
+    "competitive_overlap": ["GOOG", "SNAP", "TTD", "AMZN"],
+    "read_through": ["NVDA", "AVGO", "TSM"]
+  },
+  "AMZN": {
+    "subsector": "Hyperscaler / Megacap",
+    "core_peers": ["MSFT", "GOOG", "WMT", "SHOP", "AAPL"],
+    "competitive_overlap": ["MSFT", "GOOG", "SHOP", "WMT", "TGT"],
+    "read_through": ["NVDA", "AVGO", "ARM", "MRVL", "ANET"]
+  },
+  "AAPL": {
+    "subsector": "Consumer Tech / Megacap",
+    "core_peers": ["MSFT", "GOOG", "META", "AMZN"],
+    "competitive_overlap": ["MSFT", "GOOG", "AMZN", "SAMSUNG-PRIVATE"],
+    "read_through": ["TSM", "AVGO", "ARM", "QCOM"]
+  },
+
+  "INTU": {
+    "subsector": "Application Software / SMB",
+    "core_peers": ["ADP", "PAYC", "PYPL", "BILL", "HUBS"],
+    "competitive_overlap": ["ADP", "BILL", "MSFT"],
+    "read_through": ["MA", "V"]
+  },
+  "ZM": {
+    "subsector": "Application Software / Comms",
+    "core_peers": ["MSFT", "RNG", "TEAM"],
+    "competitive_overlap": ["MSFT", "RNG", "GOOG"],
+    "read_through": ["MSFT", "CSCO"]
+  },
+  "NTNX": {
+    "subsector": "Infrastructure Software",
+    "core_peers": ["VMW-VMW", "DELL", "HPE", "PURE", "PSTG"],
+    "competitive_overlap": ["VMW-VMW", "HPE", "DELL", "MSFT"],
+    "read_through": ["AMZN", "MSFT", "GOOG"]
+  },
+  "PSTG": {
+    "subsector": "Storage / Hardware",
+    "core_peers": ["NTNX", "DELL", "HPE", "WDC", "STX"],
+    "competitive_overlap": ["DELL", "HPE", "NTAP"],
+    "read_through": ["NVDA", "SMCI", "ANET"]
+  },
+  "BRZE": {
+    "subsector": "Application Software / MarTech",
+    "core_peers": ["HUBS", "TWLO", "ZETA", "TTD"],
+    "competitive_overlap": ["HUBS", "TWLO", "ZETA", "ADBE", "CRM"],
+    "read_through": ["META", "GOOG"]
+  }
+}

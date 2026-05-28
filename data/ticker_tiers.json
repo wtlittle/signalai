@@ -1,0 +1,65 @@
+{
+  "_meta": {
+    "schema_version": "v1",
+    "generated_at": "2026-05-28",
+    "philosophy": "Two tiers control reasoning effort and cost. T1 = high-conviction cover names we want institutional-grade notes on (sonar-reasoning-pro at HIGH effort). T2 = the rest of the watchlist (sonar-reasoning-pro at MEDIUM). Any ticker not listed defaults to T2.",
+    "estimated_cost_per_note": {
+      "T1": 0.08,
+      "T2": 0.03
+    }
+  },
+
+  "T1": [
+    "NVDA",
+    "AMD",
+    "AVGO",
+    "MRVL",
+    "SNPS",
+    "ARM",
+    "TSM",
+    "CRM",
+    "SNOW",
+    "MDB",
+    "CRWD",
+    "PANW",
+    "ZS",
+    "NET",
+    "DDOG",
+    "S",
+    "OKTA",
+    "HUBS",
+    "TEAM",
+    "PLTR",
+    "GOOG",
+    "MSFT",
+    "META",
+    "AMZN",
+    "AAPL",
+    "INTU",
+    "WDAY",
+    "NOW",
+    "DT",
+    "FTNT"
+  ],
+
+  "T2_explicit": [
+    "MNDY",
+    "ESTC",
+    "CFLT",
+    "ZM",
+    "NTNX",
+    "PSTG",
+    "BRZE",
+    "QLYS",
+    "TENB",
+    "RPD",
+    "CHKP",
+    "APP",
+    "SHOP",
+    "PINS",
+    "TTD",
+    "NFLX"
+  ],
+
+  "default_tier": "T2"
+}
