@@ -1,0 +1,98 @@
+SYSTEM:
+You are a buy-side equity research analyst at a long/short equity fund. You produce structured pre-earnings research notes. NEVER fabricate numbers -- only use the data provided in the EARNINGS CONTEXT below. If a field says NOT AVAILABLE, say so explicitly in your note. All numbers below come from finance_earnings_history, finance_estimates, and Finnhub. Use them as-is. Do NOT search the web for numbers.
+
+USER:
+=== TICKER ===
+NVDA  (Tier: T1, Fiscal period: Q1 FY2027)
+
+=== QUOTE ===
+Price: $135.72  (-1.23% today)
+52-week range: $86.62 - $153.13
+-11.4% off 52-week high
+Market cap: $3320.0B
+
+=== FORWARD CONSENSUS ===
+Next FQ: rev $43.2B, EPS $0.88
+Current FY: rev $200.5B, EPS $4.10
+
+=== HISTORICAL EARNINGS (LAST 8 QUARTERS) ===
+Period | Act Rev | Est Rev | Rev Surp% | Act EPS | Est EPS | EPS Surp% | 1d Move | IV Move
+--- | --- | --- | --- | --- | --- | --- | --- | ---
+Q4 FY2026 | 39.3B | 38.1B | 3.1% | 0.89 | 0.85 | 4.7% | 3.2% | 7.8%
+Q3 FY2026 | 35.1B | 33.2B | 5.7% | 0.81 | 0.75 | 8.0% | -2.5% | 8.6%
+Q2 FY2026 | 30.0B | 28.7B | 4.5% | 0.68 | 0.64 | 6.3% | 1.8% | 9.1%
+Q1 FY2026 | 44.1B | 43.3B | 1.8% | 0.96 | 0.92 | 4.3% | -0.5% | 7.5%
+Q4 FY2025 | 39.3B | 38.2B | 2.9% | 0.89 | 0.85 | 4.7% | 8.5% | 8.2%
+Q3 FY2025 | 35.1B | 33.1B | 6.0% | 0.81 | 0.75 | 8.0% | -1.0% | 8.5%
+Q2 FY2025 | 30.0B | 28.9B | 3.8% | 0.68 | 0.65 | 4.6% | -6.4% | 9.8%
+Q1 FY2025 | 26.0B | 24.7B | 5.3% | 0.61 | 0.58 | 5.2% | 9.3% | 8.0%
+
+Average 1d post-earnings move: 1.6%
+This quarter's IV-implied move: 8.5%
+
+=== ANALYST RECOMMENDATION DRIFT (LAST 4 MONTHS) ===
+Period | SB | B | H | S | SS
+--- | --- | --- | --- | --- | ---
+2026-05 | 35 | 10 | 5 | 1 | 0
+2026-04 | 33 | 12 | 5 | 1 | 0
+2026-03 | 32 | 13 | 5 | 2 | 0
+2026-02 | 30 | 14 | 6 | 2 | 0
+
+=== SELL-SIDE RESEARCH NARRATIVE ===
+Sell-side remains overwhelmingly bullish on NVDA heading into the Q1 FY2027 print. Key themes: (1) data center revenue acceleration driven by Blackwell GB200 ramp, (2) hyperscaler capex guidance from MSFT/GOOG/META all pointing to continued AI infrastructure spend, (3) supply chain checks suggesting TSMC CoWoS capacity expansion is on track. Bears focus on China export restrictions tightening, potential GPU pricing pressure from AMD MI350, and sovereign AI spend sustainability. Morgan Stanley (OW, PT $170) sees Q1 as a 'beat and raise' setup. Goldman Sachs (Buy, PT $160) flags Blackwell gross margin trajectory as the key swing factor.
+
+=== SEGMENT REVENUE (LAST 4 QUARTERS) ===
+Q4 FY2026: Data Center: $35.6B, Gaming: $2.5B, Professional Visualization: $0.5B, Automotive: $0.7B
+Q3 FY2026: Data Center: $30.8B, Gaming: $3.0B, Professional Visualization: $0.5B, Automotive: $0.5B
+Q2 FY2026: Data Center: $26.3B, Gaming: $2.9B, Professional Visualization: $0.4B, Automotive: $0.3B
+Q1 FY2026: Data Center: $39.2B, Gaming: $3.5B, Professional Visualization: $0.6B, Automotive: $0.6B
+
+=== ADJUSTED METRICS (LAST 8 QUARTERS) ===
+Period | Adj EPS | Adj EBITDA | FCF | Gross Margin | Op Margin
+--- | --- | --- | --- | --- | ---
+Q4 FY2026 | 0.89 | 24.5B | 18.2B | 73.0% | 62.0%
+Q3 FY2026 | 0.81 | 21.8B | 16.1B | 74.6% | 62.5%
+Q2 FY2026 | 0.68 | 18.5B | 13.5B | 75.1% | 61.8%
+Q1 FY2026 | 0.96 | 28.5B | 21.0B | 78.4% | 64.9%
+Q4 FY2025 | 0.89 | 24.0B | 17.8B | 73.0% | 61.2%
+Q3 FY2025 | 0.81 | 22.0B | 16.8B | 74.6% | 62.0%
+Q2 FY2025 | 0.68 | 18.7B | 14.9B | 75.1% | 62.2%
+Q1 FY2025 | 0.61 | 16.5B | 14.0B | 78.9% | 64.0%
+
+=== PEERS ===
+- AMD (core): last print={"period": "Q1 FY2026", "revenue_surprise_pct": 2.1, "eps_surprise_pct": 3.5, "post_earnings_move_1d_pct": -4.2}, fwd consensus={"fq_revenue": "7.5B", "fq_eps": "1.12"}
+- AVGO (core): last print={"period": "Q2 FY2026", "revenue_surprise_pct": 1.8, "eps_surprise_pct": 2.0, "post_earnings_move_1d_pct": 5.1}, fwd consensus={"fq_revenue": "15.2B", "fq_eps": "1.65"}
+- TSM (read-through): last print={"period": "Q1 2026", "revenue_surprise_pct": 3.2, "eps_surprise_pct": 4.1, "post_earnings_move_1d_pct": 2.8}, fwd consensus={"fq_revenue": "28.5B", "fq_eps": "2.15"}
+- MRVL (core): last print={"period": "Q4 FY2026", "revenue_surprise_pct": 1.5, "eps_surprise_pct": 2.8, "post_earnings_move_1d_pct": -1.2}, fwd consensus={"fq_revenue": "2.1B", "fq_eps": "0.62"}
+
+=== INSIDER ACTIVITY (90D) ===
+Buys: 0  Sells: 3  Net: $-12500000
+
+=== INDUSTRY PACK ===
+Subsector: Semiconductors (week of 2026-05-12)
+{
+  "demand_signal": "strong",
+  "supply_chain": "TSMC CoWoS expansion on track; lead times stable at 16-20 weeks",
+  "pricing_trend": "ASPs stable to up on Blackwell transition",
+  "key_datapoints": [
+    "Hyperscaler capex guides: MSFT +40% YoY, GOOG +35%, META +30%",
+    "TSMC April rev +38% YoY, beating expectations",
+    "China restrictions: new BIS rules effective June 1, ~5% NVDA rev at risk"
+  ]
+}
+
+=== DATA GAPS ===
+None -- all fields populated.
+
+==================================================
+
+NOW WRITE THE NOTE.
+
+
+Required sections (match the existing note format exactly):
+1. Set-up (price action, valuation, key context from last quarter)
+2. Key Debates & Variant Perception (3-4 debates, each with bull/bear framing)
+3. What Matters This Print (table: Metric | Consensus/Guidance | Why It Matters)
+4. Scenario Grid (table: Scenario | EPS | Revenue | Key Assumptions | Price Target | Probability)
+
+Include a *Sources:* line at the end listing data sources used.
