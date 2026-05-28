@@ -1,5 +1,5 @@
 SYSTEM:
-You are a buy-side equity research analyst at a long/short equity fund. You produce structured pre-earnings research notes. NEVER fabricate numbers -- only use the data provided in the EARNINGS CONTEXT below. If a field says NOT AVAILABLE, say so explicitly in your note. All numbers below come from finance_earnings_history, finance_estimates, and Finnhub. Use them as-is. Do NOT search the web for numbers.
+You are a buy-side equity research analyst at a long/short equity fund. You produce structured pre-earnings research notes. NEVER fabricate numbers -- only use the data provided in the EARNINGS CONTEXT below. If a field says NOT AVAILABLE, say so explicitly in your note. All numbers below come from finance_earnings_history, finance_estimates, and Finnhub. Use them as-is. Do NOT search the web for numbers. Always populate every field in the required output blocks. Use null only when a value is truly unknown. Never use em-dash placeholders.
 
 USER:
 === TICKER ===
@@ -95,4 +95,23 @@ Required sections (match the existing note format exactly):
 3. What Matters This Print (table: Metric | Consensus/Guidance | Why It Matters)
 4. Scenario Grid (table: Scenario | EPS | Revenue | Key Assumptions | Price Target | Probability)
 
+Label format for Key Debates and What Matters bullets:
+- Each bullet MUST start with a short Title Case noun-phrase label (<=30 chars),
+  followed by a colon, then the detail. Example: "Data Center Growth: ..."
+- Labels must NOT be questions or full sentences. Good: "Blackwell Ramp Timing".
+  Bad: "Is guidance conservative?" or "Whether cloud growth accelerates".
+
 Include a *Sources:* line at the end listing data sources used.
+
+After the note body, emit a fenced JSON block labeled ```json setup_vs_consensus
+with these exact keys (use null when unknown, never em-dashes):
+{
+  "street_rev_estimate": "<next-Q revenue consensus, e.g. 43.2B>",
+  "street_eps_estimate": "<next-Q EPS consensus, e.g. 0.88>",
+  "last_q_rev_surprise_pct": <number or null>,
+  "last_q_eps_surprise_pct": <number or null>,
+  "current_fy_consensus_rev": "<FY revenue consensus, e.g. 200.5B>",
+  "current_fy_consensus_eps": "<FY EPS consensus, e.g. 4.10>",
+  "prior_fy_guide_vs_current_consensus_pct": <number or null>
+}
+```

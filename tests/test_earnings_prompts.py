@@ -43,6 +43,8 @@ def test_pre_earnings_nvda_all_sections():
     # System prompt is the analyst persona
     assert "buy-side equity research analyst" in system
     assert "NEVER fabricate numbers" in system
+    # Phase 4: anti-hedge directives in system prompt
+    assert "Never use em-dash placeholders" in system
 
     # User prompt contains all required sections
     assert "=== TICKER ===" in user
@@ -85,6 +87,16 @@ def test_pre_earnings_nvda_all_sections():
     assert "Key Debates" in user
     assert "What Matters This Print" in user
     assert "Scenario Grid" in user
+
+    # Phase 4: label format constraints
+    assert "Title Case noun-phrase label" in user
+    assert "<=30 chars" in user
+
+    # Phase 4: setup_vs_consensus JSON block
+    assert "setup_vs_consensus" in user
+    assert "street_rev_estimate" in user
+    assert "street_eps_estimate" in user
+    assert "last_q_rev_surprise_pct" in user
 
 
 # ---------------------------------------------------------------------------
@@ -232,6 +244,23 @@ def test_post_earnings_prompt_renders():
     assert "Guidance and Tone" in user
     assert "Thesis Impact" in user
     assert "Read-Through to Peers" in user  # T1
+
+    # Phase 4: anti-hedge directive in system prompt
+    assert "MUST extract actuals" in system
+    assert "Do NOT write" in system
+    assert "no reported numbers" in system
+
+    # Phase 4: results_vs_consensus JSON block
+    assert "results_vs_consensus" in user
+    assert "in_quarter_rev_actual" in user
+    assert "in_quarter_eps_actual" in user
+    assert "in_quarter_rev_surprise_pct" in user
+
+    # Phase 4: guide_vs_consensus JSON block
+    assert "guide_vs_consensus" in user
+    assert "next_q_rev_guide_midpoint" in user
+    assert "fy_rev_guide_change_vs_consensus_pct" in user
+    assert "fy_eps_guide_change_vs_prior_pct" in user
 
 
 # ---------------------------------------------------------------------------
