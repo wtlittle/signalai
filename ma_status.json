@@ -24,9 +24,43 @@
       "Story names specific buyer or transaction",
       "Story published before or coincident with the move"
     ],
-    "last_rumor_scan": "2026-05-29T14:14:33.593930+00:00"
+    "last_rumor_scan": "2026-05-29T15:01:43.899343+00:00"
   },
-  "pending_review": [],
+  "pending_review": [
+    {
+      "ticker": "BILL",
+      "company": "BILL Holdings, Inc.",
+      "flagged_at": "2026-05-29T15:01:40.556871+00:00",
+      "intraday_move_pct": 3.3,
+      "price_at_flag": 36,
+      "buyer": "Hellman & Friedman",
+      "deal_type": "take-private",
+      "headline": "BILL Holdings surged after Bloomberg reported Hellman & Friedman was in talks to acquire the company",
+      "rationale": "A Tier-1 Bloomberg-reported rumor named a specific buyer, Hellman & Friedman, and described acquisition talks for BILL Holdings. The report was published on Friday and the stock move occurred in the same session, so the timing gate is satisfied based on the provided results. The only limitation is that the search results do not include the original Bloomberg page itself, but the secondary coverage consistently attributes the story to Bloomberg.",
+      "confidence": 0.94,
+      "sources": [
+        {
+          "label": "Bloomberg (via Payments Dive coverage)",
+          "url": "https://www.paymentsdive.com/news/bill-weighs-the-best-path-to-profits/812067/",
+          "published_at": "2026-05-29",
+          "tier": 1
+        },
+        {
+          "label": "Bloomberg (via Investing.com coverage)",
+          "url": "https://www.investing.com/news/stock-market-news/bill-holdings-stock-soars-on-potential-acquisition-talks-with-hellman--friedman-93CH-4491545",
+          "published_at": "2026-05-29",
+          "tier": 1
+        }
+      ],
+      "gates": {
+        "gate1_move": true,
+        "gate2_tier1": true,
+        "gate3_named_buyer": true,
+        "gate4_timing": true
+      },
+      "status": "pending_review"
+    }
+  ],
   "deals": {
     "CFLT": {
       "ticker": "CFLT",
