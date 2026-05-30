@@ -2643,6 +2643,12 @@ tbody tr:hover .comps-sticky-col {
 }
 .wb-value-card .wb-primer-part { border-left-color: #22c55e; }
 .wb-momentum-card .wb-primer-part { border-left-color: #3b82f6; }
+/* Bear-case "Why it could go lower": orange/red accent to contrast bull-case green. */
+.wb-value-card .wb-primer-part--bear,
+.wb-primer-part--bear { border-left-color: #f97316; }
+.wb-primer-part--bear .wb-label { color: #f97316; }
+.wb-primer-placeholder { color: #6b7280; font-style: italic; font-weight: 400; }
+.wb-drawer-section--bear .wb-drawer-sectionhead { color: #f97316; }
 .wb-primer-footer {
   display: flex;
   justify-content: space-between;

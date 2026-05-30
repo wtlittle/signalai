@@ -11,6 +11,36 @@ function _wbEsc(s) {
     .replace(/'/g, '&#39;');
 }
 
+// Placeholder shown for the "Why it could go lower" bear-case section on value
+// picks that predate the field (populated by the Sunday weekly_briefing cron).
+const WB_BEAR_PLACEHOLDER = 'Bear-case summary arriving with the next weekly refresh.';
+
+// The bear-case ("Why it could go lower") primer part for a value pick. Shared
+// by the inline card and the full-primer drawer so the label/accent/placeholder
+// stay in lockstep.
+function _wbBearPart(obj) {
+  return {
+    label: 'Why it could go lower',
+    text: obj.why_could_go_lower || '',
+    accent: 'bear',
+    placeholder: WB_BEAR_PLACEHOLDER,
+  };
+}
+
+// Resolve a value pick's revenue growth into a formatted, signed string.
+// Deep-research often returns 0 / null / "N/A" for value names; treat those as
+// missing and return null so the caller can render a graceful em dash instead
+// of a misleading "N/A" on a public company.
+function _wbRevGrowth(obj) {
+  const raw = obj.revenue_growth != null && obj.revenue_growth !== ''
+    ? obj.revenue_growth
+    : obj.rev_growth;
+  if (raw == null || raw === '' || raw === 'N/A' || raw === 'n/a') return null;
+  const num = parseFloat(String(raw).replace('%', '').replace('+', '').trim());
+  if (!isFinite(num) || num === 0) return null;
+  return (num >= 0 ? '+' : '') + num.toFixed(1) + '%';
+}
+
 let weeklyBriefingData = null;
 let weeklyBriefingArchiveIndex = null; // array of { week_ending, path }
 let weeklyBriefingInFlight = null;
@@ -316,20 +346,38 @@ function _renderFullPrimerBlock(text) {
 }
 
 // Build the compact inline primer card: headline + labeled short sections +
-// "Read full primer" affordance. `parts` is an array of { label, text }.
+// "Read full primer" affordance. `parts` is an array of
+// { label, text, accent?, placeholder? }. `accent` adds a modifier class to
+// tint the section (e.g. "bear" for the orange/red "Why it could go lower").
+// `placeholder` renders the section even when text is empty (used until fresh
+// briefing data populates a new field) with muted "coming soon" copy.
 function _buildPrimerCard(ticker, kind, parts) {
-  const have = parts.filter(p => p && p.text);
+  const have = parts.filter(p => p && (p.text || p.placeholder));
   if (!have.length) return '';
 
   // Headline takes the first non-empty narrative's opening sentence.
-  const headline = _primerHeadline(have[0].text);
+  const firstWithText = have.find(p => p.text) || have[0];
+  const headline = _primerHeadline(firstWithText.text || '');
 
   // For each part, show label + headline + up to 2 bullets.
   const partsHtml = have.map(p => {
+    const accentCls = p.accent ? ` wb-primer-part--${p.accent}` : '';
+    if (!p.text && p.placeholder) {
+      return `
+      <div class="wb-primer-part${accentCls}">
+        <div class="wb-primer-part-head">
+          <span class="wb-label">${_wbEsc(p.label)}</span>
+        </div>
+        <div class="wb-primer-part-body">
+          <p class="wb-primer-headline wb-primer-placeholder">${_wbEsc(p.placeholder)}</p>
+        </div>
+      </div>
+    `;
+    }
     const head = _primerHeadline(p.text);
     const bullets = _primerKeyPoints(p.text, 2);
     return `
-      <div class="wb-primer-part">
+      <div class="wb-primer-part${accentCls}">
         <div class="wb-primer-part-head">
           <span class="wb-label">${_wbEsc(p.label)}</span>
         </div>
@@ -503,7 +551,12 @@ function renderWeeklyBriefing() {
     const primerHtml = _buildPrimerCard(v.ticker, 'value', [
       { label: 'Why undervalued', text: v.why_undervalued || '' },
       { label: 'Bull case',       text: v.bull_case || '' },
+      _wbBearPart(v),
     ]);
+    const revGrowth = _wbRevGrowth(v);
+    const revGrowthChip = revGrowth
+      ? `<span class="wb-stat ${revGrowth.startsWith('-') ? 'negative' : 'positive'}">Rev Growth: ${_wbEsc(revGrowth)}</span>`
+      : `<span class="wb-stat" title="No revenue history available">Rev Growth: &mdash;</span>`;
     html += `
       <div class="wb-card wb-value-card" id="wb-card-${_wbEsc(v.ticker)}">
         <div class="wb-card-rank">#${i + 1}</div>
@@ -516,7 +569,7 @@ function renderWeeklyBriefing() {
           <span class="wb-stat negative">${_wbEsc(v.off_high_pct || v.pct_off_high || '')} off 52w high</span>
           <span class="wb-stat">P/E: ${_wbEsc(v.pe_ratio || 'N/A')}</span>
           <span class="wb-stat">EV/EBITDA: ${_wbEsc(v.ev_ebitda || 'N/A')}</span>
-          <span class="wb-stat">Rev Growth: ${_wbEsc(v.rev_growth || v.revenue_growth || 'N/A')}</span>
+          ${revGrowthChip}
           <span class="wb-stat">FCF Yield: ${_wbEsc(v.fcf_yield || 'N/A')}</span>
         </div>
         ${primerHtml}
@@ -754,6 +807,7 @@ function openPrimerDrawer(ticker, kind) {
     ? [
         { label: 'Why undervalued', text: p.why_undervalued || '' },
         { label: 'Bull case',       text: p.bull_case || '' },
+        _wbBearPart(p),
       ]
     : [
         { label: 'Catalyst',       text: p.catalyst || '' },
@@ -790,10 +844,10 @@ function openPrimerDrawer(ticker, kind) {
       </div>
     </header>
     <div class="wb-drawer-body">
-      ${parts.filter(pt => pt.text).map(pt => `
-        <section class="wb-drawer-section">
+      ${parts.filter(pt => pt.text || pt.placeholder).map(pt => `
+        <section class="wb-drawer-section${pt.accent ? ` wb-drawer-section--${_wbEsc(pt.accent)}` : ''}">
           <h3 class="wb-drawer-sectionhead">${_wbEsc(pt.label)}</h3>
-          ${_renderFullPrimerBlock(pt.text)}
+          ${pt.text ? _renderFullPrimerBlock(pt.text) : `<p class="wb-primer-placeholder">${_wbEsc(pt.placeholder)}</p>`}
         </section>
       `).join('')}
     </div>
@@ -1227,11 +1281,12 @@ async function exportBriefingPDF() {
         y += 14;
         setFont(9, 'normal');
         setColor(TEXT_MUTED);
+        const ACCENT_BEAR = [249, 115, 22]; // orange — bear case
         const stats = [
           `${v.off_high_pct || v.pct_off_high || ''} off 52w high`,
           `P/E ${v.pe_ratio || 'N/A'}`,
           `EV/EBITDA ${v.ev_ebitda || 'N/A'}`,
-          `Rev Gr ${v.rev_growth || v.revenue_growth || 'N/A'}`,
+          `Rev Gr ${_wbRevGrowth(v) || '—'}`,
           `FCF Yld ${v.fcf_yield || 'N/A'}`,
         ].filter(s => s && !s.startsWith(' off')).join('   ·   ');
         if (stats) { doc.text(stats, MARGIN, y); y += 12; }
@@ -1244,6 +1299,11 @@ async function exportBriefingPDF() {
           setFont(9, 'bold'); setColor(ACCENT_GREEN);
           doc.text('BULL CASE', MARGIN, y); y += 11;
           writeParagraph(v.bull_case, 10, 'normal', TEXT_PRIMARY);
+        }
+        if (v.why_could_go_lower) {
+          setFont(9, 'bold'); setColor(ACCENT_BEAR);
+          doc.text('WHY IT COULD GO LOWER', MARGIN, y); y += 11;
+          writeParagraph(v.why_could_go_lower, 10, 'normal', TEXT_PRIMARY);
         }
         y += 6;
       });

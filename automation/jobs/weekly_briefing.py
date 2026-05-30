@@ -81,11 +81,103 @@ def _fetch_trends(tickers: list[str]):
     )
 
 
+def _rev_growth_missing(v) -> bool:
+    """True when a deep-research revenue_growth value is absent or a useless zero.
+
+    sonar-deep-research frequently returns ``0`` or an empty string for
+    revenue_growth on value names (e.g. GPN, STZ, CTVA), which the card then
+    renders as "N/A". Treat those as missing so we can backfill from yfinance.
+    """
+    raw = v.get("revenue_growth", v.get("rev_growth"))
+    if raw in (None, "", "N/A", "n/a"):
+        return True
+    try:
+        return float(str(raw).replace("%", "").replace("+", "").strip()) == 0.0
+    except (TypeError, ValueError):
+        return False
+
+
+def _compute_revenue_growth(ticker: str) -> str | None:
+    """Best-available YoY revenue growth for a ticker as a formatted string.
+
+    Prefers trailing-twelve-month growth (last 4 quarters vs the prior 4); falls
+    back to the most recent annual YoY. Returns e.g. "+4.2%" / "-2.1%", or None
+    if no revenue history is available (extremely rare for a public company).
+    """
+    try:
+        import yfinance as yf
+    except Exception:
+        return None
+    try:
+        t = yf.Ticker(ticker)
+    except Exception:
+        return None
+
+    def _fmt(curr, prior):
+        if not curr or not prior or prior == 0:
+            return None
+        pct = (curr / prior - 1.0) * 100.0
+        return f"{'+' if pct >= 0 else ''}{pct:.1f}%"
+
+    # 1) TTM: sum of last 4 quarters vs prior 4 quarters
+    try:
+        qi = t.quarterly_income_stmt
+        if qi is not None and not qi.empty and "Total Revenue" in qi.index:
+            row = qi.loc["Total Revenue"].dropna()
+            vals = [float(x) for x in row.values]
+            if len(vals) >= 8:
+                ttm = sum(vals[:4])
+                prior_ttm = sum(vals[4:8])
+                out = _fmt(ttm, prior_ttm)
+                if out:
+                    return out
+    except Exception:
+        pass
+
+    # 2) Fallback: most recent annual YoY
+    try:
+        ai = t.income_stmt
+        if ai is not None and not ai.empty and "Total Revenue" in ai.index:
+            row = ai.loc["Total Revenue"].dropna()
+            vals = [float(x) for x in row.values]
+            if len(vals) >= 2:
+                out = _fmt(vals[0], vals[1])
+                if out:
+                    return out
+    except Exception:
+        pass
+
+    return None
+
+
+def _backfill_revenue_growth(value_picks: list) -> None:
+    """Fill in missing revenue_growth on value picks using yfinance (in place).
+
+    weekly_briefing.json is static client data, so the card renderer has no live
+    fundamentals to fall back on. We resolve revenue growth here at generation
+    time so a public-company card never shows "N/A".
+    """
+    for v in value_picks:
+        ticker = (v.get("ticker") or "").strip()
+        if not ticker or not _rev_growth_missing(v):
+            continue
+        computed = _compute_revenue_growth(ticker)
+        if computed:
+            v["revenue_growth"] = computed
+            print(f"  [rev-growth] backfilled {ticker}: {computed}")
+        else:
+            print(f"  [rev-growth] no revenue history for {ticker}; left as-is")
+
+
 def compile_briefing(value, momentum, trends) -> dict:
     """Merge 3 API responses into the weekly_briefing.json schema."""
     value_picks = _extract_list(value)
     momentum_picks = _extract_list(momentum)
     trends_data = _extract_dict(trends)
+
+    # Resolve revenue growth for any value pick where deep-research left it
+    # missing or zero, so cards never render "Rev Growth: N/A".
+    _backfill_revenue_growth(value_picks)
 
     return {
         "generated": datetime.now(tz=__import__("datetime").timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
