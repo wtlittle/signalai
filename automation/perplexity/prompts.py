@@ -928,7 +928,8 @@ For each stock return this JSON array. No prose. No preamble.
     "analyst_target": 0.0,
     "analyst_consensus": "Buy/Hold/Sell",
     "why_undervalued": "2 sentences max",
-    "bull_case": "2 sentences max"
+    "bull_case": "2 sentences max",
+    "why_could_go_lower": "2-3 sentences max — the dominant bear thesis: the specific risk, concern, or structural issue that could drive the stock further down. Must be distinct from why_undervalued (which explains the discount); this is what could make the discount deserved or wider."
   }
 ]"""
 
