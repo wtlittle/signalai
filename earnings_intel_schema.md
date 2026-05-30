@@ -145,7 +145,26 @@ One persistent record per ticker. Updated in place (never duplicated). The same 
         "takeaways_bullets": [],
         "what_happened_headline": null,
         "what_happened_bullets": [],
-        "stock_reaction_pct": null
+        "stock_reaction_pct": null      // signed % move on the print; drives the "post-print" line on POST cards
+      },
+
+      /* === V2 CONSENSUS ENVELOPES (post-earnings) ===
+         Emitted as ```json results_vs_consensus / guide_vs_consensus``` fenced
+         blocks in the post-earnings note and lifted verbatim by
+         scripts/sync_earnings_intel_from_notes.py. Optional — absent on tickers
+         that have not yet had a V2-style note. POST cards render "—" when missing. */
+      "results_vs_consensus": {
+        "in_quarter_rev_actual": null,        // e.g. "$2.542B"
+        "in_quarter_rev_surprise_pct": null,  // signed % vs Street; >+1% = beat, <-1% = miss
+        "in_quarter_eps_actual": null,        // e.g. "$2.66"
+        "in_quarter_eps_surprise_pct": null   // signed % vs Street consensus EPS
+      },
+      "guide_vs_consensus": {
+        "fy_rev_change_vs_consensus_pct": null,   // FY revenue guide move vs prior Street consensus (drives "FY Guide Δ")
+        "fy_rev_change_vs_prior_pct": null,       // FY revenue guide move vs the company's own prior guide
+        "fy_eps_change_vs_consensus_pct": null,
+        "next_q_rev_guide_vs_consensus_pct": null,
+        "next_q_eps_guide_vs_consensus_pct": null
       },
       "previous_bottom_line": null,
       "signal_changes": []  // [{"signal_id": "...", "old_status": "WATCHING", "new_status": "CONFIRMED", "note": "..."}]
