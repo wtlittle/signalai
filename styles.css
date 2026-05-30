@@ -2060,6 +2060,17 @@ tbody tr:hover .comps-sticky-col {
   background: rgba(107, 114, 128, 0.15);
   color: #9ca3af;
 }
+/* --- Beat/miss surprise % on post-earnings REV / EPS rows --- */
+.metric-surprise {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+.metric-surprise.beat { color: #22c55e; }
+.metric-surprise.miss { color: #ef4444; }
+.metric-surprise.inline { color: #9ca3af; }
+.metric-surprise.neutral { color: #4b5563; }
 /* --- FY / Next Q guide row on post-earnings cards --- */
 .earnings-guide-row {
   display: flex;
@@ -2112,6 +2123,7 @@ tbody tr:hover .comps-sticky-col {
 }
 .reaction-pct.positive { color: #22c55e; }
 .reaction-pct.negative { color: #ef4444; }
+.reaction-pct.neutral { color: #4b5563; }
 .reaction-text {
   font-size: 11px;
   color: #9ca3af;

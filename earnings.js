@@ -216,6 +216,49 @@ function _renderGuideRow(label, revPct, epsPct) {
   return `<div class="earnings-guide-row"><span class="guide-label">${label}</span>${parts.join('<span class="guide-sep">&middot;</span>')}</div>`;
 }
 
+// --- Beat/miss surprise helpers for post-earnings REV / EPS rows ---
+// Resolve a numeric surprise % for a metric. Prefer the structured field
+// (e.g. in_quarter_rev_surprise_pct); fall back to parsing the % out of a
+// Phase-4 beat/miss string like "beat (+2.1%)" / "miss (-0.8%)".
+function _resolveSurprisePct(structuredPct, beatMissStr) {
+  if (typeof structuredPct === 'number' && !Number.isNaN(structuredPct)) return structuredPct;
+  if (typeof beatMissStr === 'string') {
+    const m = beatMissStr.match(/([+-]?\d+(?:\.\d+)?)\s*%/);
+    if (m) return parseFloat(m[1]);
+  }
+  return null;
+}
+
+// Render a compact beat/miss span: "+2.1% beat" (green) / "-0.8% miss" (red),
+// or a neutral "\u2014" placeholder when the surprise is unknown. Within the
+// +/-1% band we label "in-line" (neutral) rather than beat/miss.
+function _fmtBeatMiss(pct) {
+  if (pct == null) {
+    return '<span class="metric-surprise neutral">\u2014</span>';
+  }
+  const sign = pct > 0 ? '+' : '';
+  const label = pct > 1 ? 'beat' : pct < -1 ? 'miss' : 'in-line';
+  const cls = pct > 1 ? 'beat' : pct < -1 ? 'miss' : 'inline';
+  return `<span class="metric-surprise ${cls}">${sign}${pct.toFixed(1)}% ${label}</span>`;
+}
+
+// Render the FY Guide \u0394 row: how much FY revenue guidance moved vs prior
+// Street consensus. "+1.5% raise" (green) / "-2.0% cut" (red) / "\u2014" when
+// unavailable. Accepts the structured field under either the calendar name
+// (fy_rev_guide_change_vs_consensus_pct) or the envelope name
+// (fy_rev_change_vs_consensus_pct).
+function _renderFyGuideDeltaRow(pct) {
+  let body;
+  if (pct == null) {
+    body = '<span class="guide-metric guide-neutral">\u2014</span>';
+  } else {
+    const sign = pct > 0 ? '+' : '';
+    const word = pct > 0.5 ? 'raise' : pct < -0.5 ? 'cut' : 'flat';
+    body = `<span class="guide-metric ${_guideColor(pct)}">${sign}${pct.toFixed(1)}% ${word}</span>`;
+  }
+  return `<div class="earnings-guide-row"><span class="guide-label">FY Guide \u0394</span>${body}</div>`;
+}
+
 // --- Render earnings cards ---
 function renderRecentEarnings(recent) {
   const hasCoverage = typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.length > 0;
@@ -229,10 +272,15 @@ function renderRecentEarnings(recent) {
   }
   $recentCards.innerHTML = filtered.map(r => {
     const name = (COMMON_NAMES && COMMON_NAMES[r.ticker]) || r.name || r.ticker;
-    const revBeat = (r.revenue_beat_miss || '').toLowerCase();
-    const epsBeat = (r.eps_beat_miss || '').toLowerCase();
-    const revClass = revBeat.includes('beat') ? 'beat' : revBeat.includes('miss') ? 'miss' : 'inline';
-    const epsClass = epsBeat.includes('beat') ? 'beat' : epsBeat.includes('miss') ? 'miss' : 'inline';
+    // Resolve REV / EPS surprise % from the structured envelope fields when
+    // present, otherwise parse it out of the Phase-4 beat/miss strings.
+    const revSurprise = _resolveSurprisePct(r.in_quarter_rev_surprise_pct, r.revenue_beat_miss);
+    const epsSurprise = _resolveSurprisePct(r.in_quarter_eps_surprise_pct, r.eps_beat_miss);
+    // FY revenue guidance move vs prior consensus. Accept either the calendar
+    // field name or the raw envelope field name.
+    const fyGuideDelta = (typeof r.fy_rev_guide_change_vs_consensus_pct === 'number')
+      ? r.fy_rev_guide_change_vs_consensus_pct
+      : (typeof r.fy_rev_change_vs_consensus_pct === 'number' ? r.fy_rev_change_vs_consensus_pct : null);
     // Human-friendly "days since" phrase:
     //   0 → "Reported today", 1 → "Reported yesterday", n → "nd ago"
     let sinceLabel;
@@ -252,19 +300,21 @@ function renderRecentEarnings(recent) {
         <div class="earnings-metric">
           <span class="metric-label">Rev</span>
           <span class="metric-value">${r.revenue_actual || '\u2014'}</span>
-          <span class="metric-tag ${revClass}">${r.revenue_beat_miss || ''}</span>
+          ${_fmtBeatMiss(revSurprise)}
         </div>
         <div class="earnings-metric">
           <span class="metric-label">EPS</span>
           <span class="metric-value">${r.eps_actual || '\u2014'}</span>
-          <span class="metric-tag ${epsClass}">${r.eps_beat_miss || ''}</span>
+          ${_fmtBeatMiss(epsSurprise)}
         </div>
       </div>
-      ${_renderGuideRow('FY Guide', r.fy_rev_guide_change_vs_consensus_pct, r.fy_eps_guide_change_vs_consensus_pct)}
+      ${_renderFyGuideDeltaRow(fyGuideDelta)}
       ${_renderGuideRow('Next Q Guide', r.next_q_rev_guide_vs_consensus_pct, r.next_q_eps_guide_vs_consensus_pct)}
       ${r.fiscal_quarter ? `<div class="earnings-card-fq">${r.fiscal_quarter}</div>` : ''}
       <div class="earnings-card-reaction-row">
-        ${r.stock_reaction_pct != null ? `<span class="reaction-pct ${r.stock_reaction_pct >= 0 ? 'positive' : 'negative'}">${r.stock_reaction_pct >= 0 ? '+' : ''}${r.stock_reaction_pct.toFixed(1)}% post-print</span>` : ''}
+        ${r.stock_reaction_pct != null
+          ? `<span class="reaction-pct ${r.stock_reaction_pct >= 0 ? 'positive' : 'negative'}">${r.stock_reaction_pct >= 0 ? '+' : ''}${r.stock_reaction_pct.toFixed(1)}% post-print</span>`
+          : `<span class="reaction-pct neutral">\u2014 post-print</span>`}
         ${r.stock_reaction ? `<span class="reaction-text">${r.stock_reaction}</span>` : (r.stock_reaction_pct == null ? `<span class="reaction-text muted">Awaiting post-earnings note</span>` : '')}
       </div>
       <div class="earnings-card-footer">
