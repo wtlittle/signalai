@@ -32,12 +32,75 @@ from automation.perplexity.prompts import (
 TODAY = date.today()
 
 
+def _salvage_json_array(raw_text: str) -> list | None:
+    """Attempt to recover a list of JSON objects from a broken response.
+
+    Tries four strategies in order:
+    1. Direct json.loads after cleaning bad escapes
+    2. Extract the outermost [...] array substring and parse it
+    3. Extract individual {...} objects one by one
+    4. Return None if nothing recoverable
+    """
+    import re as _re
+
+    def _clean_escapes(s: str) -> str:
+        return _re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', s)
+
+    def _try(s: str):
+        try:
+            return json.loads(s)
+        except (json.JSONDecodeError, ValueError):
+            return None
+
+    for text in (raw_text, _clean_escapes(raw_text)):
+        # Strategy 1: direct parse
+        result = _try(text)
+        if isinstance(result, list):
+            return result
+        if isinstance(result, dict) and "raw" not in result:
+            return [result]
+
+        # Strategy 2: extract outermost array
+        m = _re.search(r'\[.*\]', text, flags=_re.DOTALL)
+        if m:
+            result = _try(m.group(0))
+            if isinstance(result, list) and result:
+                return result
+
+        # Strategy 3: extract individual objects
+        objects = []
+        for match in _re.finditer(
+            r'\{(?:[^{}]|\{[^{}]*\})*\}', text, flags=_re.DOTALL
+        ):
+            obj = _try(match.group())
+            if isinstance(obj, dict) and len(obj) > 1:
+                objects.append(obj)
+        if objects:
+            return objects
+
+    return None
+
+
 def _extract_list(result) -> list:
-    """Safely extract a list from a Perplexity response."""
+    """Safely extract a list from a Perplexity response.
+
+    If the response is a {"raw": ...} fallback (meaning parsing failed in
+    client.py), attempt to salvage a list from the raw string before giving up.
+    """
     if isinstance(result, list):
         return result
     if isinstance(result, dict):
-        return result.get("raw", []) if not isinstance(result.get("raw"), str) else []
+        raw = result.get("raw")
+        if isinstance(raw, str) and raw.strip():
+            salvaged = _salvage_json_array(raw)
+            if salvaged:
+                print(f"  [SALVAGE] Recovered {len(salvaged)} objects from raw payload")
+                return salvaged
+            else:
+                print(f"  [SALVAGE FAILED] Could not recover objects from raw payload (len={len(raw)}); first 300 chars: {raw[:300]!r}")
+                return []
+        if isinstance(raw, list):
+            return raw
     return []
 
 
@@ -54,8 +117,8 @@ def _fetch_value():
     return call_perplexity(
         "MARKET", "weekly_value",
         build_weekly_value_prompt(),
-        system="You are a senior equity research analyst. Return only a JSON array.",
-        max_tokens=4000,
+        system="You are a senior equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. No markdown. No prose. No code fences. No explanation. Only JSON.",
+        max_tokens=8000,
     )
 
 
@@ -65,8 +128,8 @@ def _fetch_momentum():
     return call_perplexity(
         "MARKET", "weekly_momentum",
         build_weekly_momentum_prompt(),
-        system="You are a senior equity research analyst. Return only a JSON array.",
-        max_tokens=3000,
+        system="You are a senior equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. No markdown. No prose. No code fences. No explanation. Only JSON.",
+        max_tokens=6000,
     )
 
 
@@ -76,8 +139,8 @@ def _fetch_trends(tickers: list[str]):
     return call_perplexity(
         "MARKET", "weekly_trends",
         build_weekly_trends_prompt(tickers),
-        system="You are a senior market strategist. Return only structured JSON.",
-        max_tokens=4000,
+        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. No markdown. No prose. No code fences. No explanation. Only JSON.",
+        max_tokens=6000,
     )
 
 
@@ -255,6 +318,13 @@ def compile_briefing(value, momentum, trends) -> dict:
     value_picks = _extract_list(value)
     momentum_picks = _extract_list(momentum)
     trends_data = _extract_dict(trends)
+
+    if not value_picks:
+        print("  [WARNING] value_picks is EMPTY — value section will be absent from this week's briefing. Check the raw cache for the weekly_value response.")
+    if not momentum_picks:
+        print("  [WARNING] momentum_picks is EMPTY — momentum section will be absent from this week's briefing. Check the raw cache for the weekly_momentum response.")
+    if not trends_data:
+        print("  [WARNING] trends_data is EMPTY — narrative, index_returns, trends, and risks will be absent. Check the raw cache for the weekly_trends response.")
 
     # Resolve revenue growth for any pick where deep-research left it missing or
     # zero, so cards never render "Rev Growth: N/A" (shared by value + momentum).

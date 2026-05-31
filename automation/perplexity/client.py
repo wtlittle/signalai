@@ -232,7 +232,7 @@ def call_perplexity(
     prompt: str,
     system: str = "Return only structured JSON. No prose, no markdown fences.",
     force: bool = False,
-    max_tokens: int = 1500,
+    max_tokens: int = 4000,
     temperature: float = 0.1,
     extra_meta: dict | None = None,
 ) -> dict:
@@ -360,6 +360,11 @@ def call_perplexity(
     # Strip markdown fences if present (with or without language hint).
     if text.startswith("```"):
         text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+
+    # Repair: fix invalid backslash escapes that break json.loads
+    # Valid JSON escapes are: \" \\ \/ \b \f \n \r \t \uXXXX
+    # Everything else (e.g. \%, \$, \x outside \uXXXX) must be double-escaped
+    text = _re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', text)
 
     def _try_parse(t: str):
         try:
