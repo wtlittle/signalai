@@ -81,20 +81,24 @@ def _fetch_trends(tickers: list[str]):
     )
 
 
-def _rev_growth_missing(v) -> bool:
-    """True when a deep-research revenue_growth value is absent or a useless zero.
+def _is_zero_or_blank(raw) -> bool:
+    """True when a deep-research metric is absent or a useless zero.
 
-    sonar-deep-research frequently returns ``0`` or an empty string for
-    revenue_growth on value names (e.g. GPN, STZ, CTVA), which the card then
-    renders as "N/A". Treat those as missing so we can backfill from yfinance.
+    sonar-deep-research frequently returns ``0`` / "" for both revenue_growth and
+    the 1W/1M/3M return windows, which then render as "N/A". Treat those as
+    missing so we can backfill from yfinance.
     """
-    raw = v.get("revenue_growth", v.get("rev_growth"))
     if raw in (None, "", "N/A", "n/a"):
         return True
     try:
         return float(str(raw).replace("%", "").replace("+", "").strip()) == 0.0
     except (TypeError, ValueError):
         return False
+
+
+def _rev_growth_missing(v) -> bool:
+    """True when a pick's revenue_growth is absent or a useless zero."""
+    return _is_zero_or_blank(v.get("revenue_growth", v.get("rev_growth")))
 
 
 def _compute_revenue_growth(ticker: str) -> str | None:
@@ -150,14 +154,15 @@ def _compute_revenue_growth(ticker: str) -> str | None:
     return None
 
 
-def _backfill_revenue_growth(value_picks: list) -> None:
-    """Fill in missing revenue_growth on value picks using yfinance (in place).
+def _backfill_revenue_growth(picks: list) -> None:
+    """Fill in missing revenue_growth on a list of picks using yfinance (in place).
 
     weekly_briefing.json is static client data, so the card renderer has no live
     fundamentals to fall back on. We resolve revenue growth here at generation
-    time so a public-company card never shows "N/A".
+    time so a public-company card never shows "N/A". Shared by both value and
+    momentum picks.
     """
-    for v in value_picks:
+    for v in picks:
         ticker = (v.get("ticker") or "").strip()
         if not ticker or not _rev_growth_missing(v):
             continue
@@ -169,15 +174,96 @@ def _backfill_revenue_growth(value_picks: list) -> None:
             print(f"  [rev-growth] no revenue history for {ticker}; left as-is")
 
 
+# Trailing-return windows in trading days: 1 week (~5), 1 month (~21), 3 months (~63).
+_RETURN_WINDOWS = (
+    ("one_week_perf", 5),
+    ("one_month_perf", 21),
+    ("three_month_perf", 63),
+)
+
+
+def _compute_momentum_returns(ticker: str) -> dict:
+    """Trailing 1W/1M/3M price returns for a ticker as formatted strings.
+
+    Uses ~6 months of daily closes from yfinance and compares the latest close
+    to the close N trading days back (5/21/63). Returns a dict keyed by
+    one_week_perf / one_month_perf / three_month_perf, e.g. "+4.2%" / "-2.1%".
+    Windows with insufficient history are omitted (extremely rare for a public
+    US ticker with active trading history).
+    """
+    try:
+        import yfinance as yf
+    except Exception:
+        return {}
+    try:
+        t = yf.Ticker(ticker)
+        hist = t.history(period="6mo", interval="1d")
+    except Exception:
+        return {}
+    if hist is None or hist.empty or "Close" not in hist.columns:
+        return {}
+
+    closes = [float(x) for x in hist["Close"].dropna().values]
+    if len(closes) < 2:
+        return {}
+
+    latest = closes[-1]
+    out = {}
+    for field, lookback in _RETURN_WINDOWS:
+        if len(closes) <= lookback:
+            continue
+        prior = closes[-(lookback + 1)]
+        if not prior:
+            continue
+        pct = (latest / prior - 1.0) * 100.0
+        out[field] = f"{'+' if pct >= 0 else ''}{pct:.1f}%"
+    return out
+
+
+def _backfill_momentum_returns(momentum_picks: list) -> None:
+    """Fill in missing 1W/1M/3M returns on momentum picks using yfinance (in place).
+
+    Deep-research ranks momentum names by recent performance but often emits ``0``
+    for the displayed return fields, so the card renders "1W/1M/3M: N/A". We
+    recompute the trailing windows from price history at generation time.
+    """
+    for m in momentum_picks:
+        ticker = (m.get("ticker") or "").strip()
+        if not ticker:
+            continue
+        needed = [
+            field for field, _ in _RETURN_WINDOWS
+            if _is_zero_or_blank(m.get(field))
+        ]
+        if not needed:
+            continue
+        computed = _compute_momentum_returns(ticker)
+        if not computed:
+            print(f"  [returns] no price history for {ticker}; left as-is")
+            continue
+        for field in needed:
+            if field in computed:
+                m[field] = computed[field]
+        print(
+            f"  [returns] backfilled {ticker}: "
+            + ", ".join(f"{f}={computed[f]}" for f in needed if f in computed)
+        )
+
+
 def compile_briefing(value, momentum, trends) -> dict:
     """Merge 3 API responses into the weekly_briefing.json schema."""
     value_picks = _extract_list(value)
     momentum_picks = _extract_list(momentum)
     trends_data = _extract_dict(trends)
 
-    # Resolve revenue growth for any value pick where deep-research left it
-    # missing or zero, so cards never render "Rev Growth: N/A".
+    # Resolve revenue growth for any pick where deep-research left it missing or
+    # zero, so cards never render "Rev Growth: N/A" (shared by value + momentum).
     _backfill_revenue_growth(value_picks)
+    _backfill_revenue_growth(momentum_picks)
+
+    # Recompute trailing 1W/1M/3M returns for momentum picks from price history
+    # so cards never render "1W/1M/3M: N/A".
+    _backfill_momentum_returns(momentum_picks)
 
     return {
         "generated": datetime.now(tz=__import__("datetime").timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
