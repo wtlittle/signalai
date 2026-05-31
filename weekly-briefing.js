@@ -41,6 +41,31 @@ function _wbRevGrowth(obj) {
   return (num >= 0 ? '+' : '') + num.toFixed(1) + '%';
 }
 
+// Resolve a momentum pick's trailing return (1W/1M/3M) into a formatted, signed
+// string. Deep-research often returns 0 / null / "N/A" for these windows; treat
+// those as missing and return null so the caller can render a graceful em dash
+// instead of a misleading "N/A" on a liquid public equity. Accepts the pick and
+// the candidate field names in priority order.
+function _wbReturnPct(obj, fields) {
+  let raw = null;
+  for (const f of fields) {
+    const v = obj[f];
+    if (v != null && v !== '') { raw = v; break; }
+  }
+  if (raw == null || raw === '' || raw === 'N/A' || raw === 'n/a') return null;
+  const num = parseFloat(String(raw).replace('%', '').replace('+', '').trim());
+  if (!isFinite(num) || num === 0) return null;
+  return (num >= 0 ? '+' : '') + num.toFixed(1) + '%';
+}
+
+// Candidate field names (priority order) for each momentum return window, kept
+// in one place so every renderer reads the same aliases.
+const WB_RETURN_FIELDS = {
+  '1W': ['one_week_perf', 'perf_1w', 'one_week'],
+  '1M': ['one_month_perf', 'perf_1m', 'one_month'],
+  '3M': ['three_month_perf', 'perf_3m', 'three_month'],
+};
+
 let weeklyBriefingData = null;
 let weeklyBriefingArchiveIndex = null; // array of { week_ending, path }
 let weeklyBriefingInFlight = null;
@@ -132,7 +157,8 @@ function synthesizeTldr(d) {
   }
   if ((d.momentum_picks || []).length && bullets.length < 5) {
     const m = d.momentum_picks[0];
-    bullets.push(`Momentum leader: ${m.ticker} ${m.one_week_perf || m.perf_1w || m.one_week || ''} on the week.`);
+    const w1 = _wbReturnPct(m, WB_RETURN_FIELDS['1W']);
+    bullets.push(`Momentum leader: ${m.ticker}${w1 ? ' ' + w1 : ''} on the week.`);
   }
   // Regime chip
   if (ms.macro_regime) chips.push(ms.macro_regime);
@@ -590,9 +616,16 @@ function renderWeeklyBriefing() {
       { label: 'Catalyst',     text: m.catalyst || '' },
       { label: 'Risk / reward', text: m.risk_reward || '' },
     ]);
-    const w1Str = m.one_week_perf || m.perf_1w || m.one_week || 'N/A';
-    const m1Str = m.one_month_perf || m.perf_1m || m.one_month || 'N/A';
-    const m3Str = m.three_month_perf || m.perf_3m || m.three_month || 'N/A';
+    const w1 = _wbReturnPct(m, WB_RETURN_FIELDS['1W']);
+    const m1 = _wbReturnPct(m, WB_RETURN_FIELDS['1M']);
+    const m3 = _wbReturnPct(m, WB_RETURN_FIELDS['3M']);
+    const _retChip = (label, val) => val
+      ? `<span class="wb-stat ${val.startsWith('-') ? 'negative' : 'positive'}">${label}: ${_wbEsc(val)}</span>`
+      : `<span class="wb-stat" title="No price history available">${label}: &mdash;</span>`;
+    const momRevGrowth = _wbRevGrowth(m);
+    const momRevChip = momRevGrowth
+      ? `<span class="wb-stat ${momRevGrowth.startsWith('-') ? 'negative' : 'positive'}">Rev Growth: ${_wbEsc(momRevGrowth)}</span>`
+      : `<span class="wb-stat" title="No revenue history available">Rev Growth: &mdash;</span>`;
     html += `
       <div class="wb-card wb-momentum-card" id="wb-card-${_wbEsc(m.ticker)}">
         <div class="wb-card-rank">#${i + 1}</div>
@@ -602,10 +635,10 @@ function renderWeeklyBriefing() {
           <span class="wb-card-price">${_wbEsc(m.price || m.current_price || '')}</span>
         </div>
         <div class="wb-card-stats">
-          <span class="wb-stat ${parseFloat((String(w1Str).replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1W: ${_wbEsc(w1Str)}</span>
-          <span class="wb-stat ${parseFloat((String(m1Str).replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">1M: ${_wbEsc(m1Str)}</span>
-          <span class="wb-stat ${parseFloat((String(m3Str).replace('%','').replace('+',''))) >= 0 ? 'positive' : 'negative'}">3M: ${_wbEsc(m3Str)}</span>
-          <span class="wb-stat">Rev Growth: ${_wbEsc(m.rev_growth || m.revenue_growth || 'N/A')}</span>
+          ${_retChip('1W', w1)}
+          ${_retChip('1M', m1)}
+          ${_retChip('3M', m3)}
+          ${momRevChip}
         </div>
         ${primerHtml}
       </div>`;
@@ -814,6 +847,10 @@ function openPrimerDrawer(ticker, kind) {
         { label: 'Risk / reward',  text: p.risk_reward || '' },
       ];
 
+  const dw1 = kind === 'momentum' ? _wbReturnPct(p, WB_RETURN_FIELDS['1W']) : null;
+  const dm1 = kind === 'momentum' ? _wbReturnPct(p, WB_RETURN_FIELDS['1M']) : null;
+  const dm3 = kind === 'momentum' ? _wbReturnPct(p, WB_RETURN_FIELDS['3M']) : null;
+  const dRev = _wbRevGrowth(p);
   const statChips = [
     p.current_price || p.price ? `<span class="wb-stat">${_wbEsc(p.current_price || p.price)}</span>` : '',
     (kind === 'value')
@@ -822,10 +859,10 @@ function openPrimerDrawer(ticker, kind) {
     (kind === 'value' && (p.pe_ratio)) ? `<span class="wb-stat">P/E ${_wbEsc(p.pe_ratio)}</span>` : '',
     (kind === 'value' && (p.ev_ebitda)) ? `<span class="wb-stat">EV/EBITDA ${_wbEsc(p.ev_ebitda)}</span>` : '',
     (kind === 'value' && (p.fcf_yield)) ? `<span class="wb-stat">FCF Yld ${_wbEsc(p.fcf_yield)}</span>` : '',
-    (kind === 'momentum' && (p.one_week_perf || p.perf_1w)) ? `<span class="wb-stat">1W ${_wbEsc(p.one_week_perf || p.perf_1w)}</span>` : '',
-    (kind === 'momentum' && (p.one_month_perf || p.perf_1m)) ? `<span class="wb-stat">1M ${_wbEsc(p.one_month_perf || p.perf_1m)}</span>` : '',
-    (kind === 'momentum' && (p.three_month_perf || p.perf_3m)) ? `<span class="wb-stat">3M ${_wbEsc(p.three_month_perf || p.perf_3m)}</span>` : '',
-    (p.revenue_growth || p.rev_growth) ? `<span class="wb-stat">Rev ${_wbEsc(p.revenue_growth || p.rev_growth)}</span>` : '',
+    dw1 ? `<span class="wb-stat">1W ${_wbEsc(dw1)}</span>` : '',
+    dm1 ? `<span class="wb-stat">1M ${_wbEsc(dm1)}</span>` : '',
+    dm3 ? `<span class="wb-stat">3M ${_wbEsc(dm3)}</span>` : '',
+    dRev ? `<span class="wb-stat">Rev ${_wbEsc(dRev)}</span>` : '',
   ].filter(Boolean).join('');
 
   drawer.innerHTML = `
@@ -1321,10 +1358,10 @@ async function exportBriefingPDF() {
         y += 14;
         setFont(9, 'normal'); setColor(TEXT_MUTED);
         const stats = [
-          `1W ${m.one_week_perf || m.perf_1w || m.one_week || '—'}`,
-          `1M ${m.one_month_perf || m.perf_1m || m.one_month || '—'}`,
-          `3M ${m.three_month_perf || m.perf_3m || m.three_month || '—'}`,
-          `Rev Gr ${m.rev_growth || m.revenue_growth || 'N/A'}`,
+          `1W ${_wbReturnPct(m, WB_RETURN_FIELDS['1W']) || '—'}`,
+          `1M ${_wbReturnPct(m, WB_RETURN_FIELDS['1M']) || '—'}`,
+          `3M ${_wbReturnPct(m, WB_RETURN_FIELDS['3M']) || '—'}`,
+          `Rev Gr ${_wbRevGrowth(m) || '—'}`,
         ].join('   ·   ');
         doc.text(stats, MARGIN, y); y += 12;
         if (m.catalyst) {
