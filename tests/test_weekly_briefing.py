@@ -5,7 +5,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from automation.jobs.weekly_briefing import compile_briefing, run, _extract_list, _extract_dict
+from automation.jobs.weekly_briefing import (
+    compile_briefing, run, _extract_list, _extract_dict, _salvage_json_array,
+)
 
 
 # --- Fixtures ---
@@ -111,6 +113,41 @@ class TestExtractHelpers(unittest.TestCase):
 
     def test_extract_dict_from_non_dict(self):
         self.assertEqual(_extract_dict("string"), {})
+
+
+class TestSalvageJsonArray(unittest.TestCase):
+    """Test salvage recovery of broken sonar-deep-research payloads."""
+
+    def test_clean_array_parses_directly(self):
+        raw = '[{"ticker": "AAPL", "price": 1.0}, {"ticker": "MSFT", "price": 2.0}]'
+        self.assertEqual(_salvage_json_array(raw), json.loads(raw))
+
+    def test_truncated_array_recovers_complete_objects(self):
+        # VALUE failure mode: model ran out of tokens mid-array, no closing ].
+        raw = ('[{"ticker": "AAPL", "price": 1.0}, '
+               '{"ticker": "MSFT", "price": 2.0}, {"ticker": "X"')
+        salvaged = _salvage_json_array(raw)
+        self.assertIsNotNone(salvaged)
+        tickers = [o.get("ticker") for o in salvaged]
+        self.assertIn("AAPL", tickers)
+        self.assertIn("MSFT", tickers)
+
+    def test_invalid_backslash_escapes_recovered(self):
+        # MOMENTUM failure mode: invalid \% and \$ escapes break json.loads.
+        raw = r'[{"ticker": "NVDA", "one_week_perf": "+12.3\%", "price": "\$132.00"}]'
+        salvaged = _salvage_json_array(raw)
+        self.assertIsNotNone(salvaged)
+        self.assertEqual(salvaged[0]["ticker"], "NVDA")
+
+    def test_unrecoverable_prose_returns_none(self):
+        # TRENDS failure mode: pure markdown prose, nothing to salvage as a list.
+        self.assertIsNone(_salvage_json_array("Here is a summary of the markets."))
+
+    def test_extract_list_salvages_truncated_raw(self):
+        raw = '[{"ticker": "AAPL", "price": 1.0}, {"ticker": "MSFT"'
+        result = _extract_list({"raw": raw})
+        self.assertTrue(result)
+        self.assertEqual(result[0]["ticker"], "AAPL")
 
 
 class TestCompileBriefing(unittest.TestCase):

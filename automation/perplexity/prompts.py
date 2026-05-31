@@ -931,7 +931,9 @@ For each stock return this JSON array. No prose. No preamble.
     "bull_case": "2 sentences max",
     "why_could_go_lower": "2-3 sentences max — the dominant bear thesis: the specific risk, concern, or structural issue that could drive the stock further down. Must be distinct from why_undervalued (which explains the discount); this is what could make the discount deserved or wider."
   }
-]"""
+]
+
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array. It must be parseable by Python json.loads() without any preprocessing. Do NOT include any markdown formatting, prose explanation, section headers, bullet points, or code fences. Do NOT wrap in ```json or ``` markers. The first character of your response must be [ and the last character must be ]. If you cannot fit all 5 picks within the token limit, return however many complete picks you have — never truncate a pick mid-object."""
 
 
 def build_weekly_momentum_prompt() -> str:
@@ -952,7 +954,9 @@ For each stock return this JSON array. No prose. No preamble.
     "catalyst": "1-2 sentences on what is driving the move",
     "risk_reward": "1-2 sentences on risk/reward from here"
   }
-]"""
+]
+
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array. It must be parseable by Python json.loads() without any preprocessing. Do NOT include any markdown formatting, prose explanation, section headers, bullet points, or code fences. Do NOT wrap in ```json or ``` markers. The first character of your response must be [ and the last character must be ]. If you cannot fit all 5 picks within the token limit, return however many complete picks you have — never truncate a pick mid-object."""
 
 
 def build_weekly_trends_prompt(watchlist_tickers: list[str]) -> str:
@@ -979,7 +983,9 @@ Return ONLY this JSON. No prose.
     {{"ticker": "...", "weekly_move": "+X%", "thirty_day_move": "+X%", "catalyst": "...", "detail": "..."}}
   ],
   "narrative": "2-3 sentence summary"
-}}"""
+}}
+
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object. It must be parseable by Python json.loads() without any preprocessing. Do NOT include any markdown formatting, prose explanation, section headers, bullet points, or code fences. Do NOT wrap in ```json or ``` markers. The first character of your response must be {{ and the last character must be }}."""
 
 
 def _temporal_header(week_ending) -> str:
