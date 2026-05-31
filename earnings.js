@@ -155,9 +155,17 @@ async function enrichRecentFromIntel(recent) {
       }
     }
 
-    // Guide fields from guide_vs_consensus envelope
+    // Guide fields from guide_vs_consensus envelope.
+    // The canonical schema field that drives "FY Guide Δ" is
+    // fy_rev_change_vs_consensus_pct (see earnings_intel_schema.md). The
+    // calendar pipeline carries the same value under the longer name
+    // fy_rev_guide_change_vs_consensus_pct, so accept either, mapping the
+    // envelope name onto the field the renderer reads (r.fy_rev_change_vs_consensus_pct).
     const gvc = intel.guide_vs_consensus;
     if (gvc) {
+      if (r.fy_rev_change_vs_consensus_pct == null && gvc.fy_rev_change_vs_consensus_pct != null) {
+        r.fy_rev_change_vs_consensus_pct = gvc.fy_rev_change_vs_consensus_pct;
+      }
       if (r.fy_rev_guide_change_vs_consensus_pct == null && gvc.fy_rev_guide_change_vs_consensus_pct != null) {
         r.fy_rev_guide_change_vs_consensus_pct = gvc.fy_rev_guide_change_vs_consensus_pct;
       }
@@ -172,11 +180,20 @@ async function enrichRecentFromIntel(recent) {
       }
     }
 
-    // Results fields from results_vs_consensus envelope
+    // Results fields from results_vs_consensus envelope. Surface the structured
+    // surprise % under the schema field names the renderer reads directly
+    // (r.in_quarter_rev_surprise_pct / r.in_quarter_eps_surprise_pct) and keep
+    // the beat/miss string as a fallback for older calendar-only rows.
     const rvc = intel.results_vs_consensus;
     if (rvc) {
       if (!r.revenue_actual && rvc.in_quarter_rev_actual) r.revenue_actual = rvc.in_quarter_rev_actual;
       if (!r.eps_actual && rvc.in_quarter_eps_actual) r.eps_actual = rvc.in_quarter_eps_actual;
+      if (r.in_quarter_rev_surprise_pct == null && rvc.in_quarter_rev_surprise_pct != null) {
+        r.in_quarter_rev_surprise_pct = rvc.in_quarter_rev_surprise_pct;
+      }
+      if (r.in_quarter_eps_surprise_pct == null && rvc.in_quarter_eps_surprise_pct != null) {
+        r.in_quarter_eps_surprise_pct = rvc.in_quarter_eps_surprise_pct;
+      }
       if (!r.revenue_beat_miss && rvc.in_quarter_rev_surprise_pct != null) {
         const s = rvc.in_quarter_rev_surprise_pct;
         r.revenue_beat_miss = s > 1 ? `beat (+${s.toFixed(1)}%)` : s < -1 ? `miss (${s.toFixed(1)}%)` : 'in-line';
