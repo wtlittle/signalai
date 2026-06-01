@@ -259,7 +259,7 @@ def test_post_earnings_prompt_renders():
     # Phase 4: guide_vs_consensus JSON block
     assert "guide_vs_consensus" in user
     assert "next_q_rev_guide_midpoint" in user
-    assert "fy_rev_guide_change_vs_consensus_pct" in user
+    assert "fy_rev_change_vs_consensus_pct" in user
     assert "fy_eps_guide_change_vs_prior_pct" in user
 
 

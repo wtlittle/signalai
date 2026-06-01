@@ -196,8 +196,8 @@ Block 2 -- ```json guide_vs_consensus
   "fy_rev_guide_midpoint_new": "<or null>",
   "fy_rev_guide_midpoint_prior": "<or null>",
   "fy_rev_consensus_prior": "<or null>",
-  "fy_rev_guide_change_vs_consensus_pct": <number or null>,
-  "fy_rev_guide_change_vs_prior_pct": <number or null>,
+  "fy_rev_change_vs_consensus_pct": <number or null>,
+  "fy_rev_change_vs_prior_pct": <number or null>,
   "fy_eps_guide_midpoint_new": "<or null>",
   "fy_eps_guide_midpoint_prior": "<or null>",
   "fy_eps_consensus_prior": "<or null>",
@@ -206,10 +206,14 @@ Block 2 -- ```json guide_vs_consensus
 }
 ```
 
-IMPORTANT: You MUST populate the results_vs_consensus block with actual numbers
-from the THIS QUARTER ACTUALS and FORWARD CONSENSUS data provided. If the
-company reported, every field in results_vs_consensus must have a value.
-Use null only when the data is genuinely not provided in the context."""
+IMPORTANT: Both blocks are REQUIRED, not optional. You MUST populate the
+results_vs_consensus block with actual numbers from the THIS QUARTER ACTUALS and
+FORWARD CONSENSUS data provided. If the company reported, every field in
+results_vs_consensus must have a value. The guide_vs_consensus block must use the
+exact field names above -- in particular fy_rev_change_vs_consensus_pct (the FY
+revenue guide move vs prior Street consensus, signed: + = raise, - = cut) and
+fy_rev_change_vs_prior_pct -- because those drive the "FY Guide Δ" line on the
+POST card. Use null only when the data is genuinely not provided in the context."""
 
 
 def _safe(val, fmt: str = "", fallback: str = "?") -> str:
