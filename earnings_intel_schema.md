@@ -160,12 +160,46 @@ One persistent record per ticker. Updated in place (never duplicated). The same 
         "in_quarter_eps_surprise_pct": null   // signed % vs Street consensus EPS
       },
       "guide_vs_consensus": {
-        "fy_rev_change_vs_consensus_pct": null,   // FY revenue guide move vs prior Street consensus (drives "FY Guide Δ")
+        "fy_rev_change_vs_consensus_pct": null,   // FY revenue guide move vs prior Street consensus (legacy single "FY Guide Δ")
         "fy_rev_change_vs_prior_pct": null,       // FY revenue guide move vs the company's own prior guide
         "fy_eps_change_vs_consensus_pct": null,
         "next_q_rev_guide_vs_consensus_pct": null,
-        "next_q_eps_guide_vs_consensus_pct": null
+        "next_q_eps_guide_vs_consensus_pct": null,
+        // Midpoints feeding the split-guidance pills (EPS / op profit / FCF).
+        "fy_eps_guide_midpoint_new": null,
+        "fy_eps_guide_midpoint_prior": null,
+        "fy_eps_consensus_prior": null,
+        "fy_op_metric_kind": null,                // "operating_profit" | "operating_income" | null
+        "fy_op_profit_guide_midpoint_new": null,
+        "fy_op_profit_guide_midpoint_prior": null,
+        "fy_op_profit_consensus_prior": null,
+        "fy_fcf_guide_midpoint_new": null,
+        "fy_fcf_guide_midpoint_prior": null,
+        "fy_fcf_consensus_prior": null
       },
+
+      /* === NORMALIZED SPLIT-GUIDANCE FIELDS (post-earnings) ===
+         Derived from guide_vs_consensus by scripts/sync_earnings_intel_from_notes.py
+         (normalize_guidance_envelope) and mirrored onto earnings_calendar.json
+         post_earnings entries. The POST card renders TWO metric-specific pills
+         from these — revenue guidance Δ and the relevant profitability Δ (EPS
+         preferred; operating profit/income or FCF as fallbacks). deltaPct values
+         are FRACTIONS (e.g. -0.007 == -0.7%). priorSource records the baseline
+         used per metric so consensus-vs-prior-guide is auditable downstream.
+         The legacy single fy_rev_change_vs_consensus_pct field is kept for
+         backward compatibility but is NO LONGER used to drive the card UI. */
+      "guidanceRevenueDeltaPct": null,            // fraction; revenue guide Δ
+      "guidanceRevenuePriorSource": null,         // "consensus" | "prior_guidance"
+      "guidanceEpsDeltaPct": null,
+      "guidanceEpsDeltaAbs": null,                // absolute $ change (used when pct is unsafe near a tiny baseline)
+      "guidanceEpsPriorSource": null,
+      "guidanceOperatingProfitDeltaPct": null,
+      "guidanceOperatingProfitDeltaAbs": null,
+      "guidanceOperatingProfitPriorSource": null,
+      "guidanceFcfDeltaPct": null,
+      "guidanceFcfDeltaAbs": null,
+      "guidanceFcfPriorSource": null,
+      "guidanceProfitMetricUsed": null,           // "eps" | "operating_profit" | "operating_income" | "fcf"
       "previous_bottom_line": null,
       "signal_changes": []  // [{"signal_id": "...", "old_status": "WATCHING", "new_status": "CONFIRMED", "note": "..."}]
     }
