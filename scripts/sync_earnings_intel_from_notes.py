@@ -208,6 +208,181 @@ def _extract_json_envelope(md: str, label: str) -> dict | None:
         return None
 
 
+def _parse_guide_num(v) -> float | None:
+    """Parse a guidance value that may be a number or a string with a $ prefix
+    and/or K/M/B/T magnitude suffix (e.g. "$0.04", "48.0B", "1.13T").
+
+    Suffix scaling is consistent within a metric, so it cancels in the ratio
+    used for deltaPct. Returns a float in raw units or None.
+    """
+    if v is None:
+        return None
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, (int, float)):
+        return float(v) if not (v != v) else None  # reject NaN
+    if not isinstance(v, str):
+        return None
+    s = v.strip().replace("$", "").replace(",", "").replace(" ", "")
+    m = re.fullmatch(r"(-?\d+(?:\.\d+)?)([kKmMbBtT]?)", s)
+    if not m:
+        return None
+    try:
+        n = float(m.group(1))
+    except ValueError:
+        return None
+    scale = {"k": 1e3, "m": 1e6, "b": 1e9, "t": 1e12}.get(m.group(2).lower(), 1.0)
+    return n * scale
+
+
+def select_guidance_baseline(consensus_prior, prior_guide):
+    """Return (baseline_midpoint, prior_source): prefer prior consensus, else
+    prior company guidance. Returns (None, None) when neither exists.
+    """
+    cons = _parse_guide_num(consensus_prior)
+    if cons is not None:
+        return cons, "consensus"
+    guide = _parse_guide_num(prior_guide)
+    if guide is not None:
+        return guide, "prior_guidance"
+    return None, None
+
+
+def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0.0):
+    """Compute {deltaPct, deltaAbs, priorSource} for one metric from new/prior
+    midpoints, preferring a prior-consensus baseline. deltaPct is a fraction
+    (None when the baseline is zero / near-zero so callers use deltaAbs).
+    Returns None when the new midpoint or all baselines are missing.
+    """
+    cur = _parse_guide_num(new_mid)
+    if cur is None:
+        return None
+    base, source = select_guidance_baseline(consensus_prior, prior_guide)
+    if base is None:
+        return None
+    delta_abs = cur - base
+    delta_pct = None
+    if abs(base) > tiny_baseline:
+        delta_pct = delta_abs / abs(base)
+    return {"deltaPct": delta_pct, "deltaAbs": delta_abs, "priorSource": source}
+
+
+def normalize_guidance_envelope(gvc: dict | None) -> dict:
+    """Derive the normalized split-guidance fields (revenue + profitability)
+    from a raw ``guide_vs_consensus`` envelope.
+
+    Returns a flat dict of the backend fields the card UI reads. deltaPct
+    values are FRACTIONS (e.g. -0.007 for -0.7%) so they match the JS helpers
+    in earnings.js. Profitability follows the EPS > op profit/income > FCF
+    priority order and records which metric was used in
+    ``guidanceProfitMetricUsed``.
+    """
+    out: dict = {}
+    if not gvc:
+        return out
+
+    def pct_to_frac(p):
+        f = _safe_float(p)
+        return f / 100.0 if f is not None else None
+
+    # --- Revenue ---
+    rev = _compute_metric_delta(
+        gvc.get("fy_rev_guide_midpoint_new"),
+        gvc.get("fy_rev_consensus_prior"),
+        gvc.get("fy_rev_guide_midpoint_prior"),
+        0.0,
+    )
+    if rev and rev["deltaPct"] is not None:
+        out["guidanceRevenueDeltaPct"] = rev["deltaPct"]
+        out["guidanceRevenuePriorSource"] = rev["priorSource"]
+    else:
+        cons = pct_to_frac(gvc.get("fy_rev_change_vs_consensus_pct"))
+        prior = pct_to_frac(gvc.get("fy_rev_change_vs_prior_pct"))
+        if cons is not None:
+            out["guidanceRevenueDeltaPct"] = cons
+            out["guidanceRevenuePriorSource"] = "consensus"
+        elif prior is not None:
+            out["guidanceRevenueDeltaPct"] = prior
+            out["guidanceRevenuePriorSource"] = "prior_guidance"
+
+    # --- EPS (primary profitability) --- tiny baseline guard for near-zero EPS.
+    eps = _compute_metric_delta(
+        gvc.get("fy_eps_guide_midpoint_new"),
+        gvc.get("fy_eps_consensus_prior"),
+        gvc.get("fy_eps_guide_midpoint_prior"),
+        0.05,
+    )
+    if eps:
+        if eps["deltaPct"] is not None:
+            out["guidanceEpsDeltaPct"] = eps["deltaPct"]
+        out["guidanceEpsDeltaAbs"] = eps["deltaAbs"]
+        out["guidanceEpsPriorSource"] = eps["priorSource"]
+    else:
+        cons = pct_to_frac(gvc.get("fy_eps_guide_change_vs_consensus_pct"))
+        prior = pct_to_frac(gvc.get("fy_eps_guide_change_vs_prior_pct"))
+        if cons is not None:
+            out["guidanceEpsDeltaPct"] = cons
+            out["guidanceEpsPriorSource"] = "consensus"
+        elif prior is not None:
+            out["guidanceEpsDeltaPct"] = prior
+            out["guidanceEpsPriorSource"] = "prior_guidance"
+
+    # --- Operating profit / income (fallback profitability) ---
+    op = _compute_metric_delta(
+        gvc.get("fy_op_profit_guide_midpoint_new"),
+        gvc.get("fy_op_profit_consensus_prior"),
+        gvc.get("fy_op_profit_guide_midpoint_prior"),
+        0.0,
+    )
+    if op:
+        if op["deltaPct"] is not None:
+            out["guidanceOperatingProfitDeltaPct"] = op["deltaPct"]
+        out["guidanceOperatingProfitDeltaAbs"] = op["deltaAbs"]
+        out["guidanceOperatingProfitPriorSource"] = op["priorSource"]
+
+    # --- FCF (last-resort profitability) ---
+    fcf = _compute_metric_delta(
+        gvc.get("fy_fcf_guide_midpoint_new"),
+        gvc.get("fy_fcf_consensus_prior"),
+        gvc.get("fy_fcf_guide_midpoint_prior"),
+        0.0,
+    )
+    if fcf:
+        if fcf["deltaPct"] is not None:
+            out["guidanceFcfDeltaPct"] = fcf["deltaPct"]
+        out["guidanceFcfDeltaAbs"] = fcf["deltaAbs"]
+        out["guidanceFcfPriorSource"] = fcf["priorSource"]
+
+    # Record which profitability metric the card will use (EPS first).
+    if "guidanceEpsDeltaPct" in out or "guidanceEpsDeltaAbs" in out:
+        out["guidanceProfitMetricUsed"] = "eps"
+    elif "guidanceOperatingProfitDeltaPct" in out or "guidanceOperatingProfitDeltaAbs" in out:
+        kind = gvc.get("fy_op_metric_kind")
+        out["guidanceProfitMetricUsed"] = kind if kind in ("operating_income", "operating_profit") else "operating_profit"
+    elif "guidanceFcfDeltaPct" in out or "guidanceFcfDeltaAbs" in out:
+        out["guidanceProfitMetricUsed"] = "fcf"
+
+    return out
+
+
+# Flat normalized guidance fields the card UI reads. Kept alongside the legacy
+# consolidated guide_vs_consensus envelope (which stays for backward compat).
+NORMALIZED_GUIDANCE_FIELDS = (
+    "guidanceRevenueDeltaPct",
+    "guidanceRevenuePriorSource",
+    "guidanceEpsDeltaPct",
+    "guidanceEpsDeltaAbs",
+    "guidanceEpsPriorSource",
+    "guidanceOperatingProfitDeltaPct",
+    "guidanceOperatingProfitDeltaAbs",
+    "guidanceOperatingProfitPriorSource",
+    "guidanceFcfDeltaPct",
+    "guidanceFcfDeltaAbs",
+    "guidanceFcfPriorSource",
+    "guidanceProfitMetricUsed",
+)
+
+
 def _beat_miss_label(surprise_pct: float | None, threshold: float = 1.0) -> str:
     """Derive 'beat (X%)' / 'miss (X%)' / 'in-line' from surprise percentage.
 
@@ -574,6 +749,12 @@ def build_post_intel(ticker: str, entry: dict, note_path: Path) -> dict:
         rec["results_vs_consensus"] = results_envelope
     if guide_envelope:
         rec["guide_vs_consensus"] = guide_envelope
+        # Derive the normalized split-guidance fields (revenue + profitability)
+        # so the post-earnings card can render two metric-specific pills. The
+        # legacy consolidated envelope is preserved above for backward compat.
+        normalized = normalize_guidance_envelope(guide_envelope)
+        for k, v in normalized.items():
+            rec[k] = v
     return rec
 
 
@@ -594,6 +775,9 @@ REFRESH_ALWAYS = {
     "next_earnings_date",
     "last_earnings_date",
     "refresh_reason",
+    # Normalized split-guidance fields are cheap derived scalars — always
+    # refresh them from the latest envelope rather than treating as sticky.
+    *NORMALIZED_GUIDANCE_FIELDS,
 }
 
 # Rich fields the sync now produces. If an existing record has empty values
@@ -775,6 +959,18 @@ def sync_calendar_from_intel(tickers: dict, dry_run: bool = False) -> int:
                 if val is not None and field not in entry:
                     entry[field] = val
                     changed = True
+
+        # Push the normalized split-guidance fields onto the calendar entry so
+        # the card renderer can build revenue + profitability pills directly.
+        # Prefer fields already computed on the intel record; recompute from
+        # the envelope only as a fallback.
+        normalized = {k: intel[k] for k in NORMALIZED_GUIDANCE_FIELDS if k in intel}
+        if not normalized and gvc:
+            normalized = normalize_guidance_envelope(gvc)
+        for field, val in normalized.items():
+            if val is not None and entry.get(field) != val:
+                entry[field] = val
+                changed = True
 
         if changed:
             updated += 1

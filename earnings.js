@@ -178,6 +178,10 @@ async function enrichRecentFromIntel(recent) {
       if (r.next_q_eps_guide_vs_consensus_pct == null && gvc.next_q_eps_guide_vs_consensus_pct != null) {
         r.next_q_eps_guide_vs_consensus_pct = gvc.next_q_eps_guide_vs_consensus_pct;
       }
+      // Derive the normalized split-guidance fields (revenue + profitability)
+      // from the raw envelope so the two-pill row works even before the
+      // backend recomputes them onto the calendar row.
+      _applyNormalizedGuidanceFromEnvelope(r, gvc);
     }
 
     // Results fields from results_vs_consensus envelope. Surface the structured
@@ -276,6 +280,318 @@ function _renderFyGuideDeltaRow(pct) {
   return `<div class="earnings-guide-row"><span class="guide-label">FY Guide \u0394</span>${body}</div>`;
 }
 
+// === Split FY guidance: revenue + profitability metric-specific pills ===
+// The legacy single "FY Guide Δ" line above blended one number. POST cards now
+// render TWO independent pills: revenue guidance Δ and the relevant
+// profitability guidance Δ (EPS preferred; operating profit / FCF as
+// fallbacks). Each metric selects its own baseline (prior consensus when
+// available, else prior company guide) and tracks which via priorSource.
+
+// Bucket a fractional delta (e.g. -0.007 for -0.7%) into raise / cut / flat.
+// flatThreshold is in the same fractional units (0.005 = 0.5%). Returns 'n/a'
+// when the delta is null or non-finite.
+function classifyGuideDelta(deltaPct, flatThreshold = 0.005) {
+  if (deltaPct == null || !Number.isFinite(deltaPct)) return 'n/a';
+  if (Math.abs(deltaPct) <= flatThreshold) return 'flat';
+  return deltaPct > 0 ? 'raise' : 'cut';
+}
+
+// Build the "+2.1%" / "-0.7%" / "+$0.02" string for a metric. Prefers a
+// percentage when the delta is finite and meaningful. For profit metrics
+// (EPS / OP PROFIT / OP INC / FCF) where the percentage is missing or not
+// finite (tiny / zero-crossing baseline) it falls back to a signed absolute
+// change so the UI never shows NaN/Infinity/absurd %.
+function formatGuideDelta({ deltaPct, deltaAbs, metric }) {
+  const isProfit = metric && metric !== 'REV';
+  const pctOk = deltaPct != null && Number.isFinite(deltaPct);
+  if (pctOk) {
+    const pct = deltaPct * 100;
+    // Guard against absurd magnitudes from a near-zero baseline on profit
+    // metrics — prefer the absolute $ change instead.
+    if (isProfit && Math.abs(pct) >= 100 && deltaAbs != null && Number.isFinite(deltaAbs)) {
+      return _fmtGuideAbs(deltaAbs);
+    }
+    const sign = pct > 0 ? '+' : (pct < 0 ? '-' : '');
+    return `${sign}${Math.abs(pct).toFixed(1)}%`;
+  }
+  if (deltaAbs != null && Number.isFinite(deltaAbs)) {
+    return _fmtGuideAbs(deltaAbs);
+  }
+  return null;
+}
+
+// Format a signed absolute dollar change like "+$0.02" / "-$0.03".
+function _fmtGuideAbs(deltaAbs) {
+  const sign = deltaAbs > 0 ? '+' : (deltaAbs < 0 ? '-' : '');
+  return `${sign}$${Math.abs(deltaAbs).toFixed(2)}`;
+}
+
+// Pick the profitability metric to display, in priority order:
+//   EPS > Operating Profit / Operating Income > FCF.
+// `guidance` is the raw card row. Returns a normalized metric descriptor or
+// null when no profitability guidance is available.
+function selectProfitabilityGuideMetric(g) {
+  if (!g) return null;
+  const num = (v) => (typeof v === 'number' && Number.isFinite(v)) ? v : null;
+  const hasEps = num(g.guidanceEpsDeltaPct) != null || num(g.guidanceEpsDeltaAbs) != null;
+  if (hasEps) {
+    return {
+      label: 'EPS',
+      deltaPct: num(g.guidanceEpsDeltaPct),
+      deltaAbs: num(g.guidanceEpsDeltaAbs),
+      priorSource: g.guidanceEpsPriorSource || 'consensus',
+    };
+  }
+  const hasOp = num(g.guidanceOperatingProfitDeltaPct) != null || num(g.guidanceOperatingProfitDeltaAbs) != null;
+  if (hasOp) {
+    // The metric used (operating profit vs operating income) is recorded on
+    // guidanceProfitMetricUsed; default to "OP PROFIT".
+    const used = (g.guidanceProfitMetricUsed === 'operating_income') ? 'OP INC' : 'OP PROFIT';
+    return {
+      label: used,
+      deltaPct: num(g.guidanceOperatingProfitDeltaPct),
+      deltaAbs: num(g.guidanceOperatingProfitDeltaAbs),
+      priorSource: g.guidanceOperatingProfitPriorSource || 'consensus',
+    };
+  }
+  const hasFcf = num(g.guidanceFcfDeltaPct) != null || num(g.guidanceFcfDeltaAbs) != null;
+  if (hasFcf) {
+    return {
+      label: 'FCF',
+      deltaPct: num(g.guidanceFcfDeltaPct),
+      deltaAbs: num(g.guidanceFcfDeltaAbs),
+      priorSource: g.guidanceFcfPriorSource || 'consensus',
+    };
+  }
+  return null;
+}
+
+// Resolve { baselineMidpoint, priorSource } for a metric: prefer prior
+// consensus, else fall back to prior company guidance. Used by the backend
+// mirror / any client-side recompute path. Returns null when neither baseline
+// exists.
+function selectGuidanceBaseline(metricData) {
+  if (!metricData) return null;
+  const num = (v) => (typeof v === 'number' && Number.isFinite(v)) ? v : null;
+  const cons = num(metricData.consensusPriorMidpoint);
+  if (cons != null) return { baselineMidpoint: cons, priorSource: 'consensus' };
+  const guide = num(metricData.priorGuideMidpoint);
+  if (guide != null) return { baselineMidpoint: guide, priorSource: 'prior_guidance' };
+  return null;
+}
+
+// Normalize a raw card row into { revenue, profitability } display objects.
+// Each side is null when its data is unavailable so callers can omit the pill.
+function buildGuidanceChangeDisplay(g) {
+  const num = (v) => (typeof v === 'number' && Number.isFinite(v)) ? v : null;
+
+  let revenue = null;
+  const revPct = num(g && g.guidanceRevenueDeltaPct);
+  if (revPct != null) {
+    const direction = classifyGuideDelta(revPct);
+    const value = formatGuideDelta({ deltaPct: revPct, deltaAbs: null, metric: 'REV' });
+    if (value != null) {
+      revenue = {
+        label: 'REV',
+        deltaPct: revPct,
+        direction,
+        priorSource: (g.guidanceRevenuePriorSource) || 'consensus',
+        display: value,
+      };
+    }
+  }
+
+  let profitability = null;
+  const prof = selectProfitabilityGuideMetric(g);
+  if (prof) {
+    const direction = classifyGuideDelta(prof.deltaPct);
+    const value = formatGuideDelta({ deltaPct: prof.deltaPct, deltaAbs: prof.deltaAbs, metric: prof.label });
+    if (value != null) {
+      // When the rendered value is an absolute $ change, classify direction
+      // off the absolute delta (pct may be null / unreliable near zero).
+      const dir = direction === 'n/a' && prof.deltaAbs != null
+        ? (Math.abs(prof.deltaAbs) <= 0.0001 ? 'flat' : (prof.deltaAbs > 0 ? 'raise' : 'cut'))
+        : direction;
+      profitability = {
+        label: prof.label,
+        deltaPct: prof.deltaPct,
+        deltaAbs: prof.deltaAbs,
+        direction: dir,
+        priorSource: prof.priorSource || 'consensus',
+        display: value,
+      };
+    }
+  }
+
+  return { revenue, profitability };
+}
+
+// Map a normalized direction to the pill color class.
+function _guideDirClass(direction) {
+  if (direction === 'raise') return 'guide-positive';
+  if (direction === 'cut') return 'guide-negative';
+  return 'guide-neutral';
+}
+
+// Render one metric pill: "<LABEL> Δ <value> <direction>".
+function _renderGuidePill(metric, extraClass) {
+  if (!metric) return '';
+  const dirClass = _guideDirClass(metric.direction);
+  // Surface a subtle "vs prior guide" qualifier when the baseline was the
+  // company's own prior guide rather than Street consensus.
+  const basisTitle = metric.priorSource === 'prior_guidance'
+    ? ' title="vs prior guide"'
+    : ' title="vs prior consensus"';
+  const basisHint = metric.priorSource === 'prior_guidance'
+    ? '<span class="guide-basis-hint">vs prior guide</span>'
+    : '';
+  return `<span class="guide-metric ${extraClass} ${dirClass}"${basisTitle}>` +
+    `<span class="guide-metric-label">${metric.label} \u0394</span>` +
+    `<span class="guide-metric-value">${metric.display}</span>` +
+    `<span class="guide-metric-direction">${metric.direction}</span>` +
+    `${basisHint}</span>`;
+}
+
+// Render the split FY guidance row from a normalized { revenue, profitability }
+// object. Returns '' when neither metric is present (caller hides the line).
+function renderGuidanceChangeRow(g) {
+  const { revenue, profitability } = buildGuidanceChangeDisplay(g);
+  if (!revenue && !profitability) return '';
+  const pills = [];
+  if (revenue) pills.push(_renderGuidePill(revenue, 'guide-revenue'));
+  if (profitability) pills.push(_renderGuidePill(profitability, 'guide-profit'));
+  const body = pills.join('<span class="guide-sep">&middot;</span>');
+  return `<div class="earnings-guide-row"><span class="guide-label">FY Guide</span>${body}</div>`;
+}
+
+// Parse a guidance numeric value that may be a bare number or a string with a
+// $ prefix and/or B/M/K/T suffix (e.g. "$0.04", "48.0B", "1.13T"). Returns a
+// float in raw units or null. Suffix scaling is consistent within a metric so
+// it cancels in the ratio used for deltaPct.
+function _parseGuideNum(v) {
+  if (v == null) return null;
+  if (typeof v === 'number') return Number.isFinite(v) ? v : null;
+  if (typeof v !== 'string') return null;
+  const s = v.trim().replace(/[$,\s]/g, '');
+  const m = /^(-?\d+(?:\.\d+)?)\s*([kKmMbBtT])?$/.exec(s);
+  if (!m) return null;
+  let n = parseFloat(m[1]);
+  if (!Number.isFinite(n)) return null;
+  const suf = (m[2] || '').toLowerCase();
+  const scale = { k: 1e3, m: 1e6, b: 1e9, t: 1e12 }[suf] || 1;
+  return n * scale;
+}
+
+// Compute { deltaPct, deltaAbs, priorSource } for one metric from new/prior
+// midpoints, preferring a prior-consensus baseline over prior-guide. Returns
+// null when the new midpoint or all baselines are missing. deltaPct is a
+// fraction; null when the baseline is zero/near-zero (caller uses deltaAbs).
+function _computeMetricDelta(newMid, consensusPrior, guidePrior, tinyBaseline) {
+  const cur = _parseGuideNum(newMid);
+  if (cur == null) return null;
+  const base = selectGuidanceBaseline({
+    consensusPriorMidpoint: _parseGuideNum(consensusPrior),
+    priorGuideMidpoint: _parseGuideNum(guidePrior),
+  });
+  if (!base) return null;
+  const deltaAbs = cur - base.baselineMidpoint;
+  const tiny = tinyBaseline != null ? tinyBaseline : 0;
+  let deltaPct = null;
+  if (Math.abs(base.baselineMidpoint) > tiny) {
+    deltaPct = deltaAbs / Math.abs(base.baselineMidpoint);
+  }
+  return { deltaPct, deltaAbs, priorSource: base.priorSource };
+}
+
+// Map a raw guide_vs_consensus envelope onto the normalized split-guidance
+// fields the card renderer reads. Prefers precomputed deltas already on the
+// row; only fills gaps. Percent envelope fields (e.g. -0.7) are converted to
+// the fractional units the helpers expect (-0.007).
+function _applyNormalizedGuidanceFromEnvelope(r, gvc) {
+  if (!gvc) return;
+  const setIf = (key, val) => {
+    if (val != null && Number.isFinite(val) && r[key] == null) r[key] = val;
+  };
+  const pctToFrac = (p) => (typeof p === 'number' && Number.isFinite(p)) ? p / 100 : null;
+
+  // --- Revenue ---
+  // Prefer a midpoint-derived delta; else fall back to the precomputed pct.
+  let rev = _computeMetricDelta(
+    gvc.fy_rev_guide_midpoint_new,
+    gvc.fy_rev_consensus_prior,
+    gvc.fy_rev_guide_midpoint_prior,
+    0,
+  );
+  if (rev && rev.deltaPct != null) {
+    setIf('guidanceRevenueDeltaPct', rev.deltaPct);
+    if (r.guidanceRevenuePriorSource == null) r.guidanceRevenuePriorSource = rev.priorSource;
+  } else {
+    const consPct = pctToFrac(gvc.fy_rev_change_vs_consensus_pct);
+    const priorPct = pctToFrac(gvc.fy_rev_change_vs_prior_pct);
+    if (consPct != null) {
+      setIf('guidanceRevenueDeltaPct', consPct);
+      if (r.guidanceRevenuePriorSource == null) r.guidanceRevenuePriorSource = 'consensus';
+    } else if (priorPct != null) {
+      setIf('guidanceRevenueDeltaPct', priorPct);
+      if (r.guidanceRevenuePriorSource == null) r.guidanceRevenuePriorSource = 'prior_guidance';
+    }
+  }
+
+  // --- EPS (primary profitability metric) ---
+  // EPS baselines are small; treat |baseline| <= 0.05 as "tiny" so we surface
+  // an absolute $ change instead of a misleading percentage.
+  const eps = _computeMetricDelta(
+    gvc.fy_eps_guide_midpoint_new,
+    gvc.fy_eps_consensus_prior,
+    gvc.fy_eps_guide_midpoint_prior,
+    0.05,
+  );
+  if (eps) {
+    setIf('guidanceEpsDeltaPct', eps.deltaPct);
+    setIf('guidanceEpsDeltaAbs', eps.deltaAbs);
+    if (r.guidanceEpsPriorSource == null) r.guidanceEpsPriorSource = eps.priorSource;
+  } else {
+    const epsPct = pctToFrac(gvc.fy_eps_guide_change_vs_consensus_pct);
+    const epsPriorPct = pctToFrac(gvc.fy_eps_guide_change_vs_prior_pct);
+    if (epsPct != null) {
+      setIf('guidanceEpsDeltaPct', epsPct);
+      if (r.guidanceEpsPriorSource == null) r.guidanceEpsPriorSource = 'consensus';
+    } else if (epsPriorPct != null) {
+      setIf('guidanceEpsDeltaPct', epsPriorPct);
+      if (r.guidanceEpsPriorSource == null) r.guidanceEpsPriorSource = 'prior_guidance';
+    }
+  }
+
+  // --- Operating profit / income (fallback profitability) ---
+  const op = _computeMetricDelta(
+    gvc.fy_op_profit_guide_midpoint_new,
+    gvc.fy_op_profit_consensus_prior,
+    gvc.fy_op_profit_guide_midpoint_prior,
+    0,
+  );
+  if (op) {
+    setIf('guidanceOperatingProfitDeltaPct', op.deltaPct);
+    setIf('guidanceOperatingProfitDeltaAbs', op.deltaAbs);
+    if (r.guidanceOperatingProfitPriorSource == null) r.guidanceOperatingProfitPriorSource = op.priorSource;
+    if (r.guidanceProfitMetricUsed == null && gvc.fy_op_metric_kind) {
+      r.guidanceProfitMetricUsed = gvc.fy_op_metric_kind;
+    }
+  }
+
+  // --- FCF (last-resort profitability) ---
+  const fcf = _computeMetricDelta(
+    gvc.fy_fcf_guide_midpoint_new,
+    gvc.fy_fcf_consensus_prior,
+    gvc.fy_fcf_guide_midpoint_prior,
+    0,
+  );
+  if (fcf) {
+    setIf('guidanceFcfDeltaPct', fcf.deltaPct);
+    setIf('guidanceFcfDeltaAbs', fcf.deltaAbs);
+    if (r.guidanceFcfPriorSource == null) r.guidanceFcfPriorSource = fcf.priorSource;
+  }
+}
+
 // --- Render earnings cards ---
 function renderRecentEarnings(recent) {
   const hasCoverage = typeof tickerList !== 'undefined' && Array.isArray(tickerList) && tickerList.length > 0;
@@ -293,8 +609,11 @@ function renderRecentEarnings(recent) {
     // present, otherwise parse it out of the Phase-4 beat/miss strings.
     const revSurprise = _resolveSurprisePct(r.in_quarter_rev_surprise_pct, r.revenue_beat_miss);
     const epsSurprise = _resolveSurprisePct(r.in_quarter_eps_surprise_pct, r.eps_beat_miss);
-    // FY revenue guidance move vs prior consensus. Accept either the calendar
-    // field name or the raw envelope field name.
+    // Split FY guidance into revenue + profitability pills from the normalized
+    // backend fields. Falls back to the legacy single "FY Guide Δ" line only
+    // when no normalized guidance data is present on the row.
+    const guideRowHtml = renderGuidanceChangeRow(r);
+    // Legacy single-line fallback: FY revenue guidance move vs prior consensus.
     const fyGuideDelta = (typeof r.fy_rev_guide_change_vs_consensus_pct === 'number')
       ? r.fy_rev_guide_change_vs_consensus_pct
       : (typeof r.fy_rev_change_vs_consensus_pct === 'number' ? r.fy_rev_change_vs_consensus_pct : null);
@@ -325,7 +644,7 @@ function renderRecentEarnings(recent) {
           ${_fmtBeatMiss(epsSurprise)}
         </div>
       </div>
-      ${_renderFyGuideDeltaRow(fyGuideDelta)}
+      ${guideRowHtml || _renderFyGuideDeltaRow(fyGuideDelta)}
       ${_renderGuideRow('Next Q Guide', r.next_q_rev_guide_vs_consensus_pct, r.next_q_eps_guide_vs_consensus_pct)}
       ${r.fiscal_quarter ? `<div class="earnings-card-fq">${r.fiscal_quarter}</div>` : ''}
       <div class="earnings-card-reaction-row">
@@ -874,7 +1193,20 @@ async function fetchEarnings() {
               fy_rev_guide_change_vs_consensus_pct: p.fy_rev_guide_change_vs_consensus_pct || null,
               fy_eps_guide_change_vs_consensus_pct: p.fy_eps_guide_change_vs_consensus_pct || null,
               next_q_rev_guide_vs_consensus_pct: p.next_q_rev_guide_vs_consensus_pct || null,
-              next_q_eps_guide_vs_consensus_pct: p.next_q_eps_guide_vs_consensus_pct || null
+              next_q_eps_guide_vs_consensus_pct: p.next_q_eps_guide_vs_consensus_pct || null,
+              // Normalized split-guidance fields (revenue + profitability).
+              guidanceRevenueDeltaPct: p.guidanceRevenueDeltaPct != null ? p.guidanceRevenueDeltaPct : null,
+              guidanceRevenuePriorSource: p.guidanceRevenuePriorSource || null,
+              guidanceEpsDeltaPct: p.guidanceEpsDeltaPct != null ? p.guidanceEpsDeltaPct : null,
+              guidanceEpsDeltaAbs: p.guidanceEpsDeltaAbs != null ? p.guidanceEpsDeltaAbs : null,
+              guidanceEpsPriorSource: p.guidanceEpsPriorSource || null,
+              guidanceOperatingProfitDeltaPct: p.guidanceOperatingProfitDeltaPct != null ? p.guidanceOperatingProfitDeltaPct : null,
+              guidanceOperatingProfitDeltaAbs: p.guidanceOperatingProfitDeltaAbs != null ? p.guidanceOperatingProfitDeltaAbs : null,
+              guidanceOperatingProfitPriorSource: p.guidanceOperatingProfitPriorSource || null,
+              guidanceFcfDeltaPct: p.guidanceFcfDeltaPct != null ? p.guidanceFcfDeltaPct : null,
+              guidanceFcfDeltaAbs: p.guidanceFcfDeltaAbs != null ? p.guidanceFcfDeltaAbs : null,
+              guidanceFcfPriorSource: p.guidanceFcfPriorSource || null,
+              guidanceProfitMetricUsed: p.guidanceProfitMetricUsed || null
             });
           }
         }

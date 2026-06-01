@@ -202,9 +202,21 @@ Block 2 -- ```json guide_vs_consensus
   "fy_eps_guide_midpoint_prior": "<or null>",
   "fy_eps_consensus_prior": "<or null>",
   "fy_eps_guide_change_vs_consensus_pct": <number or null>,
-  "fy_eps_guide_change_vs_prior_pct": <number or null>
+  "fy_eps_guide_change_vs_prior_pct": <number or null>,
+  "fy_op_metric_kind": "<operating_profit | operating_income | null>",
+  "fy_op_profit_guide_midpoint_new": "<or null>",
+  "fy_op_profit_guide_midpoint_prior": "<or null>",
+  "fy_op_profit_consensus_prior": "<or null>",
+  "fy_fcf_guide_midpoint_new": "<or null>",
+  "fy_fcf_guide_midpoint_prior": "<or null>",
+  "fy_fcf_consensus_prior": "<or null>"
 }
 ```
+
+The EPS / operating-profit / FCF midpoints feed the profitability guidance
+pill on the POST card (EPS preferred; operating profit/income and FCF are
+fallbacks). Provide the prior consensus midpoint when known so the change is
+measured vs Street; otherwise the prior company guide midpoint is used.
 
 IMPORTANT: Both blocks are REQUIRED, not optional. You MUST populate the
 results_vs_consensus block with actual numbers from the THIS QUARTER ACTUALS and
