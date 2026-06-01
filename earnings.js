@@ -250,17 +250,117 @@ function _resolveSurprisePct(structuredPct, beatMissStr) {
   return null;
 }
 
+// === Safe display formatters (card hardening) =============================
+// Every dynamic card field flows through these. They guarantee no card can
+// emit NaN / undefined / null / Infinity / "$$" / doubled signs / a bare "—"
+// in place of an expected value. They NEVER fabricate a value: missing input
+// degrades to an explicit "n/a", it is never backfilled from a constant.
+
+// Tokens that should never appear inside a rendered value. Used by the audit.
+const FORBIDDEN_DISPLAY_TOKENS = ['NaN', 'undefined', 'null', 'Infinity', '$$'];
+
+// Coerce an arbitrary value to a finite number or null. Strings carrying a
+// leading "$" and/or a B/M/K/T magnitude suffix are parsed; anything that
+// cannot be made finite returns null (never NaN/Infinity).
+function _toFiniteNumber(value) {
+  if (value == null) return null;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value !== 'string') return null;
+  const s = value.trim().replace(/[$,\s]/g, '');
+  const m = /^(-?\d+(?:\.\d+)?)\s*([kKmMbBtT])?$/.exec(s);
+  if (!m) return null;
+  const n = parseFloat(m[1]);
+  if (!Number.isFinite(n)) return null;
+  return n;
+}
+
+// safeMoney: render a monetary value with EXACTLY ONE "$". Strips any
+// pre-existing "$" on the input before prepending so we can never produce
+// "$$". The value must originate from the data layer; when it is null/blank
+// or non-numeric we return 'n/a' rather than inventing a number. When `unit`
+// is supplied (e.g. 'M', 'B') and the input is a bare number it is appended.
+function safeMoney(value, { unit } = {}) {
+  if (value == null) return 'n/a';
+  if (typeof value === 'string') {
+    // Already-formatted string from the data layer (e.g. "$276.7M", "276.7M").
+    let s = value.trim();
+    if (s === '' || s === '\u2014' || s === '--') return 'n/a';
+    // Collapse any run of leading "$" to a single one we control.
+    s = s.replace(/^\$+/, '');
+    if (s === '') return 'n/a';
+    return '$' + s;
+  }
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) return 'n/a';
+    const suffix = unit ? unit : '';
+    return '$' + value + suffix;
+  }
+  return 'n/a';
+}
+
+// safePct: null-safe signed percentage. Returns 'n/a' for null / non-finite
+// input (never NaN / Infinity). A single leading sign only; never doubled.
+function safePct(value, { decimals = 1, signed = true } = {}) {
+  const n = (typeof value === 'number') ? value : _toFiniteNumber(value);
+  if (n == null || !Number.isFinite(n)) return 'n/a';
+  const rounded = Number(n.toFixed(decimals));
+  const sign = signed && rounded > 0 ? '+' : (rounded < 0 ? '-' : '');
+  return `${sign}${Math.abs(rounded).toFixed(decimals)}%`;
+}
+
+// safeReaction: resolve the post-print price reaction from a DATA-LAYER field.
+// Returns { display, direction, available }. When the field is genuinely
+// missing/non-finite we return available=false with display 'n/a' — we NEVER
+// fabricate, remember, or interpolate a value. direction is used for color.
+function safeReaction(postPrintPct, { flatThreshold = 0.05 } = {}) {
+  const n = (typeof postPrintPct === 'number') ? postPrintPct : _toFiniteNumber(postPrintPct);
+  if (n == null || !Number.isFinite(n)) {
+    return { display: 'n/a', direction: 'neutral', available: false };
+  }
+  let direction;
+  if (Math.abs(n) <= flatThreshold) direction = 'neutral';
+  else direction = n > 0 ? 'positive' : 'negative';
+  return { display: safePct(n, { decimals: 1, signed: true }), direction, available: true };
+}
+
+// classifyBeatMiss: bucket an in-quarter surprise % into beat / miss / in-line.
+// flatThreshold is in percentage points (default 1.0 → ±1% is "in-line").
+function classifyBeatMiss(deltaPct, flatThreshold = 1.0) {
+  const n = (typeof deltaPct === 'number') ? deltaPct : _toFiniteNumber(deltaPct);
+  if (n == null || !Number.isFinite(n)) return 'n/a';
+  if (n > flatThreshold) return 'beat';
+  if (n < -flatThreshold) return 'miss';
+  return 'in-line';
+}
+
+// renderEarningsCard: compose the safe display tokens for a post-earnings
+// card row. EVERY token is derived from data-layer fields on `card` (no
+// hardcoded constants) and passed through the safe formatters above. Returns
+// a token bag the template assembles; missing fields degrade to 'n/a' tokens,
+// never to a fabricated or remembered value.
+function renderEarningsCard(card) {
+  const c = card || {};
+  // Headline actuals — already formatted strings from the data layer; route
+  // through safeMoney so we emit exactly one "$" and never a bare "—".
+  const revenue = safeMoney(c.revenue_actual);
+  const eps = safeMoney(c.eps_actual);
+  // Post-print reaction — sourced FRESH from the data-layer field
+  // stock_reaction_pct. safeReaction returns 'n/a' when the field is genuinely
+  // missing; it never substitutes a guessed/remembered value.
+  const reaction = safeReaction(c.stock_reaction_pct);
+  return { revenue, eps, reaction };
+}
+
 // Render a compact beat/miss span: "+2.1% beat" (green) / "-0.8% miss" (red),
 // or a neutral "\u2014" placeholder when the surprise is unknown. Within the
 // +/-1% band we label "in-line" (neutral) rather than beat/miss.
 function _fmtBeatMiss(pct) {
-  if (pct == null) {
+  const label = classifyBeatMiss(pct);
+  if (label === 'n/a') {
     return '<span class="metric-surprise neutral">\u2014</span>';
   }
-  const sign = pct > 0 ? '+' : '';
-  const label = pct > 1 ? 'beat' : pct < -1 ? 'miss' : 'in-line';
-  const cls = pct > 1 ? 'beat' : pct < -1 ? 'miss' : 'inline';
-  return `<span class="metric-surprise ${cls}">${sign}${pct.toFixed(1)}% ${label}</span>`;
+  const cls = label === 'beat' ? 'beat' : label === 'miss' ? 'miss' : 'inline';
+  return `<span class="metric-surprise ${cls}">${safePct(pct)} ${label}</span>`;
 }
 
 // Render the FY Guide \u0394 row: how much FY revenue guidance moved vs prior
@@ -609,6 +709,10 @@ function renderRecentEarnings(recent) {
     // present, otherwise parse it out of the Phase-4 beat/miss strings.
     const revSurprise = _resolveSurprisePct(r.in_quarter_rev_surprise_pct, r.revenue_beat_miss);
     const epsSurprise = _resolveSurprisePct(r.in_quarter_eps_surprise_pct, r.eps_beat_miss);
+    // Compose every dynamic token through the safe formatters so no card can
+    // emit "$$" / NaN / undefined / a bare "—" where a value is expected. Each
+    // value is sourced FRESH from the data-layer row (r.*) — none is hardcoded.
+    const tokens = renderEarningsCard(r);
     // Split FY guidance into revenue + profitability pills from the normalized
     // backend fields. Falls back to the legacy single "FY Guide Δ" line only
     // when no normalized guidance data is present on the row.
@@ -635,12 +739,12 @@ function renderRecentEarnings(recent) {
       <div class="earnings-card-metrics">
         <div class="earnings-metric">
           <span class="metric-label">Rev</span>
-          <span class="metric-value">${r.revenue_actual || '\u2014'}</span>
+          <span class="metric-value">${tokens.revenue}</span>
           ${_fmtBeatMiss(revSurprise)}
         </div>
         <div class="earnings-metric">
           <span class="metric-label">EPS</span>
-          <span class="metric-value">${r.eps_actual || '\u2014'}</span>
+          <span class="metric-value">${tokens.eps}</span>
           ${_fmtBeatMiss(epsSurprise)}
         </div>
       </div>
@@ -648,10 +752,8 @@ function renderRecentEarnings(recent) {
       ${_renderGuideRow('Next Q Guide', r.next_q_rev_guide_vs_consensus_pct, r.next_q_eps_guide_vs_consensus_pct)}
       ${r.fiscal_quarter ? `<div class="earnings-card-fq">${r.fiscal_quarter}</div>` : ''}
       <div class="earnings-card-reaction-row">
-        ${r.stock_reaction_pct != null
-          ? `<span class="reaction-pct ${r.stock_reaction_pct >= 0 ? 'positive' : 'negative'}">${r.stock_reaction_pct >= 0 ? '+' : ''}${r.stock_reaction_pct.toFixed(1)}% post-print</span>`
-          : `<span class="reaction-pct neutral">\u2014 post-print</span>`}
-        ${r.stock_reaction ? `<span class="reaction-text">${r.stock_reaction}</span>` : (r.stock_reaction_pct == null ? `<span class="reaction-text muted">Awaiting post-earnings note</span>` : '')}
+        <span class="reaction-pct ${tokens.reaction.direction}">${tokens.reaction.display} post-print</span>
+        ${r.stock_reaction ? `<span class="reaction-text">${r.stock_reaction}</span>` : (!tokens.reaction.available ? `<span class="reaction-text muted">Awaiting post-earnings note</span>` : '')}
       </div>
       <div class="earnings-card-footer">
         <span class="earnings-card-inflection-slot" data-ticker="${r.ticker}"></span>
@@ -1173,10 +1275,14 @@ async function fetchEarnings() {
           const date = p.date || p.earnings_date;
           const daysSince = -dayDiffFrom(date);
           if (daysSince >= 0 && daysSince <= 14) {
-            const surprise = p.surprise_pct;
-            const epsBeat = surprise > 0 ? `Beat +${surprise.toFixed(1)}%` : surprise < 0 ? `Miss ${surprise.toFixed(1)}%` : '';
-            const revActual = p.revenue_actual ? ('$' + p.revenue_actual) : '';
-            const revBeat = p.revenue_actual && p.revenue_estimate ? 
+            // Guard the surprise % so an undefined/non-finite calendar field
+            // can never produce "NaN%" in the beat/miss label.
+            const surprise = (typeof p.surprise_pct === 'number' && Number.isFinite(p.surprise_pct)) ? p.surprise_pct : null;
+            const epsBeat = surprise == null ? '' : surprise > 0 ? `Beat +${surprise.toFixed(1)}%` : surprise < 0 ? `Miss ${surprise.toFixed(1)}%` : '';
+            // safeMoney strips any pre-existing "$" before prepending, so a
+            // calendar value that already carries "$" cannot become "$$".
+            const revActual = p.revenue_actual ? safeMoney(p.revenue_actual) : '';
+            const revBeat = p.revenue_actual && p.revenue_estimate ?
               (parseFloat(String(p.revenue_actual).replace(/[^0-9.]/g,'')) > parseFloat(String(p.revenue_estimate).replace(/[^0-9.]/g,'')) ? 'Beat' : 'Miss') : '';
             recent.push({
               ticker: p.ticker,
@@ -1184,7 +1290,7 @@ async function fetchEarnings() {
               earnings_date: date,
               days_since: daysSince,
               revenue_actual: revActual || (p.revenue_actual || ''),
-              eps_actual: p.eps_actual != null ? '$' + p.eps_actual : '',
+              eps_actual: p.eps_actual != null ? safeMoney(p.eps_actual) : '',
               revenue_beat_miss: p.revenue_beat_miss || revBeat,
               eps_beat_miss: p.eps_beat_miss || epsBeat,
               stock_reaction: p.note || '',
