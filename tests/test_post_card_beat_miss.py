@@ -25,14 +25,89 @@ def _resolve_surprise_pct(structured_pct, beat_miss_str):
     return None
 
 
+import math
+
+
+def _to_finite_number(value):
+    """Mirror of JS _toFiniteNumber."""
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value) if math.isfinite(value) else None
+    if not isinstance(value, str):
+        return None
+    s = re.sub(r"[$,\s]", "", value.strip())
+    m = re.match(r"^(-?\d+(?:\.\d+)?)\s*([kKmMbBtT])?$", s)
+    if not m:
+        return None
+    n = float(m.group(1))
+    return n if math.isfinite(n) else None
+
+
+def safe_money(value, unit=None):
+    """Mirror of JS safeMoney: exactly one '$', 'n/a' for missing/non-numeric."""
+    if value is None:
+        return "n/a"
+    if isinstance(value, str):
+        s = value.strip()
+        if s in ("", "\u2014", "--"):
+            return "n/a"
+        s = re.sub(r"^\$+", "", s)
+        if s == "":
+            return "n/a"
+        return "$" + s
+    if isinstance(value, bool):
+        return "n/a"
+    if isinstance(value, (int, float)):
+        if not math.isfinite(value):
+            return "n/a"
+        return "$" + str(value) + (unit or "")
+    return "n/a"
+
+
+def safe_pct(value, decimals=1, signed=True):
+    """Mirror of JS safePct: signed '+X.X%' or 'n/a'; never NaN/Infinity."""
+    n = value if isinstance(value, (int, float)) and not isinstance(value, bool) else _to_finite_number(value)
+    if n is None or not math.isfinite(n):
+        return "n/a"
+    rounded = round(n, decimals)
+    sign = "+" if (signed and rounded > 0) else ("-" if rounded < 0 else "")
+    return f"{sign}{abs(rounded):.{decimals}f}%"
+
+
+def safe_reaction(post_print_pct, flat_threshold=0.05):
+    """Mirror of JS safeReaction: {display, direction, available}."""
+    n = post_print_pct if isinstance(post_print_pct, (int, float)) and not isinstance(post_print_pct, bool) else _to_finite_number(post_print_pct)
+    if n is None or not math.isfinite(n):
+        return {"display": "n/a", "direction": "neutral", "available": False}
+    if abs(n) <= flat_threshold:
+        direction = "neutral"
+    else:
+        direction = "positive" if n > 0 else "negative"
+    return {"display": safe_pct(n), "direction": direction, "available": True}
+
+
+def classify_beat_miss(delta_pct, flat_threshold=1.0):
+    """Mirror of JS classifyBeatMiss."""
+    n = delta_pct if isinstance(delta_pct, (int, float)) and not isinstance(delta_pct, bool) else _to_finite_number(delta_pct)
+    if n is None or not math.isfinite(n):
+        return "n/a"
+    if n > flat_threshold:
+        return "beat"
+    if n < -flat_threshold:
+        return "miss"
+    return "in-line"
+
+
 def _fmt_beat_miss(pct):
     """Mirror of JS _fmtBeatMiss -> returns the rendered span HTML."""
-    if pct is None:
+    label = classify_beat_miss(pct)
+    if label == "n/a":
         return '<span class="metric-surprise neutral">\u2014</span>'
-    sign = "+" if pct > 0 else ""
-    label = "beat" if pct > 1 else "miss" if pct < -1 else "in-line"
-    cls = "beat" if pct > 1 else "miss" if pct < -1 else "inline"
-    return f'<span class="metric-surprise {cls}">{sign}{pct:.1f}% {label}</span>'
+    cls = "beat" if label == "beat" else "miss" if label == "miss" else "inline"
+    return f'<span class="metric-surprise {cls}">{safe_pct(pct)} {label}</span>'
 
 
 def _render_fy_guide_delta_row(pct):
@@ -127,16 +202,17 @@ def test_fy_guide_dash_when_missing():
 
 
 # ---------------------------------------------------------------------------
-# D) Bug 1 contract — reaction row renders even when reaction pct is missing.
-#    Mirrors the inline ternary in renderRecentEarnings.
+# D) Bug 1 contract (hardened) — the post-print reaction is sourced FRESH from
+#    the data-layer field stock_reaction_pct via safeReaction. When the field
+#    is missing the row renders an explicit "n/a" — NOT a bare "—" and NEVER a
+#    fabricated/remembered value. Mirrors renderEarningsCard + safeReaction in
+#    earnings.js.
 # ---------------------------------------------------------------------------
 
 def _render_reaction_pct(pct):
-    if pct is not None:
-        cls = "positive" if pct >= 0 else "negative"
-        sign = "+" if pct >= 0 else ""
-        return f'<span class="reaction-pct {cls}">{sign}{pct:.1f}% post-print</span>'
-    return '<span class="reaction-pct neutral">\u2014 post-print</span>'
+    """Mirror of the hardened reaction span (safeReaction + template)."""
+    r = safe_reaction(pct)
+    return f'<span class="reaction-pct {r["direction"]}">{r["display"]} post-print</span>'
 
 
 def test_reaction_present_positive():
@@ -147,7 +223,10 @@ def test_reaction_present_negative():
     assert "negative" in _render_reaction_pct(-3.7)
 
 
-def test_reaction_missing_shows_dash_not_hidden():
+def test_reaction_missing_shows_na_not_bare_dash():
     out = _render_reaction_pct(None)
-    assert "\u2014 post-print" in out
+    # Hardened contract: explicit n/a, never a bare em-dash standing in for a
+    # value that should be present, and never a fabricated number.
+    assert "n/a post-print" in out
+    assert "\u2014" not in out
     assert "reaction-pct neutral" in out
