@@ -1,311 +1,361 @@
 {
-  "updated": "2026-05-29T22:54:20.551878",
-  "pre_earnings": [
+  "post_earnings": [
     {
-      "ticker": "CRDO",
+      "company": "SentinelOne",
+      "date": "2026-05-28",
+      "days_since": 4,
+      "earnings_date": "2026-05-28",
+      "ticker": "S",
+      "timing": "AMC",
+      "revenue_actual": "$276.7M",
+      "eps_actual": "$0.04",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+100.0%)"
+    },
+    {
+      "company": "Okta",
+      "date": "2026-05-28",
+      "days_since": 4,
+      "earnings_date": "2026-05-28",
+      "ticker": "OKTA",
+      "timing": "AMC",
+      "revenue_actual": "$765M",
+      "eps_actual": "$0.91",
+      "revenue_beat_miss": "beat (+1.7%)",
+      "eps_beat_miss": "beat (+7.1%)"
+    },
+    {
+      "company": "Asana",
+      "date": "2026-05-28",
+      "days_since": 4,
+      "earnings_date": "2026-05-28",
+      "ticker": "ASAN",
+      "timing": "AMC",
+      "revenue_actual": "$205.1M",
+      "eps_actual": "$0.10",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+42.9%)"
+    },
+    {
+      "company": "MongoDB",
+      "date": "2026-05-28",
+      "days_since": 4,
+      "earnings_date": "2026-05-28",
+      "ticker": "MDB",
+      "timing": "AMC"
+    },
+    {
+      "company": "Elastic",
+      "date": "2026-05-28",
+      "days_since": 4,
+      "earnings_date": "2026-05-28",
+      "ticker": "ESTC",
+      "timing": "AMC"
+    },
+    {
+      "company": "UiPath",
+      "date": "2026-05-28",
+      "days_since": 4,
+      "earnings_date": "2026-05-28",
+      "ticker": "PATH",
+      "timing": "AMC"
+    },
+    {
+      "company": "Autodesk",
+      "date": "2026-05-28",
+      "days_since": 4,
+      "earnings_date": "2026-05-28",
+      "ticker": "ADSK",
+      "timing": "AMC"
+    },
+    {
+      "company": "Marvell",
+      "date": "2026-05-27",
+      "days_since": 5,
+      "earnings_date": "2026-05-27",
+      "ticker": "MRVL",
+      "timing": "AMC"
+    },
+    {
+      "company": "Synopsys",
+      "date": "2026-05-27",
+      "days_since": 5,
+      "earnings_date": "2026-05-27",
+      "ticker": "SNPS",
+      "timing": "AMC"
+    },
+    {
+      "company": "Salesforce",
+      "date": "2026-05-27",
+      "days_since": 5,
+      "earnings_date": "2026-05-27",
+      "ticker": "CRM",
+      "timing": "AMC"
+    },
+    {
+      "company": "Snowflake",
+      "date": "2026-05-27",
+      "days_since": 5,
+      "earnings_date": "2026-05-27",
+      "ticker": "SNOW",
+      "timing": "AMC",
+      "revenue_actual": "$1.39B",
+      "eps_actual": "$0.39",
+      "revenue_beat_miss": "beat (+5.3%)",
+      "eps_beat_miss": "beat (+21.9%)"
+    },
+    {
+      "company": "NTNX",
+      "date": "2026-05-27",
+      "days_since": 5,
+      "earnings_date": "2026-05-27",
+      "ticker": "NTNX",
+      "timing": "AMC"
+    },
+    {
+      "company": "Braze",
+      "date": "2026-05-27",
+      "days_since": 5,
+      "earnings_date": "2026-05-27",
+      "ticker": "BRZE",
+      "timing": "AMC"
+    },
+    {
+      "company": "Zscaler",
+      "date": "2026-05-26",
+      "days_since": 6,
+      "earnings_date": "2026-05-26",
+      "ticker": "ZS",
+      "timing": "AMC",
+      "revenue_actual": "$850.5M",
+      "eps_actual": "$1.08",
+      "revenue_beat_miss": "beat (+1.8%)",
+      "eps_beat_miss": "beat (+6.9%)"
+    },
+    {
+      "company": "Workday",
+      "date": "2026-05-21",
+      "days_since": 11,
+      "earnings_date": "2026-05-21",
+      "ticker": "WDAY",
+      "timing": "AMC",
+      "revenue_actual": "$2.542B",
+      "eps_actual": "$2.66",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+6.0%)"
+    },
+    {
+      "company": "LiveRamp",
+      "date": "2026-05-21",
+      "days_since": 11,
+      "earnings_date": "2026-05-21",
+      "ticker": "RAMP",
+      "timing": "AMC"
+    },
+    {
+      "company": "Zoom",
+      "date": "2026-05-21",
+      "days_since": 11,
+      "earnings_date": "2026-05-21",
+      "ticker": "ZM",
+      "timing": "AMC"
+    },
+    {
+      "company": "ROST",
+      "date": "2026-05-21",
+      "days_since": 11,
+      "earnings_date": "2026-05-21",
+      "ticker": "ROST",
+      "timing": "AMC",
+      "revenue_actual": "$6.01B",
+      "revenue_beat_miss": "beat (+6.6%)"
+    },
+    {
+      "company": "NVIDIA",
+      "date": "2026-05-20",
+      "days_since": 12,
+      "earnings_date": "2026-05-20",
+      "ticker": "NVDA",
+      "timing": "AMC"
+    },
+    {
+      "company": "Intuit",
+      "date": "2026-05-20",
+      "days_since": 12,
+      "earnings_date": "2026-05-20",
+      "ticker": "INTU",
+      "timing": "AMC"
+    },
+    {
+      "company": "Home Depot",
+      "date": "2026-05-19",
+      "days_since": 13,
+      "earnings_date": "2026-05-19",
+      "ticker": "HD",
+      "timing": "BMO"
+    },
+    {
+      "company": "LiveRamp",
+      "date": "2026-05-18",
+      "days_since": 14,
+      "earnings_date": "2026-05-18",
+      "ticker": "RAMP",
+      "timing": "BMO"
+    },
+    {
       "company": "CRDO",
       "date": "2026-06-01",
+      "days_since": 0,
       "earnings_date": "2026-06-01",
-      "days_until": 3,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "PANW",
-      "company": "Palo Alto Networks",
-      "date": "2026-06-02",
-      "earnings_date": "2026-06-02",
-      "days_until": 4,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "GTLB",
-      "company": "GitLab",
-      "date": "2026-06-02",
-      "earnings_date": "2026-06-02",
-      "days_until": 4,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "AVGO",
-      "company": "Broadcom",
-      "date": "2026-06-03",
-      "earnings_date": "2026-06-03",
-      "days_until": 5,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "CRWD",
-      "company": "CrowdStrike",
-      "date": "2026-06-03",
-      "earnings_date": "2026-06-03",
-      "days_until": 5,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "AI",
-      "company": "C3.ai",
-      "date": "2026-06-03",
-      "earnings_date": "2026-06-03",
-      "days_until": 5,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "CXM",
-      "company": "Sprinklr",
-      "date": "2026-06-03",
-      "earnings_date": "2026-06-03",
-      "days_until": 5,
-      "timing": "BMO"
-    },
-    {
-      "ticker": "VEEV",
-      "company": "Veeva Systems",
-      "date": "2026-06-03",
-      "earnings_date": "2026-06-03",
-      "days_until": 5,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "FIVE",
-      "company": "Five Below",
-      "date": "2026-06-03",
-      "earnings_date": "2026-06-03",
-      "days_until": 5,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "MDT",
-      "company": "MDT",
-      "date": "2026-06-03",
-      "earnings_date": "2026-06-03",
-      "days_until": 5,
-      "timing": "BMO"
-    },
-    {
-      "ticker": "PVH",
-      "company": "PVH",
-      "date": "2026-06-03",
-      "earnings_date": "2026-06-03",
-      "days_until": 5,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "RBRK",
-      "company": "Rubrik",
-      "date": "2026-06-04",
-      "earnings_date": "2026-06-04",
-      "days_until": 6,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "IOT",
-      "company": "Samsara",
-      "date": "2026-06-04",
-      "earnings_date": "2026-06-04",
-      "days_until": 6,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "CIEN",
-      "company": "Ciena",
-      "date": "2026-06-04",
-      "earnings_date": "2026-06-04",
-      "days_until": 6,
-      "timing": "BMO"
-    },
-    {
-      "ticker": "DOCU",
-      "company": "DocuSign",
-      "date": "2026-06-04",
-      "earnings_date": "2026-06-04",
-      "days_until": 6,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "TTAN",
-      "company": "ServiceTitan",
-      "date": "2026-06-04",
-      "earnings_date": "2026-06-04",
-      "days_until": 6,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "GWRE",
-      "company": "Guidewire",
-      "date": "2026-06-04",
-      "earnings_date": "2026-06-04",
-      "days_until": 6,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "ORCL",
-      "company": "Oracle",
-      "date": "2026-06-10",
-      "earnings_date": "2026-06-10",
-      "days_until": 12,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "ADBE",
-      "company": "Adobe",
-      "date": "2026-06-11",
-      "earnings_date": "2026-06-11",
-      "days_until": 13,
+      "ticker": "CRDO",
       "timing": "AMC"
     }
   ],
-  "post_earnings": [
+  "pre_earnings": [
     {
-      "ticker": "S",
-      "company": "SentinelOne",
-      "date": "2026-05-28",
-      "earnings_date": "2026-05-28",
-      "days_since": 1,
+      "company": "Palo Alto Networks",
+      "date": "2026-06-02",
+      "days_until": 1,
+      "earnings_date": "2026-06-02",
+      "ticker": "PANW",
       "timing": "AMC"
     },
     {
-      "ticker": "OKTA",
-      "company": "Okta",
-      "date": "2026-05-28",
-      "earnings_date": "2026-05-28",
-      "days_since": 1,
+      "company": "GitLab",
+      "date": "2026-06-02",
+      "days_until": 1,
+      "earnings_date": "2026-06-02",
+      "ticker": "GTLB",
       "timing": "AMC"
     },
     {
-      "ticker": "ASAN",
-      "company": "Asana",
-      "date": "2026-05-28",
-      "earnings_date": "2026-05-28",
-      "days_since": 1,
+      "company": "Broadcom",
+      "date": "2026-06-03",
+      "days_until": 2,
+      "earnings_date": "2026-06-03",
+      "ticker": "AVGO",
       "timing": "AMC"
     },
     {
-      "ticker": "MDB",
-      "company": "MongoDB",
-      "date": "2026-05-28",
-      "earnings_date": "2026-05-28",
-      "days_since": 1,
+      "company": "CrowdStrike",
+      "date": "2026-06-03",
+      "days_until": 2,
+      "earnings_date": "2026-06-03",
+      "ticker": "CRWD",
       "timing": "AMC"
     },
     {
-      "ticker": "ESTC",
-      "company": "Elastic",
-      "date": "2026-05-28",
-      "earnings_date": "2026-05-28",
-      "days_since": 1,
+      "company": "C3.ai",
+      "date": "2026-06-03",
+      "days_until": 2,
+      "earnings_date": "2026-06-03",
+      "ticker": "AI",
       "timing": "AMC"
     },
     {
-      "ticker": "PATH",
-      "company": "UiPath",
-      "date": "2026-05-28",
-      "earnings_date": "2026-05-28",
-      "days_since": 1,
+      "company": "Sprinklr",
+      "date": "2026-06-03",
+      "days_until": 2,
+      "earnings_date": "2026-06-03",
+      "ticker": "CXM",
+      "timing": "BMO"
+    },
+    {
+      "company": "Veeva Systems",
+      "date": "2026-06-03",
+      "days_until": 2,
+      "earnings_date": "2026-06-03",
+      "ticker": "VEEV",
       "timing": "AMC"
     },
     {
-      "ticker": "ADSK",
-      "company": "Autodesk",
-      "date": "2026-05-28",
-      "earnings_date": "2026-05-28",
-      "days_since": 1,
+      "company": "Five Below",
+      "date": "2026-06-03",
+      "days_until": 2,
+      "earnings_date": "2026-06-03",
+      "ticker": "FIVE",
       "timing": "AMC"
     },
     {
-      "ticker": "MRVL",
-      "company": "Marvell",
-      "date": "2026-05-27",
-      "earnings_date": "2026-05-27",
-      "days_since": 2,
+      "company": "MDT",
+      "date": "2026-06-03",
+      "days_until": 2,
+      "earnings_date": "2026-06-03",
+      "ticker": "MDT",
+      "timing": "BMO"
+    },
+    {
+      "company": "PVH",
+      "date": "2026-06-03",
+      "days_until": 2,
+      "earnings_date": "2026-06-03",
+      "ticker": "PVH",
       "timing": "AMC"
     },
     {
-      "ticker": "SNPS",
-      "company": "Synopsys",
-      "date": "2026-05-27",
-      "earnings_date": "2026-05-27",
-      "days_since": 2,
+      "company": "Rubrik",
+      "date": "2026-06-04",
+      "days_until": 3,
+      "earnings_date": "2026-06-04",
+      "ticker": "RBRK",
       "timing": "AMC"
     },
     {
-      "ticker": "CRM",
-      "company": "Salesforce",
-      "date": "2026-05-27",
-      "earnings_date": "2026-05-27",
-      "days_since": 2,
+      "company": "Samsara",
+      "date": "2026-06-04",
+      "days_until": 3,
+      "earnings_date": "2026-06-04",
+      "ticker": "IOT",
       "timing": "AMC"
     },
     {
-      "ticker": "SNOW",
-      "company": "Snowflake",
-      "date": "2026-05-27",
-      "earnings_date": "2026-05-27",
-      "days_since": 2,
+      "company": "Ciena",
+      "date": "2026-06-04",
+      "days_until": 3,
+      "earnings_date": "2026-06-04",
+      "ticker": "CIEN",
+      "timing": "BMO"
+    },
+    {
+      "company": "DocuSign",
+      "date": "2026-06-04",
+      "days_until": 3,
+      "earnings_date": "2026-06-04",
+      "ticker": "DOCU",
       "timing": "AMC"
     },
     {
-      "ticker": "NTNX",
-      "company": "NTNX",
-      "date": "2026-05-27",
-      "earnings_date": "2026-05-27",
-      "days_since": 2,
+      "company": "ServiceTitan",
+      "date": "2026-06-04",
+      "days_until": 3,
+      "earnings_date": "2026-06-04",
+      "ticker": "TTAN",
       "timing": "AMC"
     },
     {
-      "ticker": "BRZE",
-      "company": "Braze",
-      "date": "2026-05-27",
-      "earnings_date": "2026-05-27",
-      "days_since": 2,
+      "company": "Guidewire",
+      "date": "2026-06-04",
+      "days_until": 3,
+      "earnings_date": "2026-06-04",
+      "ticker": "GWRE",
       "timing": "AMC"
     },
     {
-      "ticker": "ZS",
-      "company": "Zscaler",
-      "date": "2026-05-26",
-      "earnings_date": "2026-05-26",
-      "days_since": 3,
+      "company": "Oracle",
+      "date": "2026-06-10",
+      "days_until": 9,
+      "earnings_date": "2026-06-10",
+      "ticker": "ORCL",
       "timing": "AMC"
     },
     {
-      "ticker": "WDAY",
-      "company": "Workday",
-      "date": "2026-05-21",
-      "earnings_date": "2026-05-21",
-      "days_since": 8,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "RAMP",
-      "company": "LiveRamp",
-      "date": "2026-05-21",
-      "earnings_date": "2026-05-21",
-      "days_since": 8,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "ZM",
-      "company": "Zoom",
-      "date": "2026-05-21",
-      "earnings_date": "2026-05-21",
-      "days_since": 8,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "ROST",
-      "company": "ROST",
-      "date": "2026-05-21",
-      "earnings_date": "2026-05-21",
-      "days_since": 8,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "INTU",
-      "company": "Intuit",
-      "date": "2026-05-20",
-      "earnings_date": "2026-05-20",
-      "days_since": 9,
+      "company": "Adobe",
+      "date": "2026-06-11",
+      "days_until": 10,
+      "earnings_date": "2026-06-11",
+      "ticker": "ADBE",
       "timing": "AMC"
     }
-  ]
+  ],
+  "updated": "2026-06-01T11:58:16+00:00"
 }
