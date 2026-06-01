@@ -524,17 +524,38 @@ async function buildNoteSearchIndex() {
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const idx = await resp.json();
     const all = [];
-    if (idx.notes) {
-      idx.notes.forEach(n => {
-        all.push({
+    // Active notes live across four arrays with slightly different keys.
+    const activeArrays = [
+      { key: 'active_pre_earnings', type: 'pre_earnings' },
+      { key: 'pre_earnings', type: 'pre_earnings' },
+      { key: 'active_post_earnings', type: 'post_earnings' },
+      { key: 'post_earnings', type: 'post_earnings' },
+    ];
+    const activeNotes = [];
+    activeArrays.forEach(({ key, type }) => {
+      (idx[key] || []).forEach(n => {
+        const file = n.note_file || n.file;
+        const date = n.date || n.earnings_date;
+        if (!file) return;
+        activeNotes.push({
           ticker: n.ticker,
-          type: n.type,
-          date: n.earnings_date,
-          file: n.file,
-          status: n.status || 'active',
-          title: `${n.ticker} — ${n.type === 'pre_earnings' ? 'Pre' : 'Post'}-Earnings (${n.earnings_date})`,
+          type,
+          date,
+          file,
+          status: 'active',
+          title: `${n.ticker} — ${type === 'pre_earnings' ? 'Pre' : 'Post'}-Earnings (${date})`,
         });
       });
+    });
+    // Dedup by file — the same note appears in both an active_* array and a flat array.
+    const seenFiles = new Set();
+    activeNotes.forEach(n => {
+      if (seenFiles.has(n.file)) return;
+      seenFiles.add(n.file);
+      all.push(n);
+    });
+    if (all.length === 0) {
+      console.warn('buildNoteSearchIndex: parsed index yielded zero active notes — check earnings_notes_index.json schema');
     }
     // Also add archive entries if present
     (idx.archived || []).forEach(n => {
@@ -609,10 +630,9 @@ async function runNoteSearch(query) {
     return terms.some(t => haystack.includes(t));
   });
 
-  // Also do full-text search on note content (up to 20 notes to avoid lag)
+  // Also do full-text search on note content across the full index (fetches are cached and run in parallel)
   const contentCandidates = [];
-  const fetchLimit = Math.min(index.length, 25);
-  const fetches = index.slice(0, fetchLimit).map(async n => {
+  const fetches = index.map(async n => {
     if (candidates.some(c => c.file === n.file)) return; // already in candidates
     const content = await fetchNoteContent(n.file);
     if (!content) return;
