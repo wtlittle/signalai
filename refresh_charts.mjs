@@ -5,6 +5,7 @@
  * Updates data-snapshot.json and pushes chart_meta + chart_data to Supabase.
  */
 import { createClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
 import { readFileSync, writeFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
@@ -13,7 +14,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim() || 'https://wcyirdvvuetzodiedzss.supabase.co';
 const SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim();
-const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
+  realtime: { transport: WebSocket },
+});
 
 const snapshotPath = resolve(__dirname, 'data-snapshot.json');
 const snapshot = JSON.parse(readFileSync(snapshotPath, 'utf-8'));
