@@ -982,6 +982,56 @@ def sync_calendar_from_intel(tickers: dict, dry_run: bool = False) -> int:
     return updated
 
 
+def _run_consensus_backfills(only_ticker: str | None = None) -> None:
+    """Invoke the structured-field backfills after the note sync.
+
+    Each backfill is best-effort: a failure (e.g. no Finnhub credential, network
+    error) is logged and never aborts the sync. They only ever FILL nulls — an
+    existing note-sourced value is never overwritten.
+    """
+    try:
+        from scripts.backfill_results_vs_consensus import main as _prose_main
+    except Exception:
+        try:
+            import importlib.util as _ilu
+            _spec = _ilu.spec_from_file_location(
+                "backfill_results_vs_consensus",
+                ROOT / "scripts" / "backfill_results_vs_consensus.py",
+            )
+            _mod = _ilu.module_from_spec(_spec)
+            _spec.loader.exec_module(_mod)
+            _prose_main = _mod.main
+        except Exception as exc:  # noqa: BLE001
+            print(f"  [WARN] prose consensus backfill unavailable: {exc}")
+            _prose_main = None
+
+    import sys as _sys
+    saved = _sys.argv
+    for label, fn, path in (
+        ("prose", _prose_main, None),
+        ("finnhub_eps", None, ROOT / "scripts" / "backfill_eps_surprise_from_finnhub.py"),
+    ):
+        try:
+            if fn is None and path is not None:
+                import importlib.util as _ilu
+                _spec = _ilu.spec_from_file_location(path.stem, path)
+                _mod = _ilu.module_from_spec(_spec)
+                _spec.loader.exec_module(_mod)
+                fn = _mod.main
+            if fn is None:
+                continue
+            _sys.argv = [label] + (["--ticker", only_ticker] if only_ticker else [])
+            try:
+                fn()
+            finally:
+                _sys.argv = saved
+        except SystemExit:
+            _sys.argv = saved
+        except Exception as exc:  # noqa: BLE001
+            _sys.argv = saved
+            print(f"  [WARN] {label} consensus backfill failed: {exc}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true",
@@ -1048,6 +1098,19 @@ def main():
     else:
         INTEL_PATH.write_text(json.dumps(intel, indent=2))
         print(f"[OK] earnings_intel.json synced -- {msg}")
+
+    # Backfill structured results_vs_consensus / guide_vs_consensus fields the
+    # POST cards read. These run AFTER the note-sync so they only fill gaps the
+    # notes leave behind, and they never overwrite a non-null value:
+    #   1. prose backfill   — lifts REV/EPS actuals + surprise from note prose
+    #   2. finnhub backfill — fills EPS surprise % from the authoritative
+    #                         stock/earnings feed when the note omits it
+    # Both re-read/write earnings_intel.json on disk; skipped on --dry-run.
+    if not args.dry_run:
+        _run_consensus_backfills(only_ticker=args.ticker)
+        # Re-read so the calendar sync below sees the backfilled fields.
+        intel = json.loads(INTEL_PATH.read_text())
+        tickers = intel.setdefault("tickers", {})
 
     # Sync derived fields to earnings_calendar.json
     cal_updated = sync_calendar_from_intel(tickers, dry_run=args.dry_run)
