@@ -9,11 +9,14 @@
  * 2. v10 quoteSummary for fundamentals (market cap, EV, revenue, FCF, etc.)
  */
 import { createClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim() || 'https://wcyirdvvuetzodiedzss.supabase.co';
 const SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim();
-const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
+  realtime: { transport: WebSocket },
+});
 
 // --- Parse tickers from utils.js ---
 const scriptDir = new URL('.', import.meta.url).pathname;

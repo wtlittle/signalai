@@ -9,6 +9,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
 import { readFileSync } from 'fs';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -19,7 +20,9 @@ if (!SUPABASE_URL || !SERVICE_KEY) {
   process.exit(1);
 }
 
-const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
+  realtime: { transport: WebSocket },
+});
 
 // ---------------------------------------------------------------------------
 // 1. Parse tickers from utils.js (without eval — regex extraction)
