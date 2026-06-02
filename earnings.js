@@ -344,11 +344,24 @@ function renderEarningsCard(card) {
   // through safeMoney so we emit exactly one "$" and never a bare "—".
   const revenue = safeMoney(c.revenue_actual);
   const eps = safeMoney(c.eps_actual);
+  // NO CONTRADICTORY STATES (Issue D): a surprise % may render ONLY when its
+  // matching actual rendered. safeMoney returns 'n/a' when the actual is
+  // missing, so a card can never show "EPS n/a +23% beat". When the actual is
+  // present but consensus (surprise %) is absent, we show the actual alone —
+  // that is a legitimate "reported, no consensus" state, not a contradiction.
+  const revAvailable = revenue !== 'n/a';
+  const epsAvailable = eps !== 'n/a';
+  const revSurprisePct = revAvailable
+    ? _resolveSurprisePct(c.in_quarter_rev_surprise_pct, c.revenue_beat_miss)
+    : null;
+  const epsSurprisePct = epsAvailable
+    ? _resolveSurprisePct(c.in_quarter_eps_surprise_pct, c.eps_beat_miss)
+    : null;
   // Post-print reaction — sourced FRESH from the data-layer field
   // stock_reaction_pct. safeReaction returns 'n/a' when the field is genuinely
   // missing; it never substitutes a guessed/remembered value.
   const reaction = safeReaction(c.stock_reaction_pct);
-  return { revenue, eps, reaction };
+  return { revenue, eps, reaction, revSurprisePct, epsSurprisePct };
 }
 
 // Render a compact beat/miss span: "+2.1% beat" (green) / "-0.8% miss" (red),
@@ -705,14 +718,14 @@ function renderRecentEarnings(recent) {
   }
   $recentCards.innerHTML = filtered.map(r => {
     const name = (COMMON_NAMES && COMMON_NAMES[r.ticker]) || r.name || r.ticker;
-    // Resolve REV / EPS surprise % from the structured envelope fields when
-    // present, otherwise parse it out of the Phase-4 beat/miss strings.
-    const revSurprise = _resolveSurprisePct(r.in_quarter_rev_surprise_pct, r.revenue_beat_miss);
-    const epsSurprise = _resolveSurprisePct(r.in_quarter_eps_surprise_pct, r.eps_beat_miss);
     // Compose every dynamic token through the safe formatters so no card can
     // emit "$$" / NaN / undefined / a bare "—" where a value is expected. Each
     // value is sourced FRESH from the data-layer row (r.*) — none is hardcoded.
+    // renderEarningsCard also gates the surprise % on its matching actual being
+    // present (NO CONTRADICTORY STATES) — see Issue D.
     const tokens = renderEarningsCard(r);
+    const revSurprise = tokens.revSurprisePct;
+    const epsSurprise = tokens.epsSurprisePct;
     // Split FY guidance into revenue + profitability pills from the normalized
     // backend fields. Falls back to the legacy single "FY Guide Δ" line only
     // when no normalized guidance data is present on the row.

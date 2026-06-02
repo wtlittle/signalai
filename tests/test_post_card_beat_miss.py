@@ -230,3 +230,34 @@ def test_reaction_missing_shows_na_not_bare_dash():
     assert "n/a post-print" in out
     assert "\u2014" not in out
     assert "reaction-pct neutral" in out
+
+
+# ---------------------------------------------------------------------------
+# E) NO CONTRADICTORY STATES (Issue D) \u2014 the surprise % may render ONLY when
+#    its matching actual rendered. Mirrors the gating in renderEarningsCard:
+#    the surprise is resolved only when safeMoney(actual) != 'n/a'. This pins
+#    the fix for the CRM card that showed "EPS n/a +23.2% beat".
+# ---------------------------------------------------------------------------
+
+def _resolve_paired_surprise(actual, structured_pct, beat_miss_str=None):
+    """Mirror of renderEarningsCard: gate the surprise on the actual present."""
+    available = safe_money(actual) != "n/a"
+    return _resolve_surprise_pct(structured_pct, beat_miss_str) if available else None
+
+
+def test_surprise_suppressed_when_actual_missing():
+    # The exact CRM bug: surprise % present, actual null. The pair must be
+    # suppressed so the card never renders "n/a +23.2% beat".
+    assert _resolve_paired_surprise(None, 23.2) is None
+
+
+def test_surprise_renders_when_actual_present():
+    # CRM after the Finnhub triplet backfill: actual + surprise both present.
+    assert _resolve_paired_surprise("$3.88", 23.2) == 23.2
+
+
+def test_actual_without_surprise_is_allowed():
+    # Reported, no consensus baseline -> show the actual alone (legitimate),
+    # surprise stays None. This is NOT a contradiction.
+    assert safe_money("$11.13B") == "$11.13B"
+    assert _resolve_paired_surprise("$11.13B", None) is None

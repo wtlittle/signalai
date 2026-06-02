@@ -155,9 +155,21 @@ One persistent record per ticker. Updated in place (never duplicated). The same 
          that have not yet had a V2-style note. POST cards render "—" when missing. */
       "results_vs_consensus": {
         "in_quarter_rev_actual": null,        // e.g. "$2.542B"
+        "in_quarter_rev_estimate": null,      // e.g. "$2.50B" (Finnhub paid tier only; free tier omits revenue)
         "in_quarter_rev_surprise_pct": null,  // signed % vs Street; >+1% = beat, <-1% = miss
         "in_quarter_eps_actual": null,        // e.g. "$2.66"
-        "in_quarter_eps_surprise_pct": null   // signed % vs Street consensus EPS
+        "in_quarter_eps_estimate": null,      // e.g. "$2.55" (Finnhub /stock/earnings estimate)
+        "in_quarter_eps_surprise_pct": null,  // signed % vs Street consensus EPS
+        // INVARIANT (NO CONTRADICTORY STATES): if in_quarter_eps_surprise_pct is
+        // non-null then in_quarter_eps_actual MUST be non-null (same for REV).
+        // The full Finnhub triplet (actual+estimate+surprise) is written from
+        // ONE /stock/earnings row by scripts/backfill_earnings_from_finnhub.py
+        // so the card can never show "EPS n/a +X% beat". The render-side
+        // renderEarningsCard() also suppresses a surprise whose actual is n/a,
+        // and scripts/verify_earnings_intel_completeness.py fails loud on any
+        // surprise-without-actual pair.
+        "eps_consensus_source": null,         // e.g. "finnhub_stock_earnings"
+        "rev_consensus_source": null
       },
       "guide_vs_consensus": {
         "fy_rev_change_vs_consensus_pct": null,   // FY revenue guide move vs prior Street consensus (legacy single "FY Guide Δ")
@@ -175,7 +187,14 @@ One persistent record per ticker. Updated in place (never duplicated). The same 
         "fy_op_profit_consensus_prior": null,
         "fy_fcf_guide_midpoint_new": null,
         "fy_fcf_guide_midpoint_prior": null,
-        "fy_fcf_consensus_prior": null
+        "fy_fcf_consensus_prior": null,
+        // FY guidance midpoints + prior baselines backfilled FRESH from a
+        // Perplexity sonar call by scripts/backfill_fy_guide_from_perplexity.py
+        // (no per-run cap; runs for every POST card with an empty pill).
+        // normalize_guidance_envelope turns these into the
+        // guidanceRevenueDeltaPct / guidanceEpsDeltaPct pills.
+        "fy_guide_source": null,              // e.g. "perplexity_sonar"
+        "fy_guide_fiscal_year": null          // e.g. "FY27"
       },
 
       /* === NORMALIZED SPLIT-GUIDANCE FIELDS (post-earnings) ===

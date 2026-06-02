@@ -98,6 +98,27 @@ def check(only: str | None) -> list[str]:
                 f"results_vs_consensus.in_quarter_eps_actual is n/a"
             )
 
+        # NO CONTRADICTORY STATES invariant (Issue D): a surprise % must never
+        # exist without its matching absolute. The card renders "EPS <surprise>
+        # beat" off the surprise %; without the actual it shows "EPS n/a +X%
+        # beat" — a logical impossibility. Fail loud so this can't ship again.
+        # This check is offline/source-independent (applies to EVERY active POST
+        # card, not just note-derivable ones).
+        if rvc.get("in_quarter_eps_surprise_pct") is not None and \
+                rvc.get("in_quarter_eps_actual") is None:
+            regressions.append(
+                f"{tk}: in_quarter_eps_surprise_pct is "
+                f"{rvc.get('in_quarter_eps_surprise_pct')!r} but "
+                f"in_quarter_eps_actual is null (contradictory pair)"
+            )
+        if rvc.get("in_quarter_rev_surprise_pct") is not None and \
+                rvc.get("in_quarter_rev_actual") is None:
+            regressions.append(
+                f"{tk}: in_quarter_rev_surprise_pct is "
+                f"{rvc.get('in_quarter_rev_surprise_pct')!r} but "
+                f"in_quarter_rev_actual is null (contradictory pair)"
+            )
+
     return regressions
 
 

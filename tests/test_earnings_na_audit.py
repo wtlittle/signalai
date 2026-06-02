@@ -8,10 +8,12 @@ Covers the three distinct root causes:
         when no real estimate token is present. Preview notes still yield
         nothing.
 
-  RC-1  scripts/backfill_eps_surprise_from_finnhub — matches the reported
-        quarter to the note's earnings_date, writes ONLY the surprise %
-        (basis guard: never the absolute EPS), never overwrites a non-null,
-        and declines when no quarter is within the match window.
+  RC-1  scripts/backfill_earnings_from_finnhub — matches the reported quarter
+        to the note's earnings_date and writes the FULL Finnhub triplet
+        (actual + estimate + surprise %) from the SAME row, so the card can
+        never show a surprise % without its matching actual (the CRM
+        "EPS n/a +23.2% beat" contradiction). It declines when no quarter is
+        within the match window and never overwrites a note-sourced actual.
 
 Fixture notes (tests/fixtures/) mirror two real, differently-shaped notes:
   * MDB_2026-05-28.md — a PREVIEW note (actuals "not yet reported")
@@ -28,7 +30,7 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures"
 sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.backfill_results_vs_consensus import _parse_metric  # noqa: E402
-import scripts.backfill_eps_surprise_from_finnhub as eps_bf  # noqa: E402
+import scripts.backfill_earnings_from_finnhub as eps_bf  # noqa: E402
 
 _QUAL = r"(?:Total\s+|Non-GAAP\s+|GAAP\s+|Adjusted\s+|Adj\.?\s+|Core\s+|Q\d\s+)*"
 _REV = _QUAL + r"Rev(?:enue)?"
@@ -96,7 +98,7 @@ def test_na_token_in_actual_is_not_captured():
 
 
 # --------------------------------------------------------------------------
-# RC-1 — Finnhub EPS surprise quarter matching + basis guard
+# RC-1 — Finnhub FULL-triplet quarter matching (NO contradictory pair)
 # --------------------------------------------------------------------------
 
 _FINNHUB_MDB = [
@@ -121,53 +123,59 @@ def _intel_with(ticker, earnings_date, rvc=None):
     }
 
 
-def test_finnhub_matches_reported_quarter_and_writes_only_surprise(tmp_path):
-    """RC-1: surprise % is written for the quarter nearest the note date; the
-    absolute EPS actual is NEVER written (basis guard)."""
+def test_finnhub_writes_full_triplet_for_reported_quarter(tmp_path):
+    """RC-1 (fixed): the FULL triplet (actual + estimate + surprise) is written
+    from the row nearest the note date, so the card can never show a surprise %
+    without its actual. The old 'surprise only / basis guard' behavior was the
+    CRM 'EPS n/a +23.2% beat' bug and is explicitly undone here."""
     intel_path = tmp_path / "earnings_intel.json"
     intel_path.write_text(json.dumps(_intel_with("MDB", "2026-05-28")))
 
     with mock.patch.object(eps_bf, "INTEL_PATH", intel_path), \
          mock.patch.object(eps_bf, "get_earnings_surprises", return_value=_FINNHUB_MDB):
-        populated, present, nodata = eps_bf.backfill(only="MDB", dry_run=False)
+        eps_written, rev_written, present, nodata = eps_bf.backfill(only="MDB", dry_run=False)
 
-    assert populated == ["MDB"]
+    assert eps_written == ["MDB"]
     rvc = json.loads(intel_path.read_text())["tickers"]["MDB"]["results_vs_consensus"]
-    assert rvc["in_quarter_eps_surprise_pct"] == 10.5  # nearest quarter (2026-06-30)
-    assert "in_quarter_eps_actual" not in rvc  # basis guard: no absolute written
+    assert rvc["in_quarter_eps_surprise_pct"] == 10.5      # nearest quarter (2026-06-30)
+    assert rvc["in_quarter_eps_actual"] == "$1.32"          # absolute IS written now
+    assert rvc["in_quarter_eps_estimate"] == "$1.19"        # estimate from same row
+    # Invariant: surprise present implies actual present (no contradiction).
+    assert rvc["in_quarter_eps_actual"] is not None
 
 
-def test_finnhub_never_overwrites_note_sourced_value(tmp_path):
-    """An existing (note-sourced) surprise must win over Finnhub."""
+def test_finnhub_never_overwrites_note_sourced_actual(tmp_path):
+    """A note-sourced EPS actual (company headline non-GAAP basis) must win;
+    Finnhub does not clobber it."""
     intel_path = tmp_path / "earnings_intel.json"
     intel_path.write_text(json.dumps(_intel_with(
-        "MDB", "2026-05-28", rvc={"in_quarter_eps_surprise_pct": 4.2})))
+        "MDB", "2026-05-28", rvc={"in_quarter_eps_actual": "$1.00"})))
 
     with mock.patch.object(eps_bf, "INTEL_PATH", intel_path), \
          mock.patch.object(eps_bf, "get_earnings_surprises", return_value=_FINNHUB_MDB):
-        populated, present, nodata = eps_bf.backfill(only="MDB", dry_run=False)
+        eps_written, rev_written, present, nodata = eps_bf.backfill(only="MDB", dry_run=False)
 
-    assert present == ["MDB"] and populated == []
     rvc = json.loads(intel_path.read_text())["tickers"]["MDB"]["results_vs_consensus"]
-    assert rvc["in_quarter_eps_surprise_pct"] == 4.2  # untouched
+    assert rvc["in_quarter_eps_actual"] == "$1.00"  # untouched
+    assert "MDB" not in eps_written
 
 
 def test_finnhub_declines_when_no_quarter_in_window(tmp_path):
-    """When the latest Finnhub quarter is >75 days from the note date, the
-    surprise must NOT be attributed (wrong-quarter guard) -> n/a stays."""
+    """When the latest Finnhub quarter is >75 days from the note date, nothing
+    is attributed (wrong-quarter guard) -> n/a stays, no contradictory pair."""
     intel_path = tmp_path / "earnings_intel.json"
-    # Note dated months after the only available Finnhub quarter.
     intel_path.write_text(json.dumps(_intel_with("OS", "2026-05-07")))
     stale = [{"actual": 1.0, "estimate": 0.3, "period": "2025-12-31",
               "quarter": 4, "year": 2025, "surprisePercent": 231.9, "symbol": "OS"}]
 
     with mock.patch.object(eps_bf, "INTEL_PATH", intel_path), \
          mock.patch.object(eps_bf, "get_earnings_surprises", return_value=stale):
-        populated, present, nodata = eps_bf.backfill(only="OS", dry_run=False)
+        eps_written, rev_written, present, nodata = eps_bf.backfill(only="OS", dry_run=False)
 
-    assert nodata == ["OS"] and populated == []
+    assert "OS" in nodata and eps_written == []
     rec = json.loads(intel_path.read_text())["tickers"]["OS"]
     assert (rec.get("results_vs_consensus") or {}).get("in_quarter_eps_surprise_pct") is None
+    assert (rec.get("results_vs_consensus") or {}).get("in_quarter_eps_actual") is None
 
 
 def test_finnhub_unavailable_is_safe(tmp_path):
@@ -177,6 +185,6 @@ def test_finnhub_unavailable_is_safe(tmp_path):
 
     with mock.patch.object(eps_bf, "INTEL_PATH", intel_path), \
          mock.patch.object(eps_bf, "get_earnings_surprises", return_value=None):
-        populated, present, nodata = eps_bf.backfill(only="CSU.TO", dry_run=False)
+        eps_written, rev_written, present, nodata = eps_bf.backfill(only="CSU.TO", dry_run=False)
 
-    assert nodata == ["CSU.TO"] and populated == []
+    assert "CSU.TO" in nodata and eps_written == []
