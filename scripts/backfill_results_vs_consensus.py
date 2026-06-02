@@ -143,6 +143,41 @@ def _parse_metric(md: str, label_re: str) -> tuple[str | None, float | None, flo
             continue
         return a_tok.strip(), actual, _signed_surprise(actual, est)
 
+    # Actual-only fallback (RC-2): real notes phrase the comparator as
+    # "guidance mid-point", "consensus", "Street" rather than "<est> est", or
+    # state only the reported actual. Capture the actual value so the card can
+    # surface "Revenue: $X". A surprise % is computed ONLY when an explicit
+    # estimate token ("vs <num> [est|consensus|Street|guidance mid-point]") is
+    # parseable — otherwise surprise stays None (never fabricated).
+    actual_only_re = re.compile(
+        rf"^[-*\s]*{label_re}\s*"
+        rf"(?:\((?:non-GAAP|adjusted|core)\)\s*)?"
+        rf":?\s*"
+        rf"({_MONEY})\b",
+        re.I | re.M,
+    )
+    comparator_re = re.compile(
+        rf"vs\.?\s*(?:est\.?\s*|consensus\s*|Street\s*|guidance\s*)?"
+        rf"({_MONEY}(?:\s*(?:-|–|to)\s*{_MONEY})?)\s*"
+        rf"(?:est\.?|consensus|Street|guidance\s*mid-?point|mid-?point)",
+        re.I,
+    )
+    for m in actual_only_re.finditer(md):
+        actual_raw = m.group(1)
+        if _NA.search(actual_raw):
+            continue
+        actual = _to_number(actual_raw)
+        if actual is None:
+            continue
+        # Look for an estimate comparator in the remainder of the same line.
+        line_tail = md[m.end():].split("\n", 1)[0]
+        surprise = None
+        cm = comparator_re.search(line_tail)
+        if cm and not _NA.search(cm.group(1)):
+            est = _est_number(cm.group(1))
+            surprise = _signed_surprise(actual, est)
+        return actual_raw.strip(), actual, surprise
+
     return None, None, None
 
 

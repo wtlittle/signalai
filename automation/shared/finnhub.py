@@ -144,6 +144,41 @@ def get_insider_transactions(
         return None
 
 
+def get_earnings_surprises(symbol: str) -> list[dict[str, Any]] | None:
+    """Per-quarter EPS actual vs estimate from /stock/earnings (free tier).
+
+    Returns list (most recent first) like:
+        [{"actual": 1.32, "estimate": 1.1945, "period": "2026-06-30",
+          "quarter": 1, "year": 2027, "surprise": 0.1255,
+          "surprisePercent": 10.5065, "symbol": "MDB"}, ...]
+
+    The actual/estimate are on a single consistent basis, so
+    ``surprisePercent`` is a trustworthy beat/miss magnitude even if the
+    absolute basis differs from a note's non-GAAP figure. Returns None on
+    failure (no credential, network error, non-200).
+    """
+    if not _has_credential():
+        return None
+    try:
+        resp = requests.get(
+            f"{BASE_URL}/stock/earnings",
+            params=_params_with_token({"symbol": symbol}),
+            timeout=_TIMEOUT,
+            verify=_verify_setting(),
+        )
+        if resp.status_code != 200:
+            print(
+                f"  [WARN] Finnhub earnings {symbol}: "
+                f"HTTP {resp.status_code} {resp.text[:120]}"
+            )
+            return None
+        data = resp.json()
+        return data if isinstance(data, list) else None
+    except Exception as exc:
+        print(f"  [WARN] Finnhub earnings {symbol}: {exc}")
+        return None
+
+
 def summarize_insider_tx(transactions: list[dict[str, Any]]) -> dict[str, Any]:
     """Aggregate insider transactions into n_buys, n_sells, net_value_usd."""
     if not transactions:

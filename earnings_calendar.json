@@ -62,7 +62,8 @@
       "days_since": 5,
       "earnings_date": "2026-05-28",
       "ticker": "MDB",
-      "timing": "AMC"
+      "timing": "AMC",
+      "eps_beat_miss": "beat (+10.5%)"
     },
     {
       "company": "Elastic",
@@ -70,7 +71,8 @@
       "days_since": 5,
       "earnings_date": "2026-05-28",
       "ticker": "ESTC",
-      "timing": "AMC"
+      "timing": "AMC",
+      "eps_beat_miss": "beat (+7.3%)"
     },
     {
       "company": "UiPath",
@@ -78,7 +80,8 @@
       "days_since": 5,
       "earnings_date": "2026-05-28",
       "ticker": "PATH",
-      "timing": "AMC"
+      "timing": "AMC",
+      "eps_beat_miss": "miss (-7.9%)"
     },
     {
       "company": "Autodesk",
@@ -86,7 +89,8 @@
       "days_since": 5,
       "earnings_date": "2026-05-28",
       "ticker": "ADSK",
-      "timing": "AMC"
+      "timing": "AMC",
+      "eps_beat_miss": "beat (+3.1%)"
     },
     {
       "company": "Marvell",
@@ -94,7 +98,10 @@
       "days_since": 6,
       "earnings_date": "2026-05-27",
       "ticker": "MRVL",
-      "timing": "AMC"
+      "timing": "AMC",
+      "revenue_actual": "$2.42B",
+      "eps_actual": "$0.80",
+      "eps_beat_miss": "in-line"
     },
     {
       "company": "Synopsys",
@@ -102,7 +109,8 @@
       "days_since": 6,
       "earnings_date": "2026-05-27",
       "ticker": "SNPS",
-      "timing": "AMC"
+      "timing": "AMC",
+      "eps_beat_miss": "beat (+4.1%)"
     },
     {
       "company": "Salesforce",
@@ -110,7 +118,9 @@
       "days_since": 6,
       "earnings_date": "2026-05-27",
       "ticker": "CRM",
-      "timing": "AMC"
+      "timing": "AMC",
+      "revenue_actual": "$11.13B",
+      "eps_beat_miss": "beat (+23.2%)"
     },
     {
       "company": "Snowflake",
@@ -130,7 +140,8 @@
       "days_since": 6,
       "earnings_date": "2026-05-27",
       "ticker": "NTNX",
-      "timing": "AMC"
+      "timing": "AMC",
+      "eps_beat_miss": "beat (+28.6%)"
     },
     {
       "company": "Braze",
@@ -138,7 +149,8 @@
       "days_since": 6,
       "earnings_date": "2026-05-27",
       "ticker": "BRZE",
-      "timing": "AMC"
+      "timing": "AMC",
+      "eps_beat_miss": "miss (-5.6%)"
     },
     {
       "company": "Zscaler",
@@ -172,7 +184,8 @@
       "days_since": 12,
       "earnings_date": "2026-05-21",
       "ticker": "RAMP",
-      "timing": "AMC"
+      "timing": "AMC",
+      "eps_beat_miss": "beat (+2.8%)"
     },
     {
       "company": "Zoom",
@@ -180,7 +193,11 @@
       "days_since": 12,
       "earnings_date": "2026-05-21",
       "ticker": "ZM",
-      "timing": "AMC"
+      "timing": "AMC",
+      "revenue_actual": "$1.239B",
+      "eps_actual": "$1.55",
+      "revenue_beat_miss": "beat (+1.6%)",
+      "eps_beat_miss": "beat (+9.9%)"
     },
     {
       "company": "ROST",
@@ -190,7 +207,8 @@
       "ticker": "ROST",
       "timing": "AMC",
       "revenue_actual": "$6.01B",
-      "revenue_beat_miss": "beat (+6.6%)"
+      "revenue_beat_miss": "beat (+6.6%)",
+      "eps_beat_miss": "beat (+14.5%)"
     },
     {
       "company": "Intuit",
@@ -198,7 +216,11 @@
       "days_since": 13,
       "earnings_date": "2026-05-20",
       "ticker": "INTU",
-      "timing": "AMC"
+      "timing": "AMC",
+      "revenue_actual": "$8.56B",
+      "eps_actual": "$12.80",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+1.8%)"
     },
     {
       "company": "Palo Alto Networks",
@@ -347,5 +369,5 @@
       "timing": "AMC"
     }
   ],
-  "updated": "2026-06-02T14:04:28+00:00"
+  "updated": "2026-06-02T18:18:46+00:00"
 }
