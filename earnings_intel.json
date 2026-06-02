@@ -294,7 +294,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": -3.6,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$1.61",
+        "in_quarter_eps_estimate": "$1.67",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "BKR": {
@@ -929,7 +932,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$1.06B",
         "in_quarter_eps_surprise_pct": 32.8,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$1.80",
+        "in_quarter_eps_estimate": "$1.36",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "GOOG": {
@@ -2241,7 +2247,15 @@
       "results_vs_consensus": {
         "in_quarter_eps_actual": "$4.47",
         "in_quarter_eps_surprise_pct": 6.2
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 13025000000.0,
+        "fy_rev_consensus_prior": 12955000000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year"
+      },
+      "guidanceRevenueDeltaPct": 0.005403319181783096,
+      "guidanceRevenuePriorSource": "consensus"
     },
     "ZBH": {
       "ticker": "ZBH",
@@ -2398,8 +2412,25 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 11.0,
-        "eps_surprise_source": "finnhub_stock_earnings"
-      }
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$2.09",
+        "in_quarter_eps_estimate": "$1.88",
+        "eps_consensus_source": "finnhub_stock_earnings"
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 8500000000.0,
+        "fy_rev_consensus_prior": 8500000000.0,
+        "fy_eps_guide_midpoint_new": 8.475,
+        "fy_eps_consensus_prior": 8.39,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year"
+      },
+      "guidanceRevenueDeltaPct": 0.0,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceEpsDeltaPct": 0.010131108462455194,
+      "guidanceEpsDeltaAbs": 0.08499999999999908,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceProfitMetricUsed": "eps"
     },
     "ABT": {
       "ticker": "ABT",
@@ -2517,7 +2548,17 @@
         "in_quarter_rev_surprise_pct": 1.2,
         "in_quarter_eps_actual": "$1.15",
         "in_quarter_eps_surprise_pct": 0.0
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_eps_guide_midpoint_new": 5.48,
+        "fy_eps_consensus_prior": 5.68,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year"
+      },
+      "guidanceEpsDeltaPct": -0.03521126760563368,
+      "guidanceEpsDeltaAbs": -0.1999999999999993,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceProfitMetricUsed": "eps"
     },
     "BAC": {
       "ticker": "BAC",
@@ -3456,7 +3497,10 @@
         "in_quarter_rev_actual": "$35.9B",
         "in_quarter_rev_surprise_pct": 2.6,
         "in_quarter_eps_surprise_pct": 4.4,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$22.08",
+        "in_quarter_eps_estimate": "$21.14",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "WFC": {
@@ -3777,7 +3821,21 @@
         "in_quarter_eps_actual": "$0.06",
         "in_quarter_eps_surprise_pct": 210.3,
         "eps_surprise_source": "finnhub_stock_earnings"
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 734000000.0,
+        "fy_rev_consensus_prior": 727940000.0,
+        "fy_eps_guide_midpoint_new": 0.115,
+        "fy_eps_consensus_prior": 0.08,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year"
+      },
+      "guidanceRevenueDeltaPct": 0.00832486193917081,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceEpsDeltaPct": 0.43750000000000006,
+      "guidanceEpsDeltaAbs": 0.035,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceProfitMetricUsed": "eps"
     },
     "CSU.TO": {
       "ticker": "CSU.TO",
@@ -4140,7 +4198,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": -10.9,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.67",
+        "in_quarter_eps_estimate": "$0.75",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "DT": {
@@ -4322,7 +4383,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 2.4,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.41",
+        "in_quarter_eps_estimate": "$0.40",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "GLBE": {
@@ -4867,7 +4931,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": -2.2,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$3.43",
+        "in_quarter_eps_estimate": "$3.51",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "INTU": {
@@ -5407,7 +5474,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 2.8,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.52",
+        "in_quarter_eps_estimate": "$0.51",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "WDAY": {
@@ -5596,7 +5666,9 @@
       "guide_vs_consensus": {
         "fy_rev_change_vs_consensus_pct": 0.0,
         "fy_rev_change_vs_prior_pct": null
-      }
+      },
+      "guidanceRevenueDeltaPct": 0.0,
+      "guidanceRevenuePriorSource": "consensus"
     },
     "ZM": {
       "ticker": "ZM",
@@ -9948,7 +10020,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$1,008M",
         "in_quarter_eps_surprise_pct": 14.8,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.27",
+        "in_quarter_eps_estimate": "$0.24",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "PLTR": {
@@ -11181,7 +11256,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": -2.9,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$1.04",
+        "in_quarter_eps_estimate": "$1.07",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "FRSH": {
@@ -11998,7 +12076,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 77.5,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$1.06",
+        "in_quarter_eps_estimate": "$0.60",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "PCOR": {
@@ -12258,7 +12339,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$175.6M",
         "in_quarter_eps_surprise_pct": 6.2,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$1.95",
+        "in_quarter_eps_estimate": "$1.84",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "RPD": {
@@ -12670,7 +12754,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$93.5M",
         "in_quarter_eps_surprise_pct": -181.7,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "-$0.02",
+        "in_quarter_eps_estimate": "-$0.01",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "APP": {
@@ -12806,7 +12893,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 3.6,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$3.56",
+        "in_quarter_eps_estimate": "$3.44",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "CF": {
@@ -13655,7 +13745,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$64.7M",
         "in_quarter_eps_surprise_pct": 5.4,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "-$0.34",
+        "in_quarter_eps_estimate": "-$0.36",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "KHC": {
@@ -13939,7 +14032,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 26.4,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$2.69",
+        "in_quarter_eps_estimate": "$2.13",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "SEMR": {
@@ -14197,7 +14293,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$1.3M",
         "in_quarter_eps_surprise_pct": -154.5,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "-$1.37",
+        "in_quarter_eps_estimate": "-$0.54",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "TRMB": {
@@ -14479,7 +14578,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 53.5,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.30",
+        "in_quarter_eps_estimate": "$0.20",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "AKAM": {
@@ -15024,7 +15126,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": -559.7,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "-$1.49",
+        "in_quarter_eps_estimate": "$0.32",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "DDOG": {
@@ -15163,7 +15268,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$1.01B",
         "in_quarter_eps_surprise_pct": 15.9,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.60",
+        "in_quarter_eps_estimate": "$0.52",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "GCT": {
@@ -15455,7 +15563,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$23",
         "in_quarter_eps_surprise_pct": 8.1,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$2.72",
+        "in_quarter_eps_estimate": "$2.52",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "NET": {
@@ -16294,7 +16405,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$608M",
         "in_quarter_eps_surprise_pct": -529.9,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "-$0.19",
+        "in_quarter_eps_estimate": "$0.04",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "MNDY": {
@@ -16422,7 +16536,10 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$351.3M",
         "in_quarter_eps_surprise_pct": 20.9,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$1.15",
+        "in_quarter_eps_estimate": "$0.95",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "MOS": {
@@ -17024,7 +17141,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 4.1,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$3.35",
+        "in_quarter_eps_estimate": "$3.22",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "CRM": {
@@ -17295,8 +17415,19 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$11.13B",
         "in_quarter_eps_surprise_pct": 23.2,
-        "eps_surprise_source": "finnhub_stock_earnings"
-      }
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$3.88",
+        "in_quarter_eps_estimate": "$3.15",
+        "eps_consensus_source": "finnhub_stock_earnings"
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 46050000000.0,
+        "fy_rev_consensus_prior": 45750000000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year"
+      },
+      "guidanceRevenueDeltaPct": 0.006557377049180328,
+      "guidanceRevenuePriorSource": "consensus"
     },
     "SNOW": {
       "ticker": "SNOW",
@@ -17875,7 +18006,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 28.6,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.47",
+        "in_quarter_eps_estimate": "$0.37",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "BRZE": {
@@ -18042,7 +18176,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": -5.6,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.10",
+        "in_quarter_eps_estimate": "$0.11",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "PSTG": {
@@ -19086,7 +19223,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 10.5,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$1.32",
+        "in_quarter_eps_estimate": "$1.19",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "ESTC": {
@@ -19361,7 +19501,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 7.3,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.61",
+        "in_quarter_eps_estimate": "$0.57",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "PATH": {
@@ -19530,7 +19673,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": -7.9,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.15",
+        "in_quarter_eps_estimate": "$0.16",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "ADSK": {
@@ -19705,7 +19851,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 3.1,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$2.99",
+        "in_quarter_eps_estimate": "$2.90",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "OS": {
@@ -20247,7 +20396,10 @@
       },
       "results_vs_consensus": {
         "in_quarter_eps_surprise_pct": 13.4,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$0.65",
+        "in_quarter_eps_estimate": "$0.57",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "PANW": {
@@ -22914,7 +23066,10 @@
         "in_quarter_rev_actual": "$6.01B",
         "in_quarter_rev_surprise_pct": 6.6,
         "in_quarter_eps_surprise_pct": 14.5,
-        "eps_surprise_source": "finnhub_stock_earnings"
+        "eps_surprise_source": "finnhub_stock_earnings",
+        "in_quarter_eps_actual": "$2.02",
+        "in_quarter_eps_estimate": "$1.76",
+        "eps_consensus_source": "finnhub_stock_earnings"
       }
     },
     "ORCL": {

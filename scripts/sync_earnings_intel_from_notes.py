@@ -1009,7 +1009,7 @@ def _run_consensus_backfills(only_ticker: str | None = None) -> None:
     saved = _sys.argv
     for label, fn, path in (
         ("prose", _prose_main, None),
-        ("finnhub_eps", None, ROOT / "scripts" / "backfill_eps_surprise_from_finnhub.py"),
+        ("finnhub_earnings", None, ROOT / "scripts" / "backfill_earnings_from_finnhub.py"),
     ):
         try:
             if fn is None and path is not None:
