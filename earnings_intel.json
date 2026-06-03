@@ -21580,7 +21580,23 @@
         "in_quarter_eps_actual": "$0.85",
         "in_quarter_eps_estimate": "$0.81",
         "in_quarter_eps_surprise_pct": 4.8,
-        "eps_consensus_source": "finnhub_stock_earnings"
+        "eps_consensus_source": "finnhub_stock_earnings",
+        "in_quarter_rev_actual": "$3.00B",
+        "in_quarter_rev_estimate": "$2.94B",
+        "in_quarter_rev_surprise_pct": 1.9,
+        "rev_actual_source": "perplexity_sonar_verified_marketbeat_cnbc",
+        "rev_consensus_source": "perplexity_sonar_verified_marketbeat_cnbc",
+        "rev_surprise_source": "computed_from_perplexity"
+      },
+      "last_earnings_date": "2026-06-02",
+      "guide_vs_consensus": {
+        "fy_guide_source": "perplexity_sonar_verified_marketbeat_cnbc_panw_ir",
+        "fy_guide_widened": true,
+        "fy_rev_guide_midpoint_new": 11420000000.0,
+        "fy_rev_guide_midpoint_prior": 11295000000.0,
+        "fy_eps_guide_midpoint_new": 3.78,
+        "fy_eps_guide_midpoint_prior": 3.675,
+        "fy_guide_fiscal_year": "FY2026"
       }
     },
     "GWRE": {
@@ -21861,7 +21877,26 @@
         "in_quarter_eps_actual": "$0.23",
         "in_quarter_eps_estimate": "$0.21",
         "in_quarter_eps_surprise_pct": 8.7,
-        "eps_consensus_source": "finnhub_stock_earnings"
+        "eps_consensus_source": "finnhub_stock_earnings",
+        "in_quarter_rev_actual": "$264M",
+        "rev_actual_source": "perplexity_sonar_verified_marketbeat",
+        "in_quarter_rev_estimate": "$254M",
+        "rev_consensus_source": "perplexity_sonar_verified_marketbeat",
+        "in_quarter_rev_surprise_pct": 3.9,
+        "rev_surprise_source": "computed_from_perplexity"
+      },
+      "last_earnings_date": "2026-06-02",
+      "guide_vs_consensus": {
+        "fy_eps_guide_midpoint_new": 0.805,
+        "fy_op_profit_guide_midpoint_new": 138000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_fiscal_year": "FY2027",
+        "fy_guide_source": "perplexity_sonar_verified_marketbeat_gtlb_transcript",
+        "fy_guide_widened": true,
+        "fy_rev_guide_midpoint_new": 1115000000.0,
+        "fy_rev_guide_midpoint_prior": 1108500000.0,
+        "fy_eps_guide_midpoint_prior": 0.78,
+        "fy_op_profit_guide_midpoint_prior": 133000000.0
       }
     },
     "AVGO": {
