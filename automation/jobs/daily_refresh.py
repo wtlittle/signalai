@@ -21,10 +21,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from automation.shared.paths import ROOT_DIR, EARNINGS_CALENDAR, MACRO_DATA
+from automation.shared.paths import ROOT_DIR, EARNINGS_CALENDAR, EARNINGS_INTEL, MACRO_DATA
 from automation.shared.cache import clear_stale_cache
 from automation.shared.tickers import load_tickers, load_common_names
-from automation.shared.io_helpers import read_json
+from automation.shared.io_helpers import read_json, write_json
 from automation.perplexity.client import call_perplexity
 from automation.perplexity.prompts import build_news_prompt, build_news_tagging_prompt
 
@@ -221,6 +221,82 @@ def step_news_tagging(news_updates: list[dict]) -> int:
         queued += 1
         print(f"  [QUEUED] {ticker}: news_tag for {len(articles)} article(s)")
     return queued
+
+
+def self_heal_state_machine(intel_path=None, today=None):
+    """Flip stuck pre_earnings tickers to post_earnings once their print is past.
+
+    For every ticker in earnings_intel.json: if state == "pre_earnings" AND
+    next_earnings_date parses to a date strictly before today, flip it to
+    post_earnings, record last_reported_date, clear next_earnings_date (a later
+    yfinance lookup re-populates it), and stamp refresh_reason.
+
+    Does NOT touch post_earnings records and never fabricates REV/EPS actuals --
+    those arrive later via the backfill. Returns the list of transitions made,
+    each a dict {ticker, from_date, to_state} for the run summary.
+
+    Args:
+        intel_path: override path to earnings_intel.json (defaults to repo root).
+        today: override the comparison date (defaults to today's UTC date).
+    """
+    from dateutil import parser as _date_parser
+
+    path = Path(intel_path) if intel_path else EARNINGS_INTEL
+    today_date = today or datetime.utcnow().date()
+
+    intel = read_json(path)
+    tickers = intel.get("tickers")
+    if not isinstance(tickers, dict):
+        return []
+
+    transitions = []
+    for ticker, entry in tickers.items():
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("state") != "pre_earnings":
+            continue
+        next_date = entry.get("next_earnings_date")
+        if not next_date:
+            continue
+        try:
+            parsed = _date_parser.parse(str(next_date)).date()
+        except (ValueError, OverflowError, TypeError):
+            continue
+        if parsed >= today_date:
+            continue
+        entry["state"] = "post_earnings"
+        entry["last_reported_date"] = next_date
+        entry["next_earnings_date"] = None
+        entry["refresh_reason"] = "self_heal_pre_to_post_transition"
+        transitions.append({
+            "ticker": ticker,
+            "from_date": next_date,
+            "to_state": "post_earnings",
+        })
+
+    if transitions:
+        write_json(path, intel)
+
+    return transitions
+
+
+def step_self_heal_state_machine():
+    """Step 3b: Self-heal stuck pre->post tickers in earnings_intel.json.
+
+    Runs BEFORE the earnings_intel sync so freshly-flipped POST tickers are
+    visible to every downstream consumer. Logs each transition to the run
+    summary so real catches can be verified.
+    """
+    print("\n=== Step 3b: Self-Heal State Machine (pre->post) ===")
+    transitions = self_heal_state_machine()
+    if not transitions:
+        print("  No stuck pre_earnings tickers to heal.")
+    else:
+        for t in transitions:
+            print(f"  [HEAL] {t['ticker']}: pre_earnings -> post_earnings "
+                  f"(reported {t['from_date']})")
+        print(f"  Healed {len(transitions)} ticker(s).")
+    return transitions
 
 
 def step_migrate_pre_to_post():
@@ -553,6 +629,8 @@ def run():
     # cheap and is the source of truth for downstream steps.
     pre, post = step_earnings_events()
     active = pre + post
+
+    step_self_heal_state_machine()
 
     # Step 4 / 4b: News scan + tagging (Perplexity) — AMC + full only.
     # We scan once per day after the close so that the news set covers a
