@@ -52,6 +52,10 @@ def test_self_heal_flips_past_dated_pre_ticker(tmp_path):
     healed = json.loads(p.read_text())["tickers"]["PANW"]
     assert healed["state"] == "post_earnings"
     assert healed["last_reported_date"] == yesterday
+    # Canonical field that backfill_earnings_from_finnhub.py +
+    # backfill_revenue_from_yfinance.py read. Both must be populated so
+    # self-healed tickers auto-backfill EPS + revenue from the data providers.
+    assert healed["last_earnings_date"] == yesterday
     assert healed["next_earnings_date"] is None
     assert healed["refresh_reason"] == "self_heal_pre_to_post_transition"
 

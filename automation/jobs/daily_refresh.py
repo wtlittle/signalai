@@ -228,8 +228,10 @@ def self_heal_state_machine(intel_path=None, today=None):
 
     For every ticker in earnings_intel.json: if state == "pre_earnings" AND
     next_earnings_date parses to a date strictly before today, flip it to
-    post_earnings, record last_reported_date, clear next_earnings_date (a later
-    yfinance lookup re-populates it), and stamp refresh_reason.
+    post_earnings, record BOTH ``last_reported_date`` (legacy) AND
+    ``last_earnings_date`` (canonical -- the field the backfill scripts read),
+    clear next_earnings_date (a later yfinance lookup re-populates it), and
+    stamp refresh_reason.
 
     Does NOT touch post_earnings records and never fabricates REV/EPS actuals --
     those arrive later via the backfill. Returns the list of transitions made,
@@ -265,7 +267,13 @@ def self_heal_state_machine(intel_path=None, today=None):
         if parsed >= today_date:
             continue
         entry["state"] = "post_earnings"
+        # Write BOTH field names. ``last_reported_date`` is the legacy field
+        # tests assert on; ``last_earnings_date`` is the canonical field that
+        # backfill_earnings_from_finnhub.py + backfill_revenue_from_yfinance.py
+        # read to fetch post-print actuals. Writing only ``last_reported_date``
+        # silently blocked auto-backfills for self-healed tickers.
         entry["last_reported_date"] = next_date
+        entry["last_earnings_date"] = next_date
         entry["next_earnings_date"] = None
         entry["refresh_reason"] = "self_heal_pre_to_post_transition"
         transitions.append({
