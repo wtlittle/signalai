@@ -568,24 +568,186 @@ async function fetchGoogleNewsClient(tickers) {
   return out;
 }
 
-// --- Client-side news fetch (Yahoo + Google News, merged + deduped) ---
+// --- Perplexity sonar news (single batched call; real-publisher URLs) ---
+// Maps common publisher hosts to display names; unknown hosts fall back to a
+// capitalized host label. Keyed by registrable domain (host with leading www. /
+// m. / news. stripped).
+const PPLX_HOST_NAMES = {
+  'bloomberg.com': 'Bloomberg',
+  'reuters.com': 'Reuters',
+  'ft.com': 'Financial Times',
+  'wsj.com': 'WSJ',
+  'nytimes.com': 'NY Times',
+  'cnbc.com': 'CNBC',
+  'marketwatch.com': 'MarketWatch',
+  'barrons.com': "Barron's",
+  'businesswire.com': 'Business Wire',
+  'prnewswire.com': 'PR Newswire',
+  'seekingalpha.com': 'Seeking Alpha',
+  'theinformation.com': 'The Information',
+  'forbes.com': 'Forbes',
+  'fool.com': 'Motley Fool',
+  'investors.com': "Investor's Business Daily",
+  'apnews.com': 'AP',
+  'theverge.com': 'The Verge',
+  'techcrunch.com': 'TechCrunch',
+  'axios.com': 'Axios',
+  'finance.yahoo.com': 'Yahoo Finance',
+  'yahoo.com': 'Yahoo Finance',
+};
+
+function sourceFromUrl(url) {
+  try {
+    let host = new URL(url).hostname.toLowerCase();
+    host = host.replace(/^(www\.|m\.|news\.|amp\.)/, '');
+    if (PPLX_HOST_NAMES[host]) return PPLX_HOST_NAMES[host];
+    // Strip subdomains down to the registrable domain for a second lookup.
+    const parts = host.split('.');
+    if (parts.length > 2) {
+      const base = parts.slice(-2).join('.');
+      if (PPLX_HOST_NAMES[base]) return PPLX_HOST_NAMES[base];
+    }
+    // Fallback: capitalize the second-level label (e.g. "example.com" -> "Example").
+    const label = parts.length >= 2 ? parts[parts.length - 2] : parts[0];
+    return label ? label.charAt(0).toUpperCase() + label.slice(1) : 'Web';
+  } catch (e) {
+    return 'Web';
+  }
+}
+
+async function fetchPerplexityNewsClient(tickers) {
+  // Browser-only guard: the wrapper lives on window.SignalAIApi (mirrors the
+  // DOMParser guard in fetchGoogleNewsClient). Skip in non-browser env or when
+  // no API key is configured.
+  if (typeof window === 'undefined' || !window.SignalAIApi
+      || typeof window.SignalAIApi.call !== 'function'
+      || typeof window.SignalAIApi.hasKey !== 'function' || !window.SignalAIApi.hasKey()) {
+    return [];
+  }
+
+  const cov = (tickers || []).slice(0, 30);
+  if (!cov.length) return [];
+  const tickerList = cov.join(', ');
+
+  const system = [
+    'You are a buy-side equity news scout. Surface only MATERIAL, recent business',
+    'news about the listed tickers: earnings results, guidance changes, M&A activity,',
+    'analyst rating/price-target changes, product launches, and regulatory or legal',
+    'actions. EXCLUDE generic listicles, "X things to know about Y stock" filler,',
+    'roundups, opinion/price-target-speculation pieces, and pure-price commentary',
+    '("stock rises/falls today"). Prefer primary publishers (Bloomberg, Reuters, WSJ,',
+    'FT, CNBC, company press releases) over aggregators. Return ONLY valid JSON, no',
+    'prose and no markdown fences.',
+  ].join(' ');
+
+  const prompt = `Find the top 15-20 most material business news stories from the last 24 hours about these tickers: ${tickerList}.
+
+Return a JSON object of the form:
+{"stories": [{"title": "...", "url": "https://...", "ticker": "TSLA", "publishedAt": "2026-06-03T14:30:00Z", "summary": "one sentence"}]}
+
+Rules:
+- "url" must be the original publisher URL (not an aggregator/Google/Yahoo redirect).
+- "ticker" is the single primary ticker the story is about, drawn from the list above.
+- "publishedAt" is ISO 8601 if known, otherwise null.
+- "summary" is one concise sentence; omit if not available.`;
+
+  const response_format = {
+    type: 'json_schema',
+    json_schema: {
+      schema: {
+        type: 'object',
+        properties: {
+          stories: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                url: { type: 'string' },
+                ticker: { type: 'string' },
+                publishedAt: { type: ['string', 'null'] },
+                summary: { type: 'string' },
+              },
+              required: ['title', 'url'],
+            },
+          },
+        },
+        required: ['stories'],
+      },
+    },
+  };
+
+  try {
+    const resp = await window.SignalAIApi.call({
+      model: 'sonar',
+      system,
+      prompt,
+      max_tokens: 2000,
+      response_format,
+      timeout_ms: 20000,
+    });
+    if (!resp || !resp.ok) {
+      console.warn('Perplexity news fetch failed:', (resp && resp.error) || 'no response');
+      return [];
+    }
+    const parsed = window.SignalAIApi.parseJsonLoose(resp.content);
+    const list = Array.isArray(parsed) ? parsed
+      : (parsed && Array.isArray(parsed.stories) ? parsed.stories : null);
+    if (!list) {
+      console.warn('Perplexity news fetch failed: malformed JSON response');
+      return [];
+    }
+    const covUpper = cov.map((t) => t.toUpperCase());
+    const out = [];
+    for (const s of list) {
+      if (!s || !s.title || !s.url) continue;
+      const url = String(s.url).trim();
+      if (!/^https?:\/\//i.test(url)) continue;
+      let publishedAt = null;
+      if (s.publishedAt) {
+        const d = new Date(s.publishedAt);
+        if (!isNaN(d.getTime())) publishedAt = d.toISOString();
+      }
+      const rawTicker = String(s.ticker || '').toUpperCase().replace(/[^A-Z0-9.]/g, '');
+      const ticker = covUpper.includes(rawTicker) ? rawTicker : '';
+      out.push({
+        title: String(s.title).trim(),
+        url,
+        source: sourceFromUrl(url),
+        publishedAt,
+        ticker,
+        body: s.summary ? String(s.summary).trim() : '',
+      });
+    }
+    return out;
+  } catch (e) {
+    console.warn('Perplexity news fetch failed:', e.message);
+    return [];
+  }
+}
+
+// --- Client-side news fetch (Perplexity + Yahoo + Google News, merged + deduped) ---
 function normalizeTitleKey(title) {
   return String(title || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim().slice(0, 60);
 }
 
 async function fetchNewsClient(tickers) {
-  const [yahoo, google] = await Promise.allSettled([
+  const [pplx, yahoo, google] = await Promise.allSettled([
+    fetchPerplexityNewsClient(tickers),
     fetchYahooNewsClient(tickers),
     fetchGoogleNewsClient(tickers),
   ]);
+  const pplxItems = pplx.status === 'fulfilled' ? pplx.value : [];
   const yahooItems = yahoo.status === 'fulfilled' ? yahoo.value : [];
   const googleItems = google.status === 'fulfilled' ? google.value : [];
 
   const merged = [];
   const seenUrls = new Set();
   const seenTitles = new Set();
-  // Yahoo first so it wins URL/title ties; Google adds source diversity.
-  for (const item of yahooItems.concat(googleItems)) {
+  // Perplexity first so its real-publisher URLs (bloomberg.com, reuters.com,
+  // etc.) win URL/title ties against Yahoo's aggregator mirrors. Yahoo+Google
+  // then fill coverage gaps.
+  for (const item of pplxItems.concat(yahooItems).concat(googleItems)) {
     if (!item || !item.title) continue;
     const urlKey = (item.url || '').trim();
     if (urlKey && urlKey !== '#' && seenUrls.has(urlKey)) continue;
