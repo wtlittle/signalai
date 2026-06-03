@@ -2,10 +2,15 @@
 """Generate post-earnings markdown notes from research data."""
 import csv
 import os
+from datetime import datetime
+
+from dateutil import parser as date_parser
 
 import os as _os
 _SCRIPT_DIR = _os.path.dirname(_os.path.abspath(__file__))
 NOTES_DIR = _os.path.join(_SCRIPT_DIR, 'notes', 'post_earnings')
+
+GENERATED = datetime.today().strftime('%Y-%m-%d')
 
 # Read research results
 rows = []
@@ -14,20 +19,17 @@ with open(_os.path.join(_SCRIPT_DIR, 'data', 'research', 'post_earnings_results.
     for row in reader:
         rows.append(row)
 
+written = 0
 for row in rows:
     ticker = row.get('Ticker', '').strip()
     company = row.get('Company Name', '').strip()
-    date = row.get('Earnings Date', '').strip().replace('March ', '2026-03-').replace(', 2026', '')
-    # Normalize date
-    if date == '2026-03-12':
-        date_str = '2026-03-12'
-    elif date == '2026-03-11':
-        date_str = '2026-03-11'
-    elif date == '2026-03-05' or 'March 5' in date:
-        date_str = '2026-03-05'
-    else:
-        date_str = date[:10] if len(date) >= 10 else date
-    
+    raw_date = row.get('Earnings Date', '').strip()
+    try:
+        date_str = date_parser.parse(raw_date).strftime('%Y-%m-%d')
+    except (ValueError, OverflowError, TypeError) as exc:
+        print(f'  [WARN] {ticker}: could not parse date {raw_date!r} ({exc}); skipping row')
+        continue
+
     fq = row.get('Fiscal Quarter', '')
     rev_actual = row.get('Revenue (Actual)', '')
     rev_est = row.get('Revenue (Estimate)', '')
@@ -64,7 +66,7 @@ for row in rows:
         surprise_bullets = '\n'.join(f'- {s}' for s in items if s)
 
     note = f"""# {company} ({ticker}) — {fq} Post-Earnings Note
-**Reported: {date_str}** | Generated: 2026-03-19
+**Reported: {date_str}** | Generated: {GENERATED}
 
 ---
 
@@ -129,6 +131,7 @@ for row in rows:
     filepath = os.path.join(NOTES_DIR, filename)
     with open(filepath, 'w') as f:
         f.write(note)
+    written += 1
     print(f'  Written: {filename}')
 
-print(f'\nAll {len(rows)} post-earnings notes generated.')
+print(f'\nAll {written} post-earnings notes generated.')
