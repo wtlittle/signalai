@@ -40,6 +40,7 @@ _sync = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_sync)
 normalize_guidance_envelope = _sync.normalize_guidance_envelope
 select_guidance_baseline = _sync.select_guidance_baseline
+compute_metric_delta = _sync._compute_metric_delta
 
 
 # ---------------------------------------------------------------------------
@@ -86,14 +87,18 @@ def select_profitability_guide_metric(g):
             "deltaPct": num(g.get("guidanceEpsDeltaPct")),
             "deltaAbs": num(g.get("guidanceEpsDeltaAbs")),
             "priorSource": g.get("guidanceEpsPriorSource") or "consensus",
+            "streetDeltaPct": num(g.get("guidanceEpsStreetDeltaPct")),
+            "streetDeltaAbs": num(g.get("guidanceEpsStreetDeltaAbs")),
         }
     if num(g.get("guidanceOperatingProfitDeltaPct")) is not None or num(g.get("guidanceOperatingProfitDeltaAbs")) is not None:
-        used = "OP INC" if g.get("guidanceProfitMetricUsed") == "operating_income" else "OP PROFIT"
+        used = "Op Inc" if g.get("guidanceProfitMetricUsed") == "operating_income" else "Op Profit"
         return {
             "label": used,
             "deltaPct": num(g.get("guidanceOperatingProfitDeltaPct")),
             "deltaAbs": num(g.get("guidanceOperatingProfitDeltaAbs")),
             "priorSource": g.get("guidanceOperatingProfitPriorSource") or "consensus",
+            "streetDeltaPct": num(g.get("guidanceOperatingProfitStreetDeltaPct")),
+            "streetDeltaAbs": num(g.get("guidanceOperatingProfitStreetDeltaAbs")),
         }
     if num(g.get("guidanceFcfDeltaPct")) is not None or num(g.get("guidanceFcfDeltaAbs")) is not None:
         return {
@@ -101,6 +106,8 @@ def select_profitability_guide_metric(g):
             "deltaPct": num(g.get("guidanceFcfDeltaPct")),
             "deltaAbs": num(g.get("guidanceFcfDeltaAbs")),
             "priorSource": g.get("guidanceFcfPriorSource") or "consensus",
+            "streetDeltaPct": num(g.get("guidanceFcfStreetDeltaPct")),
+            "streetDeltaAbs": num(g.get("guidanceFcfStreetDeltaAbs")),
         }
     return None
 
@@ -121,6 +128,8 @@ def build_guidance_change_display(g):
                 "deltaPct": rev_pct,
                 "direction": direction,
                 "priorSource": g.get("guidanceRevenuePriorSource") or "consensus",
+                "streetDeltaPct": num(g.get("guidanceRevenueStreetDeltaPct")),
+                "streetDeltaAbs": None,
                 "display": value,
             }
 
@@ -138,17 +147,88 @@ def build_guidance_change_display(g):
                 "deltaAbs": prof["deltaAbs"],
                 "direction": direction,
                 "priorSource": prof["priorSource"] or "consensus",
+                "streetDeltaPct": prof["streetDeltaPct"],
+                "streetDeltaAbs": prof["streetDeltaAbs"],
                 "display": value,
             }
 
     return {"revenue": revenue, "profitability": profitability}
 
 
-def _pill_text(metric):
-    """Compact text form a pill renders, e.g. "REV Δ -0.7% cut"."""
+def _raise_cut_word(direction):
+    """Mirror of JS _raiseCutWord."""
+    if direction == "raise":
+        return "Raise"
+    if direction == "cut":
+        return "Cut"
+    return "Flat"
+
+
+def _above_below_word(delta_pct, flat_threshold=0.005):
+    """Mirror of JS _aboveBelowWord."""
+    if delta_pct is None or not isinstance(delta_pct, (int, float)) or math.isinf(delta_pct) or math.isnan(delta_pct):
+        return "n/a"
+    if abs(delta_pct) <= flat_threshold:
+        return "In-line"
+    return "Above" if delta_pct > 0 else "Below"
+
+
+def _profit_metric_prefix(label):
+    """Mirror of JS _profitMetricPrefix."""
+    if not label or label == "REV":
+        return ""
+    return label + " "
+
+
+def build_guidance_pill_text(metric, metric_prefix):
+    """Mirror of JS buildGuidancePillText -> { text, direction } or None."""
     if not metric:
         return None
-    return f"{metric['label']} \u0394 {metric['display']} {metric['direction']}"
+    prefix = metric_prefix or ""
+    if metric.get("priorSource") == "prior_guidance":
+        primary = metric.get("display")
+        if primary is None:
+            return None
+        word = _raise_cut_word(metric.get("direction"))
+        text = f"{word} {prefix}{primary}".rstrip()
+        street = format_guide_delta(
+            delta_pct=metric.get("streetDeltaPct"),
+            delta_abs=metric.get("streetDeltaAbs"),
+            metric=metric.get("label"),
+        )
+        if street is not None:
+            text += f", {street} vs Street"
+        return {"text": text, "direction": metric.get("direction")}
+    # Consensus baseline: above / in-line / below framing, no raise/cut.
+    word = _above_below_word(metric.get("deltaPct"))
+    abs_delta = metric.get("deltaAbs")
+    if word == "n/a" and isinstance(abs_delta, (int, float)) and not (math.isinf(abs_delta) or math.isnan(abs_delta)):
+        word = "In-line" if abs(abs_delta) <= 0.0001 else ("Above" if abs_delta > 0 else "Below")
+    if word == "n/a":
+        return None
+    label_bit = (prefix.rstrip() + " ") if prefix else ""
+    if word == "In-line":
+        return {"text": f"{label_bit}In-line Street".strip(), "direction": "flat"}
+    mag = metric.get("display")
+    if mag is None:
+        return None
+    direction = "raise" if word == "Above" else "cut"
+    return {"text": f"{label_bit}{word} Street {mag}".strip(), "direction": direction}
+
+
+def _revenue_pill_text(disp):
+    """Pill text for the revenue side of a build_guidance_change_display result."""
+    pill = build_guidance_pill_text(disp.get("revenue"), "")
+    return pill["text"] if pill else None
+
+
+def _profit_pill_text(disp):
+    """Pill text for the profitability side, with the metric-label prefix."""
+    prof = disp.get("profitability")
+    if not prof:
+        return None
+    pill = build_guidance_pill_text(prof, _profit_metric_prefix(prof.get("label")))
+    return pill["text"] if pill else None
 
 
 # ---------------------------------------------------------------------------
@@ -181,14 +261,18 @@ def test_profitability_priority_order():
     assert select_profitability_guide_metric(g)["label"] == "EPS"
     # Op profit wins over FCF when EPS absent.
     g = {"guidanceOperatingProfitDeltaPct": 0.05, "guidanceFcfDeltaPct": -0.1}
-    assert select_profitability_guide_metric(g)["label"] == "OP PROFIT"
+    assert select_profitability_guide_metric(g)["label"] == "Op Profit"
     # FCF last resort.
     g = {"guidanceFcfDeltaPct": -0.04, "guidanceFcfDeltaAbs": -20}
     assert select_profitability_guide_metric(g)["label"] == "FCF"
 
 
-def test_select_guidance_baseline_prefers_consensus():
-    assert select_guidance_baseline("1236.0M", "1200M") == (1236000000.0, "consensus")
+def test_select_guidance_baseline_prefers_prior_guide():
+    # Industry framing: raise/cut is measured vs the company's OWN prior guide,
+    # so when both baselines exist the prior guide wins. The consensus baseline
+    # is the fallback (initial-quarter guide with no prior guide).
+    assert select_guidance_baseline("1236.0M", "1200M") == (1200000000.0, "prior_guidance")
+    assert select_guidance_baseline("1236.0M", None) == (1236000000.0, "consensus")
     assert select_guidance_baseline(None, "1200M") == (1200000000.0, "prior_guidance")
     assert select_guidance_baseline(None, None) == (None, None)
 
@@ -210,9 +294,11 @@ def test_case1_prior_consensus_both_metrics():
     assert g["guidanceEpsPriorSource"] == "consensus"
     assert g["guidanceProfitMetricUsed"] == "eps"
 
+    # Both metrics are vs prior CONSENSUS (no prior company guide) -> the card
+    # renders ABOVE/IN-LINE/BELOW Street framing, never raise/cut.
     disp = build_guidance_change_display(g)
-    assert _pill_text(disp["revenue"]) == "REV \u0394 -0.7% cut"
-    assert _pill_text(disp["profitability"]) == "EPS \u0394 +2.1% raise"
+    assert _revenue_pill_text(disp) == "Below Street -0.7%"
+    assert _profit_pill_text(disp) == "EPS Above Street +2.1%"
 
 
 def test_case2_consensus_missing_for_profitability_only():
@@ -232,6 +318,10 @@ def test_case2_consensus_missing_for_profitability_only():
     assert disp["profitability"] is not None
     assert disp["profitability"]["label"] == "EPS"
     assert disp["profitability"]["priorSource"] == "prior_guidance"
+    # Revenue (vs consensus) -> Below Street; EPS (vs prior guide, no prior
+    # consensus) -> Raise EPS, with no ", vs Street" suffix.
+    assert _revenue_pill_text(disp) == "Below Street -0.7%"
+    assert _profit_pill_text(disp) == "Raise EPS +3.2%"
 
 
 def test_case3_revenue_flat_eps_unavailable_fcf_cut():
@@ -247,9 +337,10 @@ def test_case3_revenue_flat_eps_unavailable_fcf_cut():
     assert g["guidanceProfitMetricUsed"] == "fcf"
 
     disp = build_guidance_change_display(g)
-    assert _pill_text(disp["revenue"]) == "REV \u0394 0.0% flat"
+    assert _revenue_pill_text(disp) == "In-line Street"
     assert disp["profitability"]["label"] == "FCF"
     assert disp["profitability"]["direction"] == "cut"
+    assert _profit_pill_text(disp) == "FCF Below Street -10.0%"
 
 
 def test_case4_eps_near_zero_baseline_uses_absolute():
@@ -264,8 +355,10 @@ def test_case4_eps_near_zero_baseline_uses_absolute():
     assert round(g["guidanceEpsDeltaAbs"], 2) == 0.02
 
     disp = build_guidance_change_display(g)
-    pill = _pill_text(disp["profitability"])
-    assert pill == "EPS \u0394 +$0.02 raise"
+    # Consensus baseline + suppressed pct -> the absolute $ delta still carries
+    # the direction (Above Street), and the magnitude is the signed $ change.
+    pill = _profit_pill_text(disp)
+    assert pill == "EPS Above Street +$0.02"
     assert "%" not in pill            # never a misleading percentage
     assert "200" not in pill
 
@@ -283,8 +376,8 @@ def test_case5_missing_revenue_available_operating_profit():
 
     disp = build_guidance_change_display(g)
     assert disp["revenue"] is None
-    assert disp["profitability"]["label"] == "OP PROFIT"
-    assert _pill_text(disp["profitability"]) == "OP PROFIT \u0394 +5.0% raise"
+    assert disp["profitability"]["label"] == "Op Profit"
+    assert _profit_pill_text(disp) == "Op Profit Above Street +5.0%"
 
 
 def test_case5_operating_income_label_variant():
@@ -296,7 +389,8 @@ def test_case5_operating_income_label_variant():
     g = normalize_guidance_envelope(env)
     assert g["guidanceProfitMetricUsed"] == "operating_income"
     disp = build_guidance_change_display(g)
-    assert disp["profitability"]["label"] == "OP INC"
+    assert disp["profitability"]["label"] == "Op Inc"
+    assert _profit_pill_text(disp) == "Op Inc Above Street +5.0%"
 
 
 def test_case6_no_guidance_data():
@@ -318,8 +412,8 @@ def test_precomputed_pct_fallback_when_no_midpoints():
     }
     g = normalize_guidance_envelope(env)
     disp = build_guidance_change_display(g)
-    assert _pill_text(disp["revenue"]) == "REV \u0394 -0.7% cut"
-    assert _pill_text(disp["profitability"]) == "EPS \u0394 +2.1% raise"
+    assert _revenue_pill_text(disp) == "Below Street -0.7%"
+    assert _profit_pill_text(disp) == "EPS Above Street +2.1%"
 
 
 def test_no_nan_or_infinity_in_any_display():
@@ -334,3 +428,81 @@ def test_no_nan_or_infinity_in_any_display():
     assert "guidanceRevenueDeltaPct" not in g
     disp = build_guidance_change_display(g)
     assert disp["revenue"] is None
+
+
+# ---------------------------------------------------------------------------
+# New behavior: prior-guide-first baseline + vs-Street secondary delta
+# ---------------------------------------------------------------------------
+
+def test_compute_metric_delta_returns_both_deltas_when_both_baselines_exist():
+    """When BOTH the prior guide and prior consensus exist, the primary delta is
+    vs the prior guide (raise/cut) and streetDeltaPct carries the vs-Street move.
+    """
+    # new 1240, prior guide 1230 (+0.81% raise), prior consensus 1236 (+0.32% vs Street).
+    d = compute_metric_delta("1240M", "1236M", "1230M")
+    assert d["priorSource"] == "prior_guidance"
+    assert round(d["deltaPct"], 4) == round((1240 - 1230) / 1230, 4)
+    assert d["streetDeltaPct"] is not None
+    assert round(d["streetDeltaPct"], 4) == round((1240 - 1236) / 1236, 4)
+    assert round(d["streetDeltaAbs"] / 1e6, 2) == 4.0
+
+
+def test_compute_metric_delta_no_street_when_only_prior_guide():
+    """Prior guide present, no consensus -> primary is raise/cut, no Street delta."""
+    d = compute_metric_delta("1240M", None, "1230M")
+    assert d["priorSource"] == "prior_guidance"
+    assert d["streetDeltaPct"] is None
+    assert d["streetDeltaAbs"] is None
+
+
+def test_compute_metric_delta_consensus_only_has_no_street_delta():
+    """Only consensus -> primary is vs-Street, streetDelta stays None (it IS the
+    Street number; there is no separate prior-guide baseline to compare)."""
+    d = compute_metric_delta("1240M", "1236M", None)
+    assert d["priorSource"] == "consensus"
+    assert d["streetDeltaPct"] is None
+
+
+# ---------------------------------------------------------------------------
+# Render snapshots for the three framing states
+# ---------------------------------------------------------------------------
+
+def test_render_state_both_baselines_raise_plus_vs_street():
+    """prior_guidance primary + vs-Street secondary -> 'Raise +X%, +Y% vs Street'."""
+    env = {
+        "fy_rev_guide_midpoint_new": "1240M",
+        "fy_rev_guide_midpoint_prior": "1230M",   # +0.81% raise vs own guide
+        "fy_rev_consensus_prior": "1236M",        # +0.32% vs Street
+    }
+    g = normalize_guidance_envelope(env)
+    assert g["guidanceRevenuePriorSource"] == "prior_guidance"
+    assert g["guidanceRevenueStreetDeltaPct"] is not None
+    disp = build_guidance_change_display(g)
+    assert _revenue_pill_text(disp) == "Raise +0.8%, +0.3% vs Street"
+
+
+def test_render_state_prior_guide_only_raise_no_street():
+    """prior_guidance primary, no consensus -> 'Raise +X%' (no vs-Street suffix)."""
+    env = {
+        "fy_eps_guide_midpoint_new": "1.10",
+        "fy_eps_guide_midpoint_prior": "1.00",    # +10% raise vs own guide
+    }
+    g = normalize_guidance_envelope(env)
+    assert g["guidanceEpsPriorSource"] == "prior_guidance"
+    assert g.get("guidanceEpsStreetDeltaPct") is None
+    disp = build_guidance_change_display(g)
+    assert _profit_pill_text(disp) == "Raise EPS +10.0%"
+
+
+def test_render_state_consensus_only_above_below_street():
+    """consensus primary -> 'Above/Below Street +Y%', never raise/cut wording."""
+    env = {
+        "fy_rev_guide_midpoint_new": "1227.5M",
+        "fy_rev_consensus_prior": "1236.0M",      # -0.7% vs Street
+    }
+    g = normalize_guidance_envelope(env)
+    assert g["guidanceRevenuePriorSource"] == "consensus"
+    disp = build_guidance_change_display(g)
+    text = _revenue_pill_text(disp)
+    assert text == "Below Street -0.7%"
+    assert "Raise" not in text and "Cut" not in text and "Flat" not in text

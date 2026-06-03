@@ -215,8 +215,13 @@ Block 2 -- ```json guide_vs_consensus
 
 The EPS / operating-profit / FCF midpoints feed the profitability guidance
 pill on the POST card (EPS preferred; operating profit/income and FCF are
-fallbacks). Provide the prior consensus midpoint when known so the change is
-measured vs Street; otherwise the prior company guide midpoint is used.
+fallbacks). The card frames each guidance line two ways: RAISE / FLAT / CUT vs
+the company's OWN PRIOR guide midpoint (*_guide_midpoint_prior), and ABOVE /
+IN-LINE / BELOW vs the prior Street consensus midpoint (*_consensus_prior).
+Provide BOTH baselines when known -- the prior-guide midpoint drives raise/cut
+and the prior-consensus midpoint drives the "vs Street" magnitude. For
+operating profit, set fy_op_metric_kind to match how the company reports it
+("operating_income" or "operating_profit").
 
 IMPORTANT: Both blocks are REQUIRED, not optional. You MUST populate the
 results_vs_consensus block with actual numbers from the THIS QUARTER ACTUALS and

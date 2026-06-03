@@ -236,23 +236,39 @@ def _parse_guide_num(v) -> float | None:
 
 
 def select_guidance_baseline(consensus_prior, prior_guide):
-    """Return (baseline_midpoint, prior_source): prefer prior consensus, else
-    prior company guidance. Returns (None, None) when neither exists.
+    """Return (baseline_midpoint, prior_source): prefer the company's PRIOR
+    GUIDE, else prior Street consensus. Returns (None, None) when neither
+    exists.
+
+    Rationale: the card frames a guidance move as raise/flat/cut, which is a
+    statement about what the company did relative to its OWN prior guide. The
+    vs-Street comparison (above/in-line/below) is carried separately as a
+    secondary delta. Preferring prior_guide here makes the primary delta the
+    raise/cut number; the vs-Street magnitude is surfaced via _compute_metric_delta's
+    streetDeltaPct when both baselines are present.
     """
-    cons = _parse_guide_num(consensus_prior)
-    if cons is not None:
-        return cons, "consensus"
     guide = _parse_guide_num(prior_guide)
     if guide is not None:
         return guide, "prior_guidance"
+    cons = _parse_guide_num(consensus_prior)
+    if cons is not None:
+        return cons, "consensus"
     return None, None
 
 
 def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0.0):
-    """Compute {deltaPct, deltaAbs, priorSource} for one metric from new/prior
-    midpoints, preferring a prior-consensus baseline. deltaPct is a fraction
-    (None when the baseline is zero / near-zero so callers use deltaAbs).
-    Returns None when the new midpoint or all baselines are missing.
+    """Compute the delta dict for one metric from new/prior midpoints.
+
+    Returns ``{deltaPct, deltaAbs, priorSource, streetDeltaPct, streetDeltaAbs}``
+    where the primary delta is vs the preferred baseline (prior_guide first,
+    consensus fallback). deltaPct is a fraction (None when the baseline is
+    zero / near-zero so callers use deltaAbs). Returns None when the new
+    midpoint or all baselines are missing.
+
+    streetDeltaPct / streetDeltaAbs are populated ONLY when the primary baseline
+    is the prior guide AND a prior Street consensus is ALSO present, so the card
+    can render "Raise +X%, +Y% vs Street" without re-computing. They are None
+    otherwise.
     """
     cur = _parse_guide_num(new_mid)
     if cur is None:
@@ -264,7 +280,23 @@ def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0
     delta_pct = None
     if abs(base) > tiny_baseline:
         delta_pct = delta_abs / abs(base)
-    return {"deltaPct": delta_pct, "deltaAbs": delta_abs, "priorSource": source}
+
+    street_pct = None
+    street_abs = None
+    if source == "prior_guidance":
+        cons = _parse_guide_num(consensus_prior)
+        if cons is not None:
+            street_abs = cur - cons
+            if abs(cons) > tiny_baseline:
+                street_pct = street_abs / abs(cons)
+
+    return {
+        "deltaPct": delta_pct,
+        "deltaAbs": delta_abs,
+        "priorSource": source,
+        "streetDeltaPct": street_pct,
+        "streetDeltaAbs": street_abs,
+    }
 
 
 def normalize_guidance_envelope(gvc: dict | None) -> dict:
@@ -295,6 +327,8 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
     if rev and rev["deltaPct"] is not None:
         out["guidanceRevenueDeltaPct"] = rev["deltaPct"]
         out["guidanceRevenuePriorSource"] = rev["priorSource"]
+        if rev.get("streetDeltaPct") is not None:
+            out["guidanceRevenueStreetDeltaPct"] = rev["streetDeltaPct"]
     else:
         cons = pct_to_frac(gvc.get("fy_rev_change_vs_consensus_pct"))
         prior = pct_to_frac(gvc.get("fy_rev_change_vs_prior_pct"))
@@ -317,6 +351,10 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
             out["guidanceEpsDeltaPct"] = eps["deltaPct"]
         out["guidanceEpsDeltaAbs"] = eps["deltaAbs"]
         out["guidanceEpsPriorSource"] = eps["priorSource"]
+        if eps.get("streetDeltaPct") is not None:
+            out["guidanceEpsStreetDeltaPct"] = eps["streetDeltaPct"]
+        if eps.get("streetDeltaAbs") is not None:
+            out["guidanceEpsStreetDeltaAbs"] = eps["streetDeltaAbs"]
     else:
         cons = pct_to_frac(gvc.get("fy_eps_guide_change_vs_consensus_pct"))
         prior = pct_to_frac(gvc.get("fy_eps_guide_change_vs_prior_pct"))
@@ -339,6 +377,10 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
             out["guidanceOperatingProfitDeltaPct"] = op["deltaPct"]
         out["guidanceOperatingProfitDeltaAbs"] = op["deltaAbs"]
         out["guidanceOperatingProfitPriorSource"] = op["priorSource"]
+        if op.get("streetDeltaPct") is not None:
+            out["guidanceOperatingProfitStreetDeltaPct"] = op["streetDeltaPct"]
+        if op.get("streetDeltaAbs") is not None:
+            out["guidanceOperatingProfitStreetDeltaAbs"] = op["streetDeltaAbs"]
 
     # --- FCF (last-resort profitability) ---
     fcf = _compute_metric_delta(
@@ -352,6 +394,10 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
             out["guidanceFcfDeltaPct"] = fcf["deltaPct"]
         out["guidanceFcfDeltaAbs"] = fcf["deltaAbs"]
         out["guidanceFcfPriorSource"] = fcf["priorSource"]
+        if fcf.get("streetDeltaPct") is not None:
+            out["guidanceFcfStreetDeltaPct"] = fcf["streetDeltaPct"]
+        if fcf.get("streetDeltaAbs") is not None:
+            out["guidanceFcfStreetDeltaAbs"] = fcf["streetDeltaAbs"]
 
     # Record which profitability metric the card will use (EPS first).
     if "guidanceEpsDeltaPct" in out or "guidanceEpsDeltaAbs" in out:
@@ -370,15 +416,22 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
 NORMALIZED_GUIDANCE_FIELDS = (
     "guidanceRevenueDeltaPct",
     "guidanceRevenuePriorSource",
+    "guidanceRevenueStreetDeltaPct",
     "guidanceEpsDeltaPct",
     "guidanceEpsDeltaAbs",
     "guidanceEpsPriorSource",
+    "guidanceEpsStreetDeltaPct",
+    "guidanceEpsStreetDeltaAbs",
     "guidanceOperatingProfitDeltaPct",
     "guidanceOperatingProfitDeltaAbs",
     "guidanceOperatingProfitPriorSource",
+    "guidanceOperatingProfitStreetDeltaPct",
+    "guidanceOperatingProfitStreetDeltaAbs",
     "guidanceFcfDeltaPct",
     "guidanceFcfDeltaAbs",
     "guidanceFcfPriorSource",
+    "guidanceFcfStreetDeltaPct",
+    "guidanceFcfStreetDeltaAbs",
     "guidanceProfitMetricUsed",
 )
 

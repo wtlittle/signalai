@@ -47,6 +47,37 @@ _REV_LABEL = _QUAL + r"Rev(?:enue)?"
 _EPS_LABEL = _QUAL + r"EPS"
 
 
+def revenue_pill_complete(rec: dict) -> bool:
+    """A revenue guidance pill is complete when a revenue delta is present, OR
+    a prior-source is recorded alongside a delta (either vs-prior-guide or the
+    vs-Street magnitude). Mirrors the card's render gate so producer and guard
+    agree on what "the pill renders" means.
+    """
+    if rec.get("guidanceRevenueDeltaPct") is not None:
+        return True
+    return bool(rec.get("guidanceRevenuePriorSource")) and (
+        rec.get("guidanceRevenueDeltaPct") is not None
+        or rec.get("guidanceRevenueStreetDeltaPct") is not None
+    )
+
+
+def profit_pill_complete(rec: dict) -> bool:
+    """A profitability guidance pill is complete when ANY of the EPS / operating
+    profit / FCF deltas is non-null (the card cascades EPS > OpInc > FCF).
+    """
+    return any(
+        rec.get(k) is not None
+        for k in (
+            "guidanceEpsDeltaPct",
+            "guidanceEpsDeltaAbs",
+            "guidanceOperatingProfitDeltaPct",
+            "guidanceOperatingProfitDeltaAbs",
+            "guidanceFcfDeltaPct",
+            "guidanceFcfDeltaAbs",
+        )
+    )
+
+
 def _note_path_for(rec: dict) -> Path | None:
     meta = rec.get("source_metadata") or {}
     rel = meta.get("legacy_note_path")
@@ -122,10 +153,40 @@ def check(only: str | None) -> list[str]:
     return regressions
 
 
+def guidance_pill_coverage(only: str | None) -> tuple[int, int, int]:
+    """Return (n_active_post, n_revenue_pill_complete, n_profit_pill_complete).
+
+    Informational only — does NOT fail the build. The spec tracks how many POST
+    cards render each guidance pill so the backfill's effect is observable.
+    """
+    intel = json.loads(INTEL_PATH.read_text())
+    tickers = intel.get("tickers", {})
+    total = rev_ok = prof_ok = 0
+    for tk, rec in tickers.items():
+        if only and tk != only:
+            continue
+        if rec.get("state") != "post_earnings":
+            continue
+        if (rec.get("post_earnings_review") or {}).get("active") is not True:
+            continue
+        total += 1
+        if revenue_pill_complete(rec):
+            rev_ok += 1
+        if profit_pill_complete(rec):
+            prof_ok += 1
+    return total, rev_ok, prof_ok
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ticker", help="Limit to a single ticker")
     args = ap.parse_args()
+
+    total, rev_ok, prof_ok = guidance_pill_coverage(args.ticker)
+    print(
+        f"[INFO] guidance pill coverage: revenue {rev_ok}/{total}, "
+        f"profit {prof_ok}/{total} active POST cards"
+    )
 
     regressions = check(args.ticker)
     if regressions:
