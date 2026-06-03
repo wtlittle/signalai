@@ -2531,14 +2531,20 @@
         "fy_eps_guide_midpoint_new": 8.475,
         "fy_eps_consensus_prior": 8.39,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 4250000000.0,
+        "fy_eps_guide_midpoint_prior": 8.375,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.0,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": 0.010131108462455194,
-      "guidanceEpsDeltaAbs": 0.08499999999999908,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceRevenueDeltaPct": 1.0,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": 0.011940298507462643,
+      "guidanceEpsDeltaAbs": 0.09999999999999964,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": 0.0,
+      "guidanceEpsStreetDeltaPct": 0.010131108462455194,
+      "guidanceEpsStreetDeltaAbs": 0.08499999999999908
     },
     "ABT": {
       "ticker": "ABT",
@@ -2661,7 +2667,8 @@
         "fy_eps_guide_midpoint_new": 5.48,
         "fy_eps_consensus_prior": 5.68,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
       "guidanceEpsDeltaPct": -0.03521126760563368,
       "guidanceEpsDeltaAbs": -0.1999999999999993,
@@ -3369,7 +3376,16 @@
         "in_quarter_rev_surprise_pct": 0.6,
         "in_quarter_eps_actual": "$1.23",
         "in_quarter_eps_surprise_pct": 61.8
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 50700000000.0,
+        "fy_rev_consensus_prior": 51400000000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": -0.013618677042801557,
+      "guidanceRevenuePriorSource": "consensus"
     },
     "STZ": {
       "ticker": "STZ",
@@ -3487,7 +3503,18 @@
         "in_quarter_eps_actual": "$11.10",
         "in_quarter_eps_surprise_pct": 9.5,
         "eps_surprise_source": "finnhub_stock_earnings"
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_eps_guide_midpoint_new": 12.36,
+        "fy_eps_consensus_prior": 12.36,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
+      },
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceProfitMetricUsed": "eps"
     },
     "TSM": {
       "ticker": "TSM",
@@ -3936,14 +3963,27 @@
         "fy_eps_guide_midpoint_new": 0.115,
         "fy_eps_consensus_prior": 0.08,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 728500000.0,
+        "fy_eps_guide_midpoint_prior": 0.105,
+        "fy_op_profit_guide_midpoint_new": 8000000.0,
+        "fy_op_profit_guide_midpoint_prior": 7000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_fcf_guide_midpoint_new": 102500000.0,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.00832486193917081,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": 0.43750000000000006,
-      "guidanceEpsDeltaAbs": 0.035,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceRevenueDeltaPct": 0.0075497597803706245,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": 0.09523809523809533,
+      "guidanceEpsDeltaAbs": 0.010000000000000009,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": 0.00832486193917081,
+      "guidanceEpsStreetDeltaPct": 0.43750000000000006,
+      "guidanceEpsStreetDeltaAbs": 0.035,
+      "guidanceOperatingProfitDeltaPct": 0.14285714285714285,
+      "guidanceOperatingProfitDeltaAbs": 1000000.0,
+      "guidanceOperatingProfitPriorSource": "prior_guidance"
     },
     "CSU.TO": {
       "ticker": "CSU.TO",
@@ -4696,10 +4736,13 @@
         "fy_rev_guide_midpoint_new": 1250000000.0,
         "fy_rev_consensus_prior": 1250000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 1200000000.0,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.0,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenueDeltaPct": 0.041666666666666664,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": 0.0
     },
     "WIX": {
       "ticker": "WIX",
@@ -5069,7 +5112,18 @@
         "in_quarter_rev_estimate": "$41.51B",
         "in_quarter_rev_surprise_pct": 0.63,
         "rev_surprise_source": "computed_from_perplexity"
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_eps_guide_midpoint_new": 14.23,
+        "fy_eps_guide_midpoint_prior": 14.23,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
+      },
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps"
     },
     "INTU": {
       "ticker": "INTU",
@@ -5251,7 +5305,10 @@
         "fy_eps_guide_midpoint_new": 23.825,
         "fy_eps_consensus_prior": 22.07,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_op_profit_guide_midpoint_new": 5715000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.007429245283018868,
       "guidanceRevenuePriorSource": "consensus",
@@ -5446,6 +5503,12 @@
         "in_quarter_rev_surprise_pct": 4.1,
         "in_quarter_eps_actual": "$1.87",
         "in_quarter_eps_surprise_pct": 6.3
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 78000000000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       }
     },
     "RAMP": {
@@ -6577,7 +6640,8 @@
         "fy_eps_guide_midpoint_new": 40.45,
         "fy_eps_consensus_prior": 37.86,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.06060606060606061,
       "guidanceRevenuePriorSource": "consensus",
@@ -6861,7 +6925,22 @@
         "in_quarter_rev_surprise_pct": 0.8,
         "in_quarter_eps_actual": "$1.97",
         "in_quarter_eps_surprise_pct": 3.1
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 17100000000.0,
+        "fy_rev_guide_midpoint_prior": 17050000000.0,
+        "fy_eps_guide_midpoint_new": 7.3,
+        "fy_eps_guide_midpoint_prior": 7.3,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": 0.002932551319648094,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps"
     },
     "MDLZ": {
       "ticker": "MDLZ",
@@ -7006,12 +7085,21 @@
         "fy_eps_guide_midpoint_new": 2.99,
         "fy_eps_consensus_prior": 3.02,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_eps_guide_midpoint_prior": 2.99,
+        "fy_fcf_guide_midpoint_new": 3000000000.0,
+        "fy_fcf_guide_midpoint_prior": 3000000000.0,
+        "fy_guide_widened": true
       },
-      "guidanceEpsDeltaPct": -0.00993377483443702,
-      "guidanceEpsDeltaAbs": -0.029999999999999805,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsStreetDeltaPct": -0.00993377483443702,
+      "guidanceEpsStreetDeltaAbs": -0.029999999999999805,
+      "guidanceFcfDeltaPct": 0.0,
+      "guidanceFcfDeltaAbs": 0.0,
+      "guidanceFcfPriorSource": "prior_guidance"
     },
     "STX": {
       "ticker": "STX",
@@ -7790,12 +7878,16 @@
         "fy_eps_guide_midpoint_new": 4900000000.0,
         "fy_eps_consensus_prior": 5050000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_eps_guide_midpoint_prior": 5.05,
+        "fy_guide_widened": true
       },
-      "guidanceEpsDeltaPct": -0.0297029702970297,
-      "guidanceEpsDeltaAbs": -150000000.0,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceEpsDeltaPct": 970297028.7029703,
+      "guidanceEpsDeltaAbs": 4899999994.95,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsStreetDeltaPct": -0.0297029702970297,
+      "guidanceEpsStreetDeltaAbs": -150000000.0
     },
     "TENB": {
       "ticker": "TENB",
@@ -8513,14 +8605,17 @@
         "fy_eps_guide_midpoint_new": 5.55,
         "fy_eps_consensus_prior": 5.86,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 6700000000.0,
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.0,
-      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceEpsDeltaPct": -0.05290102389078506,
       "guidanceEpsDeltaAbs": -0.3100000000000005,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": 0.0
     },
     "GDDY": {
       "ticker": "GDDY",
@@ -8810,12 +8905,21 @@
         "fy_eps_guide_midpoint_new": 2.05,
         "fy_eps_consensus_prior": 3.03,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_eps_guide_midpoint_prior": 2.5,
+        "fy_fcf_guide_midpoint_new": 775000000.0,
+        "fy_fcf_guide_midpoint_prior": 775000000.0,
+        "fy_guide_widened": true
       },
-      "guidanceEpsDeltaPct": -0.32343234323432346,
-      "guidanceEpsDeltaAbs": -0.98,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceEpsDeltaPct": -0.18000000000000008,
+      "guidanceEpsDeltaAbs": -0.4500000000000002,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsStreetDeltaPct": -0.32343234323432346,
+      "guidanceEpsStreetDeltaAbs": -0.98,
+      "guidanceFcfDeltaPct": 0.0,
+      "guidanceFcfDeltaAbs": 0.0,
+      "guidanceFcfPriorSource": "prior_guidance"
     },
     "LPLA": {
       "ticker": "LPLA",
@@ -9376,7 +9480,16 @@
         "in_quarter_rev_estimate": "$1.70B",
         "in_quarter_rev_surprise_pct": 5.29,
         "rev_surprise_source": "computed_from_perplexity"
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 1700000000.0,
+        "fy_rev_consensus_prior": 1700000000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": 0.0,
+      "guidanceRevenuePriorSource": "consensus"
     },
     "TWLO": {
       "ticker": "TWLO",
@@ -9973,10 +10086,19 @@
         "fy_rev_guide_midpoint_new": 1785000000.0,
         "fy_rev_consensus_prior": 1750000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 1730000000.0,
+        "fy_fcf_guide_midpoint_new": 371000000.0,
+        "fy_fcf_guide_midpoint_prior": 340000000.0,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.02,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenueDeltaPct": 0.031791907514450865,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": 0.02,
+      "guidanceFcfDeltaPct": 0.09117647058823529,
+      "guidanceFcfDeltaAbs": 31000000.0,
+      "guidanceFcfPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "fcf"
     },
     "BWXT": {
       "ticker": "BWXT",
@@ -10133,8 +10255,26 @@
       "guide_vs_consensus": {
         "fy_eps_guide_midpoint_new": 4.675,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
-      }
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_new": 3750000000.0,
+        "fy_rev_consensus_prior": 3800000000.0,
+        "fy_eps_guide_midpoint_prior": 4.625,
+        "fy_eps_consensus_prior": 4.61,
+        "fy_fcf_guide_midpoint_new": 322500000.0,
+        "fy_fcf_guide_midpoint_prior": 312500000.0,
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": -0.013157894736842105,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceEpsDeltaPct": 0.010810810810810773,
+      "guidanceEpsDeltaAbs": 0.04999999999999982,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsStreetDeltaPct": 0.014099783080260195,
+      "guidanceEpsStreetDeltaAbs": 0.0649999999999995,
+      "guidanceFcfDeltaPct": 0.032,
+      "guidanceFcfDeltaAbs": 10000000.0,
+      "guidanceFcfPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps"
     },
     "FANG": {
       "ticker": "FANG",
@@ -10551,8 +10691,15 @@
       "guide_vs_consensus": {
         "fy_rev_guide_midpoint_new": 7656000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
-      }
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 7650000000.0,
+        "fy_op_profit_guide_midpoint_new": 4446000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_fcf_guide_midpoint_new": 4300000000.0,
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": 0.000784313725490196,
+      "guidanceRevenuePriorSource": "prior_guidance"
     },
     "ALAB": {
       "ticker": "ALAB",
@@ -10839,6 +10986,12 @@
         "in_quarter_rev_surprise_pct": 4.7,
         "in_quarter_eps_actual": "$1.37",
         "in_quarter_eps_surprise_pct": 9.6
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 11200000000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       }
     },
     "ANET": {
@@ -11117,6 +11270,13 @@
         "in_quarter_rev_estimate": "$1.47B",
         "in_quarter_rev_surprise_pct": 1.36,
         "rev_surprise_source": "computed_from_perplexity"
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 1260000000.0,
+        "fy_eps_guide_midpoint_new": 0.4,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       }
     },
     "BL": {
@@ -11255,7 +11415,9 @@
       "guide_vs_consensus": {
         "fy_rev_guide_midpoint_new": 767000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_eps_guide_midpoint_new": 2.475,
+        "fy_guide_widened": true
       }
     },
     "CRC": {
@@ -11547,14 +11709,20 @@
         "fy_eps_guide_midpoint_new": 1.15,
         "fy_eps_consensus_prior": 0.87,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 1087500000.0,
+        "fy_eps_guide_midpoint_prior": 1.05,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.03409090909090909,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": 0.32183908045977,
-      "guidanceEpsDeltaAbs": 0.2799999999999999,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceRevenueDeltaPct": 0.04597701149425287,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": 0.09523809523809511,
+      "guidanceEpsDeltaAbs": 0.09999999999999987,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": 0.03409090909090909,
+      "guidanceEpsStreetDeltaPct": 0.32183908045977,
+      "guidanceEpsStreetDeltaAbs": 0.2799999999999999
     },
     "DVN": {
       "ticker": "DVN",
@@ -12002,14 +12170,20 @@
         "fy_eps_guide_midpoint_new": 12.8,
         "fy_eps_consensus_prior": 12.46,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 17250000000.0,
+        "fy_eps_guide_midpoint_prior": 12.35,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.0,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": 0.02728731942215087,
-      "guidanceEpsDeltaAbs": 0.33999999999999986,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceRevenueDeltaPct": -0.002898550724637681,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": 0.03643724696356284,
+      "guidanceEpsDeltaAbs": 0.45000000000000107,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": 0.0,
+      "guidanceEpsStreetDeltaPct": 0.02728731942215087,
+      "guidanceEpsStreetDeltaAbs": 0.33999999999999986
     },
     "KVYO": {
       "ticker": "KVYO",
@@ -12151,7 +12325,10 @@
         "fy_rev_guide_midpoint_new": 1518000000.0,
         "fy_rev_consensus_prior": 1469000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_op_profit_guide_midpoint_new": 225000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.033356024506466984,
       "guidanceRevenuePriorSource": "consensus"
@@ -12296,7 +12473,8 @@
         "fy_rev_guide_midpoint_new": 44299999999.0,
         "fy_rev_consensus_prior": 45400000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": -0.02422907491189427,
       "guidanceRevenuePriorSource": "consensus"
@@ -12714,7 +12892,8 @@
         "fy_rev_guide_midpoint_new": 1501000000.0,
         "fy_rev_consensus_prior": 1450000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.03517241379310345,
       "guidanceRevenuePriorSource": "consensus"
@@ -12864,10 +13043,13 @@
         "fy_rev_guide_midpoint_new": 724000000.0,
         "fy_rev_consensus_prior": 721000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 721000000.0,
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.004160887656033287,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": 0.004160887656033287
     },
     "RPD": {
       "ticker": "RPD",
@@ -13008,7 +13190,11 @@
         "fy_rev_guide_midpoint_new": 839000000.0,
         "fy_eps_guide_midpoint_new": 1.56,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_op_profit_guide_midpoint_new": 115000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_fcf_guide_midpoint_new": 130000000.0,
+        "fy_guide_widened": true
       }
     },
     "SHOP": {
@@ -13736,7 +13922,8 @@
         "fy_eps_guide_midpoint_new": 5.6,
         "fy_eps_consensus_prior": 5.39,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
       "guidanceEpsDeltaPct": 0.03896103896103896,
       "guidanceEpsDeltaAbs": 0.20999999999999996,
@@ -13878,7 +14065,23 @@
         "in_quarter_rev_surprise_pct": 0.8,
         "in_quarter_eps_actual": "$0.13",
         "in_quarter_eps_surprise_pct": 62.5
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 717500000.0,
+        "fy_rev_guide_midpoint_prior": 637000000.0,
+        "fy_op_profit_guide_midpoint_new": 63000000.0,
+        "fy_op_profit_guide_midpoint_prior": 53000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": 0.12637362637362637,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceOperatingProfitDeltaPct": 0.18867924528301888,
+      "guidanceOperatingProfitDeltaAbs": 10000000.0,
+      "guidanceOperatingProfitPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "operating_income"
     },
     "FTNT": {
       "ticker": "FTNT",
@@ -14027,14 +14230,20 @@
         "fy_eps_guide_midpoint_new": 3130000000.0,
         "fy_eps_consensus_prior": 2980000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 7480000000.0,
+        "fy_eps_guide_midpoint_prior": 3010000000.0,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.025,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": 0.050335570469798654,
-      "guidanceEpsDeltaAbs": 150000000.0,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceRevenueDeltaPct": 0.04144385026737968,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": 0.03986710963455149,
+      "guidanceEpsDeltaAbs": 120000000.0,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": 0.025,
+      "guidanceEpsStreetDeltaPct": 0.050335570469798654,
+      "guidanceEpsStreetDeltaAbs": 150000000.0
     },
     "GPN": {
       "ticker": "GPN",
@@ -14182,12 +14391,16 @@
         "fy_eps_guide_midpoint_new": 13.9,
         "fy_eps_consensus_prior": 13.74,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_eps_guide_midpoint_prior": 13.9,
+        "fy_guide_widened": true
       },
-      "guidanceEpsDeltaPct": 0.011644832605531306,
-      "guidanceEpsDeltaAbs": 0.16000000000000014,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsStreetDeltaPct": 0.011644832605531306,
+      "guidanceEpsStreetDeltaAbs": 0.16000000000000014
     },
     "IONQ": {
       "ticker": "IONQ",
@@ -14336,10 +14549,13 @@
         "fy_rev_guide_midpoint_new": 265000000.0,
         "fy_rev_consensus_prior": 236300000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 235000000.0,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.12145577655522641,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenueDeltaPct": 0.1276595744680851,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": 0.12145577655522641
     },
     "KHC": {
       "ticker": "KHC",
@@ -15063,7 +15279,8 @@
         "fy_eps_guide_midpoint_new": 3.555,
         "fy_eps_consensus_prior": 3.44,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": -0.00641025641025641,
       "guidanceRevenuePriorSource": "consensus",
@@ -15217,7 +15434,18 @@
         "in_quarter_rev_estimate": "$997.92M",
         "in_quarter_rev_surprise_pct": 4.22,
         "rev_surprise_source": "computed_from_perplexity"
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 1100000000.0,
+        "fy_rev_guide_midpoint_prior": 1095000000.0,
+        "fy_rev_consensus_prior": 1100000000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": 0.0045662100456621,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": 0.0
     },
     "AKAM": {
       "ticker": "AKAM",
@@ -15359,6 +15587,12 @@
         "in_quarter_rev_estimate": "$1.09B",
         "in_quarter_rev_surprise_pct": -2.25,
         "rev_surprise_source": "computed_from_perplexity"
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 4497500000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       }
     },
     "BILL": {
@@ -15508,10 +15742,13 @@
         "fy_rev_guide_midpoint_new": 1647000000.0,
         "fy_rev_consensus_prior": 1615000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 1611000000.0,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.019814241486068113,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenueDeltaPct": 0.0223463687150838,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": 0.019814241486068113
     },
     "BSY": {
       "ticker": "BSY",
@@ -15647,6 +15884,12 @@
         "in_quarter_rev_surprise_pct": 1.2,
         "in_quarter_eps_actual": "$0.38",
         "in_quarter_eps_surprise_pct": 7.0
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 1700000000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       }
     },
     "COIN": {
@@ -15942,7 +16185,10 @@
         "fy_eps_guide_midpoint_new": 2.4,
         "fy_eps_consensus_prior": 2.26,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_op_profit_guide_midpoint_new": 960000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.04854368932038835,
       "guidanceRevenuePriorSource": "consensus",
@@ -16256,14 +16502,22 @@
         "fy_eps_guide_midpoint_new": 13.08,
         "fy_eps_consensus_prior": 10.69,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 3690000000.0,
+        "fy_eps_guide_midpoint_prior": 12.44,
+        "fy_op_profit_guide_midpoint_new": 764000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.001081081081081081,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": 0.22357343311506087,
-      "guidanceEpsDeltaAbs": 2.3900000000000006,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceRevenueDeltaPct": 0.003794037940379404,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": 0.05144694533762063,
+      "guidanceEpsDeltaAbs": 0.6400000000000006,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": 0.001081081081081081,
+      "guidanceEpsStreetDeltaPct": 0.22357343311506087,
+      "guidanceEpsStreetDeltaAbs": 2.3900000000000006
     },
     "NET": {
       "ticker": "NET",
@@ -16412,7 +16666,11 @@
       "guide_vs_consensus": {
         "fy_rev_guide_midpoint_new": 2795000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_eps_guide_midpoint_new": 1.195,
+        "fy_op_profit_guide_midpoint_new": 419500000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_widened": true
       }
     },
     "RNG": {
@@ -16562,7 +16820,8 @@
         "fy_eps_guide_midpoint_new": 4.93,
         "fy_eps_consensus_prior": 4.85,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.003816793893129771,
       "guidanceRevenuePriorSource": "consensus",
@@ -16862,12 +17121,18 @@
         "fy_eps_guide_midpoint_new": 385.0,
         "fy_eps_consensus_prior": 335.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_eps_guide_midpoint_prior": 3.35,
+        "fy_op_profit_guide_midpoint_new": 3340000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_widened": true
       },
-      "guidanceEpsDeltaPct": 0.14925373134328357,
-      "guidanceEpsDeltaAbs": 50.0,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceEpsDeltaPct": 113.92537313432835,
+      "guidanceEpsDeltaAbs": 381.65,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsStreetDeltaPct": 0.14925373134328357,
+      "guidanceEpsStreetDeltaAbs": 50.0
     },
     "ZTS": {
       "ticker": "ZTS",
@@ -17010,14 +17275,20 @@
         "fy_eps_guide_midpoint_new": 6.925,
         "fy_eps_consensus_prior": 7.03,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 9912500000.0,
+        "fy_eps_guide_midpoint_prior": 7.05,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": -0.00808080808080808,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": -0.014935988620199207,
-      "guidanceEpsDeltaAbs": -0.10500000000000043,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceRevenueDeltaPct": -0.009331651954602775,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": -0.01773049645390071,
+      "guidanceEpsDeltaAbs": -0.125,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": -0.00808080808080808,
+      "guidanceEpsStreetDeltaPct": -0.014935988620199207,
+      "guidanceEpsStreetDeltaAbs": -0.10500000000000043
     },
     "HIMS": {
       "ticker": "HIMS",
@@ -17165,10 +17436,13 @@
         "fy_rev_guide_midpoint_new": 2900000000.0,
         "fy_rev_consensus_prior": 2600000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 2500000000.0,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.11538461538461539,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenueDeltaPct": 0.16,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": 0.11538461538461539
     },
     "MNDY": {
       "ticker": "MNDY",
@@ -17308,7 +17582,11 @@
         "fy_rev_guide_midpoint_new": 1470000000.0,
         "fy_rev_consensus_prior": 1465000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_op_profit_guide_midpoint_new": 188000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_fcf_guide_midpoint_new": 285000000.0,
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.0034129692832764505,
       "guidanceRevenuePriorSource": "consensus"
@@ -17933,14 +18211,22 @@
         "fy_eps_guide_midpoint_new": 14.76,
         "fy_eps_consensus_prior": 14.53,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 9630000000.0,
+        "fy_fcf_guide_midpoint_new": 2000000000.0,
+        "fy_fcf_guide_midpoint_prior": 1900000000.0,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.004155844155844156,
-      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaPct": 0.0036344755970924196,
+      "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceEpsDeltaPct": 0.01582931865106679,
       "guidanceEpsDeltaAbs": 0.23000000000000043,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": 0.004155844155844156,
+      "guidanceFcfDeltaPct": 0.05263157894736842,
+      "guidanceFcfDeltaAbs": 100000000.0,
+      "guidanceFcfPriorSource": "prior_guidance"
     },
     "CRM": {
       "ticker": "CRM",
@@ -18223,7 +18509,8 @@
         "fy_rev_guide_midpoint_new": 46050000000.0,
         "fy_rev_consensus_prior": 45750000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.006557377049180328,
       "guidanceRevenuePriorSource": "consensus"
@@ -19012,14 +19299,20 @@
         "fy_eps_guide_midpoint_new": 0.63,
         "fy_eps_consensus_prior": 0.63,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 857000000.0,
+        "fy_eps_guide_midpoint_prior": 0.555,
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.012173128944995492,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": 0.0,
-      "guidanceEpsDeltaAbs": 0.0,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceRevenueDeltaPct": 0.047841306884480746,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": 0.13513513513513503,
+      "guidanceEpsDeltaAbs": 0.07499999999999996,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueStreetDeltaPct": 0.012173128944995492,
+      "guidanceEpsStreetDeltaPct": 0.0,
+      "guidanceEpsStreetDeltaAbs": 0.0
     },
     "PSTG": {
       "ticker": "PSTG",
@@ -19191,7 +19484,18 @@
         "stock_reaction_basis_date": "2026-05-27",
         "stock_reaction_calc_method": "amc_d_plus_1"
       },
-      "results_vs_consensus": {}
+      "results_vs_consensus": {},
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 3635000000.0,
+        "fy_rev_guide_midpoint_prior": 3615000000.0,
+        "fy_op_profit_guide_midpoint_new": 634000000.0,
+        "fy_op_metric_kind": "operating_profit",
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": 0.005532503457814661,
+      "guidanceRevenuePriorSource": "prior_guidance"
     },
     "S": {
       "ticker": "S",
@@ -19316,7 +19620,12 @@
         "fy_eps_guide_midpoint_prior": "0.95",
         "fy_eps_consensus_prior": "0.96",
         "fy_eps_guide_change_vs_consensus_pct": 2.1,
-        "fy_eps_guide_change_vs_prior_pct": 3.2
+        "fy_eps_guide_change_vs_prior_pct": 3.2,
+        "fy_op_profit_guide_midpoint_new": 24000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": -0.006877022653721683,
       "guidanceRevenuePriorSource": "consensus",
@@ -19785,10 +20094,28 @@
       },
       "guide_vs_consensus": {
         "fy_rev_change_vs_consensus_pct": 0.0,
-        "fy_rev_change_vs_prior_pct": null
+        "fy_rev_change_vs_prior_pct": null,
+        "fy_rev_guide_midpoint_new": 785000000.0,
+        "fy_rev_guide_midpoint_prior": 740000000.0,
+        "fy_rev_consensus_prior": 854010000.0,
+        "fy_eps_guide_midpoint_new": 0.24,
+        "fy_eps_guide_midpoint_prior": 0.24,
+        "fy_eps_consensus_prior": 0.37,
+        "fy_op_profit_guide_midpoint_new": 48000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
       },
-      "guidanceRevenueDeltaPct": 0.0,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenueDeltaPct": 0.060810810810810814,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": -0.08080701631128441,
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsStreetDeltaPct": -0.35135135135135137,
+      "guidanceEpsStreetDeltaAbs": -0.13,
+      "guidanceProfitMetricUsed": "eps"
     },
     "MDB": {
       "ticker": "MDB",
@@ -20079,8 +20406,14 @@
       "guide_vs_consensus": {
         "fy_rev_guide_midpoint_new": 2860000000.0,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
-      }
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_rev_guide_midpoint_prior": 2890000000.0,
+        "fy_rev_consensus_prior": 2890000000.0,
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": -0.010380622837370242,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": -0.010380622837370242
     },
     "ESTC": {
       "ticker": "ESTC",
@@ -20538,7 +20871,16 @@
         "in_quarter_eps_actual": "$0.15",
         "in_quarter_eps_estimate": "$0.16",
         "eps_consensus_source": "finnhub_stock_earnings"
-      }
+      },
+      "guide_vs_consensus": {
+        "fy_rev_guide_midpoint_new": 397500000.0,
+        "fy_rev_consensus_prior": 397000000.0,
+        "fy_guide_source": "perplexity_sonar",
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_guide_widened": true
+      },
+      "guidanceRevenueDeltaPct": 0.0012594458438287153,
+      "guidanceRevenuePriorSource": "consensus"
     },
     "ADSK": {
       "ticker": "ADSK",
@@ -20729,7 +21071,9 @@
         "fy_eps_guide_midpoint_new": 12.525,
         "fy_eps_consensus_prior": 12.25,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_fcf_guide_midpoint_new": 2762500000.0,
+        "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.014943960149439602,
       "guidanceRevenuePriorSource": "consensus",
@@ -24112,12 +24456,16 @@
         "fy_eps_guide_midpoint_new": 7.62,
         "fy_eps_consensus_prior": 6.61,
         "fy_guide_source": "perplexity_sonar",
-        "fy_guide_fiscal_year": "the current fiscal year"
+        "fy_guide_fiscal_year": "the current fiscal year",
+        "fy_eps_guide_midpoint_prior": 6.93,
+        "fy_guide_widened": true
       },
-      "guidanceEpsDeltaPct": 0.1527987897125567,
-      "guidanceEpsDeltaAbs": 1.0099999999999998,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceEpsDeltaPct": 0.09956709956709962,
+      "guidanceEpsDeltaAbs": 0.6900000000000004,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsStreetDeltaPct": 0.1527987897125567,
+      "guidanceEpsStreetDeltaAbs": 1.0099999999999998
     },
     "ORCL": {
       "ticker": "ORCL",
