@@ -24,7 +24,7 @@
       "Story names specific buyer or transaction",
       "Story published before or coincident with the move"
     ],
-    "last_rumor_scan": "2026-06-03T19:03:43.544077+00:00"
+    "last_rumor_scan": "2026-06-03T20:00:36.733407+00:00"
   },
   "pending_review": [
     {
@@ -49,6 +49,39 @@
           "label": "Bloomberg (via Investing.com coverage)",
           "url": "https://www.investing.com/news/stock-market-news/bill-holdings-stock-soars-on-potential-acquisition-talks-with-hellman--friedman-93CH-4491545",
           "published_at": "2026-05-29",
+          "tier": 1
+        }
+      ],
+      "gates": {
+        "gate1_move": true,
+        "gate2_tier1": true,
+        "gate3_named_buyer": true,
+        "gate4_timing": true
+      },
+      "status": "pending_review"
+    },
+    {
+      "ticker": "ADSK",
+      "company": "Autodesk, Inc.",
+      "flagged_at": "2026-06-03T20:00:32.461299+00:00",
+      "intraday_move_pct": -3.1,
+      "price_at_flag": 229.315,
+      "buyer": "Autodesk",
+      "deal_type": "bid",
+      "headline": "Bloomberg reported Autodesk is considering a cash-and-stock acquisition of PTC",
+      "rationale": "Gate 1 is satisfied because the prompt already verifies ADSK moved -3.10%. Gate 2 is satisfied by a Tier-1 Bloomberg report referenced in the market coverage, and Gate 3 is satisfied because the story names a specific buyer, Autodesk, and a specific target, PTC. Gate 4 is satisfied because the coverage ties the price move to the Bloomberg report as an immediate reaction, with no evidence the story was published after the move.",
+      "confidence": 0.91,
+      "sources": [
+        {
+          "label": "Bloomberg",
+          "url": null,
+          "published_at": null,
+          "tier": 1
+        },
+        {
+          "label": "Investing.com",
+          "url": "https://www.investing.com/news/analyst-ratings/autodesk-stock-falls-10-as-ptc-acquisition-rumors-surface-93CH-4134090",
+          "published_at": "2026-06-03",
           "tier": 1
         }
       ],
