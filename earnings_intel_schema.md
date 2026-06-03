@@ -205,19 +205,31 @@ One persistent record per ticker. Updated in place (never duplicated). The same 
          preferred; operating profit/income or FCF as fallbacks). deltaPct values
          are FRACTIONS (e.g. -0.007 == -0.7%). priorSource records the baseline
          used per metric so consensus-vs-prior-guide is auditable downstream.
+         Industry framing: when priorSource=="prior_guidance" the primary delta
+         is a RAISE/FLAT/CUT vs the company's own prior guide, and *StreetDeltaPct
+         carries the vs-Street magnitude (-> "Raise +X%, +Y% vs Street"). When
+         priorSource=="consensus" (initial-quarter guide, no prior guide) the
+         card renders ABOVE/IN-LINE/BELOW Street and *StreetDeltaPct is null.
          The legacy single fy_rev_change_vs_consensus_pct field is kept for
          backward compatibility but is NO LONGER used to drive the card UI. */
-      "guidanceRevenueDeltaPct": null,            // fraction; revenue guide Δ
-      "guidanceRevenuePriorSource": null,         // "consensus" | "prior_guidance"
+      "guidanceRevenueDeltaPct": null,            // fraction; revenue guide Δ vs the PRIMARY baseline
+      "guidanceRevenuePriorSource": null,         // "prior_guidance" (raise/cut) | "consensus" (above/in-line/below)
+      "guidanceRevenueStreetDeltaPct": null,      // fraction; vs Street, set only when priorSource=="prior_guidance" AND a prior consensus also exists. Drives "Raise +X%, +Y% vs Street".
       "guidanceEpsDeltaPct": null,
       "guidanceEpsDeltaAbs": null,                // absolute $ change (used when pct is unsafe near a tiny baseline)
       "guidanceEpsPriorSource": null,
+      "guidanceEpsStreetDeltaPct": null,          // vs Street (prior_guidance primary + consensus present)
+      "guidanceEpsStreetDeltaAbs": null,
       "guidanceOperatingProfitDeltaPct": null,
       "guidanceOperatingProfitDeltaAbs": null,
       "guidanceOperatingProfitPriorSource": null,
+      "guidanceOperatingProfitStreetDeltaPct": null,
+      "guidanceOperatingProfitStreetDeltaAbs": null,
       "guidanceFcfDeltaPct": null,
       "guidanceFcfDeltaAbs": null,
       "guidanceFcfPriorSource": null,
+      "guidanceFcfStreetDeltaPct": null,
+      "guidanceFcfStreetDeltaAbs": null,
       "guidanceProfitMetricUsed": null,           // "eps" | "operating_profit" | "operating_income" | "fcf"
       "previous_bottom_line": null,
       "signal_changes": []  // [{"signal_id": "...", "old_status": "WATCHING", "new_status": "CONFIRMED", "note": "..."}]

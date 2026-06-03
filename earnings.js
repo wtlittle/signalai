@@ -453,18 +453,22 @@ function selectProfitabilityGuideMetric(g) {
       deltaPct: num(g.guidanceEpsDeltaPct),
       deltaAbs: num(g.guidanceEpsDeltaAbs),
       priorSource: g.guidanceEpsPriorSource || 'consensus',
+      streetDeltaPct: num(g.guidanceEpsStreetDeltaPct),
+      streetDeltaAbs: num(g.guidanceEpsStreetDeltaAbs),
     };
   }
   const hasOp = num(g.guidanceOperatingProfitDeltaPct) != null || num(g.guidanceOperatingProfitDeltaAbs) != null;
   if (hasOp) {
     // The metric used (operating profit vs operating income) is recorded on
-    // guidanceProfitMetricUsed; default to "OP PROFIT".
-    const used = (g.guidanceProfitMetricUsed === 'operating_income') ? 'OP INC' : 'OP PROFIT';
+    // guidanceProfitMetricUsed; default to "Op Profit".
+    const used = (g.guidanceProfitMetricUsed === 'operating_income') ? 'Op Inc' : 'Op Profit';
     return {
       label: used,
       deltaPct: num(g.guidanceOperatingProfitDeltaPct),
       deltaAbs: num(g.guidanceOperatingProfitDeltaAbs),
       priorSource: g.guidanceOperatingProfitPriorSource || 'consensus',
+      streetDeltaPct: num(g.guidanceOperatingProfitStreetDeltaPct),
+      streetDeltaAbs: num(g.guidanceOperatingProfitStreetDeltaAbs),
     };
   }
   const hasFcf = num(g.guidanceFcfDeltaPct) != null || num(g.guidanceFcfDeltaAbs) != null;
@@ -474,22 +478,86 @@ function selectProfitabilityGuideMetric(g) {
       deltaPct: num(g.guidanceFcfDeltaPct),
       deltaAbs: num(g.guidanceFcfDeltaAbs),
       priorSource: g.guidanceFcfPriorSource || 'consensus',
+      streetDeltaPct: num(g.guidanceFcfStreetDeltaPct),
+      streetDeltaAbs: num(g.guidanceFcfStreetDeltaAbs),
     };
   }
   return null;
 }
 
-// Resolve { baselineMidpoint, priorSource } for a metric: prefer prior
-// consensus, else fall back to prior company guidance. Used by the backend
-// mirror / any client-side recompute path. Returns null when neither baseline
-// exists.
+// Title-case word for a raise/flat/cut direction. Used in the new
+// industry-standard pill text ("Raise", "Cut", "Flat").
+function _raiseCutWord(direction) {
+  if (direction === 'raise') return 'Raise';
+  if (direction === 'cut') return 'Cut';
+  return 'Flat';
+}
+
+// Above / In-line / Below word for a vs-consensus delta (initial-quarter guide
+// with no prior company guide). flatThreshold is fractional (0.005 = 0.5%).
+function _aboveBelowWord(deltaPct, flatThreshold = 0.005) {
+  if (deltaPct == null || !Number.isFinite(deltaPct)) return 'n/a';
+  if (Math.abs(deltaPct) <= flatThreshold) return 'In-line';
+  return deltaPct > 0 ? 'Above' : 'Below';
+}
+
+// Build the human-facing pill text for one metric, applying the industry
+// framing rule:
+//   * priorSource === 'prior_guidance' AND a vs-Street delta exists ->
+//     "Raise +X%, +Y% vs Street" (Cut/Flat by the sign of the vs-prior-guide X).
+//   * priorSource === 'prior_guidance' with no Street delta ->
+//     "Raise +X%" (raise/cut vs prior guide only).
+//   * priorSource === 'consensus' (initial-quarter guide, no prior guide) ->
+//     "Above Street +Y%" / "In-line Street" / "Below Street -Y%". Never
+//     raise/cut wording in this branch.
+// `metricPrefix` ('' for revenue, 'EPS '/'Op Inc '/'FCF ' for profit) precedes
+// the raise/cut word. Returns { text, direction } or null when nothing renders.
+function buildGuidancePillText(metric, metricPrefix) {
+  if (!metric) return null;
+  const prefix = metricPrefix || '';
+  if (metric.priorSource === 'prior_guidance') {
+    const primary = metric.display;
+    if (primary == null) return null;
+    const word = _raiseCutWord(metric.direction);
+    let text = `${word} ${prefix}${primary}`.trimEnd();
+    const street = formatGuideDelta({
+      deltaPct: metric.streetDeltaPct,
+      deltaAbs: metric.streetDeltaAbs,
+      metric: metric.label,
+    });
+    if (street != null) text += `, ${street} vs Street`;
+    return { text, direction: metric.direction };
+  }
+  // Consensus baseline: above / in-line / below framing, no raise/cut.
+  // Near a tiny baseline the pct is suppressed but an absolute $ delta still
+  // carries the direction (e.g. EPS guide of $0.03 vs $0.01 consensus) -> fall
+  // back to the abs sign so the magnitude is not silently dropped.
+  let word = _aboveBelowWord(metric.deltaPct);
+  if (word === 'n/a' && metric.deltaAbs != null && Number.isFinite(metric.deltaAbs)) {
+    word = Math.abs(metric.deltaAbs) <= 0.0001 ? 'In-line' : (metric.deltaAbs > 0 ? 'Above' : 'Below');
+  }
+  if (word === 'n/a') return null;
+  const labelBit = prefix ? prefix.trimEnd() + ' ' : '';
+  if (word === 'In-line') {
+    return { text: `${labelBit}In-line Street`.trim(), direction: 'flat' };
+  }
+  const mag = metric.display;
+  if (mag == null) return null;
+  const dir = word === 'Above' ? 'raise' : 'cut';
+  return { text: `${labelBit}${word} Street ${mag}`.trim(), direction: dir };
+}
+
+// Resolve { baselineMidpoint, priorSource } for a metric: prefer the company's
+// PRIOR GUIDE (so the primary delta is a raise/cut number), else fall back to
+// prior Street consensus. Used by the backend mirror / any client-side
+// recompute path. Returns null when neither baseline exists.
 function selectGuidanceBaseline(metricData) {
   if (!metricData) return null;
   const num = (v) => (typeof v === 'number' && Number.isFinite(v)) ? v : null;
-  const cons = num(metricData.consensusPriorMidpoint);
-  if (cons != null) return { baselineMidpoint: cons, priorSource: 'consensus' };
   const guide = num(metricData.priorGuideMidpoint);
   if (guide != null) return { baselineMidpoint: guide, priorSource: 'prior_guidance' };
+  const cons = num(metricData.consensusPriorMidpoint);
+  if (cons != null) return { baselineMidpoint: cons, priorSource: 'consensus' };
   return null;
 }
 
@@ -509,6 +577,8 @@ function buildGuidanceChangeDisplay(g) {
         deltaPct: revPct,
         direction,
         priorSource: (g.guidanceRevenuePriorSource) || 'consensus',
+        streetDeltaPct: num(g.guidanceRevenueStreetDeltaPct),
+        streetDeltaAbs: null,
         display: value,
       };
     }
@@ -531,6 +601,8 @@ function buildGuidanceChangeDisplay(g) {
         deltaAbs: prof.deltaAbs,
         direction: dir,
         priorSource: prof.priorSource || 'consensus',
+        streetDeltaPct: prof.streetDeltaPct,
+        streetDeltaAbs: prof.streetDeltaAbs,
         display: value,
       };
     }
@@ -546,23 +618,28 @@ function _guideDirClass(direction) {
   return 'guide-neutral';
 }
 
-// Render one metric pill: "<LABEL> Δ <value> <direction>".
-function _renderGuidePill(metric, extraClass) {
+// Render one metric pill using the industry-standard framing:
+//   * vs prior guide  -> "Raise +X%, +Y% vs Street" (or Cut/Flat)
+//   * vs consensus    -> "Above Street +Y%" / "In-line Street" / "Below Street -Y%"
+// metricPrefix is '' for revenue and 'EPS '/'Op Inc '/'Op Profit '/'FCF '
+// for the profitability pill. Returns '' when nothing meaningful renders.
+function _renderGuidePill(metric, extraClass, metricPrefix) {
   if (!metric) return '';
-  const dirClass = _guideDirClass(metric.direction);
-  // Surface a subtle "vs prior guide" qualifier when the baseline was the
-  // company's own prior guide rather than Street consensus.
+  const pill = buildGuidancePillText(metric, metricPrefix);
+  if (!pill) return '';
+  const dirClass = _guideDirClass(pill.direction);
   const basisTitle = metric.priorSource === 'prior_guidance'
-    ? ' title="vs prior guide"'
-    : ' title="vs prior consensus"';
-  const basisHint = metric.priorSource === 'prior_guidance'
-    ? '<span class="guide-basis-hint">vs prior guide</span>'
-    : '';
+    ? ' title="raise/cut vs prior guide; vs Street shown when available"'
+    : ' title="vs Street consensus"';
   return `<span class="guide-metric ${extraClass} ${dirClass}"${basisTitle}>` +
-    `<span class="guide-metric-label">${metric.label} \u0394</span>` +
-    `<span class="guide-metric-value">${metric.display}</span>` +
-    `<span class="guide-metric-direction">${metric.direction}</span>` +
-    `${basisHint}</span>`;
+    `<span class="guide-metric-value">${pill.text}</span>` +
+    `</span>`;
+}
+
+// Profit-pill prefix from the metric label (EPS / Op Inc / Op Profit / FCF).
+function _profitMetricPrefix(label) {
+  if (!label || label === 'REV') return '';
+  return label + ' ';
 }
 
 // Render the split FY guidance row from a normalized { revenue, profitability }
@@ -571,8 +648,13 @@ function renderGuidanceChangeRow(g) {
   const { revenue, profitability } = buildGuidanceChangeDisplay(g);
   if (!revenue && !profitability) return '';
   const pills = [];
-  if (revenue) pills.push(_renderGuidePill(revenue, 'guide-revenue'));
-  if (profitability) pills.push(_renderGuidePill(profitability, 'guide-profit'));
+  const revPill = _renderGuidePill(revenue, 'guide-revenue', '');
+  if (revPill) pills.push(revPill);
+  const profPill = profitability
+    ? _renderGuidePill(profitability, 'guide-profit', _profitMetricPrefix(profitability.label))
+    : '';
+  if (profPill) pills.push(profPill);
+  if (!pills.length) return '';
   const body = pills.join('<span class="guide-sep">&middot;</span>');
   return `<div class="earnings-guide-row"><span class="guide-label">FY Guide</span>${body}</div>`;
 }
@@ -613,7 +695,19 @@ function _computeMetricDelta(newMid, consensusPrior, guidePrior, tinyBaseline) {
   if (Math.abs(base.baselineMidpoint) > tiny) {
     deltaPct = deltaAbs / Math.abs(base.baselineMidpoint);
   }
-  return { deltaPct, deltaAbs, priorSource: base.priorSource };
+  // When the primary baseline is the prior guide AND a prior Street consensus
+  // also exists, also carry the vs-Street delta so the card can render
+  // "Raise +X%, +Y% vs Street" without re-computing.
+  let streetDeltaPct = null;
+  let streetDeltaAbs = null;
+  if (base.priorSource === 'prior_guidance') {
+    const cons = _parseGuideNum(consensusPrior);
+    if (cons != null) {
+      streetDeltaAbs = cur - cons;
+      if (Math.abs(cons) > tiny) streetDeltaPct = streetDeltaAbs / Math.abs(cons);
+    }
+  }
+  return { deltaPct, deltaAbs, priorSource: base.priorSource, streetDeltaPct, streetDeltaAbs };
 }
 
 // Map a raw guide_vs_consensus envelope onto the normalized split-guidance
@@ -638,6 +732,7 @@ function _applyNormalizedGuidanceFromEnvelope(r, gvc) {
   if (rev && rev.deltaPct != null) {
     setIf('guidanceRevenueDeltaPct', rev.deltaPct);
     if (r.guidanceRevenuePriorSource == null) r.guidanceRevenuePriorSource = rev.priorSource;
+    setIf('guidanceRevenueStreetDeltaPct', rev.streetDeltaPct);
   } else {
     const consPct = pctToFrac(gvc.fy_rev_change_vs_consensus_pct);
     const priorPct = pctToFrac(gvc.fy_rev_change_vs_prior_pct);
@@ -663,6 +758,8 @@ function _applyNormalizedGuidanceFromEnvelope(r, gvc) {
     setIf('guidanceEpsDeltaPct', eps.deltaPct);
     setIf('guidanceEpsDeltaAbs', eps.deltaAbs);
     if (r.guidanceEpsPriorSource == null) r.guidanceEpsPriorSource = eps.priorSource;
+    setIf('guidanceEpsStreetDeltaPct', eps.streetDeltaPct);
+    setIf('guidanceEpsStreetDeltaAbs', eps.streetDeltaAbs);
   } else {
     const epsPct = pctToFrac(gvc.fy_eps_guide_change_vs_consensus_pct);
     const epsPriorPct = pctToFrac(gvc.fy_eps_guide_change_vs_prior_pct);
@@ -686,6 +783,8 @@ function _applyNormalizedGuidanceFromEnvelope(r, gvc) {
     setIf('guidanceOperatingProfitDeltaPct', op.deltaPct);
     setIf('guidanceOperatingProfitDeltaAbs', op.deltaAbs);
     if (r.guidanceOperatingProfitPriorSource == null) r.guidanceOperatingProfitPriorSource = op.priorSource;
+    setIf('guidanceOperatingProfitStreetDeltaPct', op.streetDeltaPct);
+    setIf('guidanceOperatingProfitStreetDeltaAbs', op.streetDeltaAbs);
     if (r.guidanceProfitMetricUsed == null && gvc.fy_op_metric_kind) {
       r.guidanceProfitMetricUsed = gvc.fy_op_metric_kind;
     }
@@ -702,6 +801,8 @@ function _applyNormalizedGuidanceFromEnvelope(r, gvc) {
     setIf('guidanceFcfDeltaPct', fcf.deltaPct);
     setIf('guidanceFcfDeltaAbs', fcf.deltaAbs);
     if (r.guidanceFcfPriorSource == null) r.guidanceFcfPriorSource = fcf.priorSource;
+    setIf('guidanceFcfStreetDeltaPct', fcf.streetDeltaPct);
+    setIf('guidanceFcfStreetDeltaAbs', fcf.streetDeltaAbs);
   }
 }
 
@@ -1316,15 +1417,22 @@ async function fetchEarnings() {
               // Normalized split-guidance fields (revenue + profitability).
               guidanceRevenueDeltaPct: p.guidanceRevenueDeltaPct != null ? p.guidanceRevenueDeltaPct : null,
               guidanceRevenuePriorSource: p.guidanceRevenuePriorSource || null,
+              guidanceRevenueStreetDeltaPct: p.guidanceRevenueStreetDeltaPct != null ? p.guidanceRevenueStreetDeltaPct : null,
               guidanceEpsDeltaPct: p.guidanceEpsDeltaPct != null ? p.guidanceEpsDeltaPct : null,
               guidanceEpsDeltaAbs: p.guidanceEpsDeltaAbs != null ? p.guidanceEpsDeltaAbs : null,
               guidanceEpsPriorSource: p.guidanceEpsPriorSource || null,
+              guidanceEpsStreetDeltaPct: p.guidanceEpsStreetDeltaPct != null ? p.guidanceEpsStreetDeltaPct : null,
+              guidanceEpsStreetDeltaAbs: p.guidanceEpsStreetDeltaAbs != null ? p.guidanceEpsStreetDeltaAbs : null,
               guidanceOperatingProfitDeltaPct: p.guidanceOperatingProfitDeltaPct != null ? p.guidanceOperatingProfitDeltaPct : null,
               guidanceOperatingProfitDeltaAbs: p.guidanceOperatingProfitDeltaAbs != null ? p.guidanceOperatingProfitDeltaAbs : null,
               guidanceOperatingProfitPriorSource: p.guidanceOperatingProfitPriorSource || null,
+              guidanceOperatingProfitStreetDeltaPct: p.guidanceOperatingProfitStreetDeltaPct != null ? p.guidanceOperatingProfitStreetDeltaPct : null,
+              guidanceOperatingProfitStreetDeltaAbs: p.guidanceOperatingProfitStreetDeltaAbs != null ? p.guidanceOperatingProfitStreetDeltaAbs : null,
               guidanceFcfDeltaPct: p.guidanceFcfDeltaPct != null ? p.guidanceFcfDeltaPct : null,
               guidanceFcfDeltaAbs: p.guidanceFcfDeltaAbs != null ? p.guidanceFcfDeltaAbs : null,
               guidanceFcfPriorSource: p.guidanceFcfPriorSource || null,
+              guidanceFcfStreetDeltaPct: p.guidanceFcfStreetDeltaPct != null ? p.guidanceFcfStreetDeltaPct : null,
+              guidanceFcfStreetDeltaAbs: p.guidanceFcfStreetDeltaAbs != null ? p.guidanceFcfStreetDeltaAbs : null,
               guidanceProfitMetricUsed: p.guidanceProfitMetricUsed || null
             });
           }
