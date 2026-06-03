@@ -17,12 +17,32 @@ TODAY = datetime.combine(date.today(), time())
 
 _SCRIPT_DIR = _os.path.dirname(_os.path.abspath(__file__))
 
-# Guidance fields are populated by PR #30; read defensively (None until then).
+# Guidance fields are populated by PR #30 (split EPS/OpInc/FCF cascade).
+# build_earnings_json reads them defensively (None until normalized in intel).
 GUIDANCE_KEYS = (
+    # Revenue (PR #30: + Street/PriorSource split)
     'guidanceRevenueDeltaPct',
-    'guidanceProfitDeltaPct',
-    'guidanceProfitMetricUsed',
     'guidanceRevenuePriorSource',
+    'guidanceRevenueStreetDeltaPct',
+    # Profitability (PR #30: EPS -> OpInc -> FCF cascade)
+    'guidanceProfitMetricUsed',
+    'guidanceEpsDeltaPct',
+    'guidanceEpsDeltaAbs',
+    'guidanceEpsPriorSource',
+    'guidanceEpsStreetDeltaPct',
+    'guidanceEpsStreetDeltaAbs',
+    'guidanceOperatingProfitDeltaPct',
+    'guidanceOperatingProfitDeltaAbs',
+    'guidanceOperatingProfitPriorSource',
+    'guidanceOperatingProfitStreetDeltaPct',
+    'guidanceOperatingProfitStreetDeltaAbs',
+    'guidanceFcfDeltaPct',
+    'guidanceFcfDeltaAbs',
+    'guidanceFcfPriorSource',
+    'guidanceFcfStreetDeltaPct',
+    'guidanceFcfStreetDeltaAbs',
+    # Legacy compat (still emitted by some upstreams)
+    'guidanceProfitDeltaPct',
 )
 
 
