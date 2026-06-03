@@ -21,6 +21,71 @@
   let filters = { scope: 'coverage', signal: 'all', time: '24h', premarket: false };
   let initialized = false;
   let relevanceRequested = false;
+  let earningsRecent = [];        // earnings_calendar.json recent[] (reporters)
+  let earningsRecentByTicker = {}; // ticker -> recent entry
+  let aliasIndex = null;          // built lazily: ticker -> { tickerForm, names[] }
+
+  // Hand-maintained company-name aliases for high-traffic names whose headline
+  // form differs from the COMMON_NAMES/longName mapping. Pure name-stripping
+  // misses these (e.g. "Nvidia" vs "NVIDIA Corporation", "Facebook" for META),
+  // so they are listed explicitly. Keyed by ticker; values are headline forms.
+  const MANUAL_ALIASES = {
+    GOOG: ['Alphabet', 'Google'], GOOGL: ['Alphabet', 'Google'],
+    META: ['Meta', 'Meta Platforms', 'Facebook'],
+    'BRK.B': ['Berkshire', 'Berkshire Hathaway'], 'BRK.A': ['Berkshire', 'Berkshire Hathaway'],
+    WMT: ['Walmart'],
+    JPM: ['JPMorgan', 'JP Morgan'],
+    DIS: ['Disney', 'Walt Disney'],
+    X: ['United States Steel', 'US Steel'],
+    PEP: ['Pepsi', 'PepsiCo'],
+    KO: ['Coca-Cola', 'Coke'],
+    HD: ['Home Depot'],
+    LOW: ["Lowe's"],
+    V: ['Visa'],
+    MA: ['Mastercard'],
+    BAC: ['Bank of America'],
+    WFC: ['Wells Fargo'],
+    C: ['Citigroup', 'Citibank'],
+    PFE: ['Pfizer'],
+    LLY: ['Eli Lilly'],
+    MRK: ['Merck'],
+    JNJ: ['Johnson & Johnson'],
+    BABA: ['Alibaba'],
+    TSM: ['Taiwan Semiconductor', 'TSMC'],
+    ASML: ['ASML'],
+    NVDA: ['Nvidia', 'NVIDIA'],
+    AMD: ['AMD', 'Advanced Micro Devices'],
+    MSFT: ['Microsoft'],
+    AAPL: ['Apple'],
+    TSLA: ['Tesla'],
+    AMZN: ['Amazon'],
+    NFLX: ['Netflix'],
+    CRM: ['Salesforce'],
+    ORCL: ['Oracle'],
+    ADBE: ['Adobe'],
+    INTU: ['Intuit'],
+    NOW: ['ServiceNow'],
+    PANW: ['Palo Alto Networks', 'Palo Alto'],
+    ZS: ['Zscaler'],
+    CRWD: ['CrowdStrike'],
+    NET: ['Cloudflare'],
+    SHOP: ['Shopify'],
+    PYPL: ['PayPal'],
+    SQ: ['Block', 'Square'], XYZ: ['Block', 'Square'],
+    COIN: ['Coinbase'],
+    HOOD: ['Robinhood'],
+    PLTR: ['Palantir'],
+    SNOW: ['Snowflake'],
+    MDB: ['MongoDB'],
+    DDOG: ['Datadog'],
+    TEAM: ['Atlassian'],
+    GTLB: ['GitLab'],
+    DOCN: ['DigitalOcean'],
+    HUBS: ['HubSpot'],
+    WDAY: ['Workday'],
+    VEEV: ['Veeva'],
+  };
+
 
   // ---------- DOM lookups (resolved lazily; markup may load after script) ----------
   function $feed() { return document.getElementById('news-feed'); }
@@ -102,20 +167,98 @@
   }
 
   // ---------- Ticker tagging + coverage scoping ----------
+  function escapeRe(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  // Resolve the human-friendly company name for a ticker (defers to utils.js).
+  function companyName(ticker) {
+    if (typeof global.getCommonName === 'function') {
+      const n = global.getCommonName(ticker, null);
+      if (n && n !== ticker) return n;
+    }
+    return null;
+  }
+
+  // Build (once) a per-ticker alias index with PRE-COMPILED regexes. Without
+  // this, matchTickers would recompile ~2 regexes per ticker for every story.
+  // names come from: company name, suffix-stripped short name (via utils
+  // cleanCompanyName), and MANUAL_ALIASES. Sub-4-char aliases are dropped from
+  // name matching to avoid false positives (e.g. "Visa" tagging unrelated text);
+  // those tickers only match the uppercase ticker form.
+  function buildAliasIndex(coverage) {
+    const idx = {};
+    coverage.forEach((raw) => {
+      const t = raw.toUpperCase();
+      const names = new Set();
+      const name = companyName(t);
+      if (name) {
+        names.add(name);
+        const short = (typeof global.cleanCompanyName === 'function')
+          ? global.cleanCompanyName(name) : name;
+        if (short && short.toLowerCase() !== name.toLowerCase()) names.add(short);
+      }
+      (MANUAL_ALIASES[t] || []).forEach((a) => names.add(a));
+      const reNames = Array.from(names)
+        .map((n) => n.toLowerCase())
+        .filter((n) => n.length >= 4)
+        .map((n) => new RegExp('(^|[^a-z])' + escapeRe(n) + '([^a-z]|$)'));
+      idx[t] = {
+        reTicker: new RegExp('(^|[^A-Z0-9$])\\$?' + escapeRe(t) + '([^A-Z0-9]|$)'),
+        reNames,
+      };
+    });
+    return idx;
+  }
+
+  function aliasIndexFor(coverage) {
+    if (!aliasIndex) aliasIndex = buildAliasIndex(coverage);
+    return aliasIndex;
+  }
+
+  // Return the set of coverage tickers matched in the given text via ticker
+  // form (uppercase, word-boundary) or company-name aliases (lowercase).
+  function matchTickers(text, coverage) {
+    const idx = aliasIndexFor(coverage);
+    const upper = String(text || '').toUpperCase();
+    const lower = String(text || '').toLowerCase();
+    const found = new Set();
+    Object.keys(idx).forEach((t) => {
+      const entry = idx[t];
+      if (entry.reTicker.test(upper)) { found.add(t); return; }
+      for (const re of entry.reNames) {
+        if (re.test(lower)) { found.add(t); return; }
+      }
+    });
+    return found;
+  }
+
   function tagStoryTickers(story, coverage) {
     const cov = coverage.map((t) => t.toUpperCase());
-    const haystack = `${story.headline || ''} ${story.body || ''} ${story.ticker || ''}`.toUpperCase();
-    const found = new Set();
+    const found = matchTickers(`${story.headline || ''} ${story.body || ''} ${story.ticker || ''}`, cov);
     // Always include any explicit ticker field first.
     if (story.ticker) found.add(String(story.ticker).toUpperCase());
-    cov.forEach((t) => {
-      // word-boundary match so "S" / "NET" don't match arbitrary substrings.
-      const re = new RegExp('(^|[^A-Z0-9$])\\$?' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^A-Z0-9]|$)');
-      if (re.test(haystack)) found.add(t);
-    });
     story.tickers = Array.from(found);
-    story.inCoverage = story.tickers.some((t) => cov.indexOf(t) !== -1);
+    story.inCoverage = story.tickers.length > 0;
+    applyEarningsSignal(story, cov);
     return story;
+  }
+
+  // Force signal='earnings' if a matched ticker reported within +/- 3 days of
+  // this story's date. Overrides the headline-keyword classifier.
+  function applyEarningsSignal(story, cov) {
+    if (!earningsRecent.length || !story.pubDate) return;
+    const storyMs = Date.parse(story.pubDate);
+    if (isNaN(storyMs)) return;
+    for (const t of story.tickers) {
+      const ent = earningsRecentByTicker[t];
+      if (!ent || !ent.earnings_date) continue;
+      const repMs = Date.parse(ent.earnings_date + 'T00:00:00Z');
+      if (isNaN(repMs)) continue;
+      if (Math.abs(storyMs - repMs) <= 3 * 24 * 3600 * 1000) {
+        story.signal = 'earnings';
+        story.isEarningsAuto = true;
+        return;
+      }
+    }
   }
 
   // ---------- Normalization ----------
@@ -157,7 +300,9 @@
     return {
       id,
       headline,
-      body: entry.rationale || '',
+      // Fold buyer/target into the matchable body so the counterparty (e.g.
+      // PTC in the Autodesk rumor) and a company-name buyer both get tagged.
+      body: [entry.rationale, entry.buyer, entry.target].filter(Boolean).join(' '),
       source: srcName,
       url: srcUrl,
       ticker: tickerUp,
@@ -168,7 +313,31 @@
       relevance: null,
       isMa: true,
       maEntry: entry,
+      peers: [],
     };
+  }
+
+  // Same-subsector peers of the M&A-tagged tickers (read-through chips).
+  // Skips tagged tickers themselves; caps at 4. Returns [] if no subsector map.
+  function readThroughPeers(taggedTickers, coverage) {
+    if (typeof global.getSubsector !== 'function') return [];
+    const tagged = new Set(taggedTickers);
+    const subs = new Set();
+    taggedTickers.forEach((t) => {
+      const s = global.getSubsector(t);
+      if (s && s !== 'Other') subs.add(s);
+    });
+    if (!subs.size) return [];
+    const peers = [];
+    for (const t of coverage) {
+      const up = t.toUpperCase();
+      if (tagged.has(up)) continue;
+      if (subs.has(global.getSubsector(up))) {
+        peers.push(up);
+        if (peers.length >= 4) break;
+      }
+    }
+    return peers;
   }
 
   // ---------- Data fetching ----------
@@ -204,14 +373,147 @@
     return [];
   }
 
+  // Load earnings_calendar.json once; cache recent[] reporters for signal
+  // upgrade + synthetic post-print cards.
+  async function loadEarningsCalendar() {
+    try {
+      let data = null;
+      if (global.SignalSnapshot && global.SignalSnapshot.fetchWithFallback) {
+        const resp = await global.SignalSnapshot.fetchWithFallback('earnings_calendar.json', { timeoutMs: 10000, cacheBust: true });
+        if (resp && resp.ok) data = await resp.json();
+      }
+      if (!data) {
+        const resp = await fetch('earnings_calendar.json?ts=' + Date.now(), { signal: AbortSignal.timeout(10000) });
+        if (resp.ok) data = await resp.json();
+      }
+      earningsRecent = (data && Array.isArray(data.recent)) ? data.recent : [];
+    } catch (e) {
+      console.warn('[news] earnings_calendar load failed:', e);
+      earningsRecent = [];
+    }
+    earningsRecentByTicker = {};
+    earningsRecent.forEach((r) => {
+      if (r && r.ticker) earningsRecentByTicker[String(r.ticker).toUpperCase()] = r;
+    });
+  }
+
+  // change1d lookup from the cached snapshot quotes.
+  async function change1dFor(ticker) {
+    try {
+      if (typeof loadSnapshot === 'function') {
+        const snap = await loadSnapshot();
+        const q = snap && snap.quotes && snap.quotes[ticker];
+        if (q && typeof q.change1d === 'number') return q.change1d;
+      }
+    } catch (e) { /* ignore */ }
+    if (global._snapshotData && global._snapshotData.quotes && global._snapshotData.quotes[ticker]) {
+      const v = global._snapshotData.quotes[ticker].change1d;
+      if (typeof v === 'number') return v;
+    }
+    return null;
+  }
+
+  // Synthesize "post-print move" cards for recent reporters that moved >= 5%.
+  // Built synchronously from a pre-fetched change1d map (see init/refresh).
+  let _change1dCache = {};
+  function buildSyntheticEarningsCards(coverage, newsStories) {
+    const cov = new Set(coverage.map((t) => t.toUpperCase()));
+    const cards = [];
+    // Days printed within last week, dated same day as a real earnings story.
+    const realEarningsDays = new Set(
+      newsStories
+        .filter((s) => s.signal === 'earnings' && s.pubDate)
+        .flatMap((s) => s.tickers.map((t) => `${t}|${(s.pubDate || '').slice(0, 10)}`))
+    );
+    earningsRecent.forEach((ent) => {
+      const t = String(ent.ticker || '').toUpperCase();
+      if (!t || !cov.has(t)) return;
+      const ds = ent.days_since;
+      if (typeof ds !== 'number' || ds < 0 || ds > 7) return;
+      const chg = _change1dCache[t];
+      if (typeof chg !== 'number' || Math.abs(chg) < 5) return;
+      const dayKey = `${t}|${ent.earnings_date}`;
+      if (realEarningsDays.has(dayKey)) return; // prefer the real story
+      const name = companyName(t) || ent.name || t;
+      const arrow = chg >= 0 ? '+' : '-';
+      const pct = Math.abs(chg).toFixed(1);
+      const headline = `${name} ${arrow}${pct}% post ${quarterLabel(ent.earnings_date)}`;
+      const body = buildPrintBody(ent);
+      const note = ent.note_file;
+      // Earnings date at US market close (20:00 UTC ~= 16:00 ET).
+      const pubDate = ent.earnings_date ? `${ent.earnings_date}T20:00:00Z` : null;
+      cards.push({
+        id: djb2(`synth|${t}|${ent.earnings_date}`),
+        headline,
+        body,
+        source: 'SignalAI · Auto',
+        url: note || '#',
+        ticker: t,
+        pubDate,
+        signal: 'earnings',
+        tickers: [t],
+        inCoverage: true,
+        relevance: null,
+        isMa: false,
+        maEntry: null,
+        isEarningsAuto: true,
+        isSynthetic: true,
+        peers: [],
+        signal_meta: { kind: 'post_print_move', change_1d: chg },
+      });
+    });
+    return cards;
+  }
+
+  function quarterLabel(dateStr) {
+    if (!dateStr) return 'print';
+    const m = parseInt(String(dateStr).slice(5, 7), 10);
+    if (!m) return 'print';
+    const q = Math.floor((m - 1) / 3) + 1;
+    return `Q${q} print`;
+  }
+
+  function buildPrintBody(ent) {
+    const rev = ent.revenue_actual;
+    const revS = ent.revenue_surprise_pct;
+    const eps = ent.eps_actual;
+    const epsS = ent.eps_surprise_pct;
+    if (rev == null && eps == null) return '';
+    const parts = [];
+    if (rev != null) {
+      parts.push(`Revenue ${rev}${revS != null ? ` (${revS > 0 ? '+' : ''}${revS}% vs Street)` : ''}.`);
+    }
+    if (eps != null) {
+      parts.push(`EPS ${eps}${epsS != null ? ` (${epsS > 0 ? '+' : ''}${epsS}% vs Street)` : ''}.`);
+    }
+    return parts.join(' ');
+  }
+
   async function loadStories() {
     const cov = coverageList();
+    aliasIndex = null; // rebuild against current coverage
+    // Pre-fetch change1d for recent reporters so synthetic-card build is sync.
+    _change1dCache = {};
+    await Promise.all(earningsRecent.map(async (ent) => {
+      const t = String(ent.ticker || '').toUpperCase();
+      if (t && typeof ent.days_since === 'number' && ent.days_since >= 0 && ent.days_since <= 7) {
+        _change1dCache[t] = await change1dFor(t);
+      }
+    }));
     const [newsRaw, maRaw] = await Promise.all([fetchNewsStories(), fetchMaRumors()]);
     const newsStories = newsRaw.map(normalizeNewsItem).map((s) => tagStoryTickers(s, cov));
-    const maStories = maRaw.map(normalizeMaEntry).map((s) => tagStoryTickers(s, cov));
+    const maStories = maRaw.map(normalizeMaEntry).map((s) => {
+      tagStoryTickers(s, cov);
+      // tagStoryTickers may have flipped signal->earnings; M&A always wins.
+      s.signal = 'ma';
+      s.isEarningsAuto = false;
+      s.peers = readThroughPeers(s.tickers, cov);
+      return s;
+    });
+    const synthetic = buildSyntheticEarningsCards(cov, newsStories);
     // M&A rumors first (highest-signal), then news by recency.
     newsStories.sort((a, b) => (Date.parse(b.pubDate || 0) || 0) - (Date.parse(a.pubDate || 0) || 0));
-    stories = maStories.concat(newsStories);
+    stories = maStories.concat(synthetic, newsStories);
     relevanceRequested = false;
   }
 
@@ -240,9 +542,11 @@
       return out;
     }
 
-    // Time filter
+    // Time filter. Synthetic post-print cards are exempt: they cover the last
+    // print (up to 7 days back) and should stay visible inside the 24h window.
     const cutoff = now - timeCutoffMs(filters.time);
     out = out.filter((s) => {
+      if (s.isSynthetic) return true;
       const t = Date.parse(s.pubDate || 0);
       return !t || t >= cutoff;
     });
@@ -273,9 +577,16 @@
       ? `<button class="news-card-drilldown" data-ticker="${escapeHtml(primaryTicker)}">Open ${escapeHtml(primaryTicker)} →</button>`
       : '';
 
-    const sourceLink = story.url
-      ? `<a class="news-card-source" href="${escapeHtml(story.url)}" target="_blank" rel="noopener">${escapeHtml(story.source || 'Source')}</a>`
-      : `<span class="news-card-source">${escapeHtml(story.source || '')}</span>`;
+    const autoCls = story.isSynthetic ? ' news-card-source-auto' : '';
+    const hasUrl = story.url && story.url !== '#';
+    const sourceLink = hasUrl
+      ? `<a class="news-card-source${autoCls}" href="${escapeHtml(story.url)}" target="_blank" rel="noopener">${escapeHtml(story.source || 'Source')}</a>`
+      : `<span class="news-card-source${autoCls}">${escapeHtml(story.source || '')}</span>`;
+
+    const peerTags = (story.peers && story.peers.length)
+      ? `<span class="news-readthrough"><span class="news-readthrough-label">Read-through:</span>${story.peers.map((t) =>
+          `<span class="news-ticker-tag news-ticker-tag-peer" data-ticker="${escapeHtml(t)}">${escapeHtml(t)}</span>`).join('')}</span>`
+      : '';
 
     const maActions = story.isMa
       ? `<div class="news-ma-actions">
@@ -301,6 +612,8 @@
         <span class="news-card-time">${ago}</span>
       </div>
       <div class="news-card-headline">${escapeHtml(story.headline)}</div>
+      ${story.isSynthetic && story.body ? `<div class="news-card-body">${escapeHtml(story.body)}</div>` : ''}
+      ${peerTags}
       ${relevanceBlock}
       <div class="news-card-footer">
         ${sourceLink}
@@ -492,6 +805,7 @@ Return a JSON array: [{"id": "...", "relevance": "..."}]`;
       feed.innerHTML = '<div class="news-loading">Loading news...</div>';
     }
     setStatus('updating…');
+    await loadEarningsCalendar();
     await loadStories();
     render();
     initialized = true;
@@ -501,13 +815,35 @@ Return a JSON array: [{"id": "...", "relevance": "..."}]`;
   async function refresh() {
     wireFilterBar();
     setStatus('updating…');
+    await loadEarningsCalendar();
     await loadStories();
     render();
     initialized = true;
     return true;
   }
 
-  global.NewsModule = { init, render, refresh };
+  // ---------- Dev assertions (opt-in via window.__NEWS_DEBUG) ----------
+  function runDebugAssertions() {
+    const cov = ['NVDA', 'ADSK', 'PTC', 'V', 'CRM'];
+    aliasIndex = null;
+    const m1 = matchTickers('Nvidia surges on Blackwell demand', cov);
+    console.assert(m1.has('NVDA'), '[news][test] "Nvidia ..." should tag NVDA');
+    const m2 = matchTickers('Autodesk is considering a cash-and-stock acquisition of PTC', cov);
+    console.assert(m2.has('ADSK') && m2.has('PTC'), '[news][test] Autodesk/PTC should tag both ADSK and PTC');
+    const m4 = matchTickers('Shares of $V rallied', cov);
+    console.assert(m4.has('V'), '[news][test] ticker form $V should match V');
+    const m5 = matchTickers('Salesforce raises full-year guidance', cov);
+    console.assert(m5.has('CRM'), '[news][test] "Salesforce" should tag CRM');
+    console.log('[news][test] alias assertions done');
+  }
+  if (typeof global !== 'undefined' && global.__NEWS_DEBUG) runDebugAssertions();
+
+  global.NewsModule = {
+    init, render, refresh,
+    _matchTickers: matchTickers,
+    _runDebugAssertions: runDebugAssertions,
+    _stories: () => stories,
+  };
   // Back-compat: shell.js MORE_PANE_CONFIG.news.loaderName === 'fetchNews'.
   global.fetchNews = refresh;
 })(typeof window !== 'undefined' ? window : globalThis);

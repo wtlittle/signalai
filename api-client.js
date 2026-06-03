@@ -134,22 +134,26 @@ async function ensureBestProxy() {
   return false;
 }
 
-async function fetchWithProxy(url, timeout = 15000) {
+// parse: 'json' (default) or 'text'. Tries the active proxy, then rotates and
+// retries once on failure.
+async function fetchViaProxy(url, timeout = 15000, parse = 'json') {
   const proxyAvailable = await ensureBestProxy();
   if (!proxyAvailable) throw new Error('No CORS proxy available');
-  const proxyUrl = getProxy() + encodeURIComponent(url);
+  const read = (resp) => (parse === 'text' ? resp.text() : resp.json());
   try {
-    const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(timeout) });
+    const resp = await fetch(getProxy() + encodeURIComponent(url), { signal: AbortSignal.timeout(timeout) });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    return await resp.json();
+    return await read(resp);
   } catch (e) {
     rotateProxy();
-    const proxyUrl2 = getProxy() + encodeURIComponent(url);
-    const resp2 = await fetch(proxyUrl2, { signal: AbortSignal.timeout(timeout) });
+    const resp2 = await fetch(getProxy() + encodeURIComponent(url), { signal: AbortSignal.timeout(timeout) });
     if (!resp2.ok) throw new Error(`HTTP ${resp2.status}`);
-    return await resp2.json();
+    return await read(resp2);
   }
 }
+
+function fetchWithProxy(url, timeout = 15000) { return fetchViaProxy(url, timeout, 'json'); }
+function fetchTextWithProxy(url, timeout = 15000) { return fetchViaProxy(url, timeout, 'text'); }
 
 // --- Client-side chart data fetch ---
 // Priority: Supabase chart_data → CORS proxy → snapshot
@@ -513,8 +517,8 @@ async function searchTickerClient(query) {
   }
 }
 
-// --- Client-side news fetch ---
-async function fetchNewsClient(tickers) {
+// --- Yahoo Finance news (single search call across top tickers) ---
+async function fetchYahooNewsClient(tickers) {
   try {
     const topTickers = tickers.slice(0, 5).join(',');
     const url = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(topTickers)}&quotesCount=0&newsCount=20`;
@@ -526,9 +530,73 @@ async function fetchNewsClient(tickers) {
       publishedAt: n.providerPublishTime ? new Date(n.providerPublishTime * 1000).toISOString() : null,
     }));
   } catch (e) {
-    console.warn('Client news fetch failed:', e.message);
+    console.warn('Yahoo news fetch failed:', e.message);
     return [];
   }
+}
+
+// --- Google News RSS (per-ticker; pulls from dozens of publishers, no key) ---
+async function fetchGoogleNewsClient(tickers) {
+  const top = tickers.slice(0, 5);
+  if (typeof DOMParser === 'undefined') return []; // non-browser env
+  const parser = new DOMParser();
+  const perTicker = await Promise.allSettled(top.map(async (ticker) => {
+    const q = encodeURIComponent(`$${ticker} stock`);
+    const url = `https://news.google.com/rss/search?q=${q}&hl=en-US&gl=US&ceid=US%3Aen`;
+    const xml = await fetchTextWithProxy(url, 10000);
+    const doc = parser.parseFromString(xml, 'text/xml');
+    const items = Array.from(doc.querySelectorAll('item')).slice(0, 15);
+    return items.map((item) => {
+      const pub = item.querySelector('pubDate')?.textContent || '';
+      let publishedAt = null;
+      const d = new Date(pub);
+      if (!isNaN(d.getTime())) publishedAt = d.toISOString();
+      return {
+        title: item.querySelector('title')?.textContent || '',
+        url: item.querySelector('link')?.textContent || '',
+        source: item.querySelector('source')?.textContent || 'Google News',
+        publishedAt,
+        ticker,
+      };
+    });
+  }));
+  const out = [];
+  perTicker.forEach((r) => {
+    if (r.status === 'fulfilled' && Array.isArray(r.value)) out.push(...r.value);
+    else if (r.status === 'rejected') console.warn('Google News fetch failed:', r.reason && r.reason.message);
+  });
+  return out;
+}
+
+// --- Client-side news fetch (Yahoo + Google News, merged + deduped) ---
+function normalizeTitleKey(title) {
+  return String(title || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim().slice(0, 60);
+}
+
+async function fetchNewsClient(tickers) {
+  const [yahoo, google] = await Promise.allSettled([
+    fetchYahooNewsClient(tickers),
+    fetchGoogleNewsClient(tickers),
+  ]);
+  const yahooItems = yahoo.status === 'fulfilled' ? yahoo.value : [];
+  const googleItems = google.status === 'fulfilled' ? google.value : [];
+
+  const merged = [];
+  const seenUrls = new Set();
+  const seenTitles = new Set();
+  // Yahoo first so it wins URL/title ties; Google adds source diversity.
+  for (const item of yahooItems.concat(googleItems)) {
+    if (!item || !item.title) continue;
+    const urlKey = (item.url || '').trim();
+    if (urlKey && urlKey !== '#' && seenUrls.has(urlKey)) continue;
+    const titleKey = normalizeTitleKey(item.title);
+    if (titleKey && seenTitles.has(titleKey)) continue;
+    if (urlKey && urlKey !== '#') seenUrls.add(urlKey);
+    if (titleKey) seenTitles.add(titleKey);
+    merged.push(item);
+  }
+  merged.sort((a, b) => (Date.parse(b.publishedAt || 0) || 0) - (Date.parse(a.publishedAt || 0) || 0));
+  return merged;
 }
 
 // --- Data source status ---
