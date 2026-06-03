@@ -1595,79 +1595,8 @@ renderPrivateTable = function() {
 window.renderPrivateTable = renderPrivateTable;
 
 // --- News Feed ---
-const $newsFeed = document.getElementById('news-feed');
-const $newsStatus = document.getElementById('news-status');
-
-function timeAgo(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return '';
-  const now = Date.now();
-  const diff = now - d.getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'now';
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  const days = Math.floor(hrs / 24);
-  if (days < 7) return `${days}d`;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-function renderNews(items) {
-  if (!items || items.length === 0) {
-    $newsFeed.innerHTML = '<div class="news-empty">No recent news for your watchlist</div>';
-    return;
-  }
-  $newsFeed.innerHTML = items.map(n => {
-    const t = (n.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    const src = (n.source || '').replace(/</g, '&lt;');
-    const ticker = (n.ticker || '').replace(/</g, '&lt;');
-    const ago = timeAgo(n.pubDate);
-    const href = n.url ? ` href="${n.url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer"` : '';
-    return `<a class="news-item"${href}>
-      <span class="news-ticker-badge">${ticker}</span>
-      <span class="news-title">${t}</span>
-      <span class="news-meta">
-        <span class="news-source">${src}</span>
-        <span class="news-time">${ago}</span>
-      </span>
-    </a>`;
-  }).join('');
-}
-
-async function fetchNews() {
-  // Exposed on window below for shell.js loadMorePane('news').
-  const newsTickers = tickerList.slice(0, 20);
-  if (newsTickers.length === 0) return;
-  try {
-    $newsStatus.textContent = 'updating...';
-    let data;
-    if (await checkBackend()) {
-      const url = `${BACKEND_URL}/news?symbols=${encodeURIComponent(newsTickers.join(','))}`;
-      const resp = await fetch(url, { signal: AbortSignal.timeout(60000) });
-      data = await resp.json();
-    } else if (typeof fetchNewsClient === 'function') {
-      data = await fetchNewsClient(newsTickers);
-    } else {
-      data = [];
-    }
-    if (data && data.length > 0) {
-      renderNews(data);
-      $newsStatus.textContent = `${data.length} articles`;
-    } else {
-      $newsFeed.innerHTML = '<div class="news-empty">News requires the backend server</div>';
-      $newsStatus.textContent = '';
-    }
-  } catch (e) {
-    console.warn('News fetch failed:', e);
-    $newsFeed.innerHTML = '<div class="news-empty">Could not load news</div>';
-    $newsStatus.textContent = '';
-  }
-}
-
-// Expose for new SignalRouter / shell.js loadMorePane('news')
-window.fetchNews = fetchNews;
+// Migrated to news.js (window.NewsModule). It owns init/render/refresh and sets
+// window.fetchNews = NewsModule.refresh for the shell.js more-pane loader.
 
 // --- Legacy Tab Navigation (NEUTRALIZED) ---
 //
