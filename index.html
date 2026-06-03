@@ -449,26 +449,40 @@
     <section class="surface surface-news" data-surface="news" hidden>
       <div class="surface-header">
         <h2>Market News</h2>
+        <p class="surface-sub">Coverage-scoped news, signal-tagged and ranked by relevance to your book.</p>
       </div>
-      <div class="more-pane active" data-more-pane="news">
-        <div class="tab-pane active" id="tab-news">
-          <section class="ma-pending-section" id="ma-pending-section" hidden>
-            <div class="section-header-bar">
-              <h2>M&amp;A Rumor Queue <span class="badge badge-pending" id="ma-pending-count">0</span></h2>
-              <span class="news-status">Auto-detected. Approve to flag as RUMOR; reject to dismiss.</span>
-            </div>
-            <div class="ma-pending-list" id="ma-pending-list"></div>
-          </section>
-          <section class="news-section" id="news-section">
-            <div class="section-header-bar">
-              <h2>Market News</h2>
-              <span class="news-status" id="news-status"></span>
-            </div>
-            <div class="news-feed" id="news-feed">
-              <div class="news-loading">Loading news...</div>
-            </div>
-          </section>
+
+      <div class="news-filter-bar" id="news-filter-bar">
+        <div class="news-filter-group">
+          <span class="news-filter-label">Scope</span>
+          <button class="news-filter-pill active" data-scope="coverage">My Coverage</button>
+          <button class="news-filter-pill" data-scope="all">All Market</button>
         </div>
+        <div class="news-filter-group">
+          <span class="news-filter-label">Signal</span>
+          <button class="news-filter-pill active" data-signal="all">All</button>
+          <button class="news-filter-pill" data-signal="earnings">Earnings</button>
+          <button class="news-filter-pill" data-signal="guidance">Guidance</button>
+          <button class="news-filter-pill" data-signal="ma">M&amp;A</button>
+          <button class="news-filter-pill" data-signal="analyst">Analyst</button>
+          <button class="news-filter-pill" data-signal="macro">Macro</button>
+        </div>
+        <div class="news-filter-group">
+          <span class="news-filter-label">Time</span>
+          <button class="news-filter-pill active" data-time="24h">24H</button>
+          <button class="news-filter-pill" data-time="48h">48H</button>
+          <button class="news-filter-pill" data-time="1w">1W</button>
+        </div>
+        <div class="news-filter-group news-filter-end">
+          <button class="news-premarket-btn" id="news-premarket-btn" title="Last 12 hours only, ranked by impact on your coverage">
+            ☀ Pre-market Brief
+          </button>
+          <span class="news-status" id="news-status"></span>
+        </div>
+      </div>
+
+      <div class="news-feed" id="news-feed">
+        <div class="news-loading">Loading news...</div>
       </div>
     </section>
 
@@ -634,6 +648,7 @@
   <script src="macro.js?v=20260514d"></script>
   <script src="alerts.js?v=20260514a"></script>
   <script src="pplx-api.js?v=20260512c"></script>
+  <script src="news.js?v=20260603a"></script>
   <script src="api-settings.js?v=20260512c"></script>
   <script src="compare-ai.js?v=20260512c"></script>
   <script src="compare.js?v=20260512c"></script>
