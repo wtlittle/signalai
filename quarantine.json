@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-04T18:46:50.127309+00:00",
-  "count": 24,
+  "generated_at": "2026-06-04T19:08:57.293174+00:00",
+  "count": 5,
   "tickers": {
     "SNDK": {
       "symbol": "SNDK",
@@ -24,12 +24,27 @@
           "error_or_missing_fields": [
             "history_8q"
           ]
+        },
+        {
+          "name": "cached",
+          "error_or_missing_fields": [
+            "history_8q",
+            "fy_guide_revenue",
+            "fy_guide_eps",
+            "fy_guide_bullets",
+            "consensus_eps_next_q",
+            "consensus_rev_next_q",
+            "consensus_estimates",
+            "name",
+            "sector",
+            "subsector"
+          ]
         }
       ],
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T18:46:16.061981+00:00"
+      "updated_at": "2026-06-04T19:08:48.480695+00:00"
     },
     "SOC": {
       "symbol": "SOC",
@@ -57,39 +72,27 @@
         {
           "name": "perplexity",
           "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:17.437726+00:00"
-    },
-    "SEMR": {
-      "symbol": "SEMR",
-      "quarantined_at": "2026-06-04T17:04:12.860120+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
         },
         {
-          "name": "finnhub",
+          "name": "cached",
           "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
+            "history_8q",
+            "fy_guide_revenue",
+            "fy_guide_eps",
+            "fy_guide_bullets",
+            "consensus_eps_next_q",
+            "consensus_rev_next_q",
+            "consensus_estimates",
+            "name",
+            "sector",
+            "subsector"
           ]
         }
       ],
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T18:46:20.447899+00:00"
+      "updated_at": "2026-06-04T19:08:51.535870+00:00"
     },
     "OS": {
       "symbol": "OS",
@@ -98,7 +101,9 @@
       "sources_tried": [
         {
           "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "finnhub",
@@ -111,175 +116,25 @@
           "error_or_missing_fields": "no_response"
         },
         {
-          "name": "perplexity",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "in_quarter_rev_actual",
-        "in_quarter_rev_surprise_pct",
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:21.829021+00:00"
-    },
-    "CHKP": {
-      "symbol": "CHKP",
-      "quarantined_at": "2026-06-04T17:04:20.634465+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
+          "name": "cached",
           "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T18:46:24.451359+00:00"
-    },
-    "QLYS": {
-      "symbol": "QLYS",
-      "quarantined_at": "2026-06-04T17:04:27.287158+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
+            "history_8q",
+            "fy_guide_revenue",
+            "fy_guide_eps",
+            "fy_guide_bullets",
+            "consensus_eps_next_q",
+            "consensus_rev_next_q",
+            "consensus_estimates",
+            "name",
+            "sector",
+            "subsector"
           ]
         }
       ],
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T18:46:27.109820+00:00"
-    },
-    "PTC": {
-      "symbol": "PTC",
-      "quarantined_at": "2026-06-04T17:04:27.310393+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:27.436733+00:00"
-    },
-    "BSY": {
-      "symbol": "BSY",
-      "quarantined_at": "2026-06-04T17:04:27.312947+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:27.744086+00:00"
-    },
-    "ADSK": {
-      "symbol": "ADSK",
-      "quarantined_at": "2026-06-04T17:04:27.324381+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:27.113417+00:00"
-    },
-    "PCOR": {
-      "symbol": "PCOR",
-      "quarantined_at": "2026-06-04T17:04:27.387888+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T18:46:28.095126+00:00"
-    },
-    "TYL": {
-      "symbol": "TYL",
-      "quarantined_at": "2026-06-04T17:04:27.494029+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T18:46:28.634718+00:00"
+      "updated_at": "2026-06-04T19:08:54.862776+00:00"
     },
     "PSTG": {
       "symbol": "PSTG",
@@ -288,7 +143,9 @@
       "sources_tried": [
         {
           "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "finnhub",
@@ -303,275 +160,27 @@
         {
           "name": "perplexity",
           "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "in_quarter_eps_actual",
-        "in_quarter_rev_surprise_pct",
-        "in_quarter_eps_surprise_pct",
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:30.932904+00:00"
-    },
-    "GLBE": {
-      "symbol": "GLBE",
-      "quarantined_at": "2026-06-04T17:04:32.298426+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
         },
         {
-          "name": "finnhub",
+          "name": "cached",
           "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
+            "history_8q",
+            "fy_guide_revenue",
+            "fy_guide_eps",
+            "fy_guide_bullets",
+            "consensus_eps_next_q",
+            "consensus_rev_next_q",
+            "consensus_estimates",
+            "name",
+            "sector",
+            "subsector"
           ]
         }
       ],
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T18:46:30.582065+00:00"
-    },
-    "WIX": {
-      "symbol": "WIX",
-      "quarantined_at": "2026-06-04T17:04:32.342199+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:31.438512+00:00"
-    },
-    "FICO": {
-      "symbol": "FICO",
-      "quarantined_at": "2026-06-04T17:04:34.116668+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "perplexity",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:29.540146+00:00"
-    },
-    "AKAM": {
-      "symbol": "AKAM",
-      "quarantined_at": "2026-06-04T17:04:35.115247+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:31.184566+00:00"
-    },
-    "AEM": {
-      "symbol": "AEM",
-      "quarantined_at": "2026-06-04T17:04:58.839187+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:33.712177+00:00"
-    },
-    "GS": {
-      "symbol": "GS",
-      "quarantined_at": "2026-06-04T17:05:01.119644+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:33.088289+00:00"
-    },
-    "JPM": {
-      "symbol": "JPM",
-      "quarantined_at": "2026-06-04T17:05:21.449136+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:33.126634+00:00"
-    },
-    "SYF": {
-      "symbol": "SYF",
-      "quarantined_at": "2026-06-04T17:05:45.814680+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T18:46:35.265990+00:00"
-    },
-    "COF": {
-      "symbol": "COF",
-      "quarantined_at": "2026-06-04T17:05:46.294606+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:35.274422+00:00"
-    },
-    "ALAB": {
-      "symbol": "ALAB",
-      "quarantined_at": "2026-06-04T17:06:23.292969+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T18:46:37.749756+00:00"
+      "updated_at": "2026-06-04T19:08:54.798355+00:00"
     },
     "CSU.TO": {
       "symbol": "CSU.TO",
@@ -580,7 +189,9 @@
       "sources_tried": [
         {
           "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "finnhub",
@@ -591,39 +202,27 @@
           "error_or_missing_fields": [
             "history_8q"
           ]
-        }
-      ],
-      "missing_fields": [
-        "in_quarter_eps_actual",
-        "in_quarter_eps_surprise_pct",
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T18:46:42.162261+00:00"
-    },
-    "TSEM": {
-      "symbol": "TSEM",
-      "quarantined_at": "2026-06-04T17:06:29.228481+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "perplexity_finance",
-          "error_or_missing_fields": "no_response"
         },
         {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
+          "name": "cached",
           "error_or_missing_fields": [
-            "history_8q"
+            "history_8q",
+            "fy_guide_revenue",
+            "fy_guide_eps",
+            "fy_guide_bullets",
+            "consensus_eps_next_q",
+            "consensus_rev_next_q",
+            "consensus_estimates",
+            "name",
+            "sector",
+            "subsector"
           ]
         }
       ],
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T18:46:50.127301+00:00"
+      "updated_at": "2026-06-04T19:08:57.293162+00:00"
     }
   }
 }
