@@ -568,7 +568,8 @@ async function fetchGoogleNewsClient(tickers) {
   return out;
 }
 
-// --- Perplexity sonar news (single batched call; real-publisher URLs) ---
+// --- Perplexity sonar news (read from Supabase news_items, populated by the
+// GH Actions hourly cron; real-publisher URLs) ---
 // Maps common publisher hosts to display names; unknown hosts fall back to a
 // capitalized host label. Keyed by registrable domain (host with leading www. /
 // m. / news. stripped).
@@ -615,113 +616,33 @@ function sourceFromUrl(url) {
   }
 }
 
+// Reads material news from the Supabase `news_items` table, which the GH Actions
+// hourly cron populates from a backend Perplexity sonar call. Replaces the old
+// per-browser sonar call so users no longer need a localStorage API key.
 async function fetchPerplexityNewsClient(tickers) {
-  // Browser-only guard: the wrapper lives on window.SignalAIApi (mirrors the
-  // DOMParser guard in fetchGoogleNewsClient). Skip in non-browser env or when
-  // no API key is configured.
-  if (typeof window === 'undefined' || !window.SignalAIApi
-      || typeof window.SignalAIApi.call !== 'function'
-      || typeof window.SignalAIApi.hasKey !== 'function' || !window.SignalAIApi.hasKey()) {
-    return [];
-  }
-
-  const cov = (tickers || []).slice(0, 30);
-  if (!cov.length) return [];
-  const tickerList = cov.join(', ');
-
-  const system = [
-    'You are a buy-side equity news scout. Surface only MATERIAL, recent business',
-    'news about the listed tickers: earnings results, guidance changes, M&A activity,',
-    'analyst rating/price-target changes, product launches, and regulatory or legal',
-    'actions. EXCLUDE generic listicles, "X things to know about Y stock" filler,',
-    'roundups, opinion/price-target-speculation pieces, and pure-price commentary',
-    '("stock rises/falls today"). Prefer primary publishers (Bloomberg, Reuters, WSJ,',
-    'FT, CNBC, company press releases) over aggregators. Return ONLY valid JSON, no',
-    'prose and no markdown fences.',
-  ].join(' ');
-
-  const prompt = `Find the top 15-20 most material business news stories from the last 24 hours about these tickers: ${tickerList}.
-
-Return a JSON object of the form:
-{"stories": [{"title": "...", "url": "https://...", "ticker": "TSLA", "publishedAt": "2026-06-03T14:30:00Z", "summary": "one sentence"}]}
-
-Rules:
-- "url" must be the original publisher URL (not an aggregator/Google/Yahoo redirect).
-- "ticker" is the single primary ticker the story is about, drawn from the list above.
-- "publishedAt" is ISO 8601 if known, otherwise null.
-- "summary" is one concise sentence; omit if not available.`;
-
-  const response_format = {
-    type: 'json_schema',
-    json_schema: {
-      schema: {
-        type: 'object',
-        properties: {
-          stories: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                title: { type: 'string' },
-                url: { type: 'string' },
-                ticker: { type: 'string' },
-                publishedAt: { type: ['string', 'null'] },
-                summary: { type: 'string' },
-              },
-              required: ['title', 'url'],
-            },
-          },
-        },
-        required: ['stories'],
-      },
-    },
-  };
-
+  if (!(await checkSupabase())) return [];
+  const tickerSet = new Set((tickers || []).map((t) => String(t).toUpperCase()));
+  const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
   try {
-    const resp = await window.SignalAIApi.call({
-      model: 'sonar',
-      system,
-      prompt,
-      max_tokens: 2000,
-      response_format,
-      timeout_ms: 20000,
-    });
-    if (!resp || !resp.ok) {
-      console.warn('Perplexity news fetch failed:', (resp && resp.error) || 'no response');
-      return [];
-    }
-    const parsed = window.SignalAIApi.parseJsonLoose(resp.content);
-    const list = Array.isArray(parsed) ? parsed
-      : (parsed && Array.isArray(parsed.stories) ? parsed.stories : null);
-    if (!list) {
-      console.warn('Perplexity news fetch failed: malformed JSON response');
-      return [];
-    }
-    const covUpper = cov.map((t) => t.toUpperCase());
-    const out = [];
-    for (const s of list) {
-      if (!s || !s.title || !s.url) continue;
-      const url = String(s.url).trim();
-      if (!/^https?:\/\//i.test(url)) continue;
-      let publishedAt = null;
-      if (s.publishedAt) {
-        const d = new Date(s.publishedAt);
-        if (!isNaN(d.getTime())) publishedAt = d.toISOString();
-      }
-      const rawTicker = String(s.ticker || '').toUpperCase().replace(/[^A-Z0-9.]/g, '');
-      const ticker = covUpper.includes(rawTicker) ? rawTicker : '';
-      out.push({
-        title: String(s.title).trim(),
-        url,
-        source: sourceFromUrl(url),
-        publishedAt,
-        ticker,
-        body: s.summary ? String(s.summary).trim() : '',
-      });
-    }
-    return out;
+    const rows = await supabaseGet(
+      'news_items',
+      `select=*&published_at=gte.${since}&order=published_at.desc&limit=100`,
+      200
+    );
+    return (rows || [])
+      .filter((r) => Array.isArray(r.tickers) && r.tickers.some((t) => tickerSet.has(String(t).toUpperCase())))
+      .map((r) => ({
+        title: r.title,
+        body: r.body || '',
+        url: r.url || '',
+        source: r.source || (r.url_host ? r.url_host : 'News'),
+        publishedAt: r.published_at,
+        ticker: r.ticker || (Array.isArray(r.tickers) && r.tickers[0]) || '',
+        tickers: r.tickers || [],
+        signal: r.signal,
+      }));
   } catch (e) {
-    console.warn('Perplexity news fetch failed:', e.message);
+    console.warn('Supabase news fetch failed:', e && e.message);
     return [];
   }
 }
