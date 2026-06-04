@@ -68,6 +68,26 @@ def load_intel_results():
     }
 
 
+def _resolve_source(rvc, actual_key, *legacy_source_keys):
+    """Resolve per-field provenance for a card metric.
+
+    Prefers the canonical ``<field>_source`` sibling, then any legacy source key
+    the backfills historically wrote (rev_actual_source, eps_consensus_source,
+    etc.). Returns None when the actual itself is absent (nothing to attribute)
+    or when no source was ever recorded -- never a fabricated label.
+    """
+    if rvc.get(actual_key) is None:
+        return None
+    canonical = f"{actual_key}_source"
+    src = rvc.get(canonical)
+    if src:
+        return src
+    for k in legacy_source_keys:
+        if rvc.get(k):
+            return rvc[k]
+    return None
+
+
 def build_post_card(ticker, intel_results):
     """Build the POST-earnings card payload for one ticker from intel.
 
@@ -81,10 +101,25 @@ def build_post_card(ticker, intel_results):
         'revenue_surprise_pct': rvc.get('in_quarter_rev_surprise_pct'),
         'eps_actual': rvc.get('in_quarter_eps_actual'),
         'eps_surprise_pct': rvc.get('in_quarter_eps_surprise_pct'),
-        'revenue_source': rvc.get('in_quarter_rev_actual_source'),
-        'eps_source': rvc.get('in_quarter_eps_actual_source'),
+        'revenue_source': _resolve_source(
+            rvc, 'in_quarter_rev_actual', 'rev_actual_source', 'rev_consensus_source'
+        ),
+        'eps_source': _resolve_source(
+            rvc, 'in_quarter_eps_actual', 'eps_actual_source', 'eps_consensus_source'
+        ),
     }
     card.update({k: entry.get(k) for k in GUIDANCE_KEYS})
+
+    # No-fabrication guard (Guardrail C): a required POST field that is missing
+    # stays None (renders "n/a" in the card) and we warn, naming ticker+field.
+    # We NEVER substitute a default number -- a missing actual must surface as a
+    # gap, never as a fake value. Honors the DATA INTEGRITY MANDATE.
+    for field in ('revenue_actual', 'eps_actual'):
+        if card[field] is None:
+            print(
+                f"[WARN] {ticker}: {field} missing in intel -> emitting None "
+                f"(card renders n/a; value never fabricated)"
+            )
     return card
 
 

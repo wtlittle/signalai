@@ -76,6 +76,47 @@ def backfill_ticker(ticker, fh=None):
         _run(["python3", str(ROOT_DIR / "scripts" / script), "--ticker", ticker], fh)
 
 
+def _verify_ticker(ticker, fh=None):
+    """Run the completeness verifier scoped to one ticker.
+
+    Returns True when the ticker satisfies the schema (verifier exit 0), False
+    on a schema violation. The verifier itself logs the missing fields to
+    cron_tracking/earnings_intel_gaps.json and stderr.
+    """
+    rc = _run(
+        ["python3", str(ROOT_DIR / "scripts" / "verify_earnings_intel_completeness.py"),
+         "--ticker", ticker],
+        fh,
+    )
+    return rc == 0
+
+
+def backfill_with_repull(ticker, fh=None):
+    """Backfill a ticker, then re-pull ONCE if the verifier still fails.
+
+    Guardrail D: a single upstream API hiccup (Finnhub stale quarter, yfinance
+    10-Q not yet filed, a dropped sonar response) otherwise leaves a card
+    permanently broken until the next scheduled run. After the first chain we
+    resync intel so the verifier sees the freshly written fields, check the
+    schema, and if it is still violated run the chain a second and final time.
+    """
+    backfill_ticker(ticker, fh)
+    # Resync so note-derived fields land before we verify.
+    step_sync_earnings_intel()
+    if _verify_ticker(ticker, fh):
+        return
+    _log(f"  [RE-PULL] {ticker} failed schema verification after first chain -- "
+         f"re-running backfill chain once.", fh)
+    backfill_ticker(ticker, fh)
+    step_sync_earnings_intel()
+    if _verify_ticker(ticker, fh):
+        _log(f"  [RE-PULL] {ticker} recovered after second chain.", fh)
+    else:
+        _log(f"  [RE-PULL] {ticker} STILL failing schema after re-pull -- "
+             f"leaving fields null (renders n/a; never fabricated). "
+             f"See cron_tracking/earnings_intel_gaps.json.", fh)
+
+
 def _commit_and_push(fh=None):
     """Stage the data outputs (NOT pending_tasks.json) and push if changed."""
     paths = [
@@ -136,7 +177,8 @@ def run(only_ticker=None):
             return []
 
         for ticker in targets:
-            backfill_ticker(ticker, fh)
+            # Guardrail D: backfill, then auto re-pull once on schema violation.
+            backfill_with_repull(ticker, fh)
 
         _log("\n  --- resync earnings_intel from notes ---", fh)
         step_sync_earnings_intel()

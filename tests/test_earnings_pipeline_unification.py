@@ -158,3 +158,104 @@ def test_build_calendar_recent_uses_intel(monkeypatch):
     assert row["ticker"] == "PANW"
     assert row["revenue_actual"] == "$2.5B"
     assert row["eps_actual"] == "$0.89"
+
+
+# ---------------------------------------------------------------------------
+# Guardrail A/C: per-field provenance + no-fabrication
+# ---------------------------------------------------------------------------
+
+def test_build_post_card_resolves_canonical_source():
+    mod = _load_build_module()
+    intel_results = {
+        "PANW": {
+            "results_vs_consensus": {
+                "in_quarter_rev_actual": "$3.00B",
+                "in_quarter_rev_actual_source": "perplexity",
+                "in_quarter_eps_actual": "$0.85",
+                "in_quarter_eps_actual_source": "finnhub",
+            },
+        }
+    }
+    card = mod.build_post_card("PANW", intel_results)
+    assert card["revenue_source"] == "perplexity"
+    assert card["eps_source"] == "finnhub"
+
+
+def test_build_post_card_falls_back_to_legacy_source_names():
+    # RC-PROVENANCE-NAME-MISMATCH: existing records carry rev_actual_source /
+    # eps_consensus_source (legacy). build must still surface them so the card
+    # tooltip works without rewriting earnings_intel.json.
+    mod = _load_build_module()
+    intel_results = {
+        "MDB": {
+            "results_vs_consensus": {
+                "in_quarter_rev_actual": "$687.62M",
+                "rev_actual_source": "yfinance_quarterly_income_stmt",
+                "in_quarter_eps_actual": "$1.32",
+                "eps_consensus_source": "finnhub_stock_earnings",
+            },
+        }
+    }
+    card = mod.build_post_card("MDB", intel_results)
+    assert card["revenue_source"] == "yfinance_quarterly_income_stmt"
+    assert card["eps_source"] == "finnhub_stock_earnings"
+
+
+def test_no_source_when_actual_missing():
+    # A source must NEVER be attributed to a value that does not exist.
+    mod = _load_build_module()
+    intel_results = {
+        "PSTG": {
+            "results_vs_consensus": {
+                # No rev/eps actual at all, but a stray legacy source key.
+                "rev_actual_source": "yfinance_quarterly_income_stmt",
+            },
+        }
+    }
+    card = mod.build_post_card("PSTG", intel_results)
+    assert card["revenue_actual"] is None
+    assert card["revenue_source"] is None
+    assert card["eps_actual"] is None
+    assert card["eps_source"] is None
+
+
+def test_no_numeric_card_field_when_intel_value_is_none():
+    """Core DATA INTEGRITY assertion (Guardrail C): when an intel actual is
+    None, the corresponding card field must be None -- never a literal number,
+    zero, or any fabricated default. Asserts across a matrix of partial intel.
+    """
+    mod = _load_build_module()
+    cases = [
+        {},  # no results_vs_consensus at all
+        {"results_vs_consensus": {}},  # empty envelope
+        {"results_vs_consensus": {"in_quarter_eps_actual": "$1.16"}},  # rev only missing
+        {"results_vs_consensus": {"in_quarter_rev_actual": "$264M"}},  # eps only missing
+    ]
+    numeric_fields = (
+        "revenue_actual", "eps_actual",
+        "revenue_surprise_pct", "eps_surprise_pct",
+    )
+    for entry in cases:
+        card = mod.build_post_card("X", {"X": entry})
+        rvc = entry.get("results_vs_consensus") or {}
+        for field, intel_key in (
+            ("revenue_actual", "in_quarter_rev_actual"),
+            ("eps_actual", "in_quarter_eps_actual"),
+            ("revenue_surprise_pct", "in_quarter_rev_surprise_pct"),
+            ("eps_surprise_pct", "in_quarter_eps_surprise_pct"),
+        ):
+            if rvc.get(intel_key) is None:
+                assert card[field] is None, (
+                    f"{field} fabricated a value ({card[field]!r}) when intel "
+                    f"{intel_key} was None"
+                )
+        # And whatever IS present must equal the intel value verbatim (no coercion).
+        for field, intel_key in (
+            ("revenue_actual", "in_quarter_rev_actual"),
+            ("eps_actual", "in_quarter_eps_actual"),
+        ):
+            if rvc.get(intel_key) is not None:
+                assert card[field] == rvc[intel_key]
+        # Sanity: ensure no numeric field is a bare 0 substituted for a gap.
+        for field in numeric_fields:
+            assert card[field] != 0
