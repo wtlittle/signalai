@@ -137,8 +137,8 @@ SYSTEM_PROMPT = (
     "STRICTLY EXCLUDE: listicles, 'X things to know' / 'what to watch' roundups, "
     "pure stock-price or technical-trading commentary, opinion/predictions with "
     "no new fact, and anything older than 48 hours. "
-    "Prefer primary publishers (Bloomberg, Reuters, Financial Times, WSJ, CNBC, "
-    "company press releases) and link the original article, not an aggregator. "
+    "Include the most authoritative URL available for each story — primary publisher "
+    "when accessible, reputable secondary source otherwise. "
     "Return ONLY a single valid JSON object. No markdown fences, no commentary."
 )
 
@@ -364,6 +364,10 @@ def normalize_item(item: dict[str, Any], coverage: set[str]) -> dict[str, Any] |
         return None
 
     url = (item.get("url") or "").strip()
+    if not url:
+        # Placeholder-style emissions ("Insufficient live-news coverage...")
+        # arrive with an empty URL; drop them regardless of title wording.
+        return None
     url_host = extract_host(url)
     if _is_filler(title, url_host):
         return None
