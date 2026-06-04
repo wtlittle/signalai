@@ -766,6 +766,47 @@ function getSubsector(ticker) {
   return SUBSECTOR_MAP[ticker] || 'Other';
 }
 
+// Subsectors where Enterprise Value (and EV/Sales, EV/FCF) is not a meaningful
+// metric. Banks fund themselves with deposits and short-term borrowings, so the
+// marketCap + debt - cash math that produces EV does not carry the same meaning
+// as for non-financial corporates. We render "n/a" in these cells (with a
+// tooltip) instead of a misleading number, and exclude them from the median
+// FY1 EV/Sales KPI tile. Covers both the SUBSECTOR_MAP labels (Diversified /
+// Investment / Regional Banking) and the rolled-up "Banking" group label.
+const EV_NON_MEANINGFUL_SUBSECTORS = new Set([
+  'Diversified Banking',
+  'Investment Banking',
+  'Regional Banking',
+  'Banking',
+  'Banks - Diversified',
+  'Banks - Regional',
+]);
+
+function isEvNonMeaningfulSubsector(subsector) {
+  if (!subsector) return false;
+  return EV_NON_MEANINGFUL_SUBSECTORS.has(subsector);
+}
+
+function isEvNonMeaningfulTicker(ticker) {
+  return isEvNonMeaningfulSubsector(getSubsector(ticker));
+}
+
+// Tickers whose listing currency differs from their financial-statement
+// currency (typical of ADRs / dual-listings). Yahoo Finance returns
+// enterpriseValue, totalRevenue, totalCash, totalDebt and free/operating
+// cashflow in the REPORTING currency, while marketCap and price are in the
+// LISTING currency. Mixing the two makes EV-based figures unusable — TSM EV
+// showed ~$7.6T because TWD financials were paired with a USD listing. We null
+// those fields for these tickers so the cells render "n/a" rather than an
+// invented number (data-integrity mandate: missing -> null, never fabricate).
+const CURRENCY_MISMATCH_TICKERS = new Set([
+  'TSM',  // TWD financials, USD ADR
+]);
+
+function isCurrencyMismatchTicker(ticker) {
+  return CURRENCY_MISMATCH_TICKERS.has(ticker);
+}
+
 function setSubsectorOverride(ticker, subsector) {
   // Guard: never store undefined/null/empty subsector
   if (!subsector || subsector === 'undefined' || subsector === 'null') return;

@@ -147,9 +147,27 @@ function parseTickerData(ticker, chart, quote) {
   }
 
   // EV
+  // Currency-mismatch ADRs (e.g. TSM): Yahoo reports EV / revenue / cash / debt
+  // / cashflow in the financial-statement currency (TWD) while marketCap and
+  // price are in the listing currency (USD). Mixing them — either by using
+  // Yahoo's EV directly or via the marketCap + debt - cash fallback — produces
+  // a nonsense number (TSM EV showed ~$7.6T). Null the unit-mismatched fields
+  // so the cells render "n/a" instead of an invented value. See utils.js.
+  const _currencyMismatch = (typeof isCurrencyMismatchTicker === 'function')
+    && isCurrencyMismatchTicker(ticker);
+  if (_currencyMismatch) {
+    row.enterpriseValue = null;
+    row.totalRevenue = null;
+    row.totalCash = null;
+    row.totalDebt = null;
+    row.freeCashflow = null;
+    row.operatingCashflow = null;
+    row.enterpriseToRevenue = null;
+    row.enterpriseToEbitda = null;
+  }
   // Sanity guard: yfinance occasionally returns enterpriseValue in a
-  // foreign currency for dual-listed ADRs (TSM in TWD, etc.). When the
-  // raw EV is implausibly large vs the USD market cap (>5x), drop it
+  // foreign currency for dual-listed ADRs not in the explicit list above.
+  // When the raw EV is implausibly large vs the USD market cap (>5x), drop it
   // and let the computed fallback (mcap + debt - cash) take over.
   if (
     row.enterpriseValue && row.marketCap &&
@@ -158,7 +176,7 @@ function parseTickerData(ticker, chart, quote) {
     row.enterpriseValue = null;
   }
   row.ev = row.enterpriseValue;
-  if (!row.ev && row.marketCap) {
+  if (!_currencyMismatch && !row.ev && row.marketCap) {
     row.ev = row.marketCap + (row.totalDebt || 0) - (row.totalCash || 0);
   }
 
