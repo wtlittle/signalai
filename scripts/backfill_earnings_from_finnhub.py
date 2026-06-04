@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 """
+[DEPRECATED] Subsumed by the per-ticker pipeline (automation/pipeline +
+automation/sources/finnhub_source.py). Dormant under the new architecture; kept
+for one cycle for manual debugging. Removal scheduled in a follow-up PR after
+7 days of clean new-pipeline runs.
+
 Backfill the FULL Finnhub earnings triplet onto post_earnings tickers in
 earnings_intel.json from the AUTHORITATIVE Finnhub ``/stock/earnings`` endpoint.
 

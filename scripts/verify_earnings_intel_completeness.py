@@ -41,34 +41,25 @@ INTEL_PATH = ROOT / "earnings_intel.json"
 POST_DIR = ROOT / "notes" / "post_earnings"
 GAPS_PATH = ROOT / "cron_tracking" / "earnings_intel_gaps.json"
 
-# Strict per-ticker schema (Guardrail B). Every post_earnings ticker must carry
-# these results_vs_consensus fields; tickers reported >48h ago that are missing
-# any of them fail the build so bad cards never ship silently.
-REQUIRED_RVC_FIELDS = (
-    "in_quarter_rev_actual",
-    "in_quarter_eps_actual",
-    "in_quarter_rev_surprise_pct",
-    "in_quarter_eps_surprise_pct",
+# Schema-as-contract: the required-field lists come from the ONE pydantic model
+# in automation/pipeline/schema.py so the verifier and the pipeline honor a
+# single definition. Adding/removing a required field there automatically
+# retunes this gate -- there is no second copy to drift.
+sys.path.insert(0, str(ROOT))
+from automation.pipeline.schema import (  # noqa: E402
+    EarningsIntelRecord,
+    GUIDANCE_FIELDS,
+    HISTORY_8Q_REQUIRED_QUARTERS as HISTORY_8Q_REQUIRED,
+    REQUIRED_RVC_FIELDS,
+    history_8q_complete,
+    validate_record,
 )
-GUIDANCE_FIELDS = (
-    "guidanceRevenueDeltaPct",
-    "guidanceEpsDeltaPct",
-    "guidanceEpsDeltaAbs",
-    "guidanceOperatingProfitDeltaPct",
-    "guidanceOperatingProfitDeltaAbs",
-    "guidanceFcfDeltaPct",
-    "guidanceFcfDeltaAbs",
-    "guidanceProfitDeltaPct",
-)
+
 # A ticker reported more than this many hours ago is expected to be fully
 # populated; missing required fields then escalate from a warning to a build
 # failure. Below the threshold (data may still be settling) we only warn.
 HARD_FAIL_HOURS = 48
 GUIDANCE_EXPECTED_HOURS = 24
-# The trailing-8-quarter results array. A POST ticker reported >48h ago must
-# carry a full 8-entry history_8q; null or a short array is the gap that took
-# down the 2026-06-04 daily refresh (ACN/AVGO), so it now hard-fails the build.
-HISTORY_8Q_REQUIRED = 8
 
 
 def _reported_date(rec: dict):
@@ -128,12 +119,21 @@ def schema_check(only: str | None) -> tuple[list[str], list[str], list[dict]]:
         if _reported_date(rec) is None:
             required_missing.append("last_reported_date|last_earnings_date (unparseable)")
 
-        # history_8q: the trailing-8Q results array must be present and full.
-        # null or a short array is a hard gap once the print is >48h old (it is
-        # the exact failure mode that broke the 2026-06-04 refresh). It is a
-        # CORE field, so it escalates with required_missing below.
+        # Structural cross-check: a record the pipeline wrote must pass the same
+        # pydantic contract the pipeline validated it against. A failure here
+        # means a pipeline bug shipped a malformed record (or a hand-edit broke
+        # the shape) -- always a hard gap regardless of report age.
+        _model, _schema_err = validate_record(rec)
+        if _model is None:
+            required_missing.append(f"schema_invalid ({_schema_err})")
+
+        # history_8q: the trailing-8Q results array must be present and full,
+        # each quarter carrying BOTH a revenue and an EPS actual. The single
+        # definition of "complete 8Q" lives in schema.history_8q_complete, so
+        # the verifier and the pipeline agree on what "full" means. null or a
+        # short array is the exact failure mode that broke the 2026-06-04 refresh.
         history = rec.get("history_8q")
-        if not isinstance(history, list) or len(history) < HISTORY_8Q_REQUIRED:
+        if not history_8q_complete(history):
             n = 0 if not isinstance(history, list) else len(history)
             required_missing.append(
                 f"history_8q ({'null' if history is None else f'{n}/{HISTORY_8Q_REQUIRED} quarters'})"

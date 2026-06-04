@@ -1193,6 +1193,13 @@ async function loadAllData() {
       try { initRibbon(); } catch (e) { console.warn('[ribbon] init failed:', e); }
     }
 
+    // Load pipeline observability artifacts (quarantine.json +
+    // pipeline_status.json) and render the top-of-dashboard health pill.
+    // Fire-and-forget: a failure must not block the data render.
+    if (typeof initPipelineHealth === 'function') {
+      initPipelineHealth().catch((e) => console.warn('[pipeline] init failed:', e));
+    }
+
     // Detect data source and update UI accordingly
     const dsInfo = typeof getDataSourceInfo === 'function' ? getDataSourceInfo() : { source: 'none' };
     const usingSnapshot = dsInfo.source === 'snapshot' &&

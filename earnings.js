@@ -893,9 +893,10 @@ function renderRecentEarnings(recent) {
     // Provenance tooltips (Guardrail F): hover a metric to see its data source.
     const revTitle = _escAttr(_sourceTitle(tokens.revenue, r.revenue_source));
     const epsTitle = _escAttr(_sourceTitle(tokens.eps, r.eps_source));
+    const qBadge = (typeof quarantineBadgeHtml === 'function') ? quarantineBadgeHtml(r.ticker) : '';
     return `<div class="earnings-card reported" data-ticker="${r.ticker}" data-date="${r.earnings_date}" data-type="post">
       <div class="earnings-card-header">
-        <span class="earnings-card-ticker">${r.ticker}${maPill}</span>
+        <span class="earnings-card-ticker">${r.ticker}${maPill}${qBadge}</span>
         <span class="earnings-card-name">${name}</span>
         <span class="earnings-card-date">${r.earnings_date} · ${sinceLabel}${timingLabel}</span>
       </div>

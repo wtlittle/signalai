@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 """
+[DEPRECATED] Subsumed by the per-ticker pipeline (automation/pipeline +
+automation/sources/yfinance_source.py). Dormant under the new architecture; kept
+for one cycle for manual debugging. Removal scheduled in a follow-up PR after
+7 days of clean new-pipeline runs.
+
 Yfinance fallback for revenue ACTUAL on POST cards where Finnhub had no
 revenue data. Reads ``Ticker.quarterly_income_stmt`` -> ``Total Revenue`` row
 and matches the reporting date to ``last_earnings_date`` within a window.

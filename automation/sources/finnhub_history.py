@@ -264,6 +264,43 @@ def _eps_rows(symbol: str) -> dict[tuple[int, int], dict]:
     return rows
 
 
+def fetch_in_quarter(symbol: str) -> dict | None:
+    """Return the most-recently-reported quarter's EPS actual/estimate/surprise.
+
+    Uses /stock/earnings (single consistent analyst basis -> surprisePercent is a
+    trustworthy beat/miss magnitude) via the SAME 10s-timeout-plus-one-retry
+    ``_get`` helper the 8Q reconstruction uses, so all Finnhub traffic flows
+    through one rate-limited path (spec: "All Finnhub calls flow through one
+    helper with 10s timeout + one retry on 429/5xx").
+
+    Returns:
+        {eps_actual, eps_estimate, eps_surprise_pct, period_end} for the latest
+        row, or None if Finnhub has no /stock/earnings data for the symbol.
+
+    DATA INTEGRITY: Finnhub free tier exposes no revenue consensus, so revenue
+    actual / revenue surprise are deliberately NOT returned here -- the caller
+    leaves those for yfinance (revenue actual) and Perplexity (rev consensus),
+    never fabricating them.
+    """
+    symbol = symbol.upper().strip()
+    data = _get("stock/earnings", {"symbol": symbol})
+    if not isinstance(data, list) or not data:
+        return None
+    # /stock/earnings is returned most-recent-first; pick the newest row that
+    # carries a real actual (a future/estimated row has actual=None).
+    rows = [r for r in data if isinstance(r, dict) and r.get("actual") is not None]
+    if not rows:
+        return None
+    rows.sort(key=lambda r: str(r.get("period") or ""), reverse=True)
+    latest = rows[0]
+    return {
+        "eps_actual": latest.get("actual"),
+        "eps_estimate": latest.get("estimate"),
+        "eps_surprise_pct": latest.get("surprisePercent"),
+        "period_end": latest.get("period"),
+    }
+
+
 def fetch_history_8q(symbol: str) -> list[dict] | None:
     """Return the trailing 8 fiscal quarters for ``symbol`` (most recent first).
 

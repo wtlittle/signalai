@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 """
+[DEPRECATED] Subsumed by the per-ticker pipeline (automation/pipeline +
+automation/sources/perplexity_source.py). Dormant under the new architecture;
+kept for one cycle for manual debugging. Removal scheduled in a follow-up PR
+after 7 days of clean new-pipeline runs.
+
 Perplexity sonar backfill for IN-QUARTER revenue consensus on POST cards that
 have a real ``in_quarter_rev_actual`` but no ``in_quarter_rev_surprise_pct``.
 
