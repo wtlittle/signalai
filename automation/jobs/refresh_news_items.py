@@ -10,7 +10,7 @@ read pattern (PR #37).
 
 Pipeline:
     load coverage tickers (utils.js DEFAULT_TICKERS, capped ~50)
-      -> single batched sonar call (model='sonar', max_tokens=3000, 60s)
+      -> single batched sonar call (model='sonar', max_tokens=4000, 60s)
       -> parse structured JSON {title, body, url, source, ticker,
          published_at_iso, signal}
       -> derive url_host + publisher name, id = sha256(url||title)[:16]
@@ -54,7 +54,7 @@ from automation.perplexity.client import _log_pplx_usage  # noqa: E402
 TABLE = "news_items"
 SOURCE_ORIGIN = "perplexity_sonar"
 MODEL = "sonar"  # NOT sonar-deep-research — too expensive at hourly cadence
-MAX_TOKENS = 3000
+MAX_TOKENS = 4000
 TIMEOUT_S = 60
 MAX_TICKERS = 50  # sonar prompt budget
 BASE_URL = "https://api.perplexity.ai/chat/completions"
@@ -66,7 +66,8 @@ PERPLEXITY_API_KEY = (
 )
 
 VALID_SIGNALS = {
-    "earnings", "guidance_up", "guidance_dn", "ma", "analyst", "macro", "general",
+    "earnings", "guidance_up", "guidance_dn", "ma", "analyst",
+    "regulatory", "product", "macro", "general",
 }
 
 # Host -> publisher display name. Capitalized-host fallback handles the rest.
@@ -130,15 +131,17 @@ RESPONSE_FORMAT = {
 
 SYSTEM_PROMPT = (
     "You are a financial news desk editor for a buy-side equity research team. "
-    "Surface notable, significant business news from the last 24-48 hours about "
+    "Surface notable, significant business news from the last 7 days about "
     "the tickers provided. Notable news means: quarterly earnings results, "
     "forward guidance changes, mergers & acquisitions, analyst rating or price "
     "target changes, regulatory or legal actions, and major product launches. "
     "STRICTLY EXCLUDE: listicles, 'X things to know' / 'what to watch' roundups, "
     "pure stock-price or technical-trading commentary, opinion/predictions with "
-    "no new fact, and anything older than 48 hours. "
-    "Include the most authoritative URL available for each story — primary publisher "
-    "when accessible, reputable secondary source otherwise. "
+    "no new fact, and anything older than 7 days. "
+    "Prefer the primary publisher's URL when available; otherwise use the most "
+    "authoritative reputable secondary source. "
+    "Set signal to one of: earnings, guidance_up, guidance_dn, ma, analyst, "
+    "regulatory, product, macro, general. "
     "Return ONLY a single valid JSON object. No markdown fences, no commentary."
 )
 
@@ -149,30 +152,41 @@ SYSTEM_PROMPT = (
 def build_prompt(tickers: list[str]) -> str:
     """Build the user prompt listing coverage tickers and the JSON contract."""
     ticker_list = ", ".join(tickers)
+    today = _dt.datetime.now(_dt.timezone.utc).date().isoformat()
     return (
         f"Coverage tickers: {ticker_list}\n\n"
-        f"Find 15-25 of the most notable, significant business-news stories from "
-        f"the last 24-48 hours about any of these tickers. One story per item; no "
+        f"Find 25-40 of the most notable, significant business-news stories from "
+        f"the last 7 days about any of these tickers. One story per item; no "
         f"duplicates. Return a JSON object with exactly this shape:\n\n"
         f"{{\n"
         f'  "items": [\n'
         f"    {{\n"
         f'      "title": "<headline, no source prefix>",\n'
         f'      "body": "<one-sentence factual summary>",\n'
-        f'      "url": "<direct link to the original article>",\n'
+        f'      "url": "<direct link to the original article (must be non-empty)>",\n'
         f'      "source": "<publisher name, e.g. Bloomberg>",\n'
         f'      "ticker": "<primary ticker symbol from the coverage list>",\n'
         f'      "published_at_iso": "<ISO-8601 timestamp, UTC>",\n'
         f'      "signal": "<one of: earnings, guidance_up, guidance_dn, ma, '
-        f'analyst, macro, general>"\n'
+        f'analyst, regulatory, product, macro, general>"\n'
         f"    }}\n"
         f"  ]\n"
         f"}}\n\n"
+        f"Prefer articles from primary publishers when available — e.g. Reuters, "
+        f"Bloomberg, WSJ, FT, CNBC, Barron's, The Information, Axios, AP, "
+        f"NYT business, MarketWatch, SeekingAlpha (for analyst notes), and "
+        f"company IR newsrooms (e.g. aboutamazon.com). This is a preference, not "
+        f"a hard requirement: include a reputable secondary source rather than "
+        f"dropping a real story or returning a placeholder. "
+        f"Every item MUST have a non-empty url pointing to a real article. "
         f"Set signal to the single best-fitting category. Use guidance_up when "
         f"guidance was raised and guidance_dn when cut. Use ma for merger/"
-        f"acquisition news, analyst for rating/PT changes, macro for "
-        f"sector/regulatory-wide items, and general otherwise. If a field is "
-        f"unknown, use an empty string (never invent a URL or timestamp)."
+        f"acquisition news, analyst for rating/PT changes, regulatory for "
+        f"regulatory/legal actions, product for major product launches, macro for "
+        f"sector-wide items, and general otherwise. "
+        f"Include published_at_iso (ISO-8601, UTC) for every item; if the "
+        f"article's date is unknown, set it to today ({today}). "
+        f"Never invent a URL."
     )
 
 
@@ -386,9 +400,15 @@ def normalize_item(item: dict[str, Any], coverage: set[str]) -> dict[str, Any] |
             tickers.append(sym)
     tickers = list(dict.fromkeys(tickers))  # dedupe, keep order
 
+    fetched_at = _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds")
+    # Never write NULL published_at: PostgREST's gte filter excludes NULLs, so a
+    # row with no publish date is invisible to the 48h client read. When sonar
+    # omits/returns an unparseable date, fall back to fetched_at (≈ now).
+    published_at = _coerce_ts(item.get("published_at_iso")) or fetched_at
+
     return {
         "id": make_id(url, title),
-        "fetched_at": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
+        "fetched_at": fetched_at,
         "source_origin": SOURCE_ORIGIN,
         "ticker": primary or (tickers[0] if tickers else None),
         "tickers": tickers,
@@ -397,7 +417,7 @@ def normalize_item(item: dict[str, Any], coverage: set[str]) -> dict[str, Any] |
         "url": url or None,
         "url_host": url_host or None,
         "source": source,
-        "published_at": _coerce_ts(item.get("published_at_iso")),
+        "published_at": published_at,
         "signal": _coerce_signal(item.get("signal")),
     }
 
