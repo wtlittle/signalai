@@ -134,6 +134,8 @@ def main() -> int:
 
         rvc["in_quarter_rev_actual"] = _money_str(rev_actual)
         rvc["rev_actual_source"] = "yfinance_quarterly_income_stmt"
+        # Canonical per-field provenance sibling build_earnings_json reads.
+        rvc["in_quarter_rev_actual_source"] = "yfinance"
         written += 1
         print(f"  [WRITE] {t}: rev_actual={_money_str(rev_actual)} (Δ{best_diff}d)")
 

@@ -192,6 +192,17 @@ async function enrichRecentFromIntel(recent) {
     if (rvc) {
       if (!r.revenue_actual && rvc.in_quarter_rev_actual) r.revenue_actual = rvc.in_quarter_rev_actual;
       if (!r.eps_actual && rvc.in_quarter_eps_actual) r.eps_actual = rvc.in_quarter_eps_actual;
+      // Per-field provenance (Guardrail F): resolve the canonical <field>_source
+      // sibling, falling back to the legacy source key names the backfills
+      // historically wrote, so the card tooltip can show finnhub / yfinance /
+      // perplexity / note / manual. Only attribute a source when the actual
+      // exists -- never label a value that is not there.
+      if (!r.revenue_source && rvc.in_quarter_rev_actual) {
+        r.revenue_source = rvc.in_quarter_rev_actual_source || rvc.rev_actual_source || rvc.rev_consensus_source || null;
+      }
+      if (!r.eps_source && rvc.in_quarter_eps_actual) {
+        r.eps_source = rvc.in_quarter_eps_actual_source || rvc.eps_actual_source || rvc.eps_consensus_source || null;
+      }
       if (r.in_quarter_rev_surprise_pct == null && rvc.in_quarter_rev_surprise_pct != null) {
         r.in_quarter_rev_surprise_pct = rvc.in_quarter_rev_surprise_pct;
       }
@@ -361,7 +372,42 @@ function renderEarningsCard(card) {
   // stock_reaction_pct. safeReaction returns 'n/a' when the field is genuinely
   // missing; it never substitutes a guessed/remembered value.
   const reaction = safeReaction(c.stock_reaction_pct);
+
+  // Render audit (Guardrail E / DATA INTEGRITY MANDATE): every rendered actual
+  // must originate from the data layer, not a client-side fallback. A rendered
+  // value is legitimate only when it is exactly 'n/a' OR it equals the
+  // data-layer field it claims to represent. If a forbidden token (NaN /
+  // undefined / null / Infinity / "$$") ever reaches a metric, surface it as a
+  // console warning rather than letting a fake number ship silently.
+  const audit = (label, rendered, raw) => {
+    if (rendered === 'n/a') return;
+    if (FORBIDDEN_DISPLAY_TOKENS.some(tok => String(rendered).indexOf(tok) !== -1)) {
+      console.warn(`[earnings-card audit] ${label} rendered forbidden token: ${rendered} (raw=${raw})`);
+    }
+    if (raw == null || raw === '' || raw === '—' || raw === '--') {
+      console.warn(`[earnings-card audit] ${label} rendered "${rendered}" but data-layer value is empty -- possible fabricated fallback`);
+    }
+  };
+  audit('revenue', revenue, c.revenue_actual);
+  audit('eps', eps, c.eps_actual);
+
   return { revenue, eps, reaction, revSurprisePct, epsSurprisePct };
+}
+
+// _sourceTitle: build the title= tooltip text for a card metric (Guardrail F).
+// Shows where the rendered value came from so a future debugging session is
+// instant: hover -> "Source: finnhub" vs "Source: manual" vs "Source: missing".
+// When the value is n/a we say "missing"; we never invent a source for a value
+// that does not exist.
+function _sourceTitle(displayValue, source) {
+  if (displayValue === 'n/a' || displayValue == null) return 'Source: missing';
+  if (!source) return 'Source: unknown';
+  return `Source: ${source}`;
+}
+
+// HTML-escape a string for safe inclusion in a title= attribute.
+function _escAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 // Render a compact beat/miss span: "+2.1% beat" (green) / "-0.8% miss" (red),
@@ -844,6 +890,9 @@ function renderRecentEarnings(recent) {
     const timingLabel = (r.timing && r.timing !== 'TBD') ? ` · ${r.timing}` : '';
 
     const maPill = (window.MaStatus && window.MaStatus.pillHtml) ? window.MaStatus.pillHtml(r.ticker, { compact: true }) : '';
+    // Provenance tooltips (Guardrail F): hover a metric to see its data source.
+    const revTitle = _escAttr(_sourceTitle(tokens.revenue, r.revenue_source));
+    const epsTitle = _escAttr(_sourceTitle(tokens.eps, r.eps_source));
     return `<div class="earnings-card reported" data-ticker="${r.ticker}" data-date="${r.earnings_date}" data-type="post">
       <div class="earnings-card-header">
         <span class="earnings-card-ticker">${r.ticker}${maPill}</span>
@@ -853,12 +902,12 @@ function renderRecentEarnings(recent) {
       <div class="earnings-card-metrics">
         <div class="earnings-metric">
           <span class="metric-label">Rev</span>
-          <span class="metric-value">${tokens.revenue}</span>
+          <span class="metric-value" title="${revTitle}">${tokens.revenue}</span>
           ${_fmtBeatMiss(revSurprise)}
         </div>
         <div class="earnings-metric">
           <span class="metric-label">EPS</span>
-          <span class="metric-value">${tokens.eps}</span>
+          <span class="metric-value" title="${epsTitle}">${tokens.eps}</span>
           ${_fmtBeatMiss(epsSurprise)}
         </div>
       </div>

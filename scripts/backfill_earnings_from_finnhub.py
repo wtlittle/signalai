@@ -192,6 +192,8 @@ def backfill(only: str | None, dry_run: bool):
                 if surp is not None:
                     rvc["in_quarter_eps_surprise_pct"] = surp
                 rvc["eps_consensus_source"] = "finnhub_stock_earnings"
+                # Canonical per-field provenance sibling build_earnings_json reads.
+                rvc["in_quarter_eps_actual_source"] = "finnhub"
                 eps_written.append(tk)
                 changed = True
 
@@ -209,6 +211,8 @@ def backfill(only: str | None, dry_run: bool):
                 if rev_surp is not None:
                     rvc["in_quarter_rev_surprise_pct"] = rev_surp
                 rvc["rev_consensus_source"] = "finnhub_stock_earnings"
+                # Canonical per-field provenance sibling build_earnings_json reads.
+                rvc["in_quarter_rev_actual_source"] = "finnhub"
                 rev_written.append(tk)
                 changed = True
 

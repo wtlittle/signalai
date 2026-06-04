@@ -799,6 +799,16 @@ def build_post_intel(ticker: str, entry: dict, note_path: Path) -> dict:
         "signal_changes": [],
     }
     if results_envelope:
+        # Per-field provenance: any actual extracted from the note envelope is
+        # note-sourced unless the envelope already names a more specific source.
+        # build_earnings_json reads the canonical <field>_source siblings; older
+        # envelopes that predate this convention get backfilled to "note" here so
+        # the card can always show where a value came from. Existing source values
+        # are preserved, never overwritten.
+        if results_envelope.get("in_quarter_rev_actual") is not None:
+            results_envelope.setdefault("in_quarter_rev_actual_source", "note")
+        if results_envelope.get("in_quarter_eps_actual") is not None:
+            results_envelope.setdefault("in_quarter_eps_actual_source", "note")
         rec["results_vs_consensus"] = results_envelope
     if guide_envelope:
         rec["guide_vs_consensus"] = guide_envelope

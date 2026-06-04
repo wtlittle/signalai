@@ -280,8 +280,12 @@ def main():
                 changed = True
 
         _set(rvc, "in_quarter_rev_actual", _fmt_actual(rev_raw))
+        if rvc.get("in_quarter_rev_actual") is not None:
+            _set(rvc, "in_quarter_rev_actual_source", "note")
         _set(rvc, "in_quarter_rev_surprise_pct", rev_surp)
         _set(rvc, "in_quarter_eps_actual", _fmt_actual(eps_raw))
+        if rvc.get("in_quarter_eps_actual") is not None:
+            _set(rvc, "in_quarter_eps_actual_source", "note")
         _set(rvc, "in_quarter_eps_surprise_pct", eps_surp)
         _set(gvc, "fy_rev_change_vs_consensus_pct", fy_rev_guide)
 
