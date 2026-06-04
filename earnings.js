@@ -119,31 +119,51 @@ async function enrichRecentFromIntel(recent) {
 
   recent.forEach(r => {
     const intel = intelData.tickers[r.ticker];
-    if (!intel || !intel.post_earnings_review || intel.post_earnings_review.active !== true) return;
-    const rev = intel.post_earnings_review;
-    const bullets = rev.what_happened_bullets || [];
+    if (!intel) return;
 
-    // Revenue actual
-    if (!r.revenue_actual) {
-      for (const b of bullets) {
-        const v = parseMetricBullet(b, /^revenue\b/i);
-        if (v) { r.revenue_actual = v; break; }
+    // note_status drives the secondary card line and the print/call note body.
+    // Surface it (and the timing flag) onto the card record regardless of
+    // whether a rich post_earnings_review exists yet — a print_reaction ticker
+    // has actuals + a short note but no review block.
+    if (r.note_status == null && intel.note_status != null) {
+      r.note_status = intel.note_status;
+    }
+    if ((r.timing == null || r.timing === 'TBD') && intel.timing) {
+      r.timing = intel.timing;
+    }
+    // Print/call reaction note: prefer the short reaction note as the card
+    // body when no richer post_earnings_review headline is present.
+    if (!r.stock_reaction && intel.reaction_note) {
+      r.stock_reaction = String(intel.reaction_note).slice(0, 220);
+    }
+
+    const rev = (intel.post_earnings_review && intel.post_earnings_review.active === true)
+      ? intel.post_earnings_review
+      : null;
+    if (rev) {
+      const bullets = rev.what_happened_bullets || [];
+      // Revenue actual
+      if (!r.revenue_actual) {
+        for (const b of bullets) {
+          const v = parseMetricBullet(b, /^revenue\b/i);
+          if (v) { r.revenue_actual = v; break; }
+        }
       }
-    }
-    // EPS actual (look for "EPS" or "Adjusted EPS" bullet)
-    if (!r.eps_actual) {
-      for (const b of bullets) {
-        const v = parseMetricBullet(b, /\beps\b/i);
-        if (v) { r.eps_actual = v; break; }
+      // EPS actual (look for "EPS" or "Adjusted EPS" bullet)
+      if (!r.eps_actual) {
+        for (const b of bullets) {
+          const v = parseMetricBullet(b, /\beps\b/i);
+          if (v) { r.eps_actual = v; break; }
+        }
       }
-    }
-    // Stock reaction pct — prominent number from post_earnings_review
-    if (rev.stock_reaction_pct != null && r.stock_reaction_pct == null) {
-      r.stock_reaction_pct = rev.stock_reaction_pct;
-    }
-    // Stock reaction fallback — use takeaways_headline so card body isn't "No data"
-    if (!r.stock_reaction && rev.takeaways_headline) {
-      r.stock_reaction = rev.takeaways_headline.slice(0, 180);
+      // Stock reaction pct — prominent number from post_earnings_review
+      if (rev.stock_reaction_pct != null && r.stock_reaction_pct == null) {
+        r.stock_reaction_pct = rev.stock_reaction_pct;
+      }
+      // Stock reaction fallback — use takeaways_headline so card body isn't "No data"
+      if (!r.stock_reaction && rev.takeaways_headline) {
+        r.stock_reaction = rev.takeaways_headline.slice(0, 180);
+      }
     }
     // Fiscal quarter inference from earnings_date if missing
     if (!r.fiscal_quarter && r.earnings_date) {
@@ -881,13 +901,19 @@ function renderRecentEarnings(recent) {
     const fyGuideDelta = (typeof r.fy_rev_guide_change_vs_consensus_pct === 'number')
       ? r.fy_rev_guide_change_vs_consensus_pct
       : (typeof r.fy_rev_change_vs_consensus_pct === 'number' ? r.fy_rev_change_vs_consensus_pct : null);
-    // Human-friendly "days since" phrase:
-    //   0 → "Reported today", 1 → "Reported yesterday", n → "nd ago"
-    let sinceLabel;
-    if (r.days_since === 0) sinceLabel = 'Reported today';
-    else if (r.days_since === 1) sinceLabel = 'Reported yesterday';
-    else sinceLabel = `${r.days_since}d ago`;
-    const timingLabel = (r.timing && r.timing !== 'TBD') ? ` · ${r.timing}` : '';
+    // Timing + wall-clock aware label. earningsCardLabel (utils.js) keeps an
+    // AMC reporter future-tense ("Reports today · AMC") until 4:05 PM ET and a
+    // BMO reporter until 9:30 AM ET, then flips to "Reported today · …". It
+    // reads record.report_date, so map the card's earnings_date onto it.
+    const _labelRecord = { report_date: r.earnings_date, timing: r.timing, note_status: r.note_status };
+    const cardLabel = (typeof earningsCardLabel === 'function')
+      ? earningsCardLabel(_labelRecord)
+      : (r.days_since === 0 ? 'Reported today' : r.days_since === 1 ? 'Reported yesterday' : `${r.days_since}d ago`);
+    // Secondary note-status line (replaces the old "Awaiting post-earnings note"
+    // placeholder): print_reaction / call_reaction / stale / pre_earnings.
+    const noteStatusLabel = (typeof earningsNoteStatusLabel === 'function')
+      ? earningsNoteStatusLabel(_labelRecord)
+      : '';
 
     const maPill = (window.MaStatus && window.MaStatus.pillHtml) ? window.MaStatus.pillHtml(r.ticker, { compact: true }) : '';
     // Provenance tooltips (Guardrail F): hover a metric to see its data source.
@@ -898,7 +924,7 @@ function renderRecentEarnings(recent) {
       <div class="earnings-card-header">
         <span class="earnings-card-ticker">${r.ticker}${maPill}${qBadge}</span>
         <span class="earnings-card-name">${name}</span>
-        <span class="earnings-card-date">${r.earnings_date} · ${sinceLabel}${timingLabel}</span>
+        <span class="earnings-card-date">${r.earnings_date} · ${cardLabel}</span>
       </div>
       <div class="earnings-card-metrics">
         <div class="earnings-metric">
@@ -917,7 +943,9 @@ function renderRecentEarnings(recent) {
       ${r.fiscal_quarter ? `<div class="earnings-card-fq">${r.fiscal_quarter}</div>` : ''}
       <div class="earnings-card-reaction-row">
         <span class="reaction-pct ${tokens.reaction.direction}">${tokens.reaction.display} post-print</span>
-        ${r.stock_reaction ? `<span class="reaction-text">${r.stock_reaction}</span>` : (!tokens.reaction.available ? `<span class="reaction-text muted">Awaiting post-earnings note</span>` : '')}
+        ${r.stock_reaction
+          ? `<span class="reaction-text">${r.stock_reaction}</span>`
+          : (noteStatusLabel ? `<span class="reaction-text muted note-status-${(r.note_status || 'pre_earnings')}">${noteStatusLabel}</span>` : (!tokens.reaction.available ? `<span class="reaction-text muted">Awaiting post-earnings note</span>` : ''))}
       </div>
       <div class="earnings-card-footer">
         <span class="earnings-card-inflection-slot" data-ticker="${r.ticker}"></span>

@@ -59,6 +59,17 @@ FOOL_DELAY_SECS        = float(os.environ.get("FOOL_DELAY_SECS", "2.0"))  # poli
 
 FOOL_SEARCH_URL = "https://www.fool.com/earnings-call-transcripts/?ticker={ticker}"
 
+# finance_earnings_transcript connector (priority 1 / PRIMARY). Reached through
+# the preinstalled ``external-tool`` CLI (subprocess), exactly like
+# PerplexityFinanceSource — there is no agent runtime in the cron, so the
+# platform connector is called programmatically. A transcript is accepted only
+# when it is both substantial (>= MIN chars) AND for the target earnings_date
+# (never a stale prior-quarter transcript).
+FINANCE_SOURCE_ID       = "finance"
+FINANCE_TRANSCRIPT_TOOL = "finance_earnings_transcript"
+FINANCE_TIMEOUT         = int(os.environ.get("FINANCE_TOOL_TIMEOUT", "60"))
+MIN_TRANSCRIPT_CHARS    = int(os.environ.get("MIN_TRANSCRIPT_CHARS", "3000"))
+
 SYSTEM_PROMPT = (
     "You are a senior buy-side equity research analyst. "
     "Your job is to distill earnings call transcripts into structured, "
@@ -174,6 +185,95 @@ def _get_post_earnings_tickers() -> list[dict]:
         if days <= MAX_POST_EARNINGS_DAYS:
             results.append(entry)
     return results
+
+
+# ---------------------------------------------------------------------------
+# finance_earnings_transcript connector (PRIMARY source)
+# ---------------------------------------------------------------------------
+def _call_finance_tool(tool_name: str, args: dict, timeout: int = FINANCE_TIMEOUT) -> dict:
+    """Call one Perplexity Finance tool through the external-tool CLI.
+
+    Mirrors automation/sources/perplexity_finance_source.py::_call_finance so
+    the connector is reached the same way everywhere. Raises RuntimeError on a
+    non-zero exit so the caller can fall through to the next source.
+    """
+    import subprocess
+    payload = json.dumps({
+        "source_id": FINANCE_SOURCE_ID,
+        "tool_name": tool_name,
+        "arguments": args,
+    })
+    proc = subprocess.run(
+        ["external-tool", "call", payload],
+        capture_output=True,
+        text=True,
+        timeout=timeout,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"external-tool {tool_name} exit {proc.returncode}: "
+            f"{(proc.stderr or proc.stdout).strip()[:300]}"
+        )
+    return json.loads(proc.stdout)
+
+
+def _finance_content_text(payload: dict) -> str | None:
+    """Extract the markdown ``content`` string from a connector payload.
+
+    Connectors return ``content`` as either a plain string or a list of
+    ``{type, text}`` blocks; accept both (same as perplexity_finance_source).
+    """
+    content = payload.get("content")
+    if isinstance(content, str):
+        return content or None
+    if isinstance(content, list):
+        parts = [
+            blk.get("text", "")
+            for blk in content
+            if isinstance(blk, dict) and blk.get("text")
+        ]
+        joined = "\n".join(p for p in parts if p)
+        return joined or None
+    return None
+
+
+def _fetch_finance_transcript(
+    ticker: str, earnings_date: str
+) -> tuple[str | None, str | None]:
+    """PRIMARY transcript source: the platform finance_earnings_transcript tool.
+
+    Returns ``(transcript_text, payload_earnings_date)``. The transcript is
+    accepted by the caller only when ``len(text) >= MIN_TRANSCRIPT_CHARS`` AND
+    the returned earnings_date matches the target — otherwise the caller treats
+    it as empty/stale and falls through to Motley Fool. Any failure (no
+    credential, CLI non-zero, unparseable payload) returns ``(None, None)`` so
+    the chain degrades gracefully and never raises into the harvest loop.
+    """
+    try:
+        payload = _call_finance_tool(
+            FINANCE_TRANSCRIPT_TOOL,
+            {"ticker_symbols": [ticker.upper()], "as_of": earnings_date, "limit": 1},
+        )
+    except Exception as exc:
+        print(f"  [FINANCE] {ticker}: connector call failed: {exc} — falling back")
+        return None, None
+
+    text = _finance_content_text(payload)
+    if not text:
+        print(f"  [FINANCE] {ticker}: empty content — falling back")
+        return None, None
+
+    # The connector reports the transcript's earnings_date either at the top
+    # level or in a meta block; accept either, default to the target so a
+    # connector that omits it is not auto-rejected.
+    payload_date = (
+        payload.get("earnings_date")
+        or (payload.get("meta") or {}).get("earnings_date")
+        or None
+    )
+    print(f"  [FINANCE ✓] {ticker}: {len(text):,} chars "
+          f"(date={payload_date or 'n/a'})")
+    return text, payload_date
 
 
 # ---------------------------------------------------------------------------
@@ -376,6 +476,50 @@ def _transcript_json_schema_str(
 
 
 # ---------------------------------------------------------------------------
+# Source chain: finance connector (PRIMARY) -> Motley Fool -> sonar-native
+# ---------------------------------------------------------------------------
+# Canonical source-chain order. Used for documentation and assertable in tests.
+TRANSCRIPT_SOURCE_CHAIN = ("finance_earnings_transcript", "motley_fool", "perplexity_native")
+
+
+def _acquire_transcript(
+    ticker: str, company: str, earnings_date: str
+) -> tuple[str | None, str, str | None]:
+    """Run the transcript source chain in priority order.
+
+    Returns ``(transcript_text, source, transcript_url)``.
+
+      1. finance_earnings_transcript (PRIMARY) — accepted only when the text is
+         >= MIN_TRANSCRIPT_CHARS AND the returned earnings_date matches target.
+      2. Motley Fool scrape (SECONDARY) — fires when (1) is empty/stale.
+      3. perplexity_native (LAST) — no source text; signalled by an empty text
+         with source ``perplexity_native`` so the caller uses the research prompt.
+
+    ``transcript_text`` is None only for the perplexity_native tail; ``source``
+    always names which rung produced (or will produce) the content.
+    """
+    # Rung 1: platform finance connector (PRIMARY).
+    fin_text, fin_date = _fetch_finance_transcript(ticker, earnings_date)
+    if fin_text and len(fin_text) >= MIN_TRANSCRIPT_CHARS:
+        if fin_date and fin_date != earnings_date:
+            print(f"  [FINANCE] {ticker}: transcript date {fin_date} != target "
+                  f"{earnings_date} — treating as stale, falling back")
+        else:
+            return fin_text, "finance_earnings_transcript", None
+    elif fin_text:
+        print(f"  [FINANCE] {ticker}: transcript too short "
+              f"({len(fin_text)} < {MIN_TRANSCRIPT_CHARS}) — falling back")
+
+    # Rung 2: Motley Fool scrape (SECONDARY).
+    fool_text, fool_url = _scrape_motley_fool(ticker, company)
+    if fool_text:
+        return fool_text, "motley_fool", fool_url
+
+    # Rung 3: sonar-native research prompt (LAST resort).
+    return None, "perplexity_native", None
+
+
+# ---------------------------------------------------------------------------
 # Core per-ticker harvest
 # ---------------------------------------------------------------------------
 def harvest_ticker(
@@ -386,27 +530,41 @@ def harvest_ticker(
     requests_mod=None,
     url: str = "",
     headers: dict | None = None,
+    mode: str = "call_reaction",
 ) -> dict[str, Any]:
-    """Harvest transcript intel for one ticker. Returns a status dict."""
-    print(f"\n  [{ticker}] Starting transcript harvest (date={earnings_date})")
+    """Harvest transcript intel for one ticker. Returns a status dict.
+
+    ``mode``:
+      * ``print_reaction`` — the transcript step is SKIPPED entirely (no
+        connector / scrape / sonar cost). Actuals + the short print note are the
+        responsibility of print_reaction_sweep; this function is a no-op here
+        and returns status ``print_skipped`` so callers don't double-spend.
+      * ``call_reaction`` (default) — runs the full transcript chain below.
+    """
+    print(f"\n  [{ticker}] Starting transcript harvest (date={earnings_date}, mode={mode})")
+
+    if mode == "print_reaction":
+        print(f"  [{ticker}] mode=print_reaction — skipping transcript step (no sonar cost)")
+        return {"ticker": ticker, "status": "print_skipped"}
 
     if dry_run:
         print(f"  [DRY RUN] Would harvest transcript for {ticker} ({earnings_date})")
         return {"ticker": ticker, "status": "dry_run"}
 
-    # Step 1: Try Motley Fool
-    transcript_text, transcript_url = _scrape_motley_fool(ticker, company)
-    source = "motley_fool" if transcript_text else "perplexity_native"
+    # Source chain: finance connector -> Motley Fool -> sonar-native.
+    transcript_text, source, transcript_url = _acquire_transcript(
+        ticker, company, earnings_date
+    )
 
-    # Step 2: Build prompt
+    # Build prompt: distill a real transcript, else sonar-native research.
     if transcript_text:
         prompt = _build_scrape_distill_prompt(ticker, company, earnings_date, transcript_text)
         task   = "transcript_distill"
-        print(f"  [{ticker}] Using scraped Fool transcript — sending to Perplexity for distillation")
+        print(f"  [{ticker}] Distilling transcript from {source}")
     else:
         prompt = _build_perplexity_native_prompt(ticker, company, earnings_date)
         task   = "transcript_research"
-        print(f"  [{ticker}] Fool scrape failed — using Perplexity-native research prompt")
+        print(f"  [{ticker}] No transcript text — using Perplexity-native research prompt")
 
     # Step 3: Call Perplexity (queued or API fallback)
     result = call_perplexity(
@@ -465,6 +623,7 @@ def run(
     dry_run: bool = False,
     force: bool = False,
     ticker_filter: str | None = None,
+    mode: str = "call_reaction",
 ) -> dict[str, Any]:
     """
     Harvest transcript intel for all post-earnings tickers.
@@ -473,6 +632,8 @@ def run(
         dry_run:       List tickers without calling any APIs or touching Supabase.
         force:         Bypass freshness check and re-harvest all tickers.
         ticker_filter: If set, only process this one ticker (case-insensitive).
+        mode:          ``call_reaction`` (full transcript chain, default) or
+                       ``print_reaction`` (skip the transcript step entirely).
 
     Returns:
         Summary dict for logging / downstream callers.
@@ -544,6 +705,7 @@ def run(
                 requests_mod=requests_mod,
                 url=url or "",
                 headers=req_headers or {},
+                mode=mode,
             )
             status = result.get("status", "unknown")
             if status == "harvested":
@@ -589,9 +751,13 @@ def _parse_args(argv=None):
                    help="Bypass freshness check and re-harvest every ticker.")
     p.add_argument("--ticker", type=str, default=None,
                    help="Process only this ticker (e.g. --ticker MSFT).")
+    p.add_argument("--mode", choices=("print_reaction", "call_reaction"),
+                   default="call_reaction",
+                   help="print_reaction skips the transcript step entirely; "
+                        "call_reaction (default) runs the full transcript chain.")
     return p.parse_args(argv)
 
 
 if __name__ == "__main__":
     args = _parse_args()
-    run(dry_run=args.dry_run, force=args.force, ticker_filter=args.ticker)
+    run(dry_run=args.dry_run, force=args.force, ticker_filter=args.ticker, mode=args.mode)

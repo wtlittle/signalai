@@ -267,6 +267,75 @@ postmortems.
 
 ---
 
+## Reaction cadence (two-pass post-earnings notes)
+
+Post-earnings notes hydrate in two passes so a fast, cheap "print reaction" lands
+within minutes of the press release and a richer, transcript-backed "call
+reaction" follows once the call has happened and a transcript exists.
+
+### Card timing (renderer)
+
+`earningsCardLabel` (in `utils.js`) computes the card's tense from the
+**America/New_York** wall clock, not the browser locale. A same-day reporter keeps
+the future-tense `Reports today · {timing}` until the print minute, then flips to
+`Reported today · {timing}`:
+
+| timing | flips to past tense at |
+|--------|------------------------|
+| AMC    | 4:05 PM ET             |
+| BMO    | 9:30 AM ET             |
+
+Older dates always render past tense (`Reported yesterday · …` / `Reported {date} · …`).
+
+### `note_status` states
+
+The renderer's secondary line (`earningsNoteStatusLabel`) is driven by a single
+`note_status` field on the intel record:
+
+| `note_status`    | card text                                   | meaning |
+|------------------|---------------------------------------------|---------|
+| `pre_earnings`   | `Reports today · {timing}`                  | not yet reported |
+| `print_reaction` | `Print reaction · awaiting call commentary` | actuals + short note from the print, no transcript yet |
+| `call_reaction`  | `Reaction · full`                           | transcript-backed note (the richest state) |
+| `stale`          | `Awaiting note · {N} days post-print`       | reported but no note materialized |
+
+### The two sweeps
+
+| sweep | window (ET) | cron (UTC, EDT-anchored) | sonar? | what it writes |
+|-------|-------------|--------------------------|--------|----------------|
+| `print_reaction_sweep` AMC | 4:30 PM | `30 20 * * 1-5` | no | actuals + 2-3 sentence note, `note_status=print_reaction` |
+| `call_reaction_sweep` AMC  | 9:00 PM | `0 1 * * 2-6`   | yes | transcript-backed note, `note_status=call_reaction` |
+| `call_reaction_sweep` BMO  | 12:00 PM | `0 16 * * 1-5`  | yes | transcript-backed note, `note_status=call_reaction` |
+
+`print_reaction_sweep` makes at most one finance-connector call per ticker (plus a
+free Finnhub EPS cross-check) and **never** calls sonar. It composes the note
+formulaically and omits any clause whose underlying value is missing — a missing
+actual renders `n/a`, never a fabricated number.
+
+`call_reaction_sweep` runs `transcript_harvest --mode call_reaction`, which walks
+the transcript source chain (below) and distills a richer note.
+
+### Transcript source chain
+
+`transcript_harvest._acquire_transcript` tries three rungs in priority order:
+
+1. **`finance_earnings_transcript`** (PRIMARY) — the platform finance connector via
+   the `external-tool` CLI. Accepted only when the text is `>= MIN_TRANSCRIPT_CHARS`
+   (3000) and, when the payload carries an `earnings_date`, it matches the target
+   (a mismatched date is treated as stale).
+2. **`motley_fool`** (SECONDARY) — scrape, used when (1) is empty/short/stale.
+3. **`perplexity_native`** (LAST) — sonar research prompt, no source text.
+
+The chosen rung is stamped on the record as `transcript_source`.
+
+### No-downgrade invariant
+
+A re-run never replaces a `call_reaction` note with a weaker `print_reaction` one:
+
+- `print_reaction_sweep` skips any ticker already at `note_status=call_reaction`.
+- `call_reaction_sweep` leaves the prior note in place when all transcript rungs
+  fail (logged as `transcript_unavailable`) rather than downgrading.
+
 ## Integration points
 
 - `automation/jobs/daily_refresh.py` — calls `refresh_universe(load_tickers())`

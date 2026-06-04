@@ -18,7 +18,7 @@ def read_json(path: Path) -> dict:
 def write_json(path: Path, data: dict):
     """Write JSON with consistent formatting."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, default=str))
+    path.write_text(json.dumps(data, indent=2, default=str, ensure_ascii=False))
 
 
 def research_path(task: str, fmt: str = "json") -> Path:

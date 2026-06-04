@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-04T20:03:06.137427+00:00",
+  "last_updated": "2026-06-04T20:48:37.756296+00:00",
   "schema_version": 1,
   "tickers": {
     "ADP": {
@@ -34334,7 +34334,7 @@
       "state": "post_earnings",
       "inflection_status": "PRE",
       "next_earnings_date": null,
-      "intel_updated_at": "2026-06-04T19:08:48.259491+00:00",
+      "intel_updated_at": "2026-06-04T20:48:35+00:00",
       "refresh_reason": "self_heal_pre_to_post_transition",
       "bottom_line": "AVGO trades around $410, consolidating above key support near $320 with resistance in the $403–430 zone. The stock appears to have outperformed broader semiconductor peers YTD, helped by AI accelerator optimism and VMware integration, but expectations into Q2 are elevated.",
       "bull_case": {
@@ -34706,7 +34706,12 @@
       "history_8q_source_age_days": 0,
       "company_name_source": "cached",
       "company_name_source_age_days": 0,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
+      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name",
+      "timing": "AMC",
+      "note_status": "print_reaction",
+      "reaction_note": "AVGO reported: EPS came in in-line vs consensus; revenue missed by 12.2% vs consensus.",
+      "note_generated_at": "2026-06-04T20:48:35+00:00",
+      "note_source": "print_reaction_sweep"
     },
     "CRWD": {
       "ticker": "CRWD",
@@ -34714,7 +34719,7 @@
       "state": "post_earnings",
       "inflection_status": "PRE",
       "next_earnings_date": null,
-      "intel_updated_at": "2026-06-04T19:08:48.424010+00:00",
+      "intel_updated_at": "2026-06-04T20:48:37+00:00",
       "refresh_reason": "self_heal_pre_to_post_transition",
       "bottom_line": "CRWD trades near record highs after a strong FY26 print and Q4 beat. The stock has meaningfully outperformed broader cybersecurity/software indices YTD, with dip-buying interest on pullbacks. Key technical levels to watch are prior breakout areas in the low-$500s and recent highs as resistance.",
       "bull_case": {
@@ -35086,7 +35091,12 @@
       "history_8q_source_age_days": 0,
       "company_name_source": "cached",
       "company_name_source_age_days": 0,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
+      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name",
+      "timing": "AMC",
+      "note_status": "print_reaction",
+      "reaction_note": "CRWD reported: EPS came in in-line vs consensus; revenue missed by 4.0% vs consensus.",
+      "note_generated_at": "2026-06-04T20:48:37+00:00",
+      "note_source": "print_reaction_sweep"
     },
     "CXM": {
       "ticker": "CXM",

@@ -815,6 +815,148 @@ function setSubsectorOverride(ticker, subsector) {
   Storage.set('subsector_overrides', overrides);
 }
 
+// ===== Earnings card label (timing + wall-clock aware) =====
+// The "Reported today / yesterday · AMC / BMO" pill must not flip to past
+// tense before the press release is actually out. An AMC reporter does not
+// print until ~4:05 PM ET; a BMO reporter not until ~9:30 AM ET. We therefore
+// gate the same-day label on the America/New_York wall clock, NOT the
+// browser-local clock (a user in London at 21:00 local is still pre-close ET).
+
+// Minutes-past-midnight in America/New_York for a given Date. Uses Intl so it
+// is correct under both EST and EDT regardless of the viewer's locale/TZ.
+function etMinutesOfDay(now = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+  }).formatToParts(now);
+  let h = 0;
+  let m = 0;
+  for (const p of parts) {
+    if (p.type === 'hour') h = parseInt(p.value, 10) % 24;
+    else if (p.type === 'minute') m = parseInt(p.value, 10);
+  }
+  return h * 60 + m;
+}
+
+// YYYY-MM-DD for a Date as observed in America/New_York.
+function ymdET(now = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(now);
+  const get = (t) => (parts.find((p) => p.type === t) || {}).value || '';
+  return `${get('year')}-${get('month')}-${get('day')}`;
+}
+
+const AMC_PRINT_MIN = 16 * 60 + 5;   // 4:05 PM ET — earliest typical AMC print
+const BMO_PRINT_MIN = 9 * 60 + 30;   // 9:30 AM ET — typical BMO release is out
+
+// Compute the dated timing pill for an earnings card. `record` carries
+// report_date (YYYY-MM-DD), timing ('AMC' | 'BMO' | null) and optional
+// note_status. `nowET` is injectable for tests.
+//
+// Same-day rule: a report dated today stays future-tense ("Reports today")
+// until the wall clock passes that timing's print minute, then flips to
+// "Reported today". Prior dates are always past tense.
+function earningsCardLabel(record, nowET = new Date()) {
+  if (!record) return '';
+  const reportDate = record.report_date || record.earnings_date || null;
+  const timing = (record.timing && record.timing !== 'TBD') ? record.timing : null;
+  const timingSuffix = timing ? ` · ${timing}` : '';
+
+  const today = ymdET(nowET);
+  const yestDate = new Date(nowET.getTime() - 86400000);
+  const yest = ymdET(yestDate);
+
+  if (reportDate === today) {
+    const minutesET = etMinutesOfDay(nowET);
+    if (timing === 'AMC' && minutesET < AMC_PRINT_MIN) {
+      return `Reports today${timingSuffix}`;
+    }
+    if (timing === 'BMO' && minutesET < BMO_PRINT_MIN) {
+      return `Reports today${timingSuffix}`;
+    }
+    return `Reported today${timingSuffix}`;
+  }
+  if (reportDate === yest) {
+    return `Reported yesterday${timingSuffix}`;
+  }
+  if (reportDate) {
+    return `Reported ${reportDate}${timingSuffix}`;
+  }
+  return `Reported${timingSuffix}`.trim();
+}
+
+// Secondary line under the card title, driven by note_status. Replaces the
+// legacy "Awaiting post-earnings note" placeholder with the four canonical
+// states. `record.timing` and `report_date` are used to phrase pre_earnings.
+const NOTE_STATUS_PRE = 'pre_earnings';
+const NOTE_STATUS_PRINT = 'print_reaction';
+const NOTE_STATUS_CALL = 'call_reaction';
+const NOTE_STATUS_STALE = 'stale';
+
+function earningsNoteStatusLabel(record, nowET = new Date()) {
+  if (!record) return '';
+  const status = record.note_status || NOTE_STATUS_PRE;
+  if (status === NOTE_STATUS_PRINT) {
+    return 'Print reaction · awaiting call commentary';
+  }
+  if (status === NOTE_STATUS_CALL) {
+    return 'Reaction · full';
+  }
+  if (status === NOTE_STATUS_STALE) {
+    const days = _daysSincePrintET(record, nowET);
+    return days != null
+      ? `Awaiting note · ${days} days post-print`
+      : 'Awaiting note · post-print';
+  }
+  // pre_earnings — describe the upcoming print.
+  const timing = (record.timing && record.timing !== 'TBD') ? record.timing : null;
+  const reportDate = record.report_date || record.earnings_date || null;
+  const today = ymdET(nowET);
+  if (reportDate === today) {
+    return timing ? `Reports today · ${timing}` : 'Reports today';
+  }
+  const di = _daysUntilET(reportDate, nowET);
+  if (di === 1) return timing ? `Reports tomorrow · ${timing}` : 'Reports tomorrow';
+  if (di != null && di > 1) return `Reports in ${di} days`;
+  return timing ? `Reports · ${timing}` : 'Reports soon';
+}
+
+function _daysSincePrintET(record, nowET) {
+  const d = record.report_date || record.earnings_date || record.last_earnings_date;
+  if (!d) return null;
+  return _daysBetweenET(d, ymdET(nowET));
+}
+
+function _daysUntilET(reportDate, nowET) {
+  if (!reportDate) return null;
+  return _daysBetweenET(ymdET(nowET), reportDate);
+}
+
+function _daysBetweenET(fromYmd, toYmd) {
+  const a = Date.parse(`${fromYmd}T00:00:00Z`);
+  const b = Date.parse(`${toYmd}T00:00:00Z`);
+  if (Number.isNaN(a) || Number.isNaN(b)) return null;
+  return Math.round((b - a) / 86400000);
+}
+
+// Node test harness export (no-op in the browser where `module` is undefined).
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    earningsCardLabel,
+    earningsNoteStatusLabel,
+    etMinutesOfDay,
+    ymdET,
+    AMC_PRINT_MIN,
+    BMO_PRINT_MIN,
+  };
+}
+
 // Group tickers by subsector
 function groupBySubsector(tickers) {
   const groups = {};
