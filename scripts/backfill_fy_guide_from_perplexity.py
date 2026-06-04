@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 """
+[DEPRECATED] Subsumed by the per-ticker pipeline (automation/pipeline +
+automation/sources/perplexity_source.py). Dormant under the new architecture;
+kept for one cycle for manual debugging. Removal scheduled in a follow-up PR
+after 7 days of clean new-pipeline runs.
+
 Targeted, cost-gated FY-guidance backfill for POST earnings cards.
 
 WHY THIS EXISTS (Issue C)

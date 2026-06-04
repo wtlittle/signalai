@@ -1,4 +1,11 @@
 """
+[PARTIALLY DEPRECATED] The CONTRACTUAL earnings fields (in-quarter actuals,
+history_8q, consensus/surprise) are now owned by the per-ticker pipeline
+(automation/pipeline); this script's role is reduced to syncing the NARRATIVE
+base (bull/bear, signal scorecard, qualitative prose) from notes. Do NOT extend
+it to write contractual fields -- add a source under automation/sources/ instead.
+Removal of the contractual-field paths is scheduled in a follow-up PR.
+
 Sync earnings_intel.json from the markdown notes in notes/{pre,post}_earnings/.
 
 This is the durable bridge between the cron-generated markdown notes

@@ -1671,3 +1671,106 @@
   .dd-macro-exposure-row { grid-template-columns: 1fr; gap: 4px; }
   .dd-macro-exposure-head { display: none; }
 }
+
+/* === Pipeline observability: quarantine badge, health pill, modal ========= */
+/* Surfaced by automation/pipeline (quarantine.json + pipeline_status.json).  */
+.quarantine-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #7a2e0e;
+  background: #fde2c8;
+  border: 1px solid #f0a868;
+  border-radius: 4px;
+  vertical-align: middle;
+  cursor: help;
+}
+
+.pipeline-health-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 12px;
+  padding: 2px 4px 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+  background: var(--surface-2, #f1f5f9);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 999px;
+  vertical-align: middle;
+}
+.pipeline-health-pill.has-quarantine {
+  color: #7a2e0e;
+  background: #fde2c8;
+  border-color: #f0a868;
+}
+.pipeline-health-pill .php-main {
+  background: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+.pipeline-health-pill .php-dismiss {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0.6;
+  padding: 0 2px;
+}
+.pipeline-health-pill .php-dismiss:hover { opacity: 1; }
+
+.pipeline-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pipeline-modal {
+  width: min(640px, 92vw);
+  max-height: 80vh;
+  overflow: auto;
+  background: var(--surface, #fff);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+.pipeline-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+}
+.pipeline-modal-close {
+  background: none;
+  border: 0;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-secondary, #475569);
+}
+.pipeline-modal-body { padding: 14px 18px; }
+.pipeline-modal-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.pipeline-modal-table th,
+.pipeline-modal-table td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-light, #eef2f7);
+  vertical-align: top;
+}
+.pipeline-modal-table .pm-ticker { font-weight: 700; white-space: nowrap; }
+.pipeline-modal-table .pm-missing { color: #7a2e0e; }
+.pipeline-modal .pm-clean { color: var(--text-secondary, #475569); margin: 0; }

@@ -404,6 +404,36 @@ def step_sync_earnings_intel():
         print(f"  [WARN] earnings_intel sync failed: {exc}")
 
 
+def step_refresh_earnings_universe():
+    """Step 6.45: Populate the CONTRACTUAL earnings_intel fields via the
+    per-ticker pipeline (automation/pipeline).
+
+    Replaces the old monolithic per-ticker backfill loop. step_sync_earnings_intel
+    (6.4) writes the NARRATIVE fields from the markdown notes; this step then runs
+    the source-contract pipeline over the whole universe to populate the
+    structured contractual fields (in-quarter actuals, history_8q, consensus),
+    validate each record against the one schema, and route any ticker that cannot
+    be completed to quarantine.json -- never writing a partial record. It also
+    refreshes pipeline_status.json so the dashboard has a current health snapshot.
+
+    Must run AFTER step_sync_earnings_intel (so the narrative base + identity
+    exist) and BEFORE step_compute_debate_scores (which reads earnings_intel.json).
+    Safe to fail: a pipeline error must not take down the rest of the refresh.
+    """
+    print("\n=== Step 6.45: Refresh earnings_intel via per-ticker pipeline ===")
+    try:
+        from automation.pipeline.runner import refresh_universe
+        symbols = load_tickers()
+        summary = refresh_universe(symbols, parallel=8)
+        print(
+            f"  pipeline run {summary.run_id}: {summary.succeeded}/{summary.total} "
+            f"healthy, {summary.quarantined} quarantined, {summary.skipped} skipped "
+            f"({summary.wall_time_ms}ms); sources_used={summary.sources_used}"
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARN] earnings pipeline refresh failed: {exc}")
+
+
 def step_emit_alerts(pre: list[dict], post: list[dict]):
     """Emit subscriber alerts based on freshly-refreshed market data and
     today's earnings calendar.
@@ -676,6 +706,11 @@ def run():
     # reflected as tickers in earnings_intel.json before debate scores read
     # from it. This is what makes the Earnings Intel tab self-healing.
     step_sync_earnings_intel()
+
+    # Step 6.45: Populate contractual earnings_intel fields via the per-ticker
+    # pipeline (source contract -> schema gate -> quarantine). Replaces the old
+    # monolithic backfill loop. Runs after the note-sync narrative base lands.
+    step_refresh_earnings_universe()
 
     # Step 6.5: Debate scores (derived from earnings_intel.json) —
     # always. Must run AFTER any step that writes earnings_intel.json.

@@ -28,18 +28,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from automation.shared.paths import ROOT_DIR
 from automation.jobs.daily_refresh import self_heal_state_machine, step_sync_earnings_intel
-from automation.sources import history_8q as _history_8q
+from automation.pipeline.refresh_ticker import refresh_ticker
 
 LOG_DIR = ROOT_DIR / "cron_tracking" / "post_earnings_refresh"
 LOG_RETENTION = 30
-
-# Backfill chain, run in order for each newly-flipped POST ticker.
-BACKFILL_SCRIPTS = [
-    "backfill_earnings_from_finnhub.py",
-    "backfill_revenue_from_yfinance.py",
-    "backfill_rev_consensus_from_perplexity.py",
-    "backfill_fy_guide_from_perplexity.py",
-]
 
 
 def _log(msg, fh=None):
@@ -70,76 +62,29 @@ def _git_pull(fh=None):
     _run(["git", "pull", "--rebase", "--autostash"], fh)
 
 
-def backfill_ticker(ticker, fh=None):
-    """Run the full backfill chain for a single ticker."""
-    _log(f"\n  --- backfill chain for {ticker} ---", fh)
-    for script in BACKFILL_SCRIPTS:
-        _run(["python3", str(ROOT_DIR / "scripts" / script), "--ticker", ticker], fh)
+def refresh_one(ticker, fh=None):
+    """Refresh a single ticker through the per-ticker pipeline.
 
-
-def _verify_ticker(ticker, fh=None):
-    """Run the completeness verifier scoped to one ticker.
-
-    Returns True when the ticker satisfies the schema (verifier exit 0), False
-    on a schema violation. The verifier itself logs the missing fields to
-    cron_tracking/earnings_intel_gaps.json and stderr.
+    Replaces the old per-field backfill chain + history_8q repair + auto-re-pull.
+    The pipeline (automation/pipeline/refresh_ticker) now owns the entire source
+    chain (FactSet -> Finnhub -> yfinance -> Perplexity), the schema gate, and
+    quarantine -- so a single call both populates the record and, if it cannot be
+    completed, routes the ticker to quarantine.json without ever writing a partial
+    record. Re-running this for one ticker is the standard recovery path, so the
+    old "re-pull once" loop is subsumed by simply calling it.
     """
-    rc = _run(
-        ["python3", str(ROOT_DIR / "scripts" / "verify_earnings_intel_completeness.py"),
-         "--ticker", ticker],
-        fh,
-    )
-    return rc == 0
-
-
-def _repair_history_8q(ticker, fh=None):
-    """Run the history_8q fallback chain (FactSet -> Finnhub -> yfinance) for one
-    ticker and persist the result into earnings_intel.json.
-
-    Must run AFTER step_sync_earnings_intel, because the note resync rebuilds the
-    record from markdown and would otherwise clobber a freshly written
-    history_8q. The non-force-rebuild merge preserves keys the extractor does not
-    emit (history_8q is one), so the order sync -> repair -> verify is safe.
-    """
-    ok = _history_8q.repair_ticker(ticker)
-    if ok:
-        _log(f"  [HISTORY_8Q] {ticker} populated via fallback chain.", fh)
+    _log(f"\n  --- pipeline refresh for {ticker} ---", fh)
+    res = refresh_ticker(ticker, force=True)
+    if res.ok:
+        _log(f"  [PIPELINE] {ticker}: complete via {res.last_source} "
+             f"(written={res.written}).", fh)
+    elif res.quarantined:
+        _log(f"  [PIPELINE] {ticker}: QUARANTINED -- missing "
+             f"{', '.join(res.missing_fields)}. Prior good data preserved; "
+             f"renders n/a, never fabricated. See quarantine.json.", fh)
     else:
-        _log(f"  [HISTORY_8Q] {ticker} chain exhausted -- history_8q left null "
-             f"(renders n/a; never fabricated). See "
-             f"cron_tracking/history_8q_gaps.json.", fh)
-    return ok
-
-
-def backfill_with_repull(ticker, fh=None):
-    """Backfill a ticker, then re-pull ONCE if the verifier still fails.
-
-    Guardrail D: a single upstream API hiccup (Finnhub stale quarter, yfinance
-    10-Q not yet filed, a dropped sonar response) otherwise leaves a card
-    permanently broken until the next scheduled run. After the first chain we
-    resync intel so the verifier sees the freshly written fields, populate
-    history_8q via its own fallback chain (post-resync so it is not clobbered),
-    check the schema, and if it is still violated run the chain a second and
-    final time.
-    """
-    backfill_ticker(ticker, fh)
-    # Resync so note-derived fields land before we verify, THEN repair history_8q
-    # (the resync preserves but does not produce it).
-    step_sync_earnings_intel()
-    _repair_history_8q(ticker, fh)
-    if _verify_ticker(ticker, fh):
-        return
-    _log(f"  [RE-PULL] {ticker} failed schema verification after first chain -- "
-         f"re-running backfill chain once.", fh)
-    backfill_ticker(ticker, fh)
-    step_sync_earnings_intel()
-    _repair_history_8q(ticker, fh)
-    if _verify_ticker(ticker, fh):
-        _log(f"  [RE-PULL] {ticker} recovered after second chain.", fh)
-    else:
-        _log(f"  [RE-PULL] {ticker} STILL failing schema after re-pull -- "
-             f"leaving fields null (renders n/a; never fabricated). "
-             f"See cron_tracking/earnings_intel_gaps.json.", fh)
+        _log(f"  [PIPELINE] {ticker}: {res.note} (no record written).", fh)
+    return res.ok
 
 
 def _commit_and_push(fh=None):
@@ -196,17 +141,19 @@ def run(only_ticker=None):
             targets = [t["ticker"] for t in transitions]
 
         if not targets:
-            _log("  No newly-flipped POST tickers -- nothing to backfill.", fh)
+            _log("  No newly-flipped POST tickers -- nothing to refresh.", fh)
             _log("  Idempotent no-op; skipping commit.", fh)
             _prune_logs()
             return []
 
-        for ticker in targets:
-            # Guardrail D: backfill, then auto re-pull once on schema violation.
-            backfill_with_repull(ticker, fh)
-
+        # Sync the narrative base from notes FIRST so the pipeline has identity +
+        # qualitative context, THEN refresh each target through the per-ticker
+        # pipeline (which owns the source chain, schema gate, and quarantine).
         _log("\n  --- resync earnings_intel from notes ---", fh)
         step_sync_earnings_intel()
+
+        for ticker in targets:
+            refresh_one(ticker, fh)
 
         _log("\n  --- rebuild earnings_calendar.json ---", fh)
         _run(["python3", str(ROOT_DIR / "build_earnings_json.py")], fh)

@@ -226,6 +226,124 @@ async function getEarningsIntel(ticker) {
 }
 
 // ---------------------------------------------------------------------------
+// Pipeline observability: quarantine.json + pipeline_status.json
+//
+// Both are static assets the per-ticker pipeline commits (see
+// automation/pipeline/). quarantine.json lists tickers the pipeline could not
+// refresh to a complete, schema-passing record; pipeline_status.json is the
+// system-health snapshot. The dashboard reads them to badge quarantined cards
+// and render the top-of-dashboard health pill. They never carry fabricated
+// numbers -- a quarantined ticker's cited fields render n/a.
+// ---------------------------------------------------------------------------
+let quarantineData = null;
+let quarantineLoading = null;
+let pipelineStatusData = null;
+let pipelineStatusLoading = null;
+
+async function _loadStaticJson(file) {
+  if (window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback) {
+    return window.SignalSnapshot.fetchWithFallback(file, { cacheBust: true });
+  }
+  return fetch(file + '?v=' + Date.now());
+}
+
+/** Load + cache quarantine.json. Returns {tickers:{}} on any failure. */
+async function loadQuarantine() {
+  if (quarantineData) return quarantineData;
+  if (quarantineLoading) return quarantineLoading;
+  quarantineLoading = (async () => {
+    try {
+      const resp = await _loadStaticJson('quarantine.json');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const raw = await resp.json();
+      quarantineData = (raw && raw.tickers) ? raw : { tickers: raw || {} };
+      window._quarantineData = quarantineData;
+      return quarantineData;
+    } catch (e) {
+      console.warn('Failed to load quarantine.json:', e);
+      quarantineData = { tickers: {} };
+      return quarantineData;
+    } finally {
+      quarantineLoading = null;
+    }
+  })();
+  return quarantineLoading;
+}
+
+/** Load + cache pipeline_status.json. Returns {tickers:{},run:null} on failure. */
+async function loadPipelineStatus() {
+  if (pipelineStatusData) return pipelineStatusData;
+  if (pipelineStatusLoading) return pipelineStatusLoading;
+  pipelineStatusLoading = (async () => {
+    try {
+      const resp = await _loadStaticJson('pipeline_status.json');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      pipelineStatusData = await resp.json();
+      window._pipelineStatusData = pipelineStatusData;
+      return pipelineStatusData;
+    } catch (e) {
+      console.warn('Failed to load pipeline_status.json:', e);
+      pipelineStatusData = { tickers: {}, run: null };
+      return pipelineStatusData;
+    } finally {
+      pipelineStatusLoading = null;
+    }
+  })();
+  return pipelineStatusLoading;
+}
+
+/** Synchronous accessor for a ticker's quarantine entry (null if healthy). */
+function getQuarantineEntry(ticker) {
+  const d = window._quarantineData || quarantineData;
+  if (!d || !d.tickers) return null;
+  return d.tickers[ticker] || null;
+}
+
+/** True iff the ticker is currently quarantined. */
+function isQuarantined(ticker) {
+  return !!getQuarantineEntry(ticker);
+}
+
+/** Build the small quarantine badge element for a card/row (or null). */
+function buildQuarantineBadge(ticker) {
+  const entry = getQuarantineEntry(ticker);
+  if (!entry) return null;
+  const missing = (entry.missing_fields || []).join(', ') || 'data incomplete';
+  const lastGood = entry.last_success_at
+    ? new Date(entry.last_success_at).toLocaleString()
+    : 'never';
+  const badge = document.createElement('span');
+  badge.className = 'quarantine-badge';
+  badge.setAttribute('role', 'img');
+  badge.setAttribute('aria-label', 'Quarantined');
+  badge.textContent = 'quarantined';
+  badge.title = `Quarantined: ${missing}. Last good data: ${lastGood}.`;
+  return badge;
+}
+
+/** HTML-string variant of the quarantine badge for template-literal cards.
+ * Returns '' when the ticker is healthy. Tooltip text is HTML-escaped. */
+function quarantineBadgeHtml(ticker) {
+  const entry = getQuarantineEntry(ticker);
+  if (!entry) return '';
+  const esc = (s) => String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+  const missing = esc((entry.missing_fields || []).join(', ') || 'data incomplete');
+  const lastGood = esc(entry.last_success_at
+    ? new Date(entry.last_success_at).toLocaleString() : 'never');
+  return `<span class="quarantine-badge" role="img" aria-label="Quarantined" ` +
+    `title="Quarantined: ${missing}. Last good data: ${lastGood}.">quarantined</span>`;
+}
+
+window.loadQuarantine = loadQuarantine;
+window.loadPipelineStatus = loadPipelineStatus;
+window.getQuarantineEntry = getQuarantineEntry;
+window.isQuarantined = isQuarantined;
+window.buildQuarantineBadge = buildQuarantineBadge;
+window.quarantineBadgeHtml = quarantineBadgeHtml;
+
+// ---------------------------------------------------------------------------
 // Debate Intensity — Contested Velocity Score (universe-level KPI)
 //
 // Per-ticker score = conflict_ratio * (1 - resolution_velocity)
@@ -858,6 +976,98 @@ async function renderEarningsIntelTab(container, ticker) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Pipeline health pill + modal (system-health-at-a-glance).
+// A small, dismissible pill at the top of the dashboard:
+//   "Pipeline: 188/192 healthy . 4 quarantined"
+// Clicking it opens a modal listing the quarantined tickers + reasons.
+// ---------------------------------------------------------------------------
+function _pipelineCounts() {
+  const q = (window._quarantineData || {}).tickers || {};
+  const quarantined = Object.keys(q).length;
+  const status = window._pipelineStatusData || {};
+  // Prefer the authoritative run summary total when present.
+  let total = (status.run && typeof status.run.total === 'number')
+    ? status.run.total
+    : Object.keys(status.tickers || {}).length;
+  if (!total && Array.isArray(window.tickerList)) total = window.tickerList.length;
+  const healthy = Math.max(0, total - quarantined);
+  return { total, healthy, quarantined, q };
+}
+
+function dismissPipelineModal() {
+  const m = document.getElementById('pipeline-health-modal');
+  if (m) m.remove();
+}
+
+function showPipelineModal() {
+  dismissPipelineModal();
+  const { q } = _pipelineCounts();
+  const overlay = document.createElement('div');
+  overlay.id = 'pipeline-health-modal';
+  overlay.className = 'pipeline-modal-overlay';
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) dismissPipelineModal(); });
+
+  const rows = Object.values(q).map((entry) => {
+    const missing = (entry.missing_fields || []).join(', ') || 'data incomplete';
+    const lastGood = entry.last_success_at
+      ? new Date(entry.last_success_at).toLocaleString() : 'never';
+    return `<tr>
+      <td class="pm-ticker">${entry.symbol || ''}</td>
+      <td class="pm-missing">${missing}</td>
+      <td class="pm-lastgood">${lastGood}</td>
+    </tr>`;
+  }).join('');
+
+  overlay.innerHTML = `
+    <div class="pipeline-modal" role="dialog" aria-label="Pipeline health">
+      <div class="pipeline-modal-head">
+        <span>Pipeline health</span>
+        <button class="pipeline-modal-close" aria-label="Close" onclick="dismissPipelineModal()">&times;</button>
+      </div>
+      <div class="pipeline-modal-body">
+        ${Object.keys(q).length === 0
+          ? '<p class="pm-clean">All tracked tickers are healthy. No quarantined tickers.</p>'
+          : `<table class="pipeline-modal-table">
+               <thead><tr><th>Ticker</th><th>Missing</th><th>Last good data</th></tr></thead>
+               <tbody>${rows}</tbody>
+             </table>`}
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+/** Render (or refresh) the top-of-dashboard pipeline health pill. */
+function renderPipelineHealthPill() {
+  const { total, healthy, quarantined } = _pipelineCounts();
+  if (!total) return; // nothing loaded yet
+  let pill = document.getElementById('pipeline-health-pill');
+  if (!pill) {
+    pill = document.createElement('div');
+    pill.id = 'pipeline-health-pill';
+    pill.className = 'pipeline-health-pill';
+    const host = document.querySelector('.app-header') || document.body;
+    host.appendChild(pill);
+  }
+  pill.classList.toggle('has-quarantine', quarantined > 0);
+  pill.innerHTML =
+    `<button class="php-main" onclick="showPipelineModal()" title="Click for details">` +
+    `Pipeline: ${healthy}/${total} healthy${quarantined > 0 ? ` &middot; ${quarantined} quarantined` : ''}` +
+    `</button>` +
+    `<button class="php-dismiss" aria-label="Dismiss" ` +
+    `onclick="this.closest('#pipeline-health-pill').remove()">&times;</button>`;
+}
+
+/** Load the pipeline observability artifacts then render the pill. */
+async function initPipelineHealth() {
+  try {
+    await Promise.all([loadQuarantine(), loadPipelineStatus()]);
+    renderPipelineHealthPill();
+  } catch (e) {
+    console.warn('[pipeline] health init failed:', e);
+  }
+}
+
 // Expose globals for popup.js and earnings.js
 window.loadEarningsIntel = loadEarningsIntel;
 window.getEarningsIntel = getEarningsIntel;
@@ -865,3 +1075,7 @@ window.renderEarningsIntelTab = renderEarningsIntelTab;
 window.isStubIntel = isStubIntel;
 window.inflectionBadge = inflectionBadge;
 window.signalSummary = signalSummary;
+window.renderPipelineHealthPill = renderPipelineHealthPill;
+window.showPipelineModal = showPipelineModal;
+window.dismissPipelineModal = dismissPipelineModal;
+window.initPipelineHealth = initPipelineHealth;
