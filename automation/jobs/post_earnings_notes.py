@@ -31,6 +31,7 @@ from automation.perplexity.client import call_perplexity
 from automation.perplexity.prompts import build_post_earnings_prompt_v2
 from automation.earnings.post_earnings_context import build_post_earnings_context
 from automation.earnings.sanity_check import sanity_check
+from automation.sources import history_8q as _history_8q
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,38 @@ TODAY = date.today()
 MAX_DAYS = int(os.environ.get("MAX_POST_EARNINGS_DAYS", 14))
 
 _SNAPSHOT_TABLE = "earnings_context_snapshots"
+
+
+def _heal_history_8q(ticker: str, context: dict) -> bool:
+    """Self-heal a context missing history_8q via the fallback chain.
+
+    Returns True if the chain produced >=8 quarters and the context's
+    history_8q was filled (mapped to the context's per-quarter shape). Returns
+    False if the chain was exhausted -- the caller then escalates as before. The
+    chain logs its own gap to cron_tracking/history_8q_gaps.json. Never fabricates.
+    """
+    history, source, _tried, _partial = _history_8q.fetch_chain(ticker)
+    if history is None:
+        return False
+    context["history_8q"] = [
+        {
+            "period": (f"FQ{q['fiscal_quarter']} {q['fiscal_year']}"
+                       if q.get("fiscal_quarter") and q.get("fiscal_year") else q.get("period_end")),
+            "period_end": q.get("period_end"),
+            "actual_revenue": q.get("revenue_actual"),
+            "estimated_revenue": None,
+            "revenue_surprise_pct": q.get("rev_surprise_pct"),
+            "actual_eps": q.get("eps_actual"),
+            "estimated_eps": q.get("eps_estimate"),
+            "eps_surprise_pct": q.get("eps_surprise_pct"),
+        }
+        for q in history
+    ]
+    context["history_8q_source"] = source
+    # Drop any history_8q error so sanity_check no longer counts it as a gap.
+    context["errors"] = [e for e in (context.get("errors") or [])
+                         if e.get("field") != "history_8q"]
+    return True
 
 
 def get_post_earnings_tickers() -> list[dict]:
@@ -211,6 +244,17 @@ def run():
 
         # --- SANITY CHECK GATE ---
         ok, issues = sanity_check(context)
+        # SELF-HEAL: a missing/empty history_8q used to fail the gate and write a
+        # stub (the 2026-06-04 ACN/AVGO failure). Instead, run the fallback chain
+        # to populate it, then re-check. Only escalate if the chain also fails.
+        if not ok and any("history_8q" in i for i in issues):
+            print(f"  [HEAL] {ticker} history_8q missing -- running fallback chain")
+            if _heal_history_8q(ticker, context):
+                print(f"  [HEAL] {ticker} history_8q populated "
+                      f"({context.get('history_8q_source')}); re-running sanity_check")
+                ok, issues = sanity_check(context)
+            else:
+                print(f"  [HEAL] {ticker} history_8q chain exhausted -- escalating")
         if not ok:
             for issue in issues:
                 logger.warning("[%s] sanity_check: %s", ticker, issue)
