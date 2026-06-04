@@ -9267,3 +9267,12 @@ mark.search-highlight {
 .row-flash {
   animation: row-flash-anim 0.6s ease-out 1;
 }
+
+/* "n/a" placeholder for cells where a metric is not meaningful for the row's
+ * subsector (e.g. Enterprise Value for banks). Subdued styling so it reads as
+ * "intentionally not applicable" rather than "missing data". */
+.cell-na {
+  color: var(--text-muted, #6b7280);
+  font-style: italic;
+  opacity: 0.75;
+}
