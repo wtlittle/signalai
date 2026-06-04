@@ -1,301 +1,23 @@
 {
-  "generated_at": "2026-06-04T17:06:29.228493+00:00",
-  "count": 74,
+  "generated_at": "2026-06-04T18:46:50.127309+00:00",
+  "count": 24,
   "tickers": {
-    "GOOG": {
-      "symbol": "GOOG",
-      "quarantined_at": "2026-06-04T17:02:38.126483+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:03:34.031810+00:00"
-    },
-    "TSM": {
-      "symbol": "TSM",
-      "quarantined_at": "2026-06-04T17:02:38.129806+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:03:33.782093+00:00"
-    },
-    "ARM": {
-      "symbol": "ARM",
-      "quarantined_at": "2026-06-04T17:02:39.660234+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "perplexity",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:03:38.002587+00:00"
-    },
-    "MNDY": {
-      "symbol": "MNDY",
-      "quarantined_at": "2026-06-04T17:02:41.786350+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:03:42.018801+00:00"
-    },
-    "XYZ": {
-      "symbol": "XYZ",
-      "quarantined_at": "2026-06-04T17:03:48.692306+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        },
-        {
-          "name": "perplexity",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:03:48.692314+00:00"
-    },
-    "AFRM": {
-      "symbol": "AFRM",
-      "quarantined_at": "2026-06-04T17:03:52.820114+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:03:52.820121+00:00"
-    },
-    "SHOP": {
-      "symbol": "SHOP",
-      "quarantined_at": "2026-06-04T17:03:53.281151+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:03:53.281160+00:00"
-    },
-    "TTD": {
-      "symbol": "TTD",
-      "quarantined_at": "2026-06-04T17:03:54.488911+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "perplexity",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:03:54.488918+00:00"
-    },
-    "SE": {
-      "symbol": "SE",
-      "quarantined_at": "2026-06-04T17:03:54.793353+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:03:54.793362+00:00"
-    },
-    "PINS": {
-      "symbol": "PINS",
-      "quarantined_at": "2026-06-04T17:03:55.123916+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:03:55.123923+00:00"
-    },
-    "ACGL": {
-      "symbol": "ACGL",
-      "quarantined_at": "2026-06-04T17:03:57.179354+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:03:57.179360+00:00"
-    },
-    "LPLA": {
-      "symbol": "LPLA",
-      "quarantined_at": "2026-06-04T17:03:57.956778+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:03:57.956784+00:00"
-    },
     "SNDK": {
       "symbol": "SNDK",
       "quarantined_at": "2026-06-04T17:03:59.255890+00:00",
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
+          "name": "perplexity_finance",
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -307,101 +29,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:03:59.255895+00:00"
-    },
-    "WDC": {
-      "symbol": "WDC",
-      "quarantined_at": "2026-06-04T17:03:59.294231+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:03:59.294238+00:00"
-    },
-    "CF": {
-      "symbol": "CF",
-      "quarantined_at": "2026-06-04T17:03:59.682263+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:03:59.682269+00:00"
-    },
-    "UNH": {
-      "symbol": "UNH",
-      "quarantined_at": "2026-06-04T17:03:59.708313+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:03:59.708319+00:00"
-    },
-    "HD": {
-      "symbol": "HD",
-      "quarantined_at": "2026-06-04T17:04:01.591767+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:01.591773+00:00"
+      "updated_at": "2026-06-04T18:46:16.061981+00:00"
     },
     "SOC": {
       "symbol": "SOC",
@@ -409,12 +37,16 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
+          "name": "perplexity_finance",
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -430,384 +62,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:01.798227+00:00"
-    },
-    "HIMS": {
-      "symbol": "HIMS",
-      "quarantined_at": "2026-06-04T17:04:02.505797+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:02.505804+00:00"
-    },
-    "NVO": {
-      "symbol": "NVO",
-      "quarantined_at": "2026-06-04T17:04:03.628612+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:03.628618+00:00"
-    },
-    "GCT": {
-      "symbol": "GCT",
-      "quarantined_at": "2026-06-04T17:04:03.786651+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:03.786657+00:00"
-    },
-    "BWXT": {
-      "symbol": "BWXT",
-      "quarantined_at": "2026-06-04T17:04:03.837047+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:03.837055+00:00"
-    },
-    "KHC": {
-      "symbol": "KHC",
-      "quarantined_at": "2026-06-04T17:04:04.032230+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:04.032239+00:00"
-    },
-    "MDLZ": {
-      "symbol": "MDLZ",
-      "quarantined_at": "2026-06-04T17:04:04.293036+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:04.293044+00:00"
-    },
-    "STZ": {
-      "symbol": "STZ",
-      "quarantined_at": "2026-06-04T17:04:06.016414+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:06.016422+00:00"
-    },
-    "STX": {
-      "symbol": "STX",
-      "quarantined_at": "2026-06-04T17:04:06.425313+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:06.425320+00:00"
-    },
-    "TER": {
-      "symbol": "TER",
-      "quarantined_at": "2026-06-04T17:04:07.381373+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:07.381380+00:00"
-    },
-    "VRTX": {
-      "symbol": "VRTX",
-      "quarantined_at": "2026-06-04T17:04:08.538080+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:08.538095+00:00"
-    },
-    "GLW": {
-      "symbol": "GLW",
-      "quarantined_at": "2026-06-04T17:04:08.559001+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:08.559013+00:00"
-    },
-    "INTC": {
-      "symbol": "INTC",
-      "quarantined_at": "2026-06-04T17:04:08.585809+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:08.585817+00:00"
-    },
-    "NTNX": {
-      "symbol": "NTNX",
-      "quarantined_at": "2026-06-04T17:04:08.602014+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:08.602022+00:00"
-    },
-    "IBM": {
-      "symbol": "IBM",
-      "quarantined_at": "2026-06-04T17:04:08.748606+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:08.748612+00:00"
-    },
-    "BRZE": {
-      "symbol": "BRZE",
-      "quarantined_at": "2026-06-04T17:04:10.461462+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:10.461468+00:00"
-    },
-    "KVYO": {
-      "symbol": "KVYO",
-      "quarantined_at": "2026-06-04T17:04:10.784646+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:10.784652+00:00"
-    },
-    "AMPL": {
-      "symbol": "AMPL",
-      "quarantined_at": "2026-06-04T17:04:11.814854+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:11.814860+00:00"
+      "updated_at": "2026-06-04T18:46:17.437726+00:00"
     },
     "SEMR": {
       "symbol": "SEMR",
@@ -815,39 +70,14 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
           "error_or_missing_fields": [
             "history_8q"
           ]
-        }
-      ],
-      "missing_fields": [
-        "in_quarter_eps_actual",
-        "in_quarter_eps_surprise_pct",
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:12.860129+00:00"
-    },
-    "ZETA": {
-      "symbol": "ZETA",
-      "quarantined_at": "2026-06-04T17:04:13.056420+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
         },
         {
           "name": "yfinance",
@@ -859,70 +89,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:13.056427+00:00"
-    },
-    "RAMP": {
-      "symbol": "RAMP",
-      "quarantined_at": "2026-06-04T17:04:13.336134+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:13.336144+00:00"
-    },
-    "ZM": {
-      "symbol": "ZM",
-      "quarantined_at": "2026-06-04T17:04:16.182451+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:16.182457+00:00"
-    },
-    "FRSH": {
-      "symbol": "FRSH",
-      "quarantined_at": "2026-06-04T17:04:17.349559+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:17.349564+00:00"
+      "updated_at": "2026-06-04T18:46:20.447899+00:00"
     },
     "OS": {
       "symbol": "OS",
@@ -930,12 +97,14 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -948,106 +117,10 @@
       ],
       "missing_fields": [
         "in_quarter_rev_actual",
-        "in_quarter_eps_actual",
         "in_quarter_rev_surprise_pct",
-        "in_quarter_eps_surprise_pct",
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:17.612590+00:00"
-    },
-    "BL": {
-      "symbol": "BL",
-      "quarantined_at": "2026-06-04T17:04:17.867827+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:17.867835+00:00"
-    },
-    "TWLO": {
-      "symbol": "TWLO",
-      "quarantined_at": "2026-06-04T17:04:17.904237+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:17.904245+00:00"
-    },
-    "RNG": {
-      "symbol": "RNG",
-      "quarantined_at": "2026-06-04T17:04:19.450297+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:19.450307+00:00"
-    },
-    "APP": {
-      "symbol": "APP",
-      "quarantined_at": "2026-06-04T17:04:19.638079+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:19.638085+00:00"
+      "updated_at": "2026-06-04T18:46:21.829021+00:00"
     },
     "CHKP": {
       "symbol": "CHKP",
@@ -1055,43 +128,20 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:20.634471+00:00"
-    },
-    "TRMB": {
-      "symbol": "TRMB",
-      "quarantined_at": "2026-06-04T17:04:27.284411+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
           "error_or_missing_fields": [
             "history_8q"
           ]
         }
       ],
       "missing_fields": [
-        "history_8q (null)"
+        "history_8q (5/8 quarters)"
       ],
-      "updated_at": "2026-06-04T17:04:27.284420+00:00"
+      "updated_at": "2026-06-04T18:46:24.451359+00:00"
     },
     "QLYS": {
       "symbol": "QLYS",
@@ -1099,7 +149,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1116,7 +166,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:27.287167+00:00"
+      "updated_at": "2026-06-04T18:46:27.109820+00:00"
     },
     "PTC": {
       "symbol": "PTC",
@@ -1124,7 +174,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1141,7 +191,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:27.310402+00:00"
+      "updated_at": "2026-06-04T18:46:27.436733+00:00"
     },
     "BSY": {
       "symbol": "BSY",
@@ -1149,7 +199,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1166,7 +216,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:27.312955+00:00"
+      "updated_at": "2026-06-04T18:46:27.744086+00:00"
     },
     "ADSK": {
       "symbol": "ADSK",
@@ -1174,7 +224,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1191,32 +241,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:27.324393+00:00"
-    },
-    "RPD": {
-      "symbol": "RPD",
-      "quarantined_at": "2026-06-04T17:04:27.350031+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:27.350040+00:00"
+      "updated_at": "2026-06-04T18:46:27.113417+00:00"
     },
     "PCOR": {
       "symbol": "PCOR",
@@ -1224,7 +249,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1235,7 +260,7 @@
       "missing_fields": [
         "history_8q (5/8 quarters)"
       ],
-      "updated_at": "2026-06-04T17:04:27.387902+00:00"
+      "updated_at": "2026-06-04T18:46:28.095126+00:00"
     },
     "TYL": {
       "symbol": "TYL",
@@ -1243,7 +268,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1254,7 +279,7 @@
       "missing_fields": [
         "history_8q (5/8 quarters)"
       ],
-      "updated_at": "2026-06-04T17:04:27.494036+00:00"
+      "updated_at": "2026-06-04T18:46:28.634718+00:00"
     },
     "PSTG": {
       "symbol": "PSTG",
@@ -1262,7 +287,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1286,7 +311,7 @@
         "in_quarter_eps_surprise_pct",
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:31.899583+00:00"
+      "updated_at": "2026-06-04T18:46:30.932904+00:00"
     },
     "GLBE": {
       "symbol": "GLBE",
@@ -1294,12 +319,14 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -1311,7 +338,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:32.298435+00:00"
+      "updated_at": "2026-06-04T18:46:30.582065+00:00"
     },
     "WIX": {
       "symbol": "WIX",
@@ -1319,12 +346,14 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -1336,7 +365,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:32.342214+00:00"
+      "updated_at": "2026-06-04T18:46:31.438512+00:00"
     },
     "FICO": {
       "symbol": "FICO",
@@ -1344,7 +373,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1365,32 +394,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:34.116675+00:00"
-    },
-    "GDDY": {
-      "symbol": "GDDY",
-      "quarantined_at": "2026-06-04T17:04:34.636199+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:34.636207+00:00"
+      "updated_at": "2026-06-04T18:46:29.540146+00:00"
     },
     "AKAM": {
       "symbol": "AKAM",
@@ -1398,12 +402,14 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -1415,120 +421,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:35.115255+00:00"
-    },
-    "ABT": {
-      "symbol": "ABT",
-      "quarantined_at": "2026-06-04T17:04:37.299210+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:37.299219+00:00"
-    },
-    "ZTS": {
-      "symbol": "ZTS",
-      "quarantined_at": "2026-06-04T17:04:38.872710+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:38.872716+00:00"
-    },
-    "FANG": {
-      "symbol": "FANG",
-      "quarantined_at": "2026-06-04T17:04:39.362247+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:39.362255+00:00"
-    },
-    "KMB": {
-      "symbol": "KMB",
-      "quarantined_at": "2026-06-04T17:04:39.421672+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:39.421679+00:00"
-    },
-    "VLO": {
-      "symbol": "VLO",
-      "quarantined_at": "2026-06-04T17:04:39.646336+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        }
-      ],
-      "missing_fields": [
-        "history_8q (5/8 quarters)"
-      ],
-      "updated_at": "2026-06-04T17:04:39.646343+00:00"
+      "updated_at": "2026-06-04T18:46:31.184566+00:00"
     },
     "AEM": {
       "symbol": "AEM",
@@ -1536,12 +429,14 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -1553,32 +448,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:04:58.839195+00:00"
-    },
-    "BKR": {
-      "symbol": "BKR",
-      "quarantined_at": "2026-06-04T17:04:59.578625+00:00",
-      "last_success_at": null,
-      "sources_tried": [
-        {
-          "name": "factset",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "finnhub",
-          "error_or_missing_fields": "no_response"
-        },
-        {
-          "name": "yfinance",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
-        }
-      ],
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "updated_at": "2026-06-04T17:04:59.578632+00:00"
+      "updated_at": "2026-06-04T18:46:33.712177+00:00"
     },
     "GS": {
       "symbol": "GS",
@@ -1586,12 +456,14 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -1603,7 +475,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:05:01.119650+00:00"
+      "updated_at": "2026-06-04T18:46:33.088289+00:00"
     },
     "JPM": {
       "symbol": "JPM",
@@ -1611,12 +483,14 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -1628,7 +502,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:05:21.449145+00:00"
+      "updated_at": "2026-06-04T18:46:33.126634+00:00"
     },
     "SYF": {
       "symbol": "SYF",
@@ -1636,18 +510,20 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         }
       ],
       "missing_fields": [
         "history_8q (5/8 quarters)"
       ],
-      "updated_at": "2026-06-04T17:05:45.814687+00:00"
+      "updated_at": "2026-06-04T18:46:35.265990+00:00"
     },
     "COF": {
       "symbol": "COF",
@@ -1655,12 +531,14 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": "no_response"
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
         },
         {
           "name": "yfinance",
@@ -1672,7 +550,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:05:46.294614+00:00"
+      "updated_at": "2026-06-04T18:46:35.274422+00:00"
     },
     "ALAB": {
       "symbol": "ALAB",
@@ -1680,7 +558,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1693,7 +571,7 @@
       "missing_fields": [
         "history_8q (5/8 quarters)"
       ],
-      "updated_at": "2026-06-04T17:06:23.292977+00:00"
+      "updated_at": "2026-06-04T18:46:37.749756+00:00"
     },
     "CSU.TO": {
       "symbol": "CSU.TO",
@@ -1701,7 +579,7 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
@@ -1720,7 +598,7 @@
         "in_quarter_eps_surprise_pct",
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:06:25.370448+00:00"
+      "updated_at": "2026-06-04T18:46:42.162261+00:00"
     },
     "TSEM": {
       "symbol": "TSEM",
@@ -1728,14 +606,12 @@
       "last_success_at": null,
       "sources_tried": [
         {
-          "name": "factset",
+          "name": "perplexity_finance",
           "error_or_missing_fields": "no_response"
         },
         {
           "name": "finnhub",
-          "error_or_missing_fields": [
-            "history_8q"
-          ]
+          "error_or_missing_fields": "no_response"
         },
         {
           "name": "yfinance",
@@ -1747,7 +623,7 @@
       "missing_fields": [
         "history_8q (null)"
       ],
-      "updated_at": "2026-06-04T17:06:29.228489+00:00"
+      "updated_at": "2026-06-04T18:46:50.127301+00:00"
     }
   }
 }
