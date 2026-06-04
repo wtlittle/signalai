@@ -133,7 +133,7 @@ def schema_check(only: str | None) -> tuple[list[str], list[str], list[dict]]:
         # the verifier and the pipeline agree on what "full" means. null or a
         # short array is the exact failure mode that broke the 2026-06-04 refresh.
         history = rec.get("history_8q")
-        if not history_8q_complete(history):
+        if not history_8q_complete(history, symbol=tk):
             n = 0 if not isinstance(history, list) else len(history)
             required_missing.append(
                 f"history_8q ({'null' if history is None else f'{n}/{HISTORY_8Q_REQUIRED} quarters'})"

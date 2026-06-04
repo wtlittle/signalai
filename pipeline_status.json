@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-04T19:19:19.125212+00:00",
+  "generated_at": "2026-06-04T20:03:06.189448+00:00",
   "tickers": {
     "AMZN": {
       "symbol": "AMZN",
@@ -577,14 +577,12 @@
     },
     "SNDK": {
       "symbol": "SNDK",
-      "last_attempt_at": "2026-06-04T19:19:17.370827+00:00",
-      "last_success_at": null,
+      "last_attempt_at": "2026-06-04T20:03:04.472140+00:00",
+      "last_success_at": "2026-06-04T20:03:04.471749+00:00",
       "last_source": "perplexity_finance",
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "quarantined": true,
-      "duration_ms": 1750
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 702
     },
     "CIEN": {
       "symbol": "CIEN",
@@ -643,14 +641,12 @@
     },
     "SOC": {
       "symbol": "SOC",
-      "last_attempt_at": "2026-06-04T19:19:19.125203+00:00",
-      "last_success_at": null,
+      "last_attempt_at": "2026-06-04T20:03:06.189440+00:00",
+      "last_success_at": "2026-06-04T20:03:06.189090+00:00",
       "last_source": "perplexity_finance",
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "quarantined": true,
-      "duration_ms": 1751
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 1652
     },
     "GEV": {
       "symbol": "GEV",
@@ -926,17 +922,6 @@
       "quarantined": false,
       "duration_ms": 2728,
       "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
-    },
-    "OS": {
-      "symbol": "OS",
-      "last_attempt_at": "2026-06-04T19:19:14.717277+00:00",
-      "last_success_at": null,
-      "last_source": "perplexity_finance",
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "quarantined": true,
-      "duration_ms": 1930
     },
     "BL": {
       "symbol": "BL",

@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-04T19:19:15.577453+00:00",
+  "last_updated": "2026-06-04T20:03:06.137427+00:00",
   "schema_version": 1,
   "tickers": {
     "ADP": {
@@ -14479,7 +14479,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-04T13:04:42+00:00",
+      "intel_updated_at": "2026-06-04T20:03:04.422031+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "SanDisk crushes Q3 with adjusted EPS of $23.41 vs. $14.62 consensus estimate, but stock declines 6.4% post-earnings amid profit-taking and new business model concerns.",
       "beat_miss_quality": "Quality beat on earnings (+60% surprise), yet stock reaction suggests market questions sustainability of new business model and pricing power",
@@ -14607,8 +14607,61 @@
         "in_quarter_eps_surprise_pct": 60.1,
         "in_quarter_rev_actual": "$5.95B",
         "in_quarter_rev_actual_source": "note",
-        "in_quarter_eps_actual_source": "note"
-      }
+        "in_quarter_eps_actual_source": "note",
+        "rev_actual_source": "perplexity_finance",
+        "eps_actual_source": "perplexity_finance",
+        "in_quarter_eps_estimate": 14.11,
+        "in_quarter_eps_consensus": 14.11,
+        "eps_consensus_source": "perplexity_finance",
+        "eps_surprise_source": "perplexity_finance",
+        "in_quarter_rev_surprise_pct": 26.0629,
+        "rev_surprise_source": "perplexity_finance"
+      },
+      "history_8q": [
+        {
+          "period_end": "2026-04-30",
+          "fiscal_quarter": 3,
+          "fiscal_year": 2026,
+          "revenue_actual": 5950000000,
+          "eps_actual": 23.03,
+          "eps_estimate": 14.11,
+          "eps_surprise_pct": 63.2176,
+          "rev_surprise_pct": 26.0629
+        },
+        {
+          "period_end": "2026-01-29",
+          "fiscal_quarter": 2,
+          "fiscal_year": 2026,
+          "revenue_actual": 3025000000,
+          "eps_actual": 5.83,
+          "eps_estimate": 3.54,
+          "eps_surprise_pct": 64.6893,
+          "rev_surprise_pct": 12.5547
+        },
+        {
+          "period_end": "2025-11-06",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2026,
+          "revenue_actual": 2308000000,
+          "eps_actual": 0.9,
+          "eps_estimate": 0.85,
+          "eps_surprise_pct": 5.8824,
+          "rev_surprise_pct": 7.2459
+        },
+        {
+          "period_end": "2025-08-14",
+          "fiscal_quarter": 4,
+          "fiscal_year": 2025,
+          "revenue_actual": 1901000000,
+          "eps_actual": 0.02,
+          "eps_estimate": 0.02,
+          "eps_surprise_pct": 0.0,
+          "rev_surprise_pct": 4.2271
+        }
+      ],
+      "history_8q_source": "perplexity_finance",
+      "partial_history_accepted": true,
+      "partial_history_note": "partial history accepted: 4/8 (recent IPO)"
     },
     "TEAM": {
       "ticker": "TEAM",
@@ -23701,7 +23754,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-04T13:04:42+00:00",
+      "intel_updated_at": "2026-06-04T20:03:06.126004+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "SOC misses on revenue and earnings, reports $197M Q1 loss with minimal $1.3M revenue, yet stock rallies 5.6% on apparent debt relief signals.",
       "beat_miss_quality": "Miss/Noise: Significant revenue (-92.11%) and EPS (-114.06%) misses, but positive stock reaction suggests special situation factors driving price.",
@@ -23832,8 +23885,66 @@
         "in_quarter_rev_surprise_pct": -91.93,
         "rev_surprise_source": "computed_from_perplexity",
         "in_quarter_rev_actual_source": "note",
-        "in_quarter_eps_actual_source": "note"
-      }
+        "in_quarter_eps_actual_source": "note",
+        "rev_actual_source": "perplexity_finance",
+        "eps_actual_source": "perplexity_finance",
+        "in_quarter_eps_consensus": -0.64
+      },
+      "history_8q": [
+        {
+          "period_end": "2026-03-31",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2026,
+          "revenue_actual": 1271000,
+          "eps_actual": -1.37,
+          "eps_estimate": -0.5388,
+          "eps_surprise_pct": -154.4543,
+          "rev_surprise_pct": null
+        },
+        {
+          "period_end": "2025-12-31",
+          "fiscal_quarter": 4,
+          "fiscal_year": 2025,
+          "revenue_actual": 0,
+          "eps_actual": -0.39,
+          "eps_estimate": -0.4676,
+          "eps_surprise_pct": 16.5954,
+          "rev_surprise_pct": null
+        },
+        {
+          "period_end": "2025-09-30",
+          "fiscal_quarter": 3,
+          "fiscal_year": 2025,
+          "revenue_actual": 0,
+          "eps_actual": -1.09,
+          "eps_estimate": -0.7822,
+          "eps_surprise_pct": -41.9074,
+          "rev_surprise_pct": null
+        },
+        {
+          "period_end": "2025-06-30",
+          "fiscal_quarter": 2,
+          "fiscal_year": 2025,
+          "revenue_actual": 0,
+          "eps_actual": -1.4,
+          "eps_estimate": null,
+          "eps_surprise_pct": null,
+          "rev_surprise_pct": null
+        },
+        {
+          "period_end": "2025-03-31",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2025,
+          "revenue_actual": 0,
+          "eps_actual": -1.3,
+          "eps_estimate": null,
+          "eps_surprise_pct": null,
+          "rev_surprise_pct": null
+        }
+      ],
+      "history_8q_source": "finnhub",
+      "partial_history_accepted": true,
+      "partial_history_note": "partial history accepted: 5/8 (recent IPO)"
     },
     "TRMB": {
       "ticker": "TRMB",
@@ -32654,137 +32765,6 @@
         }
       ],
       "history_8q_source": "perplexity_finance"
-    },
-    "OS": {
-      "ticker": "OS",
-      "company_name": "OneStream",
-      "state": "post_earnings",
-      "inflection_status": "POST",
-      "last_earnings_date": "2026-05-07",
-      "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-04T13:04:42+00:00",
-      "refresh_reason": "synced_from_post_earnings_note",
-      "bottom_line": "Q1 2026 earnings not yet reflected in search results; prior Q4 2025 print showed strong beat with $0.12 EPS and $163.7M revenue.",
-      "beat_miss_quality": "Q4 2025 actual beat (EPS +140%, Rev +4% YoY) but quality questioned by negative net margin and cautious analyst sentiment.",
-      "bull_case": {
-        "thesis_headline": "Bull path requires repeat execution next print.",
-        "pattern": "",
-        "pushes_higher": [
-          {
-            "signal_id": null,
-            "text": "$0.12 vs $0.05 est (+$0.07 beat)"
-          },
-          {
-            "signal_id": null,
-            "text": "$163.73M vs $157.28M est (+4.1% beat)"
-          }
-        ],
-        "pushes_lower": []
-      },
-      "base_case": {
-        "setup_headline": "Thesis intact post-print; watch next print for signal confirmation.",
-        "pushes_higher": [],
-        "pushes_lower": []
-      },
-      "bear_case": {
-        "thesis_headline": "Bear path requires execution slip or macro shock.",
-        "pattern": "",
-        "pushes_higher": [],
-        "pushes_lower": [
-          {
-            "signal_id": null,
-            "text": "Consensus EPS expected to decline 67% Q4-to-Q1 ($0.12 to $0.04); analyst sentiment remains 'Reduce' with $25 PT"
-          }
-        ]
-      },
-      "signal_scorecard": [
-        {
-          "signal_id": "headline_results",
-          "label": "Headline Results",
-          "status": "WATCHING",
-          "note": "Q4 2025 actual beat (EPS +140%, Rev +4% YoY) but quality questioned by negative net margin and cautious analyst sentiment.",
-          "watch_quarter": "Q reported 2026-05-07",
-          "resolved_at": null
-        },
-        {
-          "signal_id": "guidance_trajectory",
-          "label": "Guidance Trajectory",
-          "status": "CONFIRMED",
-          "note": "Cautious; strong operational metrics (27% subscription revenue growth, 1,739 customers +13% YoY) offset by recurring profitability concerns and conservative FY26 outlook.",
-          "watch_quarter": "Q reported 2026-05-07",
-          "resolved_at": "2026-05-14T22:46:37+00:00"
-        }
-      ],
-      "key_metrics": [
-        "$0.12 vs $0.05 est (+$0.07 beat)",
-        "$163.73M vs $157.28M est (+4.1% beat)",
-        "+23.6% YoY"
-      ],
-      "surprises": [
-        "Q4 subscription revenue +27% YoY; free cash flow reached $70M for 9M (up 107% YoY)",
-        "Consensus EPS expected to decline 67% Q4-to-Q1 ($0.12 to $0.04); analyst sentiment remains 'Reduce' with $25 PT"
-      ],
-      "analyst_reactions": [
-        "'Reduce' with $25 average PT (implies downside from recent levels)",
-        "$3M in shares sold over 3 months (cautious signal)"
-      ],
-      "guidance_text": "Q4 2025 guided to non-GAAP margin of 4-6% and EPS of $0.04-0.07; management expressed confidence in 2026 Wall Street consensus but provided no formal FY26 guidance.",
-      "tone_drift": {
-        "current_tone": "neutral",
-        "prior_tone": "",
-        "tone_notes": "Cautious; strong operational metrics (27% subscription revenue growth, 1,739 customers +13% YoY) offset by recurring profitability concerns and conservative FY26 outlook."
-      },
-      "post_earnings_review": {
-        "active": true,
-        "earnings_date": "2026-05-07",
-        "days_since": 7,
-        "visible_until": "2026-05-21",
-        "takeaways_headline": "Challenges growth narrative; despite strong billings/customer adds, margin profile and declining near-term EPS expectations suggest limited pricing power and potential near-term margin pressure.",
-        "takeaways_bullets": [
-          "Challenges growth narrative",
-          "despite strong billings/customer adds, margin profile and declining near-term EPS expectations suggest limited pricing power and potential near-term margin pressure"
-        ],
-        "what_happened_headline": "Q1 2026 earnings not yet reflected in search results; prior Q4 2025 print showed strong beat with $0.12 EPS and $163.7M revenue.",
-        "what_happened_bullets": [
-          "$0.12 vs $0.05 est (+$0.07 beat)",
-          "$163.73M vs $157.28M est (+4.1% beat)",
-          "+23.6% YoY"
-        ],
-        "stock_reaction_pct": null
-      },
-      "source_metadata": {
-        "legacy_note_path": "notes/post_earnings/OS_2026-05-07.md",
-        "primary_sources": [
-          {
-            "label": "marketbeat.com",
-            "url": "https://www.marketbeat.com/instant-alerts/onestream-os-expected-to-announce-quarterly-earnings-on-thursday-2026-05-07/"
-          },
-          {
-            "label": "marketbeat.com",
-            "url": "https://www.marketbeat.com/stocks/NASDAQ/OS/earnings/"
-          },
-          {
-            "label": "quartr.com",
-            "url": "https://quartr.com/companies/onestream-inc_17595"
-          },
-          {
-            "label": "public.com",
-            "url": "https://public.com/stocks/os/earnings"
-          }
-        ]
-      },
-      "previous_bottom_line": null,
-      "signal_changes": [],
-      "debate_score": {
-        "value": 0,
-        "conflict_ratio": 0.0,
-        "resolution_velocity": 0.5,
-        "cross_cited_signals": 0,
-        "unresolved_signals": 1,
-        "total_signals": 2,
-        "as_of": "2026-06-04T13:05:56Z"
-      },
-      "results_vs_consensus": {}
     },
     "CRDO": {
       "ticker": "CRDO",

@@ -52,6 +52,39 @@ REQUIRED_RVC_FIELDS: tuple[str, ...] = (
 # exactly this many quarters each with BOTH a revenue and an EPS actual.
 HISTORY_8Q_REQUIRED_QUARTERS = 8
 
+# Tickers with insufficient public history due to recent IPO. The pipeline
+# accepts max-available history for these symbols instead of quarantining
+# them. Remove an entry once 8 fully-reported quarters become available
+# (this will happen organically as new earnings are released).
+SHORT_HISTORY_TICKERS: dict[str, int] = {
+    "SNDK": 4,  # IPO Feb 2025
+    "SOC":  5,  # IPO 2025
+}
+
+
+def min_required_quarters(symbol: str | None) -> int:
+    """The minimum fully-populated quarter count that counts as a complete
+    history for ``symbol``: the per-ticker allowance for an allowlisted recent
+    IPO, otherwise ``HISTORY_8Q_REQUIRED_QUARTERS`` (8). Sources consult this so
+    they emit max-available (still fully-populated) history for an allowlisted
+    symbol instead of deferring -- they never pad or fabricate a quarter.
+    """
+    if symbol is not None and symbol in SHORT_HISTORY_TICKERS:
+        return SHORT_HISTORY_TICKERS[symbol]
+    return HISTORY_8Q_REQUIRED_QUARTERS
+
+
+def _non_null_quarter_count(history: list | None) -> int:
+    """Count quarters carrying BOTH a non-null revenue and EPS actual."""
+    if not isinstance(history, list):
+        return 0
+    return sum(
+        1 for q in history
+        if isinstance(q, dict)
+        and q.get("revenue_actual") is not None
+        and q.get("eps_actual") is not None
+    )
+
 # Guidance fields (tracked, SOFT -- never a hard gate; fabricating guidance would
 # violate the zero-fabrication mandate).
 GUIDANCE_FIELDS: tuple[str, ...] = (
@@ -169,20 +202,40 @@ class EarningsIntelRecord(BaseModel):
         ]
 
 
-def history_8q_complete(history: list | None) -> bool:
-    """True iff ``history`` is a full 8Q array, each quarter carrying BOTH a
-    non-null revenue and EPS actual. The single definition of "complete 8Q" that
-    the pipeline, the sources, and the verifier all honor.
+def history_8q_complete(history: list | None, *, symbol: str | None = None) -> bool:
+    """True iff ``history`` carries enough fully-populated quarters (each with
+    BOTH a non-null revenue and EPS actual). The single definition of "complete
+    history" that the pipeline, the sources, and the verifier all honor.
+
+    Normally the threshold is ``HISTORY_8Q_REQUIRED_QUARTERS`` (8). For a symbol
+    in ``SHORT_HISTORY_TICKERS`` (recent IPOs without 8 quarters of public
+    history) the threshold is the per-ticker minimum from that map; the record
+    is accepted on its max-available history rather than quarantined. This is the
+    only sanctioned exception to the 8Q requirement and applies ONLY to
+    explicitly allowlisted symbols -- no record is ever fabricated.
     """
-    if not isinstance(history, list) or len(history) < HISTORY_8Q_REQUIRED_QUARTERS:
+    required = HISTORY_8Q_REQUIRED_QUARTERS
+    if symbol is not None and symbol in SHORT_HISTORY_TICKERS:
+        required = SHORT_HISTORY_TICKERS[symbol]
+    return _non_null_quarter_count(history) >= required
+
+
+def partial_history_accepted(history: list | None, symbol: str | None) -> bool:
+    """True iff ``symbol`` clears the completeness gate solely via its
+    SHORT_HISTORY_TICKERS allowance (i.e. it would NOT pass the full 8Q bar).
+    """
+    if symbol is None or symbol not in SHORT_HISTORY_TICKERS:
         return False
-    usable = [
-        q for q in history
-        if isinstance(q, dict)
-        and q.get("revenue_actual") is not None
-        and q.get("eps_actual") is not None
-    ]
-    return len(usable) >= HISTORY_8Q_REQUIRED_QUARTERS
+    n = _non_null_quarter_count(history)
+    return SHORT_HISTORY_TICKERS[symbol] <= n < HISTORY_8Q_REQUIRED_QUARTERS
+
+
+def partial_history_note(history: list | None, symbol: str | None) -> str | None:
+    """The audit note recording an accepted partial history (or None)."""
+    if not partial_history_accepted(history, symbol):
+        return None
+    n = _non_null_quarter_count(history)
+    return f"partial history accepted: {n}/{HISTORY_8Q_REQUIRED_QUARTERS} (recent IPO)"
 
 
 def rvc_missing_fields(rvc: dict | None) -> list[str]:
@@ -204,18 +257,26 @@ def validate_record(raw: dict) -> tuple[Optional[EarningsIntelRecord], Optional[
         return None, str(exc)
 
 
-def record_completeness(raw: dict, *, require_history_8q: bool = True) -> list[str]:
+def record_completeness(
+    raw: dict, *, require_history_8q: bool = True, symbol: str | None = None
+) -> list[str]:
     """Return the list of completeness gaps for a POST record (empty == complete).
 
     This is the policy a POST ticker must satisfy before the pipeline accepts a
     source's response as authoritative. It is intentionally separate from
     ``validate_record`` (shape) so callers can apply it only when the record's
     state + report-age warrant a full payload.
+
+    ``symbol`` is threaded to ``history_8q_complete`` so an allowlisted recent
+    IPO (``SHORT_HISTORY_TICKERS``) clears the history gate on its max-available
+    quarters instead of being reported as incomplete. Callers detect that this
+    short-history path was taken via ``partial_history_accepted`` /
+    ``partial_history_note`` and tag the record accordingly.
     """
     gaps: list[str] = []
     rvc = raw.get("results_vs_consensus") or {}
     gaps.extend(rvc_missing_fields(rvc))
-    if require_history_8q and not history_8q_complete(raw.get("history_8q")):
+    if require_history_8q and not history_8q_complete(raw.get("history_8q"), symbol=symbol):
         h = raw.get("history_8q")
         n = len(h) if isinstance(h, list) else 0
         gaps.append(

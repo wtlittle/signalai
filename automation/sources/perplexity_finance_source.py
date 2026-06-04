@@ -37,6 +37,7 @@ import re
 import subprocess
 from typing import Any, Optional
 
+from automation.pipeline.schema import min_required_quarters
 from automation.sources.base import EarningsSource, SourceResponse
 
 _SOURCE_ID = "finance"
@@ -249,11 +250,15 @@ class PerplexityFinanceSource(EarningsSource):
         missing: list[str] = []
 
         # --- trailing 8Q ---
-        if len(history) >= 8:
-            fields["history_8q"] = history[:8]
+        # Normally 8; an allowlisted recent IPO (SHORT_HISTORY_TICKERS) accepts
+        # its max-available count. Every emitted quarter is still fully populated
+        # -- we publish fewer real quarters, never a padded/fabricated one.
+        required = min_required_quarters(symbol)
+        if len(history) >= required:
+            fields["history_8q"] = history[:required]
             fields["history_8q_source"] = self.name
         else:
-            # A short series is not published as a complete 8Q; defer the field.
+            # A short series is not published as a complete history; defer the field.
             missing.append("history_8q")
 
         # --- most-recent in-quarter actuals/consensus/surprise ---
