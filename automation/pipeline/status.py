@@ -9,7 +9,7 @@ snapshot the dashboard renders. It has two parts:
          missing_fields:[], quarantined: bool, duration_ms}
   * ``run`` -- a top-level summary written once per ``refresh_universe`` call:
         {run_id, started_at, finished_at, total, succeeded, quarantined,
-         skipped, sources_used:{factset,finnhub,yfinance,perplexity}}
+         skipped, sources_used:{perplexity_finance,finnhub,yfinance,perplexity}}
 
 Thread-safe and atomic for the same reason quarantine.py is: the runner updates
 per-ticker status from worker threads concurrently.

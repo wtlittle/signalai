@@ -15,11 +15,11 @@ completed is **quarantined** with its prior good data preserved.
 ```
 automation/
   sources/
-    base.py             # EarningsSource ABC + SourceResponse (pydantic)
-    factset_source.py   # stub (returns None) — first in priority order
-    finnhub_source.py   # history_8q + in-quarter EPS actuals/consensus
-    yfinance_source.py  # quotes + quarterly revenue actuals
-    perplexity_source.py# FY guidance + revenue consensus (qualitative)
+    base.py                      # EarningsSource ABC + SourceResponse (pydantic)
+    perplexity_finance_source.py # history_8q + in-quarter actuals — FIRST in priority order
+    finnhub_source.py            # history_8q + in-quarter EPS actuals/consensus
+    yfinance_source.py           # quotes + quarterly revenue actuals
+    perplexity_source.py         # FY guidance + revenue consensus (qualitative)
   pipeline/
     schema.py           # EarningsIntelRecord — the ONE contract
     refresh_ticker.py   # refresh_ticker(symbol, *, force=False) -> TickerResult
@@ -41,7 +41,7 @@ refresh_ticker(symbol)
        state == "post_earnings" AND hours_since_report >= 48  ->  must be COMPLETE
        otherwise                                              ->  "still settling", shape-only
   3. Walk sources in priority order, gap-filling:
-       FactSet  ->  Finnhub  ->  yfinance  ->  Perplexity
+       PerplexityFinance  ->  Finnhub  ->  yfinance  ->  Perplexity
        (higher priority wins field collisions; each accepted field is
         stamped <field>_source for provenance)
   4. Validate the merged record:
@@ -115,7 +115,7 @@ The entry is removed automatically on the next successful refresh.
   "run": {
     "run_id": "...", "started_at": "...", "finished_at": "...",
     "total": 192, "succeeded": 188, "quarantined": 4, "skipped": 0,
-    "sources_used": {"factset": 0, "finnhub": 150, "yfinance": 188, "perplexity": 40}
+    "sources_used": {"perplexity_finance": 170, "finnhub": 150, "yfinance": 188, "perplexity": 40}
   }
 }
 ```
@@ -156,6 +156,34 @@ chain. The result (written / quarantined / missing fields / source) prints as a
 python -c "from automation.pipeline.runner import refresh_universe; \
 print(refresh_universe(['AMZN','ACN','AVGO'], parallel=4).as_dict())"
 ```
+
+---
+
+## Source matrix
+
+| Source | Priority | Supplies | Reaches data via |
+|---|---|---|---|
+| PerplexityFinance | 1 | `history_8q` (trailing 8Q), in-quarter rev/eps actual + eps consensus + surprise | `external-tool` CLI (subprocess) -> `finance_earnings_history` |
+| Finnhub | 2 | `history_8q` (GAAP reconstruction), in-quarter EPS actual/estimate/surprise | `FINNHUB_API_KEY` HTTP |
+| yfinance | 3 | in-quarter revenue actual, last-resort short history | `yfinance` package |
+| Perplexity (sonar) | 4 | FY guidance + qualitative narrative only (never in-quarter actuals) | `PERPLEXITY_API_KEY` HTTP |
+
+PerplexityFinance replaced the former FactSet stub at the head of the chain.
+Because it covers `history_8q` for nearly every ticker, the lower sources only
+gap-fill what it leaves null (e.g. yfinance revenue actual when the table omits a
+revenue cell).
+
+### `external-tool` CLI dependency (cron environments)
+
+`PerplexityFinanceSource` shells out to the preinstalled `external-tool` CLI,
+which requires the **`external-tools` credential preset**. The pipeline runs in
+cron as plain `python3 -m automation.jobs.daily_refresh`, so the cron bash call
+that launches it MUST pass `api_credentials=["github","external-tools"]` (the
+preset injects a short-lived token into `/tmp/.tools_service_endpoint` that the
+CLI reads). Without the preset the source logs a warning and the chain falls
+through to Finnhub -- no crash, but `history_8q` coverage drops back to the
+Finnhub reconstruction. The source never fabricates: a missing credential simply
+defers to the next source.
 
 ---
 

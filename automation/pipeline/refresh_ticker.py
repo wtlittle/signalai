@@ -4,8 +4,8 @@ The atomic unit of the earnings pipeline: ``refresh_ticker(symbol)``.
 For one ticker it:
   1. Loads the current earnings_intel record (kept as the identity base AND as
      the prior-good record we must not clobber).
-  2. Runs sources in PRIORITY ORDER -- FactSet -> Finnhub -> yfinance ->
-     Perplexity -- merging each response into an accumulating record. Higher-
+  2. Runs sources in PRIORITY ORDER -- PerplexityFinance -> Finnhub -> yfinance
+     -> Perplexity -- merging each response into an accumulating record. Higher-
      priority sources win on key collisions; lower-priority sources only fill
      gaps. Perplexity runs last and is anchored on the actuals the structured
      sources already supplied (it never supplies in-quarter actuals).
@@ -44,8 +44,8 @@ from automation.pipeline.schema import (
 )
 from automation.shared.paths import ROOT_DIR
 from automation.sources.base import EarningsSource
-from automation.sources.factset_source import FactSetSource
 from automation.sources.finnhub_source import FinnhubSource
+from automation.sources.perplexity_finance_source import PerplexityFinanceSource
 from automation.sources.perplexity_source import PerplexitySource
 from automation.sources.yfinance_source import YFinanceSource
 
@@ -135,8 +135,19 @@ def _merge_fields(base: dict, incoming: dict) -> None:
 
 
 def _ordered_sources() -> list[EarningsSource]:
-    """The priority chain. FactSet (stub) -> Finnhub -> yfinance -> Perplexity."""
-    return [FactSetSource(), FinnhubSource(), YFinanceSource(), PerplexitySource()]
+    """The priority chain. PerplexityFinance -> Finnhub -> yfinance -> Perplexity.
+
+    PerplexityFinance leads because its finance_earnings_history tool supplies the
+    full trailing-8Q array (the field that quarantined 74 tickers); Finnhub and
+    yfinance gap-fill anything it leaves null, and the qualitative Perplexity
+    source runs last (FY guidance + narrative, never in-quarter actuals).
+    """
+    return [
+        PerplexityFinanceSource(),
+        FinnhubSource(),
+        YFinanceSource(),
+        PerplexitySource(),
+    ]
 
 
 def refresh_ticker(symbol: str, *, force: bool = False) -> TickerResult:
