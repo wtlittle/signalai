@@ -96,6 +96,38 @@ PUBLISHER_BY_HOST = {
     "theguardian.com": "The Guardian",
 }
 
+# Perplexity requires response_format.type == "json_schema" (OpenAI's
+# "json_object" is rejected with HTTP 400). The schema is advisory — sonar may
+# return extra top-level fields (search_results, citations) alongside the
+# json_schema content; the parse path tolerates that.
+RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "title": {"type": "string"},
+                            "body": {"type": "string"},
+                            "url": {"type": "string"},
+                            "source": {"type": "string"},
+                            "ticker": {"type": "string"},
+                            "published_at_iso": {"type": "string"},
+                            "signal": {"type": "string"},
+                        },
+                        "required": ["title", "url", "ticker"],
+                    },
+                }
+            },
+            "required": ["items"],
+        }
+    },
+}
+
 SYSTEM_PROMPT = (
     "You are a financial news desk editor for a buy-side equity research team. "
     "Surface ONLY material business news from the last 24 hours about the "
@@ -164,8 +196,7 @@ def call_sonar(prompt: str) -> dict[str, Any]:
         ],
         "max_tokens": MAX_TOKENS,
         "temperature": 0.1,
-        "return_citations": False,
-        "response_format": {"type": "json_object"},
+        "response_format": RESPONSE_FORMAT,
     }
 
     resp = None
@@ -175,6 +206,12 @@ def call_sonar(prompt: str) -> dict[str, Any]:
     t0 = time.perf_counter()
     try:
         resp = requests.post(BASE_URL, headers=headers, json=body, timeout=TIMEOUT_S)
+        if resp.status_code >= 300:
+            # raise_for_status() swallows the body; surface it for debugging.
+            print(
+                f"  [SONAR HTTP {resp.status_code}] response body "
+                f"(first 2000 chars): {resp.text[:2000]}"
+            )
         resp.raise_for_status()
         resp_json = resp.json()
         status = "success"
