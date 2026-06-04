@@ -5,10 +5,13 @@ For one ticker it:
   1. Loads the current earnings_intel record (kept as the identity base AND as
      the prior-good record we must not clobber).
   2. Runs sources in PRIORITY ORDER -- PerplexityFinance -> Finnhub -> yfinance
-     -> Perplexity -- merging each response into an accumulating record. Higher-
-     priority sources win on key collisions; lower-priority sources only fill
-     gaps. Perplexity runs last and is anchored on the actuals the structured
-     sources already supplied (it never supplies in-quarter actuals).
+     -> Perplexity -> CachedFallback -- merging each response into an
+     accumulating record. Higher-priority sources win on key collisions;
+     lower-priority sources only fill gaps. Perplexity is anchored on the actuals
+     the structured sources already supplied (it never supplies in-quarter
+     actuals). CachedFallback runs LAST and only re-emits on-disk fields that are
+     still inside their per-field freshness window, so a transient triple-miss on
+     the live structured sources does not re-quarantine a mature ticker.
   3. Validates the merged record against the ONE schema contract
      (EarningsIntelRecord). A POST ticker reported >48h ago must additionally
      pass the completeness policy (REQUIRED_RVC_FIELDS + a full 8Q array).
@@ -44,10 +47,15 @@ from automation.pipeline.schema import (
 )
 from automation.shared.paths import ROOT_DIR
 from automation.sources.base import EarningsSource
+from automation.sources.cached_source import CachedFallbackSource
 from automation.sources.finnhub_source import FinnhubSource
 from automation.sources.perplexity_finance_source import PerplexityFinanceSource
 from automation.sources.perplexity_source import PerplexitySource
 from automation.sources.yfinance_source import YFinanceSource
+
+# Live structured sources whose collective failure on a field is what justifies
+# falling back to cache; named here so cached_fallback_reason can cite them.
+_LIVE_STRUCTURED_SOURCES = ("perplexity_finance", "finnhub", "yfinance")
 
 INTEL_PATH = ROOT_DIR / "earnings_intel.json"
 
@@ -134,19 +142,48 @@ def _merge_fields(base: dict, incoming: dict) -> None:
                 base[key] = val
 
 
+def _cached_fallback_reason(merged: dict) -> str | None:
+    """Build a record-level audit string when any field was served from cache.
+
+    Scans both top-level fields and the nested ``results_vs_consensus`` for
+    ``<field>_source == "cached"`` markers. Returns a string naming the cached
+    fields and the live structured sources that came up null for them, e.g.
+    ``"perplexity_finance,finnhub,yfinance all returned null for history_8q"``.
+    Returns ``None`` when nothing was served from cache.
+    """
+    cached_fields: list[str] = []
+    for key, val in merged.items():
+        if key.endswith("_source") and val == "cached":
+            cached_fields.append(key[: -len("_source")])
+    rvc = merged.get("results_vs_consensus")
+    if isinstance(rvc, dict):
+        for key, val in rvc.items():
+            if key.endswith("_source") and val == "cached":
+                cached_fields.append(key[: -len("_source")])
+    if not cached_fields:
+        return None
+    fields = ",".join(sorted(set(cached_fields)))
+    live = ",".join(_LIVE_STRUCTURED_SOURCES)
+    return f"{live} all returned null for {fields}"
+
+
 def _ordered_sources() -> list[EarningsSource]:
-    """The priority chain. PerplexityFinance -> Finnhub -> yfinance -> Perplexity.
+    """The priority chain. PerplexityFinance -> Finnhub -> yfinance -> Perplexity
+    -> CachedFallback.
 
     PerplexityFinance leads because its finance_earnings_history tool supplies the
     full trailing-8Q array (the field that quarantined 74 tickers); Finnhub and
     yfinance gap-fill anything it leaves null, and the qualitative Perplexity
-    source runs last (FY guidance + narrative, never in-quarter actuals).
+    source runs next (FY guidance + narrative, never in-quarter actuals).
+    CachedFallback runs last: it re-emits still-fresh on-disk fields so a
+    transient miss across the live sources does not re-quarantine a mature ticker.
     """
     return [
         PerplexityFinanceSource(),
         FinnhubSource(),
         YFinanceSource(),
         PerplexitySource(),
+        CachedFallbackSource(),
     ]
 
 
@@ -235,6 +272,13 @@ def refresh_ticker(symbol: str, *, force: bool = False) -> TickerResult:
 
     merged["intel_updated_at"] = _now()
 
+    # --- audit any fields the cached fallback supplied ---
+    # If CachedFallbackSource filled a gap the live structured sources left null,
+    # record a record-level reason so cached fields are auditable in postmortems.
+    cached_reason = _cached_fallback_reason(merged)
+    if cached_reason:
+        merged["cached_fallback_reason"] = cached_reason
+
     # --- structural schema gate (shape/type) ---
     model, schema_err = validate_record(merged)
     structurally_valid = model is not None
@@ -251,6 +295,7 @@ def refresh_ticker(symbol: str, *, force: bool = False) -> TickerResult:
         status.record_ticker(
             symbol, last_success_at=_now(), last_source=accepted_source,
             missing_fields=[], quarantined=False, duration_ms=duration_ms,
+            cached_fallback_reason=cached_reason,
         )
         return TickerResult(
             symbol=symbol, ok=True, written=True, quarantined=False,
@@ -276,6 +321,7 @@ def refresh_ticker(symbol: str, *, force: bool = False) -> TickerResult:
             symbol, last_success_at=_now() if written else None,
             last_source=accepted_source, missing_fields=[],
             quarantined=False, duration_ms=duration_ms,
+            cached_fallback_reason=cached_reason if written else None,
         )
         return TickerResult(
             symbol=symbol, ok=True, written=written, quarantined=False,

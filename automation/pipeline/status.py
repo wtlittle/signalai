@@ -9,7 +9,7 @@ snapshot the dashboard renders. It has two parts:
          missing_fields:[], quarantined: bool, duration_ms}
   * ``run`` -- a top-level summary written once per ``refresh_universe`` call:
         {run_id, started_at, finished_at, total, succeeded, quarantined,
-         skipped, sources_used:{perplexity_finance,finnhub,yfinance,perplexity}}
+         skipped, sources_used:{perplexity_finance,finnhub,yfinance,perplexity,cached}}
 
 Thread-safe and atomic for the same reason quarantine.py is: the runner updates
 per-ticker status from worker threads concurrently.
@@ -61,13 +61,18 @@ def record_ticker(
     missing_fields: list[str],
     quarantined: bool,
     duration_ms: int,
+    cached_fallback_reason: str | None = None,
 ) -> None:
-    """Append/update one ticker's status entry. Called by every refresh_ticker."""
+    """Append/update one ticker's status entry. Called by every refresh_ticker.
+
+    ``cached_fallback_reason`` is recorded when the cached fallback source filled
+    a gap the live sources left null, so postmortems can audit cached fields.
+    """
     symbol = symbol.upper().strip()
     with _LOCK:
         data = _load()
         prior = data["tickers"].get(symbol, {})
-        data["tickers"][symbol] = {
+        entry = {
             "symbol": symbol,
             "last_attempt_at": _now(),
             # Preserve the most recent real success timestamp across attempts.
@@ -78,6 +83,9 @@ def record_ticker(
             "quarantined": quarantined,
             "duration_ms": duration_ms,
         }
+        if cached_fallback_reason:
+            entry["cached_fallback_reason"] = cached_fallback_reason
+        data["tickers"][symbol] = entry
         _atomic_write(data)
 
 

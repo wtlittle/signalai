@@ -77,7 +77,7 @@ def refresh_universe(symbols: list[str], *, parallel: int = 8, force: bool = Fal
     succeeded = sum(1 for r in results if r.ok and not r.skipped)
     skipped = sum(1 for r in results if r.skipped)
     quarantined = sum(1 for r in results if r.quarantined)
-    sources_used: dict[str, int] = {"perplexity_finance": 0, "finnhub": 0, "yfinance": 0, "perplexity": 0}
+    sources_used: dict[str, int] = {"perplexity_finance": 0, "finnhub": 0, "yfinance": 0, "perplexity": 0, "cached": 0}
     for r in results:
         if r.last_source in sources_used:
             sources_used[r.last_source] += 1
