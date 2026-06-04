@@ -918,10 +918,15 @@ function earningsNoteStatusLabel(record, nowET = new Date()) {
   const timing = (record.timing && record.timing !== 'TBD') ? record.timing : null;
   const reportDate = record.report_date || record.earnings_date || null;
   const today = ymdET(nowET);
+  const di = _daysUntilET(reportDate, nowET);
+  // A past report date with a null/undefined note_status means the
+  // print_reaction sweep has not backfilled this card yet. Showing
+  // "Reports · AMC" here contradicts the "Reported …" header, so suppress the
+  // secondary line entirely until note_status is populated.
+  if (di != null && di < 0) return '';
   if (reportDate === today) {
     return timing ? `Reports today · ${timing}` : 'Reports today';
   }
-  const di = _daysUntilET(reportDate, nowET);
   if (di === 1) return timing ? `Reports tomorrow · ${timing}` : 'Reports tomorrow';
   if (di != null && di > 1) return `Reports in ${di} days`;
   return timing ? `Reports · ${timing}` : 'Reports soon';

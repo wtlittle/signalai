@@ -74,6 +74,21 @@ const noteCases = [
   ['note_status call_reaction',
     () => u.earningsNoteStatusLabel({ note_status: 'call_reaction' }, ANYTIME),
     'Reaction · full'],
+  // Bug 1 regression: a PAST report date with null note_status must NOT render
+  // "Reports · AMC" beneath an already-reported card — suppress entirely.
+  ['null note_status + past date -> suppressed (no "Reports · AMC")',
+    () => u.earningsNoteStatusLabel({ report_date: '2026-06-03', timing: 'AMC' }, ANYTIME),
+    ''],
+  ['null note_status + older past date -> suppressed',
+    () => u.earningsNoteStatusLabel({ report_date: '2026-05-21', timing: 'BMO' }, ANYTIME),
+    ''],
+  // Future / today dates still describe the upcoming print.
+  ['null note_status + today -> Reports today',
+    () => u.earningsNoteStatusLabel({ report_date: '2026-06-04', timing: 'AMC' }, ANYTIME),
+    'Reports today · AMC'],
+  ['null note_status + tomorrow -> Reports tomorrow',
+    () => u.earningsNoteStatusLabel({ report_date: '2026-06-05', timing: 'BMO' }, ANYTIME),
+    'Reports tomorrow · BMO'],
 ];
 for (const [name, fn, expected] of noteCases) {
   const got = fn();

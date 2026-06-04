@@ -133,3 +133,61 @@ def test_compose_note_eps_only_when_no_surprise():
 def test_compose_note_in_line():
     note = prs.compose_note("ABC", {"in_quarter_eps_surprise_pct": 0.2})
     assert "in-line" in note.lower()
+
+
+# ---------------------------------------------------------------------------
+# --backfill-days selection (Bug 3)
+# ---------------------------------------------------------------------------
+def _intel_fixture():
+    """A spread of intel rows: a recent reporter with actuals + null status,
+    one already escalated, one without actuals, and one outside the window."""
+    return {
+        "tickers": {
+            # recent + actuals + null note_status -> selected
+            "MDT": {
+                "company_name": "Medtronic",
+                "last_earnings_date": "2026-06-03",
+                "note_status": None,
+                "results_vs_consensus": {"in_quarter_rev_actual": 9017000000},
+            },
+            # recent but already has a note_status -> skipped
+            "AVGO": {
+                "company_name": "Broadcom",
+                "last_earnings_date": "2026-06-03",
+                "note_status": "print_reaction",
+                "results_vs_consensus": {"in_quarter_rev_actual": 19311000000},
+            },
+            # recent + null status but NO actuals -> skipped (never fabricate)
+            "NOACT": {
+                "company_name": "No Actuals Inc",
+                "last_earnings_date": "2026-06-02",
+                "note_status": None,
+                "results_vs_consensus": {},
+            },
+            # outside the 14-day window -> skipped
+            "OLD": {
+                "company_name": "Old Reporter",
+                "last_earnings_date": "2026-04-01",
+                "note_status": None,
+                "results_vs_consensus": {"in_quarter_eps_actual": "$1.00"},
+            },
+        }
+    }
+
+
+def test_select_backfill_filters_by_window_status_and_actuals():
+    with patch.object(prs, "read_json", return_value=_intel_fixture()), \
+         patch.object(prs, "_et_today", return_value="2026-06-04"):
+        entries = prs._select_backfill(14)
+    tickers = {e["ticker"] for e in entries}
+    assert tickers == {"MDT"}, tickers
+    sel = entries[0]
+    assert sel["earnings_date"] == "2026-06-03"
+    assert sel["company"] == "Medtronic"
+
+
+def test_has_actuals_detects_rev_or_eps():
+    assert prs._has_actuals({"results_vs_consensus": {"in_quarter_rev_actual": 1}})
+    assert prs._has_actuals({"results_vs_consensus": {"in_quarter_eps_actual": "$1"}})
+    assert not prs._has_actuals({"results_vs_consensus": {}})
+    assert not prs._has_actuals({})
