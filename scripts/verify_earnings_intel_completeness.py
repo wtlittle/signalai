@@ -65,6 +65,10 @@ GUIDANCE_FIELDS = (
 # failure. Below the threshold (data may still be settling) we only warn.
 HARD_FAIL_HOURS = 48
 GUIDANCE_EXPECTED_HOURS = 24
+# The trailing-8-quarter results array. A POST ticker reported >48h ago must
+# carry a full 8-entry history_8q; null or a short array is the gap that took
+# down the 2026-06-04 daily refresh (ACN/AVGO), so it now hard-fails the build.
+HISTORY_8Q_REQUIRED = 8
 
 
 def _reported_date(rec: dict):
@@ -123,6 +127,17 @@ def schema_check(only: str | None) -> tuple[list[str], list[str], list[dict]]:
         required_missing = [f for f in REQUIRED_RVC_FIELDS if rvc.get(f) is None]
         if _reported_date(rec) is None:
             required_missing.append("last_reported_date|last_earnings_date (unparseable)")
+
+        # history_8q: the trailing-8Q results array must be present and full.
+        # null or a short array is a hard gap once the print is >48h old (it is
+        # the exact failure mode that broke the 2026-06-04 refresh). It is a
+        # CORE field, so it escalates with required_missing below.
+        history = rec.get("history_8q")
+        if not isinstance(history, list) or len(history) < HISTORY_8Q_REQUIRED:
+            n = 0 if not isinstance(history, list) else len(history)
+            required_missing.append(
+                f"history_8q ({'null' if history is None else f'{n}/{HISTORY_8Q_REQUIRED} quarters'})"
+            )
 
         # Guidance is tracked but SOFT: many historically-synced tickers never
         # had guidance backfilled, and fabricating it would violate the mandate.

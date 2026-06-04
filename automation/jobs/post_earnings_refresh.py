@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from automation.shared.paths import ROOT_DIR
 from automation.jobs.daily_refresh import self_heal_state_machine, step_sync_earnings_intel
+from automation.sources import history_8q as _history_8q
 
 LOG_DIR = ROOT_DIR / "cron_tracking" / "post_earnings_refresh"
 LOG_RETENTION = 30
@@ -91,24 +92,48 @@ def _verify_ticker(ticker, fh=None):
     return rc == 0
 
 
+def _repair_history_8q(ticker, fh=None):
+    """Run the history_8q fallback chain (FactSet -> Finnhub -> yfinance) for one
+    ticker and persist the result into earnings_intel.json.
+
+    Must run AFTER step_sync_earnings_intel, because the note resync rebuilds the
+    record from markdown and would otherwise clobber a freshly written
+    history_8q. The non-force-rebuild merge preserves keys the extractor does not
+    emit (history_8q is one), so the order sync -> repair -> verify is safe.
+    """
+    ok = _history_8q.repair_ticker(ticker)
+    if ok:
+        _log(f"  [HISTORY_8Q] {ticker} populated via fallback chain.", fh)
+    else:
+        _log(f"  [HISTORY_8Q] {ticker} chain exhausted -- history_8q left null "
+             f"(renders n/a; never fabricated). See "
+             f"cron_tracking/history_8q_gaps.json.", fh)
+    return ok
+
+
 def backfill_with_repull(ticker, fh=None):
     """Backfill a ticker, then re-pull ONCE if the verifier still fails.
 
     Guardrail D: a single upstream API hiccup (Finnhub stale quarter, yfinance
     10-Q not yet filed, a dropped sonar response) otherwise leaves a card
     permanently broken until the next scheduled run. After the first chain we
-    resync intel so the verifier sees the freshly written fields, check the
-    schema, and if it is still violated run the chain a second and final time.
+    resync intel so the verifier sees the freshly written fields, populate
+    history_8q via its own fallback chain (post-resync so it is not clobbered),
+    check the schema, and if it is still violated run the chain a second and
+    final time.
     """
     backfill_ticker(ticker, fh)
-    # Resync so note-derived fields land before we verify.
+    # Resync so note-derived fields land before we verify, THEN repair history_8q
+    # (the resync preserves but does not produce it).
     step_sync_earnings_intel()
+    _repair_history_8q(ticker, fh)
     if _verify_ticker(ticker, fh):
         return
     _log(f"  [RE-PULL] {ticker} failed schema verification after first chain -- "
          f"re-running backfill chain once.", fh)
     backfill_ticker(ticker, fh)
     step_sync_earnings_intel()
+    _repair_history_8q(ticker, fh)
     if _verify_ticker(ticker, fh):
         _log(f"  [RE-PULL] {ticker} recovered after second chain.", fh)
     else:
