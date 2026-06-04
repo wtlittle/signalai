@@ -218,12 +218,15 @@ class PerplexityFinanceSource(EarningsSource):
     def fetch(self, symbol: str) -> Optional[SourceResponse]:
         symbol = symbol.upper().strip()
         try:
-            # NOTE: tool expects ticker_symbols (array) and limit must exceed 8 because
-            # the first row is the next, not-yet-reported quarter (filtered out below).
-            # Request 10 to guarantee at least 8 fully-reported quarters land in history_8q.
+            # NOTE: tool expects ticker_symbols (array) and limit must exceed 8
+            # because the first N rows are future/non-yet-reported quarters
+            # (filtered out below). Some tickers publish consensus rows up to 3
+            # quarters out (e.g. PSTG had 3 future rows + 7 actuals at limit=10),
+            # so we request 16 to guarantee at least 8 fully-reported quarters
+            # land in history_8q for all tickers in the universe.
             payload = _call_finance(
                 "finance_earnings_history",
-                {"ticker_symbols": [symbol], "period_type": "quarterly", "limit": 10},
+                {"ticker_symbols": [symbol], "period_type": "quarterly", "limit": 16},
             )
         except Exception as exc:  # never raise into the runner thread.
             print(f"  [WARN] perplexity_finance {symbol}: earnings_history "

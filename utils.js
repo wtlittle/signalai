@@ -254,7 +254,7 @@ const COMMON_NAMES = {
   'ADSK': 'Autodesk', 'PTC': 'PTC', 'BSY': 'Bentley Systems', 'TRMB': 'Trimble',
   'ROP': 'Roper Technologies', 'PCOR': 'Procore', 'TYL': 'Tyler Technologies',
   'GWRE': 'Guidewire', 'MANH': 'Manhattan Associates',
-  'FICO': 'FICO', 'PSTG': 'Pure Storage', 'AKAM': 'Akamai',
+  'FICO': 'FICO', 'PSTG': 'Everpure', 'AKAM': 'Akamai',
   'WIX': 'Wix', 'GDDY': 'GoDaddy',
   'GLBE': 'Global-E',
   'COF': 'Capital One',

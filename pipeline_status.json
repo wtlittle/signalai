@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-04T19:08:58.028795+00:00",
+  "generated_at": "2026-06-04T19:19:19.125212+00:00",
   "tickers": {
     "AMZN": {
       "symbol": "AMZN",
@@ -77,12 +77,12 @@
     },
     "GOOG": {
       "symbol": "GOOG",
-      "last_attempt_at": "2026-06-04T19:08:45.235185+00:00",
-      "last_success_at": "2026-06-04T19:08:45.234904+00:00",
+      "last_attempt_at": "2026-06-04T19:19:03.397653+00:00",
+      "last_success_at": "2026-06-04T19:19:03.397292+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 28
+      "duration_ms": 919
     },
     "TSM": {
       "symbol": "TSM",
@@ -577,14 +577,14 @@
     },
     "SNDK": {
       "symbol": "SNDK",
-      "last_attempt_at": "2026-06-04T19:08:48.483742+00:00",
+      "last_attempt_at": "2026-06-04T19:19:17.370827+00:00",
       "last_success_at": null,
       "last_source": "perplexity_finance",
       "missing_fields": [
         "history_8q (null)"
       ],
       "quarantined": true,
-      "duration_ms": 2478
+      "duration_ms": 1750
     },
     "CIEN": {
       "symbol": "CIEN",
@@ -643,14 +643,14 @@
     },
     "SOC": {
       "symbol": "SOC",
-      "last_attempt_at": "2026-06-04T19:08:51.537459+00:00",
+      "last_attempt_at": "2026-06-04T19:19:19.125203+00:00",
       "last_success_at": null,
       "last_source": "perplexity_finance",
       "missing_fields": [
         "history_8q (null)"
       ],
       "quarantined": true,
-      "duration_ms": 2775
+      "duration_ms": 1751
     },
     "GEV": {
       "symbol": "GEV",
@@ -929,14 +929,14 @@
     },
     "OS": {
       "symbol": "OS",
-      "last_attempt_at": "2026-06-04T19:08:54.863518+00:00",
+      "last_attempt_at": "2026-06-04T19:19:14.717277+00:00",
       "last_success_at": null,
       "last_source": "perplexity_finance",
       "missing_fields": [
         "history_8q (null)"
       ],
       "quarantined": true,
-      "duration_ms": 5507
+      "duration_ms": 1930
     },
     "BL": {
       "symbol": "BL",
@@ -1075,14 +1075,12 @@
     },
     "PSTG": {
       "symbol": "PSTG",
-      "last_attempt_at": "2026-06-04T19:08:54.865317+00:00",
-      "last_success_at": null,
+      "last_attempt_at": "2026-06-04T19:19:15.617000+00:00",
+      "last_success_at": "2026-06-04T19:19:15.616700+00:00",
       "last_source": "perplexity_finance",
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "quarantined": true,
-      "duration_ms": 2039
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 847
     },
     "KDP": {
       "symbol": "KDP",
@@ -1484,14 +1482,12 @@
     },
     "CSU.TO": {
       "symbol": "CSU.TO",
-      "last_attempt_at": "2026-06-04T19:08:57.303493+00:00",
-      "last_success_at": null,
+      "last_attempt_at": "2026-06-04T19:19:12.783708+00:00",
+      "last_success_at": "2026-06-04T19:19:12.783269+00:00",
       "last_source": "perplexity_finance",
-      "missing_fields": [
-        "history_8q (null)"
-      ],
-      "quarantined": true,
-      "duration_ms": 1899
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 774
     },
     "GEHC": {
       "symbol": "GEHC",
@@ -1677,12 +1673,13 @@
     },
     "AAPL": {
       "symbol": "AAPL",
-      "last_attempt_at": "2026-06-04T18:45:26.904437+00:00",
-      "last_success_at": null,
-      "last_source": null,
+      "last_attempt_at": "2026-06-04T19:19:02.427542+00:00",
+      "last_success_at": "2026-06-04T19:19:02.427240+00:00",
+      "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 8
+      "duration_ms": 2294,
+      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
     }
   },
   "run": {

@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-04T19:08:57.986955+00:00",
+  "last_updated": "2026-06-04T19:19:15.577453+00:00",
   "schema_version": 1,
   "tickers": {
     "ADP": {
@@ -1612,7 +1612,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-04T18:46:07.465195+00:00",
+      "intel_updated_at": "2026-06-04T19:19:03.348206+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Alphabet crushes Q1 2026 EPS estimate with $5.11 vs $2.64 consensus, but revenue and guidance details unavailable in search results.",
       "beat_miss_quality": "Beat - EPS $5.11 vs $2.64 est (+93.6%); extreme beat magnitude raises questions on estimate quality vs. operational outperformance.",
@@ -6449,7 +6449,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-10",
-      "intel_updated_at": "2026-06-04T13:04:42+00:00",
+      "intel_updated_at": "2026-06-04T19:19:12.726825+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Constellation Software reports Q1 2026 earnings May 12, 2026. CSU is a high-quality vertical market software roll-up with strong M&A history. Limited real-time technical and price data available in provided search results.",
       "bull_case": {
@@ -6619,8 +6619,101 @@
       "results_vs_consensus": {
         "in_quarter_rev_actual": "$3.181B",
         "in_quarter_rev_surprise_pct": 1.5,
-        "in_quarter_rev_actual_source": "note"
-      }
+        "in_quarter_rev_actual_source": "note",
+        "rev_actual_source": "perplexity_finance",
+        "in_quarter_eps_actual": 37.64,
+        "in_quarter_eps_actual_source": "perplexity_finance",
+        "eps_actual_source": "perplexity_finance",
+        "in_quarter_eps_estimate": 34.99,
+        "in_quarter_eps_consensus": 34.99,
+        "eps_consensus_source": "perplexity_finance",
+        "in_quarter_eps_surprise_pct": 7.5736,
+        "eps_surprise_source": "perplexity_finance",
+        "rev_surprise_source": "perplexity_finance"
+      },
+      "history_8q": [
+        {
+          "period_end": "2026-05-13",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2026,
+          "revenue_actual": 4374448000,
+          "eps_actual": 37.64,
+          "eps_estimate": 34.99,
+          "eps_surprise_pct": 7.5736,
+          "rev_surprise_pct": 0.3079
+        },
+        {
+          "period_end": "2026-03-09",
+          "fiscal_quarter": 4,
+          "fiscal_year": 2025,
+          "revenue_actual": 4355254000,
+          "eps_actual": 25.06,
+          "eps_estimate": 38.41,
+          "eps_surprise_pct": -34.7566,
+          "rev_surprise_pct": 0.9628
+        },
+        {
+          "period_end": "2025-11-07",
+          "fiscal_quarter": 3,
+          "fiscal_year": 2025,
+          "revenue_actual": 4110269310,
+          "eps_actual": 28.1,
+          "eps_estimate": 35.99,
+          "eps_surprise_pct": -21.9228,
+          "rev_surprise_pct": -1.4796
+        },
+        {
+          "period_end": "2025-08-08",
+          "fiscal_quarter": 2,
+          "fiscal_year": 2025,
+          "revenue_actual": 3874750920,
+          "eps_actual": 34.93,
+          "eps_estimate": 30.9,
+          "eps_surprise_pct": 13.0421,
+          "rev_surprise_pct": -1.2527
+        },
+        {
+          "period_end": "2025-05-12",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2025,
+          "revenue_actual": 3778163830,
+          "eps_actual": 33.96,
+          "eps_estimate": 28.77,
+          "eps_surprise_pct": 18.0396,
+          "rev_surprise_pct": -1.9924
+        },
+        {
+          "period_end": "2025-03-07",
+          "fiscal_quarter": 4,
+          "fiscal_year": 2024,
+          "revenue_actual": 3887157270,
+          "eps_actual": 52.79,
+          "eps_estimate": 33.03,
+          "eps_surprise_pct": 59.8244,
+          "rev_surprise_pct": -0.9639
+        },
+        {
+          "period_end": "2024-05-10",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2024,
+          "revenue_actual": 3194401540,
+          "eps_actual": 15.67,
+          "eps_estimate": 17.62,
+          "eps_surprise_pct": -11.067,
+          "rev_surprise_pct": -0.4835
+        },
+        {
+          "period_end": "2024-03-06",
+          "fiscal_quarter": 4,
+          "fiscal_year": 2023,
+          "revenue_actual": 3076468921,
+          "eps_actual": 15.5,
+          "eps_estimate": 18.75,
+          "eps_surprise_pct": -17.3333,
+          "rev_surprise_pct": 0.721
+        }
+      ],
+      "history_8q_source": "perplexity_finance"
     },
     "SE": {
       "ticker": "SE",
@@ -30059,11 +30152,11 @@
     },
     "PSTG": {
       "ticker": "PSTG",
-      "company_name": "Pure Storage",
+      "company_name": "Everpure",
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-25",
-      "intel_updated_at": "2026-06-04T13:04:42+00:00",
+      "intel_updated_at": "2026-06-04T19:19:15.566397+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Real-time price, key technical levels and precise YTD vs sector performance are not observable from the provided data. Setup into earnings should focus on how the stock has traded around prior earnings gaps and its 50/200-day moving averages versus data-storage peers.",
       "bull_case": {
@@ -30227,7 +30320,21 @@
         "stock_reaction_basis_date": "2026-05-27",
         "stock_reaction_calc_method": "amc_d_plus_1"
       },
-      "results_vs_consensus": {},
+      "results_vs_consensus": {
+        "in_quarter_rev_actual": 1058903000,
+        "in_quarter_rev_actual_source": "perplexity_finance",
+        "rev_actual_source": "perplexity_finance",
+        "in_quarter_eps_actual": 0.29,
+        "in_quarter_eps_actual_source": "perplexity_finance",
+        "eps_actual_source": "perplexity_finance",
+        "in_quarter_eps_estimate": 0.65,
+        "in_quarter_eps_consensus": 0.65,
+        "eps_consensus_source": "perplexity_finance",
+        "in_quarter_eps_surprise_pct": -55.3846,
+        "eps_surprise_source": "perplexity_finance",
+        "in_quarter_rev_surprise_pct": 2.5569,
+        "rev_surprise_source": "perplexity_finance"
+      },
       "guide_vs_consensus": {
         "fy_rev_guide_midpoint_new": 3635000000.0,
         "fy_rev_guide_midpoint_prior": 3615000000.0,
@@ -30238,7 +30345,93 @@
         "fy_guide_widened": true
       },
       "guidanceRevenueDeltaPct": 0.005532503457814661,
-      "guidanceRevenuePriorSource": "prior_guidance"
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "former_name": "Pure Storage",
+      "name_change_effective": "2026-02-23",
+      "name_change_source": "https://www.everpuredata.com/company/newsroom/press-releases/pure-storage-becomes-everpure.html",
+      "history_8q": [
+        {
+          "period_end": "2026-02-25",
+          "fiscal_quarter": 4,
+          "fiscal_year": 2026,
+          "revenue_actual": 1058903000,
+          "eps_actual": 0.29,
+          "eps_estimate": 0.65,
+          "eps_surprise_pct": -55.3846,
+          "rev_surprise_pct": 2.5569
+        },
+        {
+          "period_end": "2025-12-02",
+          "fiscal_quarter": 3,
+          "fiscal_year": 2026,
+          "revenue_actual": 964453000,
+          "eps_actual": 0.18,
+          "eps_estimate": 0.59,
+          "eps_surprise_pct": -69.4915,
+          "rev_surprise_pct": 0.8934
+        },
+        {
+          "period_end": "2025-08-27",
+          "fiscal_quarter": 2,
+          "fiscal_year": 2026,
+          "revenue_actual": 861002000,
+          "eps_actual": 0.08,
+          "eps_estimate": 0.39,
+          "eps_surprise_pct": -79.4872,
+          "rev_surprise_pct": 1.7492
+        },
+        {
+          "period_end": "2025-05-28",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2026,
+          "revenue_actual": 778485000,
+          "eps_actual": 0.29,
+          "eps_estimate": 0.25,
+          "eps_surprise_pct": 16.0,
+          "rev_surprise_pct": 1.0441
+        },
+        {
+          "period_end": "2025-02-26",
+          "fiscal_quarter": 4,
+          "fiscal_year": 2025,
+          "revenue_actual": 879842000,
+          "eps_actual": 0.14,
+          "eps_estimate": 0.42,
+          "eps_surprise_pct": -66.6667,
+          "rev_surprise_pct": 1.268
+        },
+        {
+          "period_end": "2024-12-03",
+          "fiscal_quarter": 3,
+          "fiscal_year": 2025,
+          "revenue_actual": 831072000,
+          "eps_actual": 0.2,
+          "eps_estimate": 0.43,
+          "eps_surprise_pct": -53.4884,
+          "rev_surprise_pct": 1.9849
+        },
+        {
+          "period_end": "2024-08-28",
+          "fiscal_quarter": 2,
+          "fiscal_year": 2025,
+          "revenue_actual": 763771000,
+          "eps_actual": 0.2,
+          "eps_estimate": 0.38,
+          "eps_surprise_pct": -47.3684,
+          "rev_surprise_pct": 1.0233
+        },
+        {
+          "period_end": "2024-05-29",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2025,
+          "revenue_actual": 693479000,
+          "eps_actual": -0.02,
+          "eps_estimate": 0.22,
+          "eps_surprise_pct": -109.0909,
+          "rev_surprise_pct": 1.8284
+        }
+      ],
+      "history_8q_source": "perplexity_finance"
     },
     "S": {
       "ticker": "S",
@@ -38447,6 +38640,116 @@
       "company_name_source": "cached",
       "company_name_source_age_days": 0,
       "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
+    },
+    "AAPL": {
+      "ticker": "AAPL",
+      "company_name": "Apple",
+      "state": "post_earnings",
+      "inflection_status": "POST",
+      "intel_updated_at": "2026-06-04T19:19:02.379276+00:00",
+      "refresh_reason": "identity_seed_manual",
+      "history_8q": [
+        {
+          "period_end": "2026-04-30",
+          "fiscal_quarter": 2,
+          "fiscal_year": 2026,
+          "revenue_actual": 111184000000,
+          "eps_actual": 2.01,
+          "eps_estimate": 1.92,
+          "eps_surprise_pct": 4.6875,
+          "rev_surprise_pct": 1.5772
+        },
+        {
+          "period_end": "2026-01-29",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2026,
+          "revenue_actual": 143756000000,
+          "eps_actual": 2.84,
+          "eps_estimate": 2.65,
+          "eps_surprise_pct": 7.1698,
+          "rev_surprise_pct": 3.8767
+        },
+        {
+          "period_end": "2025-10-30",
+          "fiscal_quarter": 4,
+          "fiscal_year": 2025,
+          "revenue_actual": 102466000000,
+          "eps_actual": 1.85,
+          "eps_estimate": 1.73,
+          "eps_surprise_pct": 6.9364,
+          "rev_surprise_pct": 0.2337
+        },
+        {
+          "period_end": "2025-07-31",
+          "fiscal_quarter": 3,
+          "fiscal_year": 2025,
+          "revenue_actual": 94036000000,
+          "eps_actual": 1.57,
+          "eps_estimate": 1.42,
+          "eps_surprise_pct": 10.5634,
+          "rev_surprise_pct": 4.9946
+        },
+        {
+          "period_end": "2025-05-01",
+          "fiscal_quarter": 2,
+          "fiscal_year": 2025,
+          "revenue_actual": 95359000000,
+          "eps_actual": 1.65,
+          "eps_estimate": 1.61,
+          "eps_surprise_pct": 2.4845,
+          "rev_surprise_pct": 0.864
+        },
+        {
+          "period_end": "2025-01-30",
+          "fiscal_quarter": 1,
+          "fiscal_year": 2025,
+          "revenue_actual": 124300000000,
+          "eps_actual": 2.4,
+          "eps_estimate": 2.36,
+          "eps_surprise_pct": 1.6949,
+          "rev_surprise_pct": 0.0343
+        },
+        {
+          "period_end": "2024-10-31",
+          "fiscal_quarter": 4,
+          "fiscal_year": 2024,
+          "revenue_actual": 94930000000,
+          "eps_actual": 1.64,
+          "eps_estimate": 1.49,
+          "eps_surprise_pct": 10.0671,
+          "rev_surprise_pct": 0.4423
+        },
+        {
+          "period_end": "2024-08-01",
+          "fiscal_quarter": 3,
+          "fiscal_year": 2024,
+          "revenue_actual": 85777000000,
+          "eps_actual": 1.4,
+          "eps_estimate": 1.34,
+          "eps_surprise_pct": 4.4776,
+          "rev_surprise_pct": 1.5344
+        }
+      ],
+      "history_8q_source": "perplexity_finance",
+      "results_vs_consensus": {
+        "in_quarter_rev_actual": 111184000000,
+        "in_quarter_rev_actual_source": "perplexity_finance",
+        "rev_actual_source": "perplexity_finance",
+        "in_quarter_eps_actual": 2.01,
+        "in_quarter_eps_actual_source": "perplexity_finance",
+        "eps_actual_source": "perplexity_finance",
+        "in_quarter_eps_estimate": 1.92,
+        "in_quarter_eps_consensus": 1.92,
+        "eps_consensus_source": "perplexity_finance",
+        "in_quarter_eps_surprise_pct": 4.6875,
+        "eps_surprise_source": "perplexity_finance",
+        "in_quarter_rev_surprise_pct": 1.5772,
+        "rev_surprise_source": "perplexity_finance"
+      },
+      "company_name_source": "cached",
+      "company_name_source_age_days": 0,
+      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name",
+      "history_8q_source_age_days": 0
     }
   },
   "debate_score_universe": {
