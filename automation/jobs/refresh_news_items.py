@@ -130,13 +130,13 @@ RESPONSE_FORMAT = {
 
 SYSTEM_PROMPT = (
     "You are a financial news desk editor for a buy-side equity research team. "
-    "Surface ONLY material business news from the last 24 hours about the "
-    "tickers provided. Material news means: quarterly earnings results, "
+    "Surface notable, significant business news from the last 24-48 hours about "
+    "the tickers provided. Notable news means: quarterly earnings results, "
     "forward guidance changes, mergers & acquisitions, analyst rating or price "
     "target changes, regulatory or legal actions, and major product launches. "
     "STRICTLY EXCLUDE: listicles, 'X things to know' / 'what to watch' roundups, "
     "pure stock-price or technical-trading commentary, opinion/predictions with "
-    "no new fact, and anything older than 24 hours. "
+    "no new fact, and anything older than 48 hours. "
     "Prefer primary publishers (Bloomberg, Reuters, Financial Times, WSJ, CNBC, "
     "company press releases) and link the original article, not an aggregator. "
     "Return ONLY a single valid JSON object. No markdown fences, no commentary."
@@ -151,8 +151,8 @@ def build_prompt(tickers: list[str]) -> str:
     ticker_list = ", ".join(tickers)
     return (
         f"Coverage tickers: {ticker_list}\n\n"
-        f"Find the top 25-40 most material business-news stories from the last "
-        f"24 hours about any of these tickers. One story per item; no "
+        f"Find 15-25 of the most notable, significant business-news stories from "
+        f"the last 24-48 hours about any of these tickers. One story per item; no "
         f"duplicates. Return a JSON object with exactly this shape:\n\n"
         f"{{\n"
         f'  "items": [\n'
@@ -195,7 +195,7 @@ def call_sonar(prompt: str) -> dict[str, Any]:
             {"role": "user", "content": prompt},
         ],
         "max_tokens": MAX_TOKENS,
-        "temperature": 0.1,
+        "temperature": 0.2,
         "response_format": RESPONSE_FORMAT,
     }
 
@@ -311,6 +311,29 @@ def make_id(url: str, title: str) -> str:
     return hashlib.sha256(basis.encode("utf-8")).hexdigest()[:16]
 
 
+# Defensive filler filter. The loosened prompt phrasing lands more results on
+# quiet windows but also lets sonar slip in the listicle/comparison filler the
+# prompt asks it to exclude. Drop the obvious offenders by title/host so the
+# substance bar stays where the prompt intends.
+_FILLER_TITLE_RE = re.compile(
+    r"stocks?\s+to\s+watch"
+    r"|things?\s+to\s+know"
+    r"|what\s+to\s+watch"
+    r"|\btop\s+\d+\b"
+    r"|\bbest\s+\d+\b"
+    r"|\b\w+(?:\s*,\s*\w+)*\s+vs\.?\s+\w+"  # "OKTA vs CRWD", "A, B, C vs D"
+    r"|no\s+qualifying\s+stories",
+    re.IGNORECASE,
+)
+_FILLER_HOSTS = {"youtube.com", "youtu.be"}
+
+
+def _is_filler(title: str, url_host: str) -> bool:
+    if url_host in _FILLER_HOSTS:
+        return True
+    return bool(_FILLER_TITLE_RE.search(title or ""))
+
+
 def _coerce_signal(value: Any) -> str:
     v = (value or "").strip().lower()
     return v if v in VALID_SIGNALS else "general"
@@ -342,6 +365,8 @@ def normalize_item(item: dict[str, Any], coverage: set[str]) -> dict[str, Any] |
 
     url = (item.get("url") or "").strip()
     url_host = extract_host(url)
+    if _is_filler(title, url_host):
+        return None
     source = derive_source(url_host, item.get("source") or "")
 
     primary = (item.get("ticker") or "").strip().upper()
@@ -376,8 +401,21 @@ def normalize_item(item: dict[str, Any], coverage: set[str]) -> dict[str, Any] |
 # ---------------------------------------------------------------------------
 # Supabase REST helpers
 # ---------------------------------------------------------------------------
+def _normalize_supabase_url(raw: str) -> str:
+    """Strip trailing slashes and ensure an http(s):// scheme is present.
+
+    The SUPABASE_URL secret is sometimes set without a scheme (e.g.
+    'proj.supabase.co'), which makes requests raise 'No connection adapters
+    were found'. Default to https:// when no scheme is given.
+    """
+    url = (raw or "").strip().rstrip("/")
+    if url and not url.startswith(("http://", "https://")):
+        url = f"https://{url}"
+    return url
+
+
 def _supabase() -> tuple[str, dict[str, str]]:
-    url = os.environ.get("SUPABASE_URL", "").rstrip("/")
+    url = _normalize_supabase_url(os.environ.get("SUPABASE_URL", ""))
     key = os.environ.get("SUPABASE_SERVICE_KEY", "")
     if not url or not key:
         raise RuntimeError(
@@ -468,6 +506,9 @@ def run() -> int:
     if not PERPLEXITY_API_KEY:
         print("[refresh_news_items] FATAL: PERPLEXITY_API_KEY not set")
         return 1
+
+    normalized_url = _normalize_supabase_url(os.environ.get("SUPABASE_URL", ""))
+    print(f"[refresh_news_items] SUPABASE_URL (normalized): {normalized_url or '(unset)'}")
 
     all_tickers = load_tickers()
     tickers = all_tickers[:MAX_TICKERS]
