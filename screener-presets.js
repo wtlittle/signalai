@@ -303,6 +303,24 @@
         { key: 'qualityScore', type: 'range', min: 70, max: '' },
         { key: 'debateScore', type: 'range', min: '', max: 40 }
       ]
+    },
+    {
+      id: 'political_committee_aligned',
+      name: '\u{1F3DB}\uFE0F Committee Aligned Trades',
+      blurb: 'Stocks recently traded by politicians on relevant oversight committees.',
+      regimes: [],
+      filters: [
+        { key: 'political_exposure_score_min', type: 'range', min: 2, max: '' }
+      ]
+    },
+    {
+      id: 'political_any_activity',
+      name: '\u{1F4CB} Any Political Activity (90d)',
+      blurb: 'Stocks with any congressional trade in the last 90 days.',
+      regimes: [],
+      filters: [
+        { key: 'has_political_trade', type: 'select', values: ['true'] }
+      ]
     }
   ];
 
