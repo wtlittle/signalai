@@ -42,6 +42,7 @@ from datetime import datetime, timezone
 
 from automation.pipeline import quarantine, status
 from automation.pipeline.schema import (
+    partial_history_note,
     record_completeness,
     validate_record,
 )
@@ -221,7 +222,7 @@ def refresh_ticker(symbol: str, *, force: bool = False) -> TickerResult:
 
     # Fast path: already complete and not forced -> skip the network entirely.
     if not force and completeness_required:
-        if not record_completeness(prior):
+        if not record_completeness(prior, symbol=symbol):
             quarantine.clear(symbol)
             duration_ms = int((time.monotonic() - started) * 1000)
             status.record_ticker(
@@ -267,7 +268,7 @@ def refresh_ticker(symbol: str, *, force: bool = False) -> TickerResult:
             accepted_source = resp.name
         # Stop early once the merged record satisfies the completeness policy
         # (or, for a non-required ticker, once any source contributed).
-        if completeness_required and not record_completeness(merged):
+        if completeness_required and not record_completeness(merged, symbol=symbol):
             break
 
     merged["intel_updated_at"] = _now()
@@ -284,8 +285,17 @@ def refresh_ticker(symbol: str, *, force: bool = False) -> TickerResult:
     structurally_valid = model is not None
 
     # --- completeness policy gate (time-based) ---
-    gaps = record_completeness(merged) if completeness_required else []
+    gaps = record_completeness(merged, symbol=symbol) if completeness_required else []
     complete = structurally_valid and not gaps
+
+    # An allowlisted recent IPO (SHORT_HISTORY_TICKERS) clears the gate on its
+    # max-available history; tag the record so the partial history is auditable
+    # and never silently mistaken for a full 8Q array. The note is set only when
+    # the short-history path was actually taken (never for a full record).
+    partial_note = partial_history_note(merged.get("history_8q"), symbol)
+    if partial_note:
+        merged["partial_history_accepted"] = True
+        merged["partial_history_note"] = partial_note
 
     duration_ms = int((time.monotonic() - started) * 1000)
 
@@ -301,6 +311,7 @@ def refresh_ticker(symbol: str, *, force: bool = False) -> TickerResult:
             symbol=symbol, ok=True, written=True, quarantined=False,
             last_source=accepted_source, missing_fields=[],
             sources_tried=sources_tried, duration_ms=duration_ms,
+            note=partial_note,
         )
 
     # --- Not complete: do NOT write a partial record. ---

@@ -85,7 +85,7 @@ const SUBSECTOR_MAP = {
   'ZETA': 'Marketing Tech', 'RAMP': 'Marketing Tech', 'CXM': 'Marketing Tech', 'SEMR': 'Marketing Tech',
   'ORCL': 'Enterprise Software', 'VEEV': 'Enterprise Software', 'DOCU': 'Enterprise Software',
   'ZM': 'Enterprise Software', 'TTAN': 'Enterprise Software', 'FRSH': 'Enterprise Software',
-  'OS': 'Enterprise Software', 'BL': 'Enterprise Software', 'TWLO': 'Enterprise Software', 'RNG': 'Enterprise Software',
+  'BL': 'Enterprise Software', 'TWLO': 'Enterprise Software', 'RNG': 'Enterprise Software',
   'APP': 'Digital Advertising',
   'CHKP': 'Cybersecurity', 'QLYS': 'Cybersecurity', 'RPD': 'Cybersecurity',
   'ADSK': 'Industrial Software', 'PTC': 'Industrial Software', 'BSY': 'Industrial Software',
@@ -248,7 +248,7 @@ const COMMON_NAMES = {
   // Software Coverage Expansion (2026-03-25)
   'ZETA': 'Zeta Global', 'RAMP': 'LiveRamp', 'CXM': 'Sprinklr', 'SEMR': 'Semrush',
   'ORCL': 'Oracle', 'VEEV': 'Veeva Systems', 'DOCU': 'DocuSign', 'ZM': 'Zoom',
-  'TTAN': 'ServiceTitan', 'FRSH': 'Freshworks', 'OS': 'OneStream', 'BL': 'BlackLine',
+  'TTAN': 'ServiceTitan', 'FRSH': 'Freshworks', 'BL': 'BlackLine',
   'TWLO': 'Twilio', 'RNG': 'RingCentral', 'APP': 'AppLovin',
   'CHKP': 'Check Point', 'QLYS': 'Qualys', 'RPD': 'Rapid7',
   'ADSK': 'Autodesk', 'PTC': 'PTC', 'BSY': 'Bentley Systems', 'TRMB': 'Trimble',
@@ -331,7 +331,7 @@ const COMPANY_HQ = {
   'ZETA': 'New York, NY', 'RAMP': 'San Francisco, CA', 'CXM': 'New York, NY', 'SEMR': 'Boston, MA',
   'CSU.TO': 'Toronto, Canada',
   'ORCL': 'Austin, TX', 'VEEV': 'Pleasanton, CA', 'DOCU': 'San Francisco, CA', 'ZM': 'San Jose, CA',
-  'TTAN': 'Glendale, CA', 'FRSH': 'San Mateo, CA', 'OS': 'Birmingham, MI', 'BL': 'Woodland Hills, CA',
+  'TTAN': 'Glendale, CA', 'FRSH': 'San Mateo, CA', 'BL': 'Woodland Hills, CA',
   'TWLO': 'San Francisco, CA', 'RNG': 'Belmont, CA', 'APP': 'Palo Alto, CA',
   'CHKP': 'Tel Aviv, Israel', 'QLYS': 'Foster City, CA', 'RPD': 'Boston, MA',
   'ADSK': 'San Francisco, CA', 'PTC': 'Boston, MA', 'BSY': 'Exton, PA', 'TRMB': 'Westminster, CO',
@@ -383,7 +383,7 @@ const DEFAULT_TICKERS = [
   // Marketing Tech / AdTech
   'ZETA','RAMP','CXM','SEMR',
   // Enterprise Software (sell-side staples)
-  'ORCL','VEEV','DOCU','ZM','TTAN','FRSH','OS','BL','TWLO','RNG',
+  'ORCL','VEEV','DOCU','ZM','TTAN','FRSH','BL','TWLO','RNG',
   // Digital Advertising
   'APP',
   // Cybersecurity (coverage gaps)

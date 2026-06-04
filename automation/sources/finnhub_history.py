@@ -350,14 +350,19 @@ def fetch_history_8q(symbol: str) -> list[dict] | None:
 
     quarters.sort(key=lambda q: q["period_end"], reverse=True)
 
-    # Require 8 quarters that carry BOTH a revenue and an EPS actual; a half-full
-    # series must never be presented as a complete trailing-8Q (mandate).
+    # Require enough quarters that carry BOTH a revenue and an EPS actual; a
+    # half-full series must never be presented as complete (mandate). The bar is
+    # 8, lowered to the per-ticker allowance for an allowlisted recent IPO
+    # (SHORT_HISTORY_TICKERS) -- every emitted quarter is still fully populated.
+    from automation.pipeline.schema import min_required_quarters
+
     complete = [
         q for q in quarters
         if q["revenue_actual"] is not None and q["eps_actual"] is not None
     ]
-    if len(complete) < 8:
+    required = min_required_quarters(symbol)
+    if len(complete) < required:
         print(f"  [WARN] finnhub_history {symbol}: only {len(complete)} fully "
-              f"populated quarter(s) (need 8); deferring to next source")
+              f"populated quarter(s) (need {required}); deferring to next source")
         return None
-    return complete[:8]
+    return complete[:required]

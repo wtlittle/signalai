@@ -82,6 +82,18 @@ intentionally permissive at the type level (`extra="allow"`, only `ticker` and
 The completeness verifier (`scripts/verify_earnings_intel_completeness.py`) consumes
 the **same** model and field lists — there is no second, drifting definition.
 
+### Short-history tickers
+
+Some recent IPOs lack 8 quarters of public history. The pipeline maintains
+an allowlist in `automation/pipeline/schema.py:SHORT_HISTORY_TICKERS` mapping
+the ticker to its current minimum-acceptable quarter count. These tickers
+are NOT quarantined for incomplete history; instead the pipeline accepts
+their max-available history and tags the record with
+`partial_history_accepted=true`. Remove an entry from the map once the
+ticker has 8 fully-reported quarters.
+
+Current entries: SNDK (4 quarters, IPO Feb 2025), SOC (5 quarters, IPO 2025).
+
 ---
 
 ## What quarantine means
