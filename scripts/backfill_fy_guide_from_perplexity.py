@@ -136,16 +136,29 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f'midpoint, or null>,\n'
         f'  "q_next_rev_guide_midpoint": <new NEXT-QUARTER revenue guidance '
         f'midpoint in USD dollars, or null>,\n'
+        f'  "q_next_rev_guide_midpoint_prior": <company PRIOR NEXT-QUARTER '
+        f'revenue guide midpoint if previously updated, or null>,\n'
         f'  "q_next_rev_consensus_prior": <prior NEXT-QUARTER revenue Street '
-        f'consensus midpoint, or null>,\n'
+        f'consensus midpoint (Yahoo Finance / Visible Alpha / Refinitiv / FactSet '
+        f'/ Bloomberg / Zacks / StreetAccount), or null>,\n'
         f'  "q_next_eps_guide_midpoint": <new NEXT-QUARTER non-GAAP EPS guidance '
         f'midpoint in USD, or null>,\n'
+        f'  "q_next_eps_guide_midpoint_prior": <company PRIOR NEXT-QUARTER non-GAAP '
+        f'EPS guide midpoint if previously updated, or null>,\n'
         f'  "q_next_eps_consensus_prior": <prior NEXT-QUARTER non-GAAP EPS Street '
         f'consensus midpoint, or null>\n'
         f'}}\n'
+        f"CONSENSUS GROUNDING: Wall Street consensus midpoints are publicly "
+        f"available for every major US-listed name. Before returning null for "
+        f"any *_consensus_prior field, search Yahoo Finance Analysts tab, Zacks, "
+        f"StreetAccount, Visible Alpha, Refinitiv estimates, FactSet, or "
+        f"Bloomberg consensus. Only return null when the company itself is "
+        f"covered by zero sell-side analysts (extremely rare for any name on a "
+        f"buy-side watchlist).\n\n"
         f"If the company gave no guidance at all on this date, return null for "
-        f"every field. Never guess a number you cannot ground in the actual "
-        f"release. Return only the JSON object, nothing else."
+        f"every guidance field. Never guess a number you cannot ground in the "
+        f"actual release or in a reputable estimate aggregator. Return only the "
+        f"JSON object, nothing else."
     )
 
 
@@ -306,8 +319,10 @@ def backfill(only: str | None, dry_run: bool, cap: int):
         fcf_cons = _num(res.get("fy_fcf_consensus_prior"))
         # Next-quarter guidance (for companies that only guide one quarter out).
         q_rev_mid = _num(res.get("q_next_rev_guide_midpoint"))
+        q_rev_prior = _num(res.get("q_next_rev_guide_midpoint_prior"))
         q_rev_cons = _num(res.get("q_next_rev_consensus_prior"))
         q_eps_mid = _num(res.get("q_next_eps_guide_midpoint"))
+        q_eps_prior = _num(res.get("q_next_eps_guide_midpoint_prior"))
         q_eps_cons = _num(res.get("q_next_eps_consensus_prior"))
         if (rev_mid is None and eps_mid is None and op_mid is None
                 and fcf_mid is None and q_rev_mid is None and q_eps_mid is None):
@@ -338,12 +353,16 @@ def backfill(only: str | None, dry_run: bool, cap: int):
             _set("fy_fcf_guide_midpoint_new", fcf_mid)
             _set("fy_fcf_guide_midpoint_prior", fcf_prior)
             _set("fy_fcf_consensus_prior", fcf_cons)
-        # Next-quarter midpoints (no prior-guide concept; only vs Street).
+        # Next-quarter midpoints. Prior-guide is rarely set (companies usually
+        # only guide each quarter once) but kept as a fallback baseline when
+        # Street consensus is missing.
         if q_rev_mid is not None:
             _set("q_next_rev_guide_midpoint_new", q_rev_mid)
+            _set("q_next_rev_guide_midpoint_prior", q_rev_prior)
             _set("q_next_rev_consensus_prior", q_rev_cons)
         if q_eps_mid is not None:
             _set("q_next_eps_guide_midpoint_new", q_eps_mid)
+            _set("q_next_eps_guide_midpoint_prior", q_eps_prior)
             _set("q_next_eps_consensus_prior", q_eps_cons)
         gvc.setdefault("fy_guide_source", "perplexity_sonar")
         gvc.setdefault("fy_guide_fiscal_year", fy_label)

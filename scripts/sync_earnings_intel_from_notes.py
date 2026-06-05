@@ -429,22 +429,26 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
         out["guidanceProfitMetricUsed"] = "fcf"
 
     # --- Next-quarter (Q+1) guidance for companies that don't guide FY.
-    # Vs-Street only (no "prior next-Q guide" concept). Used as a fallback
-    # pill on the card when FY revenue/EPS are missing.
+    # Prefer vs-Street consensus baseline; fall back to the company's prior
+    # next-Q guide (rare but possible when guidance was previously updated).
+    # _compute_metric_delta returns priorSource='prior_guidance' when only
+    # a prior guide is available and consensus is null.
     q_rev = _compute_metric_delta(
         gvc.get("q_next_rev_guide_midpoint_new"),
         gvc.get("q_next_rev_consensus_prior"),
-        None,  # no prior next-Q guide concept
+        gvc.get("q_next_rev_guide_midpoint_prior"),
         0.0,
     )
     if q_rev and q_rev["deltaPct"] is not None:
         out["guidanceNextQRevenueDeltaPct"] = q_rev["deltaPct"]
-        out["guidanceNextQRevenuePriorSource"] = "consensus"
+        out["guidanceNextQRevenuePriorSource"] = q_rev.get("priorSource") or "consensus"
+        if q_rev.get("streetDeltaPct") is not None:
+            out["guidanceNextQRevenueStreetDeltaPct"] = q_rev["streetDeltaPct"]
 
     q_eps = _compute_metric_delta(
         gvc.get("q_next_eps_guide_midpoint_new"),
         gvc.get("q_next_eps_consensus_prior"),
-        None,
+        gvc.get("q_next_eps_guide_midpoint_prior"),
         0.05,
     )
     if q_eps:
@@ -452,7 +456,11 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
             out["guidanceNextQEpsDeltaPct"] = q_eps["deltaPct"]
         if q_eps.get("deltaAbs") is not None:
             out["guidanceNextQEpsDeltaAbs"] = q_eps["deltaAbs"]
-        out["guidanceNextQEpsPriorSource"] = "consensus"
+        out["guidanceNextQEpsPriorSource"] = q_eps.get("priorSource") or "consensus"
+        if q_eps.get("streetDeltaPct") is not None:
+            out["guidanceNextQEpsStreetDeltaPct"] = q_eps["streetDeltaPct"]
+        if q_eps.get("streetDeltaAbs") is not None:
+            out["guidanceNextQEpsStreetDeltaAbs"] = q_eps["streetDeltaAbs"]
 
     return out
 
@@ -482,9 +490,12 @@ NORMALIZED_GUIDANCE_FIELDS = (
     # Next-quarter fallback (for companies that guide one quarter out only).
     "guidanceNextQRevenueDeltaPct",
     "guidanceNextQRevenuePriorSource",
+    "guidanceNextQRevenueStreetDeltaPct",
     "guidanceNextQEpsDeltaPct",
     "guidanceNextQEpsDeltaAbs",
     "guidanceNextQEpsPriorSource",
+    "guidanceNextQEpsStreetDeltaPct",
+    "guidanceNextQEpsStreetDeltaAbs",
 )
 
 
