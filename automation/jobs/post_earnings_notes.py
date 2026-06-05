@@ -32,6 +32,8 @@ from automation.perplexity.prompts import build_post_earnings_prompt_v2
 from automation.earnings.post_earnings_context import build_post_earnings_context
 from automation.earnings.sanity_check import sanity_check
 from automation.sources import history_8q as _history_8q
+from automation.pipeline.stub_detector import is_stub_note
+from automation.pipeline.quarantine import upsert as quarantine_upsert
 
 logger = logging.getLogger(__name__)
 
@@ -306,6 +308,23 @@ def run():
             )
             if not has_content:
                 print(f"  [SKIP] {ticker} post-earnings result has no usable fields — not writing stub")
+                skipped += 1
+                continue
+            # WRITE-GUARD: a payload with not-yet-reported prose (headline
+            # "...results are not yet released...", Beat/Miss = N/A, null
+            # metrics) is a stub generated before the print landed. Persisting
+            # it produces the broken dashboard cards this guard exists to stop.
+            # Quarantine it instead of writing; keep processing other tickers.
+            if is_stub_note(result):
+                print(f"  [QUARANTINE] {ticker} post-earnings payload is a stub — not writing")
+                try:
+                    quarantine_upsert(
+                        ticker,
+                        sources_tried=[{"name": "perplexity", "error_or_missing_fields": "stub_detected"}],
+                        missing_fields=["headline", "beat_miss_quality", "key_metrics"],
+                    )
+                except Exception as _qexc:
+                    print(f"  [{ticker}] quarantine_upsert failed: {_qexc}")
                 skipped += 1
                 continue
             write_post_earnings_note(ticker, company, earnings_date, days_since, result)

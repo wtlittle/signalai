@@ -857,6 +857,14 @@
       "ticker": "DT"
     },
     {
+      "ticker": "RAMP",
+      "company": "LiveRamp",
+      "date": "2026-05-18",
+      "day_post": 18,
+      "expires": "2026-06-01",
+      "note_file": "notes/post_earnings/RAMP_2026-05-18.md"
+    },
+    {
       "company": "Home Depot",
       "date": "2026-05-19",
       "day_post": 6,
@@ -953,14 +961,6 @@
       "ticker": "SNOW"
     },
     {
-      "company": "NTNX",
-      "date": "2026-05-27",
-      "day_post": 1,
-      "expires": "2026-06-10",
-      "note_file": "notes/post_earnings/NTNX_2026-05-27.md",
-      "ticker": "NTNX"
-    },
-    {
       "company": "Braze",
       "date": "2026-05-27",
       "day_post": 1,
@@ -969,68 +969,212 @@
       "ticker": "BRZE"
     },
     {
+      "ticker": "NTNX",
+      "company": "NTNX",
+      "date": "2026-05-27",
+      "day_post": 9,
+      "expires": "2026-06-10",
+      "note_file": "notes/post_earnings/NTNX_2026-05-27.md"
+    },
+    {
+      "ticker": "PSTG",
       "company": "Everpure",
       "date": "2026-05-27",
-      "day_post": 1,
+      "day_post": 9,
       "expires": "2026-06-10",
-      "note_file": "notes/post_earnings/PSTG_2026-05-27.md",
-      "ticker": "PSTG"
+      "note_file": "notes/post_earnings/PSTG_2026-05-27.md"
     },
     {
-      "company": "SentinelOne",
-      "date": "2026-05-28",
-      "day_post": 0,
-      "expires": "2026-06-11",
-      "note_file": "notes/post_earnings/S_2026-05-28.md",
-      "ticker": "S"
-    },
-    {
-      "company": "Okta",
-      "date": "2026-05-28",
-      "day_post": 0,
-      "expires": "2026-06-11",
-      "note_file": "notes/post_earnings/OKTA_2026-05-28.md",
-      "ticker": "OKTA"
-    },
-    {
-      "company": "Asana",
-      "date": "2026-05-28",
-      "day_post": 0,
-      "expires": "2026-06-11",
-      "note_file": "notes/post_earnings/ASAN_2026-05-28.md",
-      "ticker": "ASAN"
-    },
-    {
-      "company": "MongoDB",
-      "date": "2026-05-28",
-      "day_post": 0,
-      "expires": "2026-06-11",
-      "note_file": "notes/post_earnings/MDB_2026-05-28.md",
-      "ticker": "MDB"
-    },
-    {
-      "company": "Elastic",
-      "date": "2026-05-28",
-      "day_post": 0,
-      "expires": "2026-06-11",
-      "note_file": "notes/post_earnings/ESTC_2026-05-28.md",
-      "ticker": "ESTC"
-    },
-    {
-      "company": "UiPath",
-      "date": "2026-05-28",
-      "day_post": 0,
-      "expires": "2026-06-11",
-      "note_file": "notes/post_earnings/PATH_2026-05-28.md",
-      "ticker": "PATH"
-    },
-    {
+      "ticker": "ADSK",
       "company": "Autodesk",
       "date": "2026-05-28",
-      "day_post": 0,
+      "day_post": 8,
       "expires": "2026-06-11",
-      "note_file": "notes/post_earnings/ADSK_2026-05-28.md",
-      "ticker": "ADSK"
+      "note_file": "notes/post_earnings/ADSK_2026-05-28.md"
+    },
+    {
+      "ticker": "ASAN",
+      "company": "Asana",
+      "date": "2026-05-28",
+      "day_post": 8,
+      "expires": "2026-06-11",
+      "note_file": "notes/post_earnings/ASAN_2026-05-28.md"
+    },
+    {
+      "ticker": "PATH",
+      "company": "UiPath",
+      "date": "2026-05-28",
+      "day_post": 8,
+      "expires": "2026-06-11",
+      "note_file": "notes/post_earnings/PATH_2026-05-28.md"
+    },
+    {
+      "ticker": "ESTC",
+      "company": "Elastic",
+      "date": "2026-05-28",
+      "day_post": 8,
+      "expires": "2026-06-11",
+      "note_file": "notes/post_earnings/ESTC_2026-05-28.md"
+    },
+    {
+      "ticker": "MDB",
+      "company": "MongoDB",
+      "date": "2026-05-28",
+      "day_post": 8,
+      "expires": "2026-06-11",
+      "note_file": "notes/post_earnings/MDB_2026-05-28.md"
+    },
+    {
+      "ticker": "OKTA",
+      "company": "Okta",
+      "date": "2026-05-28",
+      "day_post": 8,
+      "expires": "2026-06-11",
+      "note_file": "notes/post_earnings/OKTA_2026-05-28.md"
+    },
+    {
+      "ticker": "S",
+      "company": "SentinelOne",
+      "date": "2026-05-28",
+      "day_post": 8,
+      "expires": "2026-06-11",
+      "note_file": "notes/post_earnings/S_2026-05-28.md"
+    },
+    {
+      "ticker": "CRDO",
+      "company": "CRDO",
+      "date": "2026-06-01",
+      "day_post": 4,
+      "expires": "2026-06-15",
+      "note_file": "notes/post_earnings/CRDO_2026-06-01.md"
+    },
+    {
+      "ticker": "GTLB",
+      "company": "GitLab",
+      "date": "2026-06-02",
+      "day_post": 3,
+      "expires": "2026-06-16",
+      "note_file": "notes/post_earnings/GTLB_2026-06-02.md"
+    },
+    {
+      "ticker": "PANW",
+      "company": "Palo Alto Networks",
+      "date": "2026-06-02",
+      "day_post": 3,
+      "expires": "2026-06-16",
+      "note_file": "notes/post_earnings/PANW_2026-06-02.md"
+    },
+    {
+      "ticker": "AI",
+      "company": "C3.ai",
+      "date": "2026-06-03",
+      "day_post": 2,
+      "expires": "2026-06-17",
+      "note_file": "notes/post_earnings/AI_2026-06-03.md"
+    },
+    {
+      "ticker": "CXM",
+      "company": "Sprinklr",
+      "date": "2026-06-03",
+      "day_post": 2,
+      "expires": "2026-06-17",
+      "note_file": "notes/post_earnings/CXM_2026-06-03.md"
+    },
+    {
+      "ticker": "FIVE",
+      "company": "Five Below",
+      "date": "2026-06-03",
+      "day_post": 2,
+      "expires": "2026-06-17",
+      "note_file": "notes/post_earnings/FIVE_2026-06-03.md"
+    },
+    {
+      "ticker": "MDT",
+      "company": "MDT",
+      "date": "2026-06-03",
+      "day_post": 2,
+      "expires": "2026-06-17",
+      "note_file": "notes/post_earnings/MDT_2026-06-03.md"
+    },
+    {
+      "ticker": "PVH",
+      "company": "PVH",
+      "date": "2026-06-03",
+      "day_post": 2,
+      "expires": "2026-06-17",
+      "note_file": "notes/post_earnings/PVH_2026-06-03.md"
+    },
+    {
+      "ticker": "VEEV",
+      "company": "Veeva Systems",
+      "date": "2026-06-03",
+      "day_post": 2,
+      "expires": "2026-06-17",
+      "note_file": "notes/post_earnings/VEEV_2026-06-03.md"
+    },
+    {
+      "ticker": "AVGO",
+      "company": "Broadcom",
+      "date": "2026-06-03",
+      "day_post": 2,
+      "expires": "2026-06-17",
+      "note_file": "notes/post_earnings/AVGO_2026-06-03.md"
+    },
+    {
+      "ticker": "CRWD",
+      "company": "CrowdStrike",
+      "date": "2026-06-03",
+      "day_post": 2,
+      "expires": "2026-06-17",
+      "note_file": "notes/post_earnings/CRWD_2026-06-03.md"
+    },
+    {
+      "ticker": "CIEN",
+      "company": "Ciena",
+      "date": "2026-06-04",
+      "day_post": 1,
+      "expires": "2026-06-18",
+      "note_file": "notes/post_earnings/CIEN_2026-06-04.md"
+    },
+    {
+      "ticker": "DOCU",
+      "company": "DocuSign",
+      "date": "2026-06-04",
+      "day_post": 1,
+      "expires": "2026-06-18",
+      "note_file": "notes/post_earnings/DOCU_2026-06-04.md"
+    },
+    {
+      "ticker": "GWRE",
+      "company": "Guidewire",
+      "date": "2026-06-04",
+      "day_post": 1,
+      "expires": "2026-06-18",
+      "note_file": "notes/post_earnings/GWRE_2026-06-04.md"
+    },
+    {
+      "ticker": "IOT",
+      "company": "Samsara",
+      "date": "2026-06-04",
+      "day_post": 1,
+      "expires": "2026-06-18",
+      "note_file": "notes/post_earnings/IOT_2026-06-04.md"
+    },
+    {
+      "ticker": "TTAN",
+      "company": "ServiceTitan",
+      "date": "2026-06-04",
+      "day_post": 1,
+      "expires": "2026-06-18",
+      "note_file": "notes/post_earnings/TTAN_2026-06-04.md"
+    },
+    {
+      "ticker": "RBRK",
+      "company": "Rubrik",
+      "date": "2026-06-04",
+      "day_post": 1,
+      "expires": "2026-06-18",
+      "note_file": "notes/post_earnings/RBRK_2026-06-04.md"
     }
   ],
   "active_pre_earnings": [
@@ -1087,7 +1231,7 @@
       "type": "post_earnings"
     }
   ],
-  "last_updated": "2026-05-13T06:23:17.406064Z",
+  "last_updated": "2026-06-05T18:04:22.932240+00:00",
   "post_earnings": [
     {
       "day_post": 12,
@@ -1266,5 +1410,5 @@
       "ticker": "AMD"
     }
   ],
-  "updated": "2026-05-28T04:44:51.945215"
+  "updated": "2026-06-05T18:27:42.175912"
 }
