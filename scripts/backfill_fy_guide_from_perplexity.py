@@ -56,6 +56,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -146,8 +147,68 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f'  "q_next_eps_guide_midpoint_prior": <company PRIOR NEXT-QUARTER non-GAAP '
         f'EPS guide midpoint if previously updated, or null>,\n'
         f'  "q_next_eps_consensus_prior": <prior NEXT-QUARTER non-GAAP EPS Street '
-        f'consensus midpoint, or null>\n'
+        f'consensus midpoint, or null>,\n'
+        f"  // ---- SaaS north-star metrics ----\n"
+        f"  // Many software companies do NOT emphasize revenue. They guide and "
+        f"the Street tracks ARR (annual recurring revenue), cRPO (current "
+        f"remaining performance obligations), billings, and/or NRR/NDR (net "
+        f"revenue/dollar retention). Capture every one the company actually "
+        f"guided or that the Street has a consensus for, for BOTH the next "
+        f"fiscal quarter (q_next_*) and the full year (fy_*). ARR / cRPO / "
+        f"billings are USD MILLIONS (e.g. 4200 for $4.2B). NRR is a PERCENT "
+        f"(e.g. 118 for 118%). Return null for any the company does not use.\n"
+        f'  "fy_arr_guide_midpoint_new": <new FY ARR midpoint USD millions, or null>,\n'
+        f'  "fy_arr_guide_midpoint_prior": <company PRIOR FY ARR guide midpoint, or null>,\n'
+        f'  "fy_arr_consensus_prior": <prior FY ARR Street consensus midpoint, or null>,\n'
+        f'  "q_next_arr_guide_midpoint_new": <new NEXT-Q ARR midpoint USD millions, or null>,\n'
+        f'  "q_next_arr_guide_midpoint_prior": <company PRIOR NEXT-Q ARR guide, or null>,\n'
+        f'  "q_next_arr_consensus_prior": <prior NEXT-Q ARR Street consensus, or null>,\n'
+        f'  "fy_crpo_guide_midpoint_new": <new FY cRPO midpoint USD millions, or null>,\n'
+        f'  "fy_crpo_guide_midpoint_prior": <company PRIOR FY cRPO guide, or null>,\n'
+        f'  "fy_crpo_consensus_prior": <prior FY cRPO Street consensus, or null>,\n'
+        f'  "q_next_crpo_guide_midpoint_new": <new NEXT-Q cRPO midpoint USD millions, or null>,\n'
+        f'  "q_next_crpo_guide_midpoint_prior": <company PRIOR NEXT-Q cRPO guide, or null>,\n'
+        f'  "q_next_crpo_consensus_prior": <prior NEXT-Q cRPO Street consensus, or null>,\n'
+        f'  "fy_billings_guide_midpoint_new": <new FY billings midpoint USD millions, or null>,\n'
+        f'  "fy_billings_guide_midpoint_prior": <company PRIOR FY billings guide, or null>,\n'
+        f'  "fy_billings_consensus_prior": <prior FY billings Street consensus, or null>,\n'
+        f'  "q_next_billings_guide_midpoint_new": <new NEXT-Q billings midpoint USD millions, or null>,\n'
+        f'  "q_next_billings_guide_midpoint_prior": <company PRIOR NEXT-Q billings guide, or null>,\n'
+        f'  "q_next_billings_consensus_prior": <prior NEXT-Q billings Street consensus, or null>,\n'
+        f'  "fy_nrr_guide_midpoint_new": <new FY NRR/NDR percent (e.g. 118), or null>,\n'
+        f'  "fy_nrr_guide_midpoint_prior": <company PRIOR FY NRR guide percent, or null>,\n'
+        f'  "fy_nrr_consensus_prior": <prior FY NRR Street consensus percent, or null>,\n'
+        f'  "q_next_nrr_guide_midpoint_new": <new NEXT-Q NRR/NDR percent, or null>,\n'
+        f'  "q_next_nrr_guide_midpoint_prior": <company PRIOR NEXT-Q NRR guide percent, or null>,\n'
+        f'  "q_next_nrr_consensus_prior": <prior NEXT-Q NRR Street consensus percent, or null>,\n'
+        f'  "fy_north_star_metric": <the ONE metric this company itself '
+        f'emphasizes as its primary FY guidance KPI: one of "revenue", "ARR", '
+        f'"cRPO", "billings", "NRR", "EPS", or null if it leads with revenue>,\n'
+        f'  "q_next_north_star_metric": <the ONE metric this company emphasizes '
+        f'for its NEXT-QUARTER guide: "revenue", "ARR", "cRPO", "billings", '
+        f'"NRR", "EPS", or null>\n'
         f'}}\n'
+        f"NORTH STAR: Pick north_star_metric from how the company FRAMES its own "
+        f"guidance in the press release / prepared remarks headline (e.g. "
+        f"CrowdStrike leads with ARR, many consumption names lead with revenue, "
+        f"some lead with cRPO). If the company genuinely leads with revenue, "
+        f'return "revenue". Only return a non-revenue metric when the company '
+        f"itself features it. Never invent a metric the company did not report.\n"
+        f"CRITICAL -- GROUND THE NORTH-STAR VALUE: If you set north_star_metric "
+        f"to ARR, cRPO, billings, or NRR, you MUST also return that metric's "
+        f"actual reported figure and its prior-period value. These are disclosed "
+        f"every quarter in the earnings press release financial tables and the "
+        f"prepared remarks (e.g. CrowdStrike reports ending ARR and net-new ARR "
+        f"in dollars; Snowflake reports product revenue and RPO; many report "
+        f"cRPO and a dollar-based net retention rate). The current-quarter "
+        f"ENDING level of the metric IS the _guide_midpoint_new for that metric, "
+        f"and the year-ago / prior-quarter ENDING level is the "
+        f"_guide_midpoint_prior. Do not return a north_star_metric of ARR/cRPO/"
+        f"billings/NRR while leaving its midpoint fields null -- if you cannot "
+        f'ground the figure, set north_star_metric to "revenue" instead.\n'
+        f"UNITS: ARR / cRPO / billings in USD MILLIONS (number only). NRR as a "
+        f"plain percent number. Keep units consistent with the prior/consensus "
+        f"values for the same metric so the comparison is apples-to-apples.\n"
         f"CONSENSUS GROUNDING: Wall Street consensus midpoints are publicly "
         f"available for every major US-listed name. Before returning null for "
         f"any *_consensus_prior field, search Yahoo Finance Analysts tab, Zacks, "
@@ -178,6 +239,65 @@ def _num(v):
     return None
 
 
+# SaaS metric prefixes -> canonical units. Units are intrinsic to the metric
+# (ARR/cRPO/billings reported in USD millions, NRR in percent), so we stamp them
+# deterministically rather than trusting a free-text units field from the model.
+_SAAS_METRIC_UNITS = {
+    "arr": "USD millions",
+    "crpo": "USD millions",
+    "billings": "USD millions",
+    "nrr": "%",
+}
+
+
+def _extract_saas_metrics(res: dict) -> dict:
+    """Pull the SaaS north-star metric families from a sonar response.
+
+    Returns {"fields": {envelope_key: value, ...}, "any_value": bool}. Only
+    grounded (non-null) midpoints produce fields; prior/consensus baselines and
+    the per-metric units are attached alongside any present new midpoint. The
+    per-horizon north_star pointer is carried through when the model named one.
+    """
+    fields: dict = {}
+    any_value = False
+    for horizon in ("fy", "q_next"):
+        for metric, units in _SAAS_METRIC_UNITS.items():
+            base = f"{horizon}_{metric}"
+            new = _num(res.get(f"{base}_guide_midpoint_new"))
+            if new is None:
+                continue
+            any_value = True
+            fields[f"{base}_guide_midpoint_new"] = new
+            prior = _num(res.get(f"{base}_guide_midpoint_prior"))
+            cons = _num(res.get(f"{base}_consensus_prior"))
+            if prior is not None:
+                fields[f"{base}_guide_midpoint_prior"] = prior
+            if cons is not None:
+                fields[f"{base}_consensus_prior"] = cons
+            fields[f"{base}_units"] = units
+        ns = res.get(f"{horizon}_north_star_metric")
+        if isinstance(ns, str):
+            ns = ns.strip()
+            if ns and ns.lower() not in ("null", "none", "n/a"):
+                fields[f"{horizon}_north_star_metric"] = ns
+                ns_units = _north_star_units(ns)
+                if ns_units:
+                    fields[f"{horizon}_north_star_units"] = ns_units
+    return {"fields": fields, "any_value": any_value}
+
+
+def _north_star_units(metric: str) -> str | None:
+    """Map a north_star_metric label to its display units."""
+    m = metric.strip().lower()
+    if m in ("arr", "crpo", "billings", "revenue", "rev"):
+        return "USD millions"
+    if m in ("nrr", "ndr"):
+        return "%"
+    if m == "eps":
+        return "USD"
+    return None
+
+
 def _fiscal_year_label(rec: dict) -> str:
     fq = rec.get("fiscal_quarter") or ""
     # Try to surface an "FYxx" hint from the fiscal_quarter string; fall back to
@@ -189,7 +309,7 @@ def _fiscal_year_label(rec: dict) -> str:
     return "the current fiscal year"
 
 
-def _candidates(tickers: dict, only: str | None):
+def _candidates(tickers: dict, only: str | None, force_gate: bool = False):
     """Active POST tickers that still need the widened FY-guide fetch.
 
     A card is a candidate when EITHER guidance pill is empty OR it has not yet
@@ -223,6 +343,14 @@ def _candidates(tickers: dict, only: str | None):
             and review.get("stock_reaction_calc_method") is not None
         )
         if active is not True and not reactioned and not has_reaction_stamp:
+            continue
+        # --force-gate: bypass the "already populated / already widened" skips
+        # below so an operator can deliberately re-fetch a card (paired with
+        # FORCE_REGENERATE=true, which bypasses the response cache). The
+        # state/active checks above still apply -- we only ever regen real,
+        # active POST cards.
+        if force_gate:
+            out.append((tk, rec))
             continue
         gvc = rec.get("guide_vs_consensus") or {}
         rev_present = any(
@@ -258,11 +386,11 @@ def _candidates(tickers: dict, only: str | None):
     return out
 
 
-def backfill(only: str | None, dry_run: bool, cap: int):
+def backfill(only: str | None, dry_run: bool, cap: int, force_gate: bool = False):
     intel = json.loads(INTEL_PATH.read_text())
     tickers = intel.get("tickers", {})
 
-    cands = _candidates(tickers, only)
+    cands = _candidates(tickers, only, force_gate=force_gate)
     written, no_data, errored = [], [], []
     used = 0
 
@@ -324,15 +452,21 @@ def backfill(only: str | None, dry_run: bool, cap: int):
         q_eps_mid = _num(res.get("q_next_eps_guide_midpoint"))
         q_eps_prior = _num(res.get("q_next_eps_guide_midpoint_prior"))
         q_eps_cons = _num(res.get("q_next_eps_consensus_prior"))
+        # SaaS north-star metrics (ARR / cRPO / billings / NRR) for both horizons.
+        saas = _extract_saas_metrics(res)
         if (rev_mid is None and eps_mid is None and op_mid is None
-                and fcf_mid is None and q_rev_mid is None and q_eps_mid is None):
+                and fcf_mid is None and q_rev_mid is None and q_eps_mid is None
+                and not saas["any_value"]):
             no_data.append(tk)
             continue
 
         gvc = rec.get("guide_vs_consensus") or {}
 
         def _set(k, v):
-            if v is not None and gvc.get(k) is None:
+            # Normally fill-only (never clobber a prior grounded value). With
+            # --force-gate the operator is deliberately re-fetching this card,
+            # so a freshly grounded value replaces the stale one.
+            if v is not None and (force_gate or gvc.get(k) is None):
                 gvc[k] = v
 
         if rev_mid is not None:
@@ -364,6 +498,10 @@ def backfill(only: str | None, dry_run: bool, cap: int):
             _set("q_next_eps_guide_midpoint_new", q_eps_mid)
             _set("q_next_eps_guide_midpoint_prior", q_eps_prior)
             _set("q_next_eps_consensus_prior", q_eps_cons)
+        # SaaS north-star metrics: write each metric/horizon family + the
+        # per-horizon north_star pointer (+ units) when present.
+        for key, val in saas["fields"].items():
+            _set(key, val)
         gvc.setdefault("fy_guide_source", "perplexity_sonar")
         gvc.setdefault("fy_guide_fiscal_year", fy_label)
         # Mark the widened pass complete so this card is not refetched again,
@@ -384,7 +522,11 @@ def backfill(only: str | None, dry_run: bool, cap: int):
         written.append(tk)
 
     if written and not dry_run:
-        INTEL_PATH.write_text(json.dumps(intel, indent=2))
+        # Atomic write: serialize to a sibling .tmp then os.replace so a crash
+        # mid-write can never leave a torn earnings_intel.json on disk.
+        tmp = INTEL_PATH.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(intel, indent=2))
+        os.replace(tmp, INTEL_PATH)
 
     return cands, written, no_data, errored, used
 
@@ -394,10 +536,25 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--ticker", help="Limit to a single ticker")
     ap.add_argument("--max-backfills", type=int, default=_DEFAULT_CAP)
+    ap.add_argument(
+        "--force-gate",
+        action="store_true",
+        help="Bypass the already-populated/already-widened candidate gate so a "
+        "card is re-fetched even after a prior pass. Pair with "
+        "FORCE_REGENERATE=true to also bypass the response cache.",
+    )
     args = ap.parse_args()
 
+    # When a single ticker is named for a forced cache-bypass run, also bypass
+    # the candidate gate by default -- the prior pass's markers would otherwise
+    # silently skip the very card the operator asked to regenerate.
+    force_gate = args.force_gate or (
+        bool(args.ticker)
+        and os.environ.get("FORCE_REGENERATE", "false").lower() == "true"
+    )
+
     cands, written, no_data, errored, used = backfill(
-        args.ticker, args.dry_run, args.max_backfills
+        args.ticker, args.dry_run, args.max_backfills, force_gate=force_gate
     )
 
     tag = "[DRY RUN] " if args.dry_run else "[OK] "

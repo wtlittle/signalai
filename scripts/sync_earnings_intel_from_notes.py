@@ -462,7 +462,69 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
         if q_eps.get("streetDeltaAbs") is not None:
             out["guidanceNextQEpsStreetDeltaAbs"] = q_eps["streetDeltaAbs"]
 
+    # --- SaaS north-star metrics (ARR / cRPO / NRR / billings) ---
+    # These are captured uniformly for both horizons. Each contributes a
+    # guidance{Horizon}{Metric}* family computed exactly like revenue above.
+    # The company's emphasized metric (north_star_metric) drives which pill the
+    # card features; units let the renderer format % (NRR) vs USD-millions.
+    _normalize_saas_metrics(gvc, out)
+
     return out
+
+
+# SaaS metric tokens. Envelope prefix -> (camelCase token, default tiny-baseline).
+# Tiny-baseline 0.0 for USD/$ metrics; for NRR (a percentage near 100-130) a
+# 0.0 tiny baseline is fine since the baseline is never near zero.
+_SAAS_METRICS = (
+    ("arr", "Arr", 0.0),
+    ("crpo", "Crpo", 0.0),
+    ("nrr", "Nrr", 0.0),
+    ("billings", "Billings", 0.0),
+)
+
+# Horizon tokens: (envelope prefix, camelCase token).
+_GUIDANCE_HORIZONS = (
+    ("fy", "FY"),
+    ("q_next", "NextQ"),
+)
+
+
+def _normalize_saas_metrics(gvc: dict, out: dict) -> None:
+    """Populate guidance{Horizon}{Metric}* fields for the SaaS metric set, plus
+    the per-horizon north-star pointer + units. Mirrors the revenue delta logic.
+    """
+    for h_prefix, h_token in _GUIDANCE_HORIZONS:
+        for m_prefix, m_token, tiny in _SAAS_METRICS:
+            base = f"{h_prefix}_{m_prefix}"
+            delta = _compute_metric_delta(
+                gvc.get(f"{base}_guide_midpoint_new"),
+                gvc.get(f"{base}_consensus_prior"),
+                gvc.get(f"{base}_guide_midpoint_prior"),
+                tiny,
+            )
+            if not delta:
+                continue
+            field = f"guidance{h_token}{m_token}"
+            if delta.get("deltaPct") is not None:
+                out[f"{field}DeltaPct"] = delta["deltaPct"]
+            if delta.get("deltaAbs") is not None:
+                out[f"{field}DeltaAbs"] = delta["deltaAbs"]
+            out[f"{field}PriorSource"] = delta.get("priorSource") or "consensus"
+            if delta.get("streetDeltaPct") is not None:
+                out[f"{field}StreetDeltaPct"] = delta["streetDeltaPct"]
+            if delta.get("streetDeltaAbs") is not None:
+                out[f"{field}StreetDeltaAbs"] = delta["streetDeltaAbs"]
+            units = gvc.get(f"{base}_units")
+            if units:
+                out[f"{field}Units"] = units
+
+        # North-star pointer for this horizon (e.g. "ARR", "cRPO", "revenue").
+        ns = gvc.get(f"{h_prefix}_north_star_metric")
+        if ns:
+            out[f"guidance{h_token}NorthStarMetric"] = ns
+            ns_units = gvc.get(f"{h_prefix}_north_star_units")
+            if ns_units:
+                out[f"guidance{h_token}NorthStarUnits"] = ns_units
 
 
 # Flat normalized guidance fields the card UI reads. Kept alongside the legacy
@@ -496,6 +558,19 @@ NORMALIZED_GUIDANCE_FIELDS = (
     "guidanceNextQEpsPriorSource",
     "guidanceNextQEpsStreetDeltaPct",
     "guidanceNextQEpsStreetDeltaAbs",
+) + tuple(
+    # SaaS north-star metric families (ARR / cRPO / NRR / billings) x horizons.
+    f"guidance{h_token}{m_token}{suffix}"
+    for h_token in ("FY", "NextQ")
+    for m_token in ("Arr", "Crpo", "Nrr", "Billings")
+    for suffix in (
+        "DeltaPct", "DeltaAbs", "PriorSource",
+        "StreetDeltaPct", "StreetDeltaAbs", "Units",
+    )
+) + tuple(
+    f"guidance{h_token}{suffix}"
+    for h_token in ("FY", "NextQ")
+    for suffix in ("NorthStarMetric", "NorthStarUnits")
 )
 
 

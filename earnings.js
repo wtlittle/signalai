@@ -606,6 +606,32 @@ function _aboveBelowWord(deltaPct, flatThreshold = 0.005) {
 function buildGuidancePillText(metric, metricPrefix) {
   if (!metric) return null;
   const prefix = metricPrefix || '';
+  // Percent north-star metrics (NRR/NDR): frame in basis points. deltaPct off a
+  // ~100-130 base is misleading, so direction/magnitude come from the absolute
+  // percentage-point change (already rendered as "+100bps" in metric.display).
+  if (metric.units === '%') {
+    const primary = metric.display;
+    if (primary == null) return null;
+    const fmtBps = (abs) => {
+      if (abs == null || !Number.isFinite(abs)) return null;
+      const bps = Math.round(abs * 100);
+      const sign = bps > 0 ? '+' : (bps < 0 ? '-' : '');
+      return `${sign}${Math.abs(bps)}bps`;
+    };
+    if (metric.priorSource === 'prior_guidance') {
+      const word = _raiseCutWord(metric.direction);
+      let text = `${word} ${prefix}${primary}`.trimEnd();
+      const street = fmtBps(metric.streetDeltaAbs);
+      if (street != null) text += `, ${street} vs Street`;
+      return { text, direction: metric.direction };
+    }
+    const labelBit = prefix ? prefix.trimEnd() + ' ' : '';
+    if (metric.direction === 'flat') {
+      return { text: `${labelBit}In-line Street`.trim(), direction: 'flat' };
+    }
+    const word = metric.direction === 'raise' ? 'Above' : 'Below';
+    return { text: `${labelBit}${word} Street ${primary}`.trim(), direction: metric.direction };
+  }
   if (metric.priorSource === 'prior_guidance') {
     const primary = metric.display;
     if (primary == null) return null;
@@ -784,12 +810,107 @@ function buildNextQGuidanceDisplay(g) {
   return { revenue, eps };
 }
 
-// Render the split FY guidance row from a normalized { revenue, profitability }
-// object. Returns '' when neither metric is present (caller hides the line).
-// When FY revenue/profitability are absent, falls back to next-quarter (Q+1)
-// guidance pills labeled "Q+1 Guide" -- this handles AVGO-class companies that
-// only guide one quarter out.
+// Map a north_star_metric label (as returned by sonar) to the camelCase field
+// token used in the normalized guidance fields, plus the human pill label.
+// Returns null for revenue/eps (handled by the legacy cascade) or unknowns.
+const _NORTH_STAR_METRICS = {
+  arr: { token: 'Arr', label: 'ARR' },
+  crpo: { token: 'Crpo', label: 'cRPO' },
+  nrr: { token: 'Nrr', label: 'NRR' },
+  ndr: { token: 'Nrr', label: 'NRR' },
+  billings: { token: 'Billings', label: 'Billings' },
+};
+
+function _northStarMeta(metric) {
+  if (!metric || typeof metric !== 'string') return null;
+  return _NORTH_STAR_METRICS[metric.trim().toLowerCase()] || null;
+}
+
+// Copy the SaaS north-star guidance fields off a calendar source row `p` onto a
+// plain object, preserving nulls. Keeps the calendar passthrough DRY rather
+// than enumerating ~50 keys by hand. Mirrors NORMALIZED_GUIDANCE_FIELDS' SaaS
+// families in the Python sync.
+function _copyNorthStarGuidanceFields(p) {
+  const out = {};
+  const horizons = ['FY', 'NextQ'];
+  const metrics = ['Arr', 'Crpo', 'Nrr', 'Billings'];
+  const suffixes = ['DeltaPct', 'DeltaAbs', 'PriorSource', 'StreetDeltaPct', 'StreetDeltaAbs', 'Units'];
+  for (const h of horizons) {
+    for (const m of metrics) {
+      for (const s of suffixes) {
+        const key = `guidance${h}${m}${s}`;
+        out[key] = p[key] != null ? p[key] : null;
+      }
+    }
+    out[`guidance${h}NorthStarMetric`] = p[`guidance${h}NorthStarMetric`] || null;
+    out[`guidance${h}NorthStarUnits`] = p[`guidance${h}NorthStarUnits`] || null;
+  }
+  return out;
+}
+
+// Format a SaaS-metric delta for display. USD-millions metrics reuse the
+// percentage framing (formatGuideDelta); percent metrics (NRR) are shown in
+// basis points off the absolute percentage-point change (e.g. +100bps).
+function _formatNorthStarDelta(deltaPct, deltaAbs, units) {
+  if (units === '%') {
+    if (deltaAbs != null && Number.isFinite(deltaAbs)) {
+      const bps = Math.round(deltaAbs * 100);
+      const sign = bps > 0 ? '+' : (bps < 0 ? '-' : '');
+      return `${sign}${Math.abs(bps)}bps`;
+    }
+    return null;
+  }
+  return formatGuideDelta({ deltaPct, deltaAbs, metric: 'REV' });
+}
+
+// Build a north-star metric display object for a horizon ('FY' | 'NextQ') from
+// the normalized guidance fields, or null when the company's north star is
+// revenue/eps/absent or the metric has no usable delta. Mirrors the shape the
+// revenue/profitability pills use so _renderGuidePill can consume it.
+function buildNorthStarDisplay(g, horizonToken) {
+  if (!g) return null;
+  const meta = _northStarMeta(g[`guidance${horizonToken}NorthStarMetric`]);
+  if (!meta) return null;
+  const num = (v) => (typeof v === 'number' && Number.isFinite(v)) ? v : null;
+  const field = `guidance${horizonToken}${meta.token}`;
+  const deltaPct = num(g[`${field}DeltaPct`]);
+  const deltaAbs = num(g[`${field}DeltaAbs`]);
+  if (deltaPct == null && deltaAbs == null) return null;
+  const units = g[`${field}Units`] || g[`guidance${horizonToken}NorthStarUnits`] || null;
+  const display = _formatNorthStarDelta(deltaPct, deltaAbs, units);
+  if (display == null) return null;
+  const direction = (units === '%')
+    ? (deltaAbs == null ? 'n/a' : (Math.abs(deltaAbs) < 0.05 ? 'flat' : (deltaAbs > 0 ? 'raise' : 'cut')))
+    : classifyGuideDelta(deltaPct);
+  return {
+    label: meta.label,
+    deltaPct,
+    deltaAbs,
+    direction,
+    priorSource: g[`${field}PriorSource`] || 'consensus',
+    streetDeltaPct: num(g[`${field}StreetDeltaPct`]),
+    streetDeltaAbs: num(g[`${field}StreetDeltaAbs`]),
+    units,
+    display,
+  };
+}
+
+// Render the guidance row. Precedence per the ARR mandate: a company's
+// emphasized north-star metric (ARR / cRPO / NRR / billings) wins; else revenue
+// (legacy); else EPS. FY is preferred over Q+1; when FY has no usable pill the
+// Q+1 row (also north-star aware) is the fallback (AVGO-class one-quarter
+// guiders). Returns '' when nothing renders.
 function renderGuidanceChangeRow(g) {
+  // 1. North-star FY pill when the company emphasizes a SaaS KPI.
+  const fyNorthStar = buildNorthStarDisplay(g, 'FY');
+  if (fyNorthStar) {
+    const pill = _renderGuidePill(fyNorthStar, 'guide-northstar', '');
+    if (pill) {
+      return `<div class="earnings-guide-row"><span class="guide-label" title="Company's emphasized guidance metric">${fyNorthStar.label} Guide</span>${pill}</div>`;
+    }
+  }
+
+  // 2. Legacy FY revenue + profitability pills.
   const { revenue, profitability } = buildGuidanceChangeDisplay(g);
   const fyPills = [];
   const revPill = _renderGuidePill(revenue, 'guide-revenue', '');
@@ -804,7 +925,16 @@ function renderGuidanceChangeRow(g) {
     return `<div class="earnings-guide-row"><span class="guide-label">FY Guide</span>${body}</div>`;
   }
 
-  // FY guide absent -- try next-quarter fallback (AVGO-class).
+  // 3. FY guide absent -- north-star Q+1 pill (AVGO/SaaS one-quarter guiders).
+  const qNorthStar = buildNorthStarDisplay(g, 'NextQ');
+  if (qNorthStar) {
+    const pill = _renderGuidePill(qNorthStar, 'guide-northstar', '');
+    if (pill) {
+      return `<div class="earnings-guide-row"><span class="guide-label" title="Company's emphasized next-quarter guidance metric">${qNorthStar.label} Guide</span>${pill}</div>`;
+    }
+  }
+
+  // 4. Legacy next-quarter revenue/EPS fallback labeled "Q+1 Guide".
   const nq = buildNextQGuidanceDisplay(g);
   const qPills = [];
   const qRevPill = _renderGuidePill(nq.revenue, 'guide-revenue', '');
@@ -962,6 +1092,40 @@ function _applyNormalizedGuidanceFromEnvelope(r, gvc) {
     if (r.guidanceFcfPriorSource == null) r.guidanceFcfPriorSource = fcf.priorSource;
     setIf('guidanceFcfStreetDeltaPct', fcf.streetDeltaPct);
     setIf('guidanceFcfStreetDeltaAbs', fcf.streetDeltaAbs);
+  }
+
+  // --- SaaS north-star metrics (ARR / cRPO / NRR / billings) x horizons ---
+  // Mirror the Python sync's _normalize_saas_metrics so a row carrying only the
+  // raw envelope still renders a north-star pill.
+  const saasMetrics = [
+    ['arr', 'Arr'], ['crpo', 'Crpo'], ['nrr', 'Nrr'], ['billings', 'Billings'],
+  ];
+  const saasHorizons = [['fy', 'FY'], ['q_next', 'NextQ']];
+  for (const [hPrefix, hToken] of saasHorizons) {
+    for (const [mPrefix, mToken] of saasMetrics) {
+      const base = `${hPrefix}_${mPrefix}`;
+      const d = _computeMetricDelta(
+        gvc[`${base}_guide_midpoint_new`],
+        gvc[`${base}_consensus_prior`],
+        gvc[`${base}_guide_midpoint_prior`],
+        0,
+      );
+      if (!d) continue;
+      const field = `guidance${hToken}${mToken}`;
+      setIf(`${field}DeltaPct`, d.deltaPct);
+      setIf(`${field}DeltaAbs`, d.deltaAbs);
+      if (r[`${field}PriorSource`] == null) r[`${field}PriorSource`] = d.priorSource;
+      setIf(`${field}StreetDeltaPct`, d.streetDeltaPct);
+      setIf(`${field}StreetDeltaAbs`, d.streetDeltaAbs);
+      if (gvc[`${base}_units`] && r[`${field}Units`] == null) r[`${field}Units`] = gvc[`${base}_units`];
+    }
+    const ns = gvc[`${hPrefix}_north_star_metric`];
+    if (ns && r[`guidance${hToken}NorthStarMetric`] == null) {
+      r[`guidance${hToken}NorthStarMetric`] = ns;
+      if (gvc[`${hPrefix}_north_star_units`] && r[`guidance${hToken}NorthStarUnits`] == null) {
+        r[`guidance${hToken}NorthStarUnits`] = gvc[`${hPrefix}_north_star_units`];
+      }
+    }
   }
 }
 
@@ -1610,7 +1774,10 @@ async function fetchEarnings() {
               guidanceNextQRevenuePriorSource: p.guidanceNextQRevenuePriorSource || null,
               guidanceNextQEpsDeltaPct: p.guidanceNextQEpsDeltaPct != null ? p.guidanceNextQEpsDeltaPct : null,
               guidanceNextQEpsDeltaAbs: p.guidanceNextQEpsDeltaAbs != null ? p.guidanceNextQEpsDeltaAbs : null,
-              guidanceNextQEpsPriorSource: p.guidanceNextQEpsPriorSource || null
+              guidanceNextQEpsPriorSource: p.guidanceNextQEpsPriorSource || null,
+              // SaaS north-star metric families (ARR/cRPO/NRR/billings) + the
+              // per-horizon north-star pointer/units, copied generically.
+              ..._copyNorthStarGuidanceFields(p)
             });
           }
         }
