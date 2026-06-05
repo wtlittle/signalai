@@ -336,10 +336,6 @@
     if (typeof r.forwardEps === 'number' && typeof r.trailingEps === 'number' && r.trailingEps !== 0) {
       r.ntmEpsGrowth = ((r.forwardEps - r.trailingEps) / Math.abs(r.trailingEps)) * 100;
     }
-    // FY1 revenue estimate (not in local data layer today -> stays null -> n/a).
-    if (r.fy1RevenueEstimate == null && r.revenueEstimates && typeof r.revenueEstimates.average === 'number') {
-      r.fy1RevenueEstimate = r.revenueEstimates.average;
-    }
     // Last earnings reaction from intel
     const intel = getIntel(ticker);
     if (intel && intel.post_earnings_review && intel.post_earnings_review.stock_reaction_pct != null) {
@@ -759,10 +755,21 @@
         { key: 'recommendationKey',label: 'Consensus rating',    fmt: r => escapeHtml(r.recommendationKey || '\u2014'), winner: null },
       ]},
       { title: 'Forward estimates', rows: [
-        { key: 'ntmEpsGrowth',      label: 'NTM EPS growth (fwd)',  fmt: r => fmt.pct(r.ntmEpsGrowth),        winner: 'high' },
-        { key: 'fy1RevenueEstimate',label: 'FY1 Revenue estimate',  fmt: r => fmt.large(r.fy1RevenueEstimate), winner: 'high' },
+        { key: '_nsTopGrowth',    label: 'NTM top-line growth',    fmt: (r, t) => fmt.northStar(r._nsTop),    winner: 'high' },
+        { key: '_nsBottomGrowth', label: 'NTM bottom-line growth', fmt: (r, t) => fmt.northStar(r._nsBottom), winner: 'high' },
       ]},
     ];
+
+    // Resolve each row's north-star metrics once, up front, so the per-cell
+    // renderer and the winner comparison (highest growth rate wins, apples-to-
+    // apples on rate even when the metric type differs across tickers) share
+    // the same resolved values.
+    rows.forEach((r, i) => {
+      r._nsTop = getNorthStarGrowth(tickers[i], 'top', r);
+      r._nsBottom = getNorthStarGrowth(tickers[i], 'bottom', r);
+      r._nsTopGrowth = (r._nsTop && typeof r._nsTop.growthPct === 'number') ? r._nsTop.growthPct : null;
+      r._nsBottomGrowth = (r._nsBottom && typeof r._nsBottom.growthPct === 'number') ? r._nsBottom.growthPct : null;
+    });
 
     let html = '<div class="cmp-section cmp-fund-section">'
       + '<div class="cmp-section-head"><h3>Fundamentals</h3>'
@@ -1159,9 +1166,14 @@
       const absG = absTier('revenueGrowth', r.revenueGrowth);
       let score = g.score;
       let ntmNote = '';
-      if (typeof r.ntmEpsGrowth === 'number' && r.ntmEpsGrowth > 15) {
+      // Metric-agnostic NTM bonus: read the company's top-line north star
+      // (ARR / cRPO / NRR / billings / revenue) and apply +0.5 when its growth
+      // exceeds 15%. Names the actual metric so the explanation matches what
+      // the Forward-estimates row shows.
+      const ns = getNorthStarGrowth(r.ticker, 'top', r);
+      if (ns && typeof ns.growthPct === 'number' && ns.growthPct > 15) {
         score = Math.min(5, score + 0.5);
-        ntmNote = ` NTM EPS growth ${r.ntmEpsGrowth.toFixed(0)}% (+0.5).`;
+        ntmNote = ` NTM ${ns.label} growth ${ns.growthPct.toFixed(0)}% (+0.5).`;
       }
       return {
         score,
@@ -1240,7 +1252,10 @@
   function explainGrowth(r) {
     if (typeof r.revenueGrowth !== 'number') return 'Revenue growth not available.';
     const v = r.revenueGrowth;
-    const ntm = (typeof r.ntmEpsGrowth === 'number') ? ' NTM EPS growth ' + r.ntmEpsGrowth.toFixed(0) + '%.' : '';
+    const ns = getNorthStarGrowth(r.ticker, 'top', r);
+    const ntm = (ns && typeof ns.growthPct === 'number')
+      ? ' NTM ' + ns.label + ' growth ' + ns.growthPct.toFixed(0) + '%.'
+      : '';
     if (v >= 30) return 'Hyper-growth (' + v.toFixed(0) + '% YoY) — multiple has to be earned.' + ntm;
     if (v >= 20) return 'Strong growth (' + v.toFixed(0) + '% YoY) for a software/internet name.' + ntm;
     if (v >= 10) return 'Mid-growth (' + v.toFixed(0) + '% YoY) — durability matters more than reacceleration story.' + ntm;
@@ -1679,6 +1694,83 @@
     const d = global._earningsIntelData || global.earningsIntelData;
     return d && d.tickers && d.tickers[t] ? d.tickers[t] : null;
   }
+
+  // North-star metric routing — mirrors the earnings-pill pipeline
+  // (earnings.js _NORTH_STAR_METRICS / _BOTTOM_LINE_NORTH_STARS and
+  // buildNorthStarDisplay / buildBottomLineNorthStarDisplay). The FY guidance
+  // delta fields live directly on the intel ticker object (getIntel) under the
+  // same key shape the pill renderer consumes: guidanceFY{Token}DeltaPct.
+  const NS_TOP_METRICS = {
+    arr: { token: 'Arr', label: 'ARR' },
+    crpo: { token: 'Crpo', label: 'cRPO' },
+    nrr: { token: 'Nrr', label: 'NRR' },
+    ndr: { token: 'Nrr', label: 'NRR' },
+    billings: { token: 'Billings', label: 'Bill' },
+  };
+  const NS_BOTTOM_METRICS = {
+    fcf: { token: 'Fcf', label: 'FCF' },
+    adj_ebitda: { token: 'AdjEbitda', label: 'EBITDA' },
+    adj_op_income: { token: 'AdjOpIncome', label: 'AdjOpInc' },
+    adj_operating_income: { token: 'AdjOpIncome', label: 'AdjOpInc' },
+    non_gaap_op_income: { token: 'AdjOpIncome', label: 'AdjOpInc' },
+  };
+
+  // Resolve the company's north-star FY growth rate for one side
+  // ('top' | 'bottom'). Returns { metric, label, growthPct, isFallback } or
+  // null when no growth is computable. growthPct is a percent magnitude
+  // (e.g. 22.4 for +22.4%). NEVER fabricates: a north-star pointer without a
+  // usable delta falls through to the Yahoo-derived metric, exactly as the
+  // pill renderer falls back to the revenue/EPS legacy cascade.
+  function getNorthStarGrowth(ticker, side, row) {
+    const intel = getIntel(ticker);
+    const num = (v) => (typeof v === 'number' && Number.isFinite(v)) ? v : null;
+
+    if (side === 'top') {
+      if (intel) {
+        const ptr = intel.guidanceFYTopLineNorthStarMetric || intel.guidanceFYNorthStarMetric;
+        const meta = ptr ? NS_TOP_METRICS[String(ptr).trim().toLowerCase()] : null;
+        if (meta) {
+          const field = 'guidanceFY' + meta.token;
+          const units = intel[field + 'Units'] || intel.guidanceFYNorthStarUnits || null;
+          const deltaPct = num(intel[field + 'DeltaPct']);
+          const deltaAbs = num(intel[field + 'DeltaAbs']);
+          // Percent metrics (NRR/NDR) carry their move as percentage points;
+          // express growth as basis points off the absolute delta.
+          if (units === '%') {
+            if (deltaAbs != null) {
+              return { metric: meta.token, label: meta.label, growthPct: deltaAbs * 100, isBps: true, isFallback: false };
+            }
+          } else if (deltaPct != null) {
+            return { metric: meta.token, label: meta.label, growthPct: deltaPct * 100, isFallback: false };
+          }
+        }
+      }
+      // Fallback: Yahoo TTM revenue growth (already a percent magnitude).
+      if (row && typeof row.revenueGrowth === 'number' && Number.isFinite(row.revenueGrowth)) {
+        return { metric: 'Rev', label: 'Rev', growthPct: row.revenueGrowth, isFallback: true };
+      }
+      return null;
+    }
+
+    // side === 'bottom'
+    if (intel) {
+      const ptr = intel.guidanceFYBottomLineNorthStarMetric;
+      const meta = ptr ? NS_BOTTOM_METRICS[String(ptr).trim().toLowerCase().replace(/\s+/g, '_')] : null;
+      if (meta) {
+        const field = 'guidanceFY' + meta.token;
+        const deltaPct = num(intel[field + 'DeltaPct']);
+        if (deltaPct != null) {
+          return { metric: meta.token, label: meta.label, growthPct: deltaPct * 100, isFallback: false };
+        }
+      }
+    }
+    // Fallback: NTM EPS growth (forward vs trailing — same computation as the
+    // augmentRow ntmEpsGrowth field).
+    if (row && typeof row.ntmEpsGrowth === 'number' && Number.isFinite(row.ntmEpsGrowth)) {
+      return { metric: 'EPS', label: 'EPS', growthPct: row.ntmEpsGrowth, isFallback: true };
+    }
+    return null;
+  }
   function escapeHtml(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;')
@@ -1701,7 +1793,25 @@
       }
       return str;
     },
-    num: (v, d) => (v == null || Number.isNaN(v)) ? '\u2014' : Number(v).toFixed(d || 0)
+    num: (v, d) => (v == null || Number.isNaN(v)) ? '\u2014' : Number(v).toFixed(d || 0),
+    // Render a north-star cell: a small metric chip (ARR/cRPO/FCF/...) + the
+    // growth value. NRR-type metrics render as basis points; everything else
+    // as a signed percent. null -> n/a (never fabricate).
+    northStar: (ns) => {
+      if (!ns || typeof ns.growthPct !== 'number' || !Number.isFinite(ns.growthPct)) return '\u2014';
+      const chip = `<span class="cmp-metric-chip"${ns.isFallback ? ' title="Fallback metric \u2014 company north star not captured"' : ''}>${escapeHtml(ns.label)}</span>`;
+      let val;
+      if (ns.isBps) {
+        const bps = Math.round(ns.growthPct);
+        const sign = bps > 0 ? '+' : (bps < 0 ? '\u2212' : '');
+        val = `${sign}${Math.abs(bps)}bps`;
+      } else {
+        val = (typeof global.formatPercent === 'function')
+          ? global.formatPercent(ns.growthPct)
+          : ((ns.growthPct > 0 ? '+' : '') + ns.growthPct.toFixed(1) + '%');
+      }
+      return `${chip} <span class="cmp-ns-val">${val}</span>`;
+    }
   };
 
   // ======================= PUBLIC API =======================

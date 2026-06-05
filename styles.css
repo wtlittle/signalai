@@ -7303,6 +7303,31 @@ mark.search-highlight {
   font-weight: 600;
   background: rgba(34,197,94,0.08);
 }
+/* North-star metric chip in the Forward-estimates rows. Reuses the dark
+   terminal tokens — no new color invention. */
+.cmp-metric-chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--bg-header);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.cmp-ns-val {
+  font-family: var(--font-mono);
+  vertical-align: middle;
+}
+.cmp-winner .cmp-metric-chip {
+  color: var(--green);
+  border-color: rgba(34,197,94,0.4);
+}
 .cmp-pct-flagged {
   color: var(--amber, #f59e0b);
   cursor: help;
