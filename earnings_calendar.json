@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-05T17:12:47+00:00",
+  "updated": "2026-06-05T23:00:50+00:00",
   "pre_earnings": [
     {
       "ticker": "ORCL",
@@ -38,30 +38,30 @@
       "eps_actual": 0.04,
       "revenue_beat_miss": "beat (+10.3%)",
       "eps_beat_miss": "beat (+135.9%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -4.8,
-        "stock_reaction_basis_date": "2026-06-04",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      },
       "guidanceRevenueDeltaPct": -0.03,
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceRevenueStreetDeltaPct": -0.03,
-      "guidanceFYNorthStarMetric": "ARR",
-      "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQRevenueDeltaPct": 0.06883158601758023,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaAbs": 0.0,
       "guidanceNextQEpsPriorSource": "consensus",
+      "guidanceFYNorthStarMetric": "ARR",
+      "guidanceFYNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "ARR",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "FCF",
       "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": -4.8,
+        "stock_reaction_basis_date": "2026-06-04",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
     },
     {
       "ticker": "IOT",
@@ -91,25 +91,25 @@
       "eps_actual": 1.64,
       "revenue_beat_miss": "beat (+4.4%)",
       "eps_beat_miss": "beat (+12.3%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -13.7,
-        "stock_reaction_basis_date": "2026-06-03",
-        "stock_reaction_calc_method": "eod_bmo"
-      },
       "guidanceNextQRevenueDeltaPct": 0.04838709677419355,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "revenue",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "adj_op_income",
       "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
-      "guidanceNextQBottomLineNorthStarUnits": "USD millions"
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "post_earnings_review": {
+        "stock_reaction_pct": -13.7,
+        "stock_reaction_basis_date": "2026-06-03",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
     },
     {
       "ticker": "DOCU",
@@ -122,11 +122,6 @@
       "eps_actual": 1.01,
       "revenue_beat_miss": "beat (+1.2%)",
       "eps_beat_miss": "beat (+4.6%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -5.8,
-        "stock_reaction_basis_date": "2026-06-04",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      },
       "guidanceRevenueDeltaPct": -0.004272287097692965,
       "guidanceRevenuePriorSource": "consensus",
       "guidanceEpsDeltaPct": 0.0,
@@ -135,22 +130,27 @@
       "guidanceProfitMetricUsed": "eps",
       "guidanceNextQRevenueDeltaPct": 0.05218446601941747,
       "guidanceNextQRevenuePriorSource": "prior_guidance",
+      "guidanceNextQRevenueStreetDeltaPct": -0.005733944954128441,
       "guidanceNextQEpsDeltaPct": 0.0,
       "guidanceNextQEpsDeltaAbs": 0.0,
       "guidanceNextQEpsPriorSource": "consensus",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "revenue",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "adj_op_income",
       "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
       "guidanceNextQBottomLineNorthStarUnits": "USD millions",
-      "guidanceNextQRevenueStreetDeltaPct": -0.005733944954128441
+      "post_earnings_review": {
+        "stock_reaction_pct": -5.8,
+        "stock_reaction_basis_date": "2026-06-04",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
     },
     {
       "ticker": "TTAN",
@@ -163,25 +163,25 @@
       "eps_actual": -0.29,
       "revenue_beat_miss": "beat (+3.5%)",
       "eps_beat_miss": "miss (-261.1%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 5.9,
-        "stock_reaction_basis_date": "2026-06-04",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      },
       "guidanceNextQRevenueDeltaPct": 0.014957264957264958,
       "guidanceNextQRevenuePriorSource": "consensus",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "revenue",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "EPS",
       "guidanceFYBottomLineNorthStarUnits": "USD",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": 5.9,
+        "stock_reaction_basis_date": "2026-06-04",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
     },
     {
       "ticker": "GWRE",
@@ -211,25 +211,25 @@
       "eps_actual": "$2.44",
       "revenue_beat_miss": "miss (-12.2%)",
       "eps_beat_miss": "in-line",
-      "post_earnings_review": {
-        "stock_reaction_pct": -12.6,
-        "stock_reaction_basis_date": "2026-06-03",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      },
       "guidanceNextQRevenueDeltaPct": -0.00587437867148667,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "revenue",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "adj_EBITDA",
       "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "adj_EBITDA",
-      "guidanceNextQBottomLineNorthStarUnits": "USD millions"
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "post_earnings_review": {
+        "stock_reaction_pct": -12.6,
+        "stock_reaction_basis_date": "2026-06-03",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
     },
     {
       "ticker": "CRWD",
@@ -242,33 +242,24 @@
       "eps_actual": "$1.10",
       "revenue_beat_miss": "miss (-4.0%)",
       "eps_beat_miss": "in-line",
-      "post_earnings_review": {
-        "stock_reaction_pct": -3.8,
-        "stock_reaction_basis_date": "2026-06-03",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      },
       "guidanceRevenueDeltaPct": 0.02802893309222423,
       "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": 0.010127931769722815,
       "guidanceEpsDeltaPct": 0.03370786516853921,
       "guidanceEpsDeltaAbs": 0.14999999999999947,
       "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsStreetDeltaPct": 0.015452538631346444,
+      "guidanceEpsStreetDeltaAbs": 0.0699999999999994,
       "guidanceFcfDeltaPct": 0.1111111111111111,
       "guidanceFcfDeltaAbs": 220000000.0,
       "guidanceFcfPriorSource": "prior_guidance",
       "guidanceProfitMetricUsed": "eps",
       "guidanceNextQRevenueDeltaPct": -0.034482758620689655,
       "guidanceNextQRevenuePriorSource": "prior_guidance",
+      "guidanceNextQRevenueStreetDeltaPct": 0.0,
       "guidanceNextQEpsDeltaPct": 0.04017857142857136,
       "guidanceNextQEpsDeltaAbs": 0.04499999999999993,
       "guidanceNextQEpsPriorSource": "prior_guidance",
-      "guidanceFYNorthStarMetric": "ARR",
-      "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
-      "guidanceRevenueStreetDeltaPct": 0.010127931769722815,
-      "guidanceEpsStreetDeltaPct": 0.015452538631346444,
-      "guidanceEpsStreetDeltaAbs": 0.0699999999999994,
-      "guidanceNextQRevenueStreetDeltaPct": 0.0,
       "guidanceNextQEpsStreetDeltaPct": 0.2010309278350516,
       "guidanceNextQEpsStreetDeltaAbs": 0.19500000000000006,
       "guidanceFYArrDeltaPct": 0.03333333333333333,
@@ -292,14 +283,23 @@
       "guidanceNextQAdjOpIncomeStreetDeltaPct": 0.014084507042253521,
       "guidanceNextQAdjOpIncomeStreetDeltaAbs": 5.0,
       "guidanceNextQAdjOpIncomeUnits": "USD millions",
+      "guidanceFYNorthStarMetric": "ARR",
+      "guidanceFYNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "ARR",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "FCF",
       "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": -3.8,
+        "stock_reaction_basis_date": "2026-06-03",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
     },
     {
       "ticker": "AI",
@@ -312,11 +312,6 @@
       "eps_actual": "-$0.33",
       "revenue_beat_miss": "in-line",
       "eps_beat_miss": "beat (+14.1%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -1.2,
-        "stock_reaction_basis_date": "2026-06-03",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      },
       "guidanceRevenueDeltaPct": 0.01669449081803005,
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceRevenueStreetDeltaPct": 0.01839464882943144,
@@ -324,16 +319,21 @@
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "revenue",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "EPS",
       "guidanceFYBottomLineNorthStarUnits": "USD",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": -1.2,
+        "stock_reaction_basis_date": "2026-06-03",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
     },
     {
       "ticker": "CXM",
@@ -346,11 +346,6 @@
       "eps_actual": "$0.11",
       "revenue_beat_miss": "beat (+2.2%)",
       "eps_beat_miss": "beat (+14.6%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -3.0,
-        "stock_reaction_basis_date": "2026-06-02",
-        "stock_reaction_calc_method": "bmo_d_minus_1"
-      },
       "guidanceNextQRevenueDeltaPct": -0.005563282336578581,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaPct": -0.09090909090909087,
@@ -358,16 +353,21 @@
       "guidanceNextQEpsPriorSource": "consensus",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "revenue",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "adj_op_income",
       "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": -3.0,
+        "stock_reaction_basis_date": "2026-06-02",
+        "stock_reaction_calc_method": "bmo_d_minus_1"
+      }
     },
     {
       "ticker": "VEEV",
@@ -380,11 +380,8 @@
       "eps_actual": "$2.24",
       "revenue_beat_miss": "beat (+3.1%)",
       "eps_beat_miss": "beat (+3.2%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -0.1,
-        "stock_reaction_basis_date": "2026-06-03",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      },
+      "guidanceRevenueDeltaPct": 0.0,
+      "guidanceRevenuePriorSource": "consensus",
       "guidanceNextQRevenueDeltaPct": 0.018028169014084508,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaPct": 0.07004830917874398,
@@ -392,18 +389,21 @@
       "guidanceNextQEpsPriorSource": "consensus",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "revenue",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "adj_op_income",
       "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
       "guidanceNextQBottomLineNorthStarUnits": "USD millions",
-      "guidanceRevenueDeltaPct": 0.0,
-      "guidanceRevenuePriorSource": "consensus"
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.1,
+        "stock_reaction_basis_date": "2026-06-03",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
     },
     {
       "ticker": "FIVE",
@@ -450,15 +450,15 @@
       "eps_actual": "$3.82",
       "revenue_beat_miss": "beat (+25.3%)",
       "eps_beat_miss": "beat (+14.5%)",
+      "guidanceEpsDeltaPct": 0.0025167785234898794,
+      "guidanceEpsDeltaAbs": 0.02999999999999936,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceProfitMetricUsed": "eps",
       "post_earnings_review": {
         "stock_reaction_pct": -20.2,
         "stock_reaction_basis_date": "2026-06-03",
         "stock_reaction_calc_method": "eod_d_plus_1"
-      },
-      "guidanceEpsDeltaPct": 0.0025167785234898794,
-      "guidanceEpsDeltaAbs": 0.02999999999999936,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      }
     },
     {
       "ticker": "PANW",
@@ -473,16 +473,11 @@
       "eps_beat_miss": "beat (+4.8%)",
       "guidanceRevenueDeltaPct": 0.011066843736166445,
       "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueStreetDeltaPct": 0.024674742036787798,
       "guidanceEpsDeltaPct": 0.028571428571428567,
       "guidanceEpsDeltaAbs": 0.10499999999999998,
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceProfitMetricUsed": "eps",
-      "post_earnings_review": {
-        "stock_reaction_pct": -5.6,
-        "stock_reaction_basis_date": "2026-06-02",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      },
-      "guidanceRevenueStreetDeltaPct": 0.024674742036787798,
       "guidanceNextQRevenueDeltaPct": 0.015151515151515152,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceFYNorthStarMetric": "ARR",
@@ -496,7 +491,12 @@
       "guidanceNextQTopLineNorthStarMetric": "ARR",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "FCF",
-      "guidanceNextQBottomLineNorthStarUnits": "USD millions"
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "post_earnings_review": {
+        "stock_reaction_pct": -5.6,
+        "stock_reaction_basis_date": "2026-06-02",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
       "ticker": "GTLB",
@@ -518,16 +518,16 @@
       "guidanceOperatingProfitDeltaAbs": 5000000.0,
       "guidanceOperatingProfitPriorSource": "prior_guidance",
       "guidanceProfitMetricUsed": "eps",
-      "post_earnings_review": {
-        "stock_reaction_pct": -2.8,
-        "stock_reaction_basis_date": "2026-06-02",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      },
       "guidanceNextQRevenueDeltaPct": -0.001463057790782736,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaPct": 0.34615384615384603,
       "guidanceNextQEpsDeltaAbs": 0.044999999999999984,
-      "guidanceNextQEpsPriorSource": "consensus"
+      "guidanceNextQEpsPriorSource": "consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": -2.8,
+        "stock_reaction_basis_date": "2026-06-02",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
       "ticker": "CRDO",
@@ -540,25 +540,6 @@
       "eps_actual": "$1.16",
       "revenue_beat_miss": "miss (-5.8%)",
       "eps_beat_miss": "beat (+10.5%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 1.3,
-        "stock_reaction_basis_date": "2026-06-01",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      },
-      "guidanceNextQRevenueDeltaPct": 0.015338085979693238,
-      "guidanceNextQRevenuePriorSource": "consensus",
-      "guidanceFYNorthStarMetric": "revenue",
-      "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
-      "guidanceFYTopLineNorthStarMetric": "revenue",
-      "guidanceFYTopLineNorthStarUnits": "USD millions",
-      "guidanceFYBottomLineNorthStarMetric": "EPS",
-      "guidanceFYBottomLineNorthStarUnits": "USD",
-      "guidanceNextQTopLineNorthStarMetric": "revenue",
-      "guidanceNextQTopLineNorthStarUnits": "USD millions",
-      "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD",
       "guidanceRevenueDeltaPct": 0.0,
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceRevenueStreetDeltaPct": 0.0,
@@ -567,7 +548,26 @@
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": 0.0,
       "guidanceEpsStreetDeltaAbs": 0.0,
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceNextQRevenueDeltaPct": 0.015338085979693238,
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "guidanceFYNorthStarMetric": "revenue",
+      "guidanceFYNorthStarUnits": "USD millions",
+      "guidanceFYTopLineNorthStarMetric": "revenue",
+      "guidanceFYTopLineNorthStarUnits": "USD millions",
+      "guidanceFYBottomLineNorthStarMetric": "EPS",
+      "guidanceFYBottomLineNorthStarUnits": "USD",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
+      "guidanceNextQTopLineNorthStarMetric": "revenue",
+      "guidanceNextQTopLineNorthStarUnits": "USD millions",
+      "guidanceNextQBottomLineNorthStarMetric": "EPS",
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": 1.3,
+        "stock_reaction_basis_date": "2026-06-01",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
     },
     {
       "ticker": "S",
@@ -584,6 +584,7 @@
       "fy_eps_guide_change_vs_prior_pct": 3.2,
       "guidanceRevenueDeltaPct": -0.006877022653721683,
       "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueStreetDeltaPct": -0.006877022653721683,
       "guidanceEpsDeltaPct": 0.03157894736842108,
       "guidanceEpsDeltaAbs": 0.030000000000000027,
       "guidanceEpsPriorSource": "prior_guidance",
@@ -594,8 +595,7 @@
         "stock_reaction_pct": -8.2,
         "stock_reaction_basis_date": "2026-05-28",
         "stock_reaction_calc_method": "amc_d_plus_1"
-      },
-      "guidanceRevenueStreetDeltaPct": -0.006877022653721683
+      }
     },
     {
       "ticker": "OKTA",
@@ -634,13 +634,13 @@
       "guidanceEpsStreetDeltaPct": -0.35135135135135137,
       "guidanceEpsStreetDeltaAbs": -0.13,
       "guidanceProfitMetricUsed": "eps",
-      "post_earnings_review": {
-        "stock_reaction_pct": 4.2
-      },
       "guidanceNextQRevenueDeltaPct": 0.009910335063709298,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaAbs": 0.045000000000000005,
-      "guidanceNextQEpsPriorSource": "consensus"
+      "guidanceNextQEpsPriorSource": "consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": 4.2
+      }
     },
     {
       "ticker": "MDB",
@@ -656,11 +656,6 @@
       "guidanceRevenueDeltaPct": -0.010380622837370242,
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceRevenueStreetDeltaPct": -0.010380622837370242,
-      "post_earnings_review": {
-        "stock_reaction_pct": 3.0,
-        "stock_reaction_basis_date": "2026-05-28",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      },
       "guidanceEpsDeltaPct": 0.0,
       "guidanceEpsDeltaAbs": 0.0,
       "guidanceEpsPriorSource": "prior_guidance",
@@ -673,7 +668,12 @@
       "guidanceOperatingProfitStreetDeltaAbs": 11000000.0,
       "guidanceProfitMetricUsed": "eps",
       "guidanceNextQRevenueDeltaPct": 0.044765446224256294,
-      "guidanceNextQRevenuePriorSource": "consensus"
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": 3.0,
+        "stock_reaction_basis_date": "2026-05-28",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
       "ticker": "ESTC",
@@ -711,13 +711,13 @@
       "eps_beat_miss": "miss (-7.9%)",
       "guidanceRevenueDeltaPct": 0.0012594458438287153,
       "guidanceRevenuePriorSource": "consensus",
+      "guidanceNextQRevenueDeltaPct": 0.0012594458438287153,
+      "guidanceNextQRevenuePriorSource": "consensus",
       "post_earnings_review": {
         "stock_reaction_pct": 1.2,
         "stock_reaction_basis_date": "2026-05-28",
         "stock_reaction_calc_method": "amc_d_plus_1"
-      },
-      "guidanceNextQRevenueDeltaPct": 0.0012594458438287153,
-      "guidanceNextQRevenuePriorSource": "consensus"
+      }
     },
     {
       "ticker": "ADSK",
@@ -753,18 +753,11 @@
       "eps_actual": "$0.80",
       "revenue_beat_miss": "in-line",
       "eps_beat_miss": "in-line",
-      "post_earnings_review": {
-        "stock_reaction_pct": 3.1,
-        "stock_reaction_basis_date": "2026-05-27",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      },
-      "guidanceNextQRevenueDeltaPct": 0.125,
-      "guidanceNextQRevenuePriorSource": "prior_guidance",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceRevenueDeltaPct": 0.15789473684210525,
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceRevenueStreetDeltaPct": 0.028037383177570093,
+      "guidanceNextQRevenueDeltaPct": 0.125,
+      "guidanceNextQRevenuePriorSource": "prior_guidance",
       "guidanceNextQRevenueStreetDeltaPct": 0.011235955056179775,
       "guidanceNextQEpsDeltaPct": 0.0,
       "guidanceNextQEpsDeltaAbs": 0.0,
@@ -777,10 +770,17 @@
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "EPS",
       "guidanceFYBottomLineNorthStarUnits": "USD",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": 3.1,
+        "stock_reaction_basis_date": "2026-05-27",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
       "ticker": "SNPS",
@@ -822,11 +822,6 @@
       "eps_beat_miss": "beat (+23.2%)",
       "guidanceRevenueDeltaPct": 0.0010869565217391304,
       "guidanceRevenuePriorSource": "prior_guidance",
-      "post_earnings_review": {
-        "stock_reaction_pct": -0.8,
-        "stock_reaction_basis_date": "2026-05-27",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      },
       "guidanceRevenueStreetDeltaPct": 0.009868421052631578,
       "guidanceNextQRevenueDeltaPct": 0.023529411764705882,
       "guidanceNextQRevenuePriorSource": "prior_guidance",
@@ -842,7 +837,12 @@
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.8,
+        "stock_reaction_basis_date": "2026-05-27",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
       "ticker": "SNOW",
@@ -855,27 +855,27 @@
       "eps_actual": "$0.39",
       "revenue_beat_miss": "beat (+5.3%)",
       "eps_beat_miss": "beat (+21.9%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 36.5,
-        "stock_reaction_basis_date": "2026-05-27",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      },
-      "guidanceFYNorthStarMetric": "revenue",
-      "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceRevenueDeltaPct": 0.027522935779816515,
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceNextQRevenueDeltaPct": 0.054307116104868915,
       "guidanceNextQRevenuePriorSource": "prior_guidance",
+      "guidanceFYNorthStarMetric": "revenue",
+      "guidanceFYNorthStarUnits": "USD millions",
       "guidanceFYTopLineNorthStarMetric": "revenue",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "adj_op_income",
       "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
-      "guidanceNextQBottomLineNorthStarUnits": "USD millions"
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "post_earnings_review": {
+        "stock_reaction_pct": 36.5,
+        "stock_reaction_basis_date": "2026-05-27",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
       "ticker": "NTNX",
@@ -918,16 +918,16 @@
       "guidanceEpsStreetDeltaPct": 0.0,
       "guidanceEpsStreetDeltaAbs": 0.0,
       "guidanceProfitMetricUsed": "eps",
-      "post_earnings_review": {
-        "stock_reaction_pct": -5.0,
-        "stock_reaction_basis_date": "2026-05-27",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      },
       "guidanceNextQRevenueDeltaPct": 0.019556956159050884,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaPct": 0.03333333333333337,
       "guidanceNextQEpsDeltaAbs": 0.0050000000000000044,
-      "guidanceNextQEpsPriorSource": "consensus"
+      "guidanceNextQEpsPriorSource": "consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": -5.0,
+        "stock_reaction_basis_date": "2026-05-27",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
       "ticker": "ZS",
@@ -948,17 +948,12 @@
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": 0.2788161993769472,
       "guidanceEpsStreetDeltaAbs": 0.8950000000000005,
-      "guidanceProfitMetricUsed": "eps",
-      "post_earnings_review": {
-        "stock_reaction_pct": -31.5,
-        "stock_reaction_basis_date": "2026-05-26",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      },
       "guidanceOperatingProfitDeltaPct": 0.01476510067114094,
       "guidanceOperatingProfitDeltaAbs": 11000000.0,
       "guidanceOperatingProfitPriorSource": "prior_guidance",
       "guidanceOperatingProfitStreetDeltaPct": 0.01476510067114094,
       "guidanceOperatingProfitStreetDeltaAbs": 11000000.0,
+      "guidanceProfitMetricUsed": "eps",
       "guidanceNextQRevenueDeltaPct": 0.04952463060085734,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceFYArrDeltaPct": 0.0018729096989966556,
@@ -982,7 +977,12 @@
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": -31.5,
+        "stock_reaction_basis_date": "2026-05-26",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     }
   ]
 }

@@ -1,10 +1,1 @@
-[
-  {
-    "ticker": "DBRX-PRIVATE",
-    "task": "finance_peer_snapshot",
-    "prompt": "Look up the most recent earnings result and current forward consensus for DBRX-PRIVATE. Return ONLY this JSON.\n\n{\"last_print\": {\"period\": \"...\", \"date\": \"...\", \"actual_eps\": <float>, \"estimated_eps\": <float>, \"eps_surprise_pct\": <float>, \"actual_revenue\": <float>, \"estimated_revenue\": <float>, \"revenue_surprise_pct\": <float>}, \"forward_consensus\": {\"fq_revenue\": <float>, \"fq_eps\": <float>, \"fy_revenue\": <float>, \"fy_eps\": <float>}}",
-    "system": "Return only structured JSON. No prose, no markdown fences.",
-    "max_tokens": 1500,
-    "queued_at": "2026-05-28T19:24:43+00:00"
-  }
-]
+[]
