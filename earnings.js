@@ -310,6 +310,17 @@ function _toFiniteNumber(value) {
 // "$$". The value must originate from the data layer; when it is null/blank
 // or non-numeric we return 'n/a' rather than inventing a number. When `unit`
 // is supplied (e.g. 'M', 'B') and the input is a bare number it is appended.
+// _scaleMoney: human-readable magnitude suffix for a bare number. >= 1e9 -> B
+// (2 decimals), >= 1e6 -> M (no decimals). Smaller values (e.g. EPS) are
+// returned as-is so we never mangle a per-share figure. Display-only \u2014 the
+// data layer keeps the raw number.
+function _scaleMoney(n) {
+  const abs = Math.abs(n);
+  if (abs >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+  if (abs >= 1e6) return Math.round(n / 1e6) + 'M';
+  return String(n);
+}
+
 function safeMoney(value, { unit } = {}) {
   if (value == null) return 'n/a';
   if (typeof value === 'string') {
@@ -319,12 +330,21 @@ function safeMoney(value, { unit } = {}) {
     // Collapse any run of leading "$" to a single one we control.
     s = s.replace(/^\$+/, '');
     if (s === '') return 'n/a';
+    // Pass through values that already carry a magnitude suffix (B/M/K/T).
+    // A bare numeric string (e.g. "19311000000") gets the same B/M scaling
+    // as a number so we never surface a raw integer.
+    if (!/[BMKT]/i.test(s)) {
+      const n = Number(s.replace(/,/g, ''));
+      if (Number.isFinite(n) && !unit) return '$' + _scaleMoney(n);
+    }
     return '$' + s;
   }
   if (typeof value === 'number') {
     if (!Number.isFinite(value)) return 'n/a';
-    const suffix = unit ? unit : '';
-    return '$' + value + suffix;
+    // An explicit unit means the caller already scaled the magnitude; just
+    // append it. Otherwise auto-scale large figures to B/M for readability.
+    if (unit) return '$' + value + unit;
+    return '$' + _scaleMoney(value);
   }
   return 'n/a';
 }

@@ -259,6 +259,54 @@ def _select_tickers(
     return out
 
 
+def _has_actuals(rec: dict[str, Any]) -> bool:
+    """True when the intel record carries a real in-quarter actual (rev or EPS)."""
+    rvc = rec.get("results_vs_consensus") or {}
+    for k in ("in_quarter_rev_actual", "in_quarter_eps_actual"):
+        if rvc.get(k) not in (None, ""):
+            return True
+    return False
+
+
+def _select_backfill(days: int) -> list[dict[str, Any]]:
+    """Synthesize sweep entries for every past-`days`-day reporter that still
+    lacks a note_status but already has stored actuals.
+
+    Reads earnings_intel.json directly (not the calendar) so a backfill covers
+    every reporter in the window, keyed on `last_earnings_date`. Rows without
+    actuals are skipped — we never fabricate a reaction for a ticker that has
+    not reported numbers.
+    """
+    today = _et_today()
+    today_d = _dt.date.fromisoformat(today)
+    window_start = today_d - _dt.timedelta(days=days)
+    intel = read_json(EARNINGS_INTEL).get("tickers", {}) or {}
+    out: list[dict[str, Any]] = []
+    for ticker, rec in intel.items():
+        led = rec.get("last_earnings_date")
+        if not led:
+            continue
+        try:
+            ed = _dt.date.fromisoformat(str(led)[:10])
+        except ValueError:
+            continue
+        if not (window_start <= ed <= today_d):
+            continue
+        if rec.get("note_status") is not None:
+            continue
+        if not _has_actuals(rec):
+            print(f"  [SKIP] {ticker}: no actuals present (note_status left null)")
+            continue
+        out.append({
+            "ticker": ticker,
+            "company": rec.get("company_name") or ticker,
+            "date": ed.isoformat(),
+            "earnings_date": ed.isoformat(),
+            "timing": rec.get("timing"),
+        })
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Per-ticker write
 # ---------------------------------------------------------------------------
@@ -354,12 +402,17 @@ def run(
     date: str = "today",
     ticker: Optional[str] = None,
     dry_run: bool = False,
+    backfill_days: Optional[int] = None,
 ) -> dict[str, Any]:
     resolved_date = _resolve_date(date)
-    entries = _select_tickers(timing if not ticker else None, resolved_date, ticker)
-
-    print(f"[print_reaction_sweep] timing={timing} date={resolved_date} "
-          f"ticker={ticker or '*'} -> {len(entries)} ticker(s)")
+    if backfill_days:
+        entries = _select_backfill(backfill_days)
+        print(f"[print_reaction_sweep] backfill_days={backfill_days} "
+              f"-> {len(entries)} ticker(s) with actuals + null note_status")
+    else:
+        entries = _select_tickers(timing if not ticker else None, resolved_date, ticker)
+        print(f"[print_reaction_sweep] timing={timing} date={resolved_date} "
+              f"ticker={ticker or '*'} -> {len(entries)} ticker(s)")
 
     if not entries:
         print("[print_reaction_sweep] No matching tickers.")
@@ -393,10 +446,15 @@ def _parse_args(argv=None):
                    help="today | yesterday | YYYY-MM-DD")
     p.add_argument("--ticker", type=str, default=None,
                    help="Backfill a single ticker (overrides --timing filter).")
+    p.add_argument("--backfill-days", type=int, default=None,
+                   help="Backfill every past-N-day reporter (from earnings_intel) "
+                        "that has actuals but a null note_status. Overrides the "
+                        "calendar/timing selection.")
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args(argv)
 
 
 if __name__ == "__main__":
     args = _parse_args()
-    run(timing=args.timing, date=args.date, ticker=args.ticker, dry_run=args.dry_run)
+    run(timing=args.timing, date=args.date, ticker=args.ticker,
+        dry_run=args.dry_run, backfill_days=args.backfill_days)
