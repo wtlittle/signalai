@@ -297,7 +297,7 @@ def main():
             populated.append(tk)
 
     if not args.dry_run and populated:
-        INTEL_PATH.write_text(json.dumps(intel, indent=2))
+        INTEL_PATH.write_text(json.dumps(intel, indent=2, ensure_ascii=False))
 
     tag = "[DRY RUN] " if args.dry_run else "[OK] "
     print(f"{tag}populated={len(populated)} preprint_skipped={len(skipped_preprint)} "

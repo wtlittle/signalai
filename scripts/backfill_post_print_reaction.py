@@ -16,12 +16,27 @@ Reaction definition
   i.e. the 1-day move from the last session at/before the print to the next
   session after it.
 
+Yahoo-lag fallback (AMC reporters)
+----------------------------------
+The yfinance daily ``history`` endpoint can trail the live quote by a full
+session, so the close[D+1] that completes an AMC reaction is often missing for
+hours after the market has actually closed. When that next-session close is
+absent from history, the script falls back to the live quote
+(fast_info.lastPrice -> info.currentPrice -> info.regularMarketPrice ->
+info.postMarketPrice) as the numerator, measured against the print-date close
+(an authoritative history value) as the denominator. calc_method then records
+``amc_d_plus_1_live`` and the basis names the exact live field used. The live
+number is a real Yahoo quote — never fabricated. The settled history close
+always wins when it is present; the live fallback only fills the lag window.
+
 Data integrity
 --------------
-- Values are computed only from yfinance closes. Nothing is ever fabricated.
+- Values are computed only from yfinance closes / live quotes. Nothing is ever
+  fabricated; a missing live price leaves the field null.
 - If market data cannot be fetched, the earnings date is missing, or the
-  required session has not closed yet (print/next session in the future),
-  the field is left null and the ticker is logged with a reason.
+  required session has not closed yet (print/next session in the future) and no
+  live quote is available, the field is left null and the ticker is logged with
+  a reason.
 - Idempotent: existing non-null stock_reaction_pct values are never overwritten.
 
 Auditability
@@ -59,10 +74,11 @@ def load_json(path: Path) -> dict:
 
 
 def dump_intel(path: Path, data: dict) -> None:
-    # earnings_intel.json is 2-space indented, ascii-escaped, no trailing
-    # newline. json.dumps(data, indent=2) reproduces that exactly, so the diff
-    # is limited to the fields we actually change.
-    path.write_text(json.dumps(data, indent=2))
+    # earnings_intel.json is 2-space indented, UTF-8 (raw non-ASCII, e.g.
+    # em-dashes), no trailing newline. ensure_ascii=False preserves that
+    # on-disk encoding so the diff stays limited to the fields we actually
+    # change instead of re-escaping every Unicode character in the file.
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False))
 
 
 def resolve_earnings_date(rec: dict) -> str | None:
@@ -111,6 +127,75 @@ def build_calendar_timing(calendar: dict) -> dict:
     return out
 
 
+def fetch_live_price(ticker: str):
+    """Return (price, basis) from yfinance's live quote, or (None, reason).
+
+    This is the Yahoo-lag fallback: yfinance's daily ``history`` endpoint can
+    trail the live quote by a full session, so the close that completes an AMC
+    reaction (close[D+1]) may be absent from ``history`` for hours after the
+    market actually closed. The live-quote endpoints carry that number sooner.
+
+    Resolution order (most-recent completed regular session first):
+        1. fast_info["lastPrice"]              -> "fast_info.lastPrice"
+        2. info["currentPrice"]                -> "info.currentPrice"
+        3. info["regularMarketPrice"]          -> "info.regularMarketPrice"
+        4. info["postMarketPrice"]             -> "info.postMarketPrice"
+           (only meaningful for a same-day AMC reporter whose regular close
+            has not happened yet; surfaces the after-hours print reaction)
+
+    Every value is a real number pulled from Yahoo; nothing is fabricated. The
+    ``basis`` string names exactly which field supplied the number so the
+    populated record stays auditable. Returns (None, reason) when no usable
+    live price is available.
+    """
+    try:
+        import yfinance as yf
+    except ImportError as exc:  # pragma: no cover - environment guard
+        raise RuntimeError(f"yfinance not available: {exc}")
+
+    def _finite(v):
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return None
+        return f if f == f and f != 0.0 else None  # reject NaN / 0
+
+    tk = yf.Ticker(ticker)
+
+    # fast_info["lastPrice"] is the cheapest live field. Its key is camelCase
+    # ("lastPrice"); attribute access (fi.last_price) returns None on some
+    # yfinance builds, so read by key with an attribute fallback.
+    try:
+        fi = tk.fast_info
+        last = None
+        try:
+            last = fi["lastPrice"]
+        except (KeyError, TypeError):
+            last = getattr(fi, "last_price", None)
+        p = _finite(last)
+        if p is not None:
+            return p, "fast_info.lastPrice"
+    except Exception:  # noqa: BLE001 - fast_info raises varied network errors
+        pass
+
+    # .info is heavier; fetch once and read the regular-session fields, then the
+    # after-hours field for same-day AMC reporters whose regular close is unset.
+    try:
+        info = tk.info or {}
+    except Exception:  # noqa: BLE001
+        info = {}
+    for field, basis in (
+        ("currentPrice", "info.currentPrice"),
+        ("regularMarketPrice", "info.regularMarketPrice"),
+        ("postMarketPrice", "info.postMarketPrice"),
+    ):
+        p = _finite(info.get(field))
+        if p is not None:
+            return p, basis
+
+    return None, "no_live_price"
+
+
 def fetch_closes(ticker: str, earnings_date: date):
     """Return a date->close dict over [earnings_date-5d, earnings_date+5d].
 
@@ -149,11 +234,28 @@ def fetch_closes(ticker: str, earnings_date: date):
 
 
 def compute_reaction(ticker: str, earnings_date: date, timing: str | None,
-                     closes: dict[date, float], today: date):
+                     closes: dict[date, float], today: date,
+                     allow_live: bool = True):
     """Compute the signed post-print reaction.
 
     Returns (pct, basis_date, calc_method) on success, else (None, None, reason).
     pct is rounded to 1 decimal, signed (positive = up).
+
+    Yahoo-lag fallback
+    ------------------
+    For AMC (and unknown-timing) prints the reaction needs close[D+1]. The
+    yfinance daily ``history`` endpoint can trail the live quote by a full
+    session, so close[D+1] is frequently absent for hours after the market has
+    actually closed. Rather than leave the field null in that window, when
+    ``allow_live`` is set and close[D+1] is missing from history we substitute
+    the live quote (fetch_live_price) as the numerator against the print-date
+    close (an authoritative history value) as the denominator. The live numerator
+    is a real Yahoo number — never fabricated — and the calc_method records that
+    a live price was used (``amc_d_plus_1_live`` + the live field in basis).
+
+    The fallback is deliberately NOT applied when close[D+1] is already present
+    in history (the settled close always wins) nor to BMO prints (which compare
+    close[D] vs close[D-1] — both settled before the next session opens).
     """
     sessions = sorted(closes.keys())
     if not sessions:
@@ -170,6 +272,25 @@ def compute_reaction(ticker: str, earnings_date: date, timing: str | None,
     def session_at_or_before(d: date):
         cands = [s for s in sessions if s <= d]
         return cands[-1] if cands else None
+
+    def live_fallback(denom: float, basis: date):
+        """Build a reaction from the live quote vs the print-date close.
+
+        Returns (pct, basis_iso, method) or (None, None, reason). The basis is
+        annotated with the exact live field used so the record stays auditable.
+        """
+        if not allow_live:
+            return None, None, "next_session_not_closed_yet"
+        try:
+            live, live_basis = fetch_live_price(ticker)
+        except RuntimeError:
+            return None, None, "next_session_not_closed_yet"
+        if live is None:
+            return None, None, "next_session_not_closed_yet"
+        if denom == 0:
+            return None, None, "zero_denominator"
+        pct = round((live - denom) / denom * 100.0, 1)
+        return pct, f"{basis.isoformat()}->{live_basis}", "amc_d_plus_1_live"
 
     if timing == "BMO":
         # close[D] vs close[D-1]
@@ -188,7 +309,9 @@ def compute_reaction(ticker: str, earnings_date: date, timing: str | None,
             return None, None, "no_close_on_print_date"
         nxt = next_session(earnings_date)
         if nxt is None:
-            return None, None, "next_session_not_closed_yet"
+            # Next session has not landed in history yet (Yahoo lag). Fall back
+            # to the live quote vs the print-date close.
+            return live_fallback(closes[earnings_date], earnings_date)
         denom = closes[earnings_date]
         numer = closes[nxt]
         basis = earnings_date
@@ -202,7 +325,7 @@ def compute_reaction(ticker: str, earnings_date: date, timing: str | None,
             return None, None, "no_close_at_or_before_print_date"
         nxt = next_session(base)
         if nxt is None:
-            return None, None, "next_session_not_closed_yet"
+            return live_fallback(closes[base], base)
         denom = closes[base]
         numer = closes[nxt]
         basis = base
