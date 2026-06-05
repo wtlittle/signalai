@@ -833,8 +833,14 @@ function _northStarMeta(metric) {
 function _copyNorthStarGuidanceFields(p) {
   const out = {};
   const horizons = ['FY', 'NextQ'];
-  const metrics = ['Arr', 'Crpo', 'Nrr', 'Billings'];
+  // Top-line (SaaS) + bottom-line (profitability) metric families.
+  const metrics = ['Arr', 'Crpo', 'Nrr', 'Billings', 'Fcf', 'AdjEbitda', 'AdjOpIncome'];
   const suffixes = ['DeltaPct', 'DeltaAbs', 'PriorSource', 'StreetDeltaPct', 'StreetDeltaAbs', 'Units'];
+  const pointers = [
+    'NorthStarMetric', 'NorthStarUnits',
+    'TopLineNorthStarMetric', 'TopLineNorthStarUnits',
+    'BottomLineNorthStarMetric', 'BottomLineNorthStarUnits',
+  ];
   for (const h of horizons) {
     for (const m of metrics) {
       for (const s of suffixes) {
@@ -842,8 +848,9 @@ function _copyNorthStarGuidanceFields(p) {
         out[key] = p[key] != null ? p[key] : null;
       }
     }
-    out[`guidance${h}NorthStarMetric`] = p[`guidance${h}NorthStarMetric`] || null;
-    out[`guidance${h}NorthStarUnits`] = p[`guidance${h}NorthStarUnits`] || null;
+    for (const ptr of pointers) {
+      out[`guidance${h}${ptr}`] = p[`guidance${h}${ptr}`] || null;
+    }
   }
   return out;
 }
@@ -895,57 +902,110 @@ function buildNorthStarDisplay(g, horizonToken) {
   };
 }
 
-// Render the guidance row. Precedence per the ARR mandate: a company's
-// emphasized north-star metric (ARR / cRPO / NRR / billings) wins; else revenue
-// (legacy); else EPS. FY is preferred over Q+1; when FY has no usable pill the
-// Q+1 row (also north-star aware) is the fallback (AVGO-class one-quarter
+// Bottom-line (profitability) north-star metric labels. EPS is handled by the
+// legacy cascade (and is the default fallback); the three dollar metrics map to
+// their guidance{Horizon}{token} families.
+const _BOTTOM_LINE_NORTH_STARS = {
+  fcf: { token: 'Fcf', label: 'FCF' },
+  adj_ebitda: { token: 'AdjEbitda', label: 'Adj EBITDA' },
+  adj_op_income: { token: 'AdjOpIncome', label: 'Adj Op Income' },
+  adj_operating_income: { token: 'AdjOpIncome', label: 'Adj Op Income' },
+  non_gaap_op_income: { token: 'AdjOpIncome', label: 'Adj Op Income' },
+};
+
+function _bottomLineNorthStarMeta(metric) {
+  if (!metric || typeof metric !== 'string') return null;
+  return _BOTTOM_LINE_NORTH_STARS[metric.trim().toLowerCase().replace(/\s+/g, '_')] || null;
+}
+
+// Build the bottom-line north-star display for a horizon. Cascade per the FCF /
+// EBITDA / adj-op-income mandate: the company's emphasized bottom-line metric
+// wins; else EPS legacy fallback. Returns { display, label } or null. All three
+// dollar metrics reuse the USD formatter; EPS uses the existing EPS pill data.
+function buildBottomLineNorthStarDisplay(g, horizonToken) {
+  if (!g) return null;
+  const num = (v) => (typeof v === 'number' && Number.isFinite(v)) ? v : null;
+  const meta = _bottomLineNorthStarMeta(g[`guidance${horizonToken}BottomLineNorthStarMetric`]);
+  if (meta) {
+    const field = `guidance${horizonToken}${meta.token}`;
+    const deltaPct = num(g[`${field}DeltaPct`]);
+    const deltaAbs = num(g[`${field}DeltaAbs`]);
+    if (deltaPct != null || deltaAbs != null) {
+      const display = formatGuideDelta({ deltaPct, deltaAbs, metric: 'REV' });
+      if (display != null) {
+        const direction = classifyGuideDelta(deltaPct) === 'n/a' && deltaAbs != null
+          ? (Math.abs(deltaAbs) <= 0.0001 ? 'flat' : (deltaAbs > 0 ? 'raise' : 'cut'))
+          : classifyGuideDelta(deltaPct);
+        return {
+          label: meta.label,
+          deltaPct,
+          deltaAbs,
+          direction,
+          priorSource: g[`${field}PriorSource`] || 'consensus',
+          streetDeltaPct: num(g[`${field}StreetDeltaPct`]),
+          streetDeltaAbs: num(g[`${field}StreetDeltaAbs`]),
+          units: g[`${field}Units`] || g[`guidance${horizonToken}BottomLineNorthStarUnits`] || null,
+          display,
+        };
+      }
+    }
+  }
+  // EPS legacy fallback (FY profitability cascade / Q+1 EPS).
+  if (horizonToken === 'FY') {
+    const { profitability } = buildGuidanceChangeDisplay(g);
+    if (profitability) return profitability;
+  } else {
+    const nq = buildNextQGuidanceDisplay(g);
+    if (nq.eps) return nq.eps;
+  }
+  return null;
+}
+
+// Render up to two pill rows (top-line + bottom-line) for a horizon
+// ('FY' | 'NextQ'), each labeled by the resolved north-star metric. Returns the
+// joined row HTML or '' when neither side resolves.
+function _renderGuidanceHorizon(g, horizonToken, fyLabel) {
+  const rows = [];
+
+  // --- Top-line row: SaaS north star > legacy revenue. ---
+  const topNorthStar = buildNorthStarDisplay(g, horizonToken);
+  if (topNorthStar) {
+    const pill = _renderGuidePill(topNorthStar, 'guide-northstar', '');
+    if (pill) {
+      rows.push(`<span class="guide-label" title="Company's emphasized top-line guidance metric">${topNorthStar.label} Guide</span>${pill}`);
+    }
+  } else {
+    const { revenue } = horizonToken === 'FY'
+      ? buildGuidanceChangeDisplay(g)
+      : buildNextQGuidanceDisplay(g);
+    const revPill = _renderGuidePill(revenue, 'guide-revenue', '');
+    if (revPill) {
+      rows.push(`<span class="guide-label">${fyLabel}</span>${revPill}`);
+    }
+  }
+
+  // --- Bottom-line row: emphasized profitability metric > EPS legacy. ---
+  const bottom = buildBottomLineNorthStarDisplay(g, horizonToken);
+  if (bottom) {
+    const pill = _renderGuidePill(bottom, 'guide-profit', _profitMetricPrefix(bottom.label));
+    if (pill) {
+      rows.push(`<span class="guide-label" title="Company's emphasized bottom-line guidance metric">${bottom.label} Guide</span>${pill}`);
+    }
+  }
+
+  if (!rows.length) return '';
+  return rows.map((r) => `<div class="earnings-guide-row">${r}</div>`).join('');
+}
+
+// Render the guidance block. Two parallel north stars per horizon: a top-line
+// pill (ARR / cRPO / NRR / billings / revenue) and a bottom-line pill
+// (FCF / adj EBITDA / adj op income / EPS). FY is preferred; when FY resolves
+// neither side the Q+1 horizon is the fallback (AVGO-class one-quarter
 // guiders). Returns '' when nothing renders.
 function renderGuidanceChangeRow(g) {
-  // 1. North-star FY pill when the company emphasizes a SaaS KPI.
-  const fyNorthStar = buildNorthStarDisplay(g, 'FY');
-  if (fyNorthStar) {
-    const pill = _renderGuidePill(fyNorthStar, 'guide-northstar', '');
-    if (pill) {
-      return `<div class="earnings-guide-row"><span class="guide-label" title="Company's emphasized guidance metric">${fyNorthStar.label} Guide</span>${pill}</div>`;
-    }
-  }
-
-  // 2. Legacy FY revenue + profitability pills.
-  const { revenue, profitability } = buildGuidanceChangeDisplay(g);
-  const fyPills = [];
-  const revPill = _renderGuidePill(revenue, 'guide-revenue', '');
-  if (revPill) fyPills.push(revPill);
-  const profPill = profitability
-    ? _renderGuidePill(profitability, 'guide-profit', _profitMetricPrefix(profitability.label))
-    : '';
-  if (profPill) fyPills.push(profPill);
-
-  if (fyPills.length) {
-    const body = fyPills.join('<span class="guide-sep">&middot;</span>');
-    return `<div class="earnings-guide-row"><span class="guide-label">FY Guide</span>${body}</div>`;
-  }
-
-  // 3. FY guide absent -- north-star Q+1 pill (AVGO/SaaS one-quarter guiders).
-  const qNorthStar = buildNorthStarDisplay(g, 'NextQ');
-  if (qNorthStar) {
-    const pill = _renderGuidePill(qNorthStar, 'guide-northstar', '');
-    if (pill) {
-      return `<div class="earnings-guide-row"><span class="guide-label" title="Company's emphasized next-quarter guidance metric">${qNorthStar.label} Guide</span>${pill}</div>`;
-    }
-  }
-
-  // 4. Legacy next-quarter revenue/EPS fallback labeled "Q+1 Guide".
-  const nq = buildNextQGuidanceDisplay(g);
-  const qPills = [];
-  const qRevPill = _renderGuidePill(nq.revenue, 'guide-revenue', '');
-  if (qRevPill) qPills.push(qRevPill);
-  const qEpsPill = nq.eps
-    ? _renderGuidePill(nq.eps, 'guide-profit', _profitMetricPrefix(nq.eps.label))
-    : '';
-  if (qEpsPill) qPills.push(qEpsPill);
-  if (!qPills.length) return '';
-  const qBody = qPills.join('<span class="guide-sep">&middot;</span>');
-  return `<div class="earnings-guide-row"><span class="guide-label" title="Company only guides next quarter">Q+1 Guide</span>${qBody}</div>`;
+  const fy = _renderGuidanceHorizon(g, 'FY', 'FY Guide');
+  if (fy) return fy;
+  return _renderGuidanceHorizon(g, 'NextQ', 'Q+1 Guide');
 }
 
 // Parse a guidance numeric value that may be a bare number or a string with a
@@ -1094,15 +1154,17 @@ function _applyNormalizedGuidanceFromEnvelope(r, gvc) {
     setIf('guidanceFcfStreetDeltaAbs', fcf.streetDeltaAbs);
   }
 
-  // --- SaaS north-star metrics (ARR / cRPO / NRR / billings) x horizons ---
-  // Mirror the Python sync's _normalize_saas_metrics so a row carrying only the
-  // raw envelope still renders a north-star pill.
-  const saasMetrics = [
+  // --- North-star metrics x horizons (top-line SaaS + bottom-line) ---
+  // Mirror the Python sync so a row carrying only the raw envelope still
+  // renders the pills. Top-line: ARR/cRPO/NRR/billings. Bottom-line:
+  // FCF/adj EBITDA/adj op income.
+  const nsMetrics = [
     ['arr', 'Arr'], ['crpo', 'Crpo'], ['nrr', 'Nrr'], ['billings', 'Billings'],
+    ['fcf', 'Fcf'], ['adj_ebitda', 'AdjEbitda'], ['adj_op_income', 'AdjOpIncome'],
   ];
-  const saasHorizons = [['fy', 'FY'], ['q_next', 'NextQ']];
-  for (const [hPrefix, hToken] of saasHorizons) {
-    for (const [mPrefix, mToken] of saasMetrics) {
+  const nsHorizons = [['fy', 'FY'], ['q_next', 'NextQ']];
+  for (const [hPrefix, hToken] of nsHorizons) {
+    for (const [mPrefix, mToken] of nsMetrics) {
       const base = `${hPrefix}_${mPrefix}`;
       const d = _computeMetricDelta(
         gvc[`${base}_guide_midpoint_new`],
@@ -1119,11 +1181,24 @@ function _applyNormalizedGuidanceFromEnvelope(r, gvc) {
       setIf(`${field}StreetDeltaAbs`, d.streetDeltaAbs);
       if (gvc[`${base}_units`] && r[`${field}Units`] == null) r[`${field}Units`] = gvc[`${base}_units`];
     }
-    const ns = gvc[`${hPrefix}_north_star_metric`];
-    if (ns && r[`guidance${hToken}NorthStarMetric`] == null) {
-      r[`guidance${hToken}NorthStarMetric`] = ns;
-      if (gvc[`${hPrefix}_north_star_units`] && r[`guidance${hToken}NorthStarUnits`] == null) {
-        r[`guidance${hToken}NorthStarUnits`] = gvc[`${hPrefix}_north_star_units`];
+    // Top-line pointer: new key with legacy fallback.
+    const topNs = gvc[`${hPrefix}_top_line_north_star_metric`] || gvc[`${hPrefix}_north_star_metric`];
+    if (topNs && r[`guidance${hToken}NorthStarMetric`] == null) {
+      r[`guidance${hToken}NorthStarMetric`] = topNs;
+      r[`guidance${hToken}TopLineNorthStarMetric`] = topNs;
+      const topUnits = gvc[`${hPrefix}_top_line_north_star_units`] || gvc[`${hPrefix}_north_star_units`];
+      if (topUnits && r[`guidance${hToken}NorthStarUnits`] == null) {
+        r[`guidance${hToken}NorthStarUnits`] = topUnits;
+        r[`guidance${hToken}TopLineNorthStarUnits`] = topUnits;
+      }
+    }
+    // Bottom-line pointer.
+    const botNs = gvc[`${hPrefix}_bottom_line_north_star_metric`];
+    if (botNs && r[`guidance${hToken}BottomLineNorthStarMetric`] == null) {
+      r[`guidance${hToken}BottomLineNorthStarMetric`] = botNs;
+      const botUnits = gvc[`${hPrefix}_bottom_line_north_star_units`];
+      if (botUnits && r[`guidance${hToken}BottomLineNorthStarUnits`] == null) {
+        r[`guidance${hToken}BottomLineNorthStarUnits`] = botUnits;
       }
     }
   }

@@ -469,6 +469,12 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
     # card features; units let the renderer format % (NRR) vs USD-millions.
     _normalize_saas_metrics(gvc, out)
 
+    # --- Bottom-line north-star metrics (FCF / adj EBITDA / adj op income) ---
+    # Symmetric to the SaaS top-line set: each contributes a
+    # guidance{Horizon}{Metric}* family + the per-horizon bottom-line north-star
+    # pointer that drives the second pill row. All three are USD-millions.
+    _normalize_bottom_line_metrics(gvc, out)
+
     return out
 
 
@@ -519,12 +525,64 @@ def _normalize_saas_metrics(gvc: dict, out: dict) -> None:
                 out[f"{field}Units"] = units
 
         # North-star pointer for this horizon (e.g. "ARR", "cRPO", "revenue").
-        ns = gvc.get(f"{h_prefix}_north_star_metric")
+        # Accept the new top-line key, falling back to the legacy name.
+        ns = gvc.get(f"{h_prefix}_top_line_north_star_metric") or gvc.get(f"{h_prefix}_north_star_metric")
         if ns:
             out[f"guidance{h_token}NorthStarMetric"] = ns
-            ns_units = gvc.get(f"{h_prefix}_north_star_units")
+            out[f"guidance{h_token}TopLineNorthStarMetric"] = ns
+            ns_units = gvc.get(f"{h_prefix}_top_line_north_star_units") or gvc.get(f"{h_prefix}_north_star_units")
             if ns_units:
                 out[f"guidance{h_token}NorthStarUnits"] = ns_units
+                out[f"guidance{h_token}TopLineNorthStarUnits"] = ns_units
+
+
+# Bottom-line (profitability) metric tokens: (envelope prefix, camelCase token,
+# tiny-baseline). All are USD-millions dollar metrics, so a 0.0 tiny baseline is
+# safe (the baseline is never near zero for a real reporter).
+_BOTTOM_LINE_METRICS = (
+    ("fcf", "Fcf", 0.0),
+    ("adj_ebitda", "AdjEbitda", 0.0),
+    ("adj_op_income", "AdjOpIncome", 0.0),
+)
+
+
+def _normalize_bottom_line_metrics(gvc: dict, out: dict) -> None:
+    """Populate guidance{Horizon}{Metric}* fields for the bottom-line metric set
+    (FCF / adj EBITDA / adj op income), plus the per-horizon bottom-line
+    north-star pointer + units. Mirrors _normalize_saas_metrics exactly.
+    """
+    for h_prefix, h_token in _GUIDANCE_HORIZONS:
+        for m_prefix, m_token, tiny in _BOTTOM_LINE_METRICS:
+            base = f"{h_prefix}_{m_prefix}"
+            delta = _compute_metric_delta(
+                gvc.get(f"{base}_guide_midpoint_new"),
+                gvc.get(f"{base}_consensus_prior"),
+                gvc.get(f"{base}_guide_midpoint_prior"),
+                tiny,
+            )
+            if not delta:
+                continue
+            field = f"guidance{h_token}{m_token}"
+            if delta.get("deltaPct") is not None:
+                out[f"{field}DeltaPct"] = delta["deltaPct"]
+            if delta.get("deltaAbs") is not None:
+                out[f"{field}DeltaAbs"] = delta["deltaAbs"]
+            out[f"{field}PriorSource"] = delta.get("priorSource") or "consensus"
+            if delta.get("streetDeltaPct") is not None:
+                out[f"{field}StreetDeltaPct"] = delta["streetDeltaPct"]
+            if delta.get("streetDeltaAbs") is not None:
+                out[f"{field}StreetDeltaAbs"] = delta["streetDeltaAbs"]
+            units = gvc.get(f"{base}_units")
+            if units:
+                out[f"{field}Units"] = units
+
+        # Bottom-line north-star pointer for this horizon.
+        ns = gvc.get(f"{h_prefix}_bottom_line_north_star_metric")
+        if ns:
+            out[f"guidance{h_token}BottomLineNorthStarMetric"] = ns
+            ns_units = gvc.get(f"{h_prefix}_bottom_line_north_star_units")
+            if ns_units:
+                out[f"guidance{h_token}BottomLineNorthStarUnits"] = ns_units
 
 
 # Flat normalized guidance fields the card UI reads. Kept alongside the legacy
@@ -568,9 +626,22 @@ NORMALIZED_GUIDANCE_FIELDS = (
         "StreetDeltaPct", "StreetDeltaAbs", "Units",
     )
 ) + tuple(
+    # Bottom-line north-star metric families (FCF / adj EBITDA / adj op income).
+    f"guidance{h_token}{m_token}{suffix}"
+    for h_token in ("FY", "NextQ")
+    for m_token in ("Fcf", "AdjEbitda", "AdjOpIncome")
+    for suffix in (
+        "DeltaPct", "DeltaAbs", "PriorSource",
+        "StreetDeltaPct", "StreetDeltaAbs", "Units",
+    )
+) + tuple(
     f"guidance{h_token}{suffix}"
     for h_token in ("FY", "NextQ")
-    for suffix in ("NorthStarMetric", "NorthStarUnits")
+    for suffix in (
+        "NorthStarMetric", "NorthStarUnits",
+        "TopLineNorthStarMetric", "TopLineNorthStarUnits",
+        "BottomLineNorthStarMetric", "BottomLineNorthStarUnits",
+    )
 )
 
 

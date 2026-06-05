@@ -181,19 +181,56 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f'  "q_next_nrr_guide_midpoint_new": <new NEXT-Q NRR/NDR percent, or null>,\n'
         f'  "q_next_nrr_guide_midpoint_prior": <company PRIOR NEXT-Q NRR guide percent, or null>,\n'
         f'  "q_next_nrr_consensus_prior": <prior NEXT-Q NRR Street consensus percent, or null>,\n'
-        f'  "fy_north_star_metric": <the ONE metric this company itself '
-        f'emphasizes as its primary FY guidance KPI: one of "revenue", "ARR", '
-        f'"cRPO", "billings", "NRR", "EPS", or null if it leads with revenue>,\n'
-        f'  "q_next_north_star_metric": <the ONE metric this company emphasizes '
-        f'for its NEXT-QUARTER guide: "revenue", "ARR", "cRPO", "billings", '
-        f'"NRR", "EPS", or null>\n'
+        f"  // ---- bottom-line (profitability) north-star metrics ----\n"
+        f"  // Some companies care about FCF, adjusted EBITDA, or adjusted "
+        f"operating income (non-GAAP operating income) MORE than EPS for their "
+        f"profitability guidance. Capture every one the company actually guided "
+        f"or that the Street tracks, for BOTH the next fiscal quarter "
+        f"(q_next_*) and the full year (fy_*). FCF / adj EBITDA / adj operating "
+        f"income are USD MILLIONS (e.g. 1200 for $1.2B). Return null for any the "
+        f"company does not use. (FCF fy_fcf_* may already be requested above -- "
+        f"reuse the same grounded figure.)\n"
+        f'  "fy_adj_ebitda_guide_midpoint_new": <new FY adj EBITDA midpoint USD millions, or null>,\n'
+        f'  "fy_adj_ebitda_guide_midpoint_prior": <company PRIOR FY adj EBITDA guide, or null>,\n'
+        f'  "fy_adj_ebitda_consensus_prior": <prior FY adj EBITDA Street consensus, or null>,\n'
+        f'  "q_next_adj_ebitda_guide_midpoint_new": <new NEXT-Q adj EBITDA midpoint USD millions, or null>,\n'
+        f'  "q_next_adj_ebitda_guide_midpoint_prior": <company PRIOR NEXT-Q adj EBITDA guide, or null>,\n'
+        f'  "q_next_adj_ebitda_consensus_prior": <prior NEXT-Q adj EBITDA Street consensus, or null>,\n'
+        f'  "fy_adj_op_income_guide_midpoint_new": <new FY adj (non-GAAP) operating income midpoint USD millions, or null>,\n'
+        f'  "fy_adj_op_income_guide_midpoint_prior": <company PRIOR FY adj op income guide, or null>,\n'
+        f'  "fy_adj_op_income_consensus_prior": <prior FY adj op income Street consensus, or null>,\n'
+        f'  "q_next_adj_op_income_guide_midpoint_new": <new NEXT-Q adj (non-GAAP) operating income midpoint USD millions, or null>,\n'
+        f'  "q_next_adj_op_income_guide_midpoint_prior": <company PRIOR NEXT-Q adj op income guide, or null>,\n'
+        f'  "q_next_adj_op_income_consensus_prior": <prior NEXT-Q adj op income Street consensus, or null>,\n'
+        f'  "fy_top_line_north_star_metric": <the ONE TOP-LINE metric this '
+        f'company emphasizes as its primary FY guidance KPI: one of "revenue", '
+        f'"ARR", "cRPO", "billings", "NRR", or null if it leads with revenue>,\n'
+        f'  "q_next_top_line_north_star_metric": <the ONE TOP-LINE metric this '
+        f'company emphasizes for its NEXT-QUARTER guide: "revenue", "ARR", '
+        f'"cRPO", "billings", "NRR", or null>,\n'
+        f'  "fy_bottom_line_north_star_metric": <the ONE BOTTOM-LINE '
+        f'(profitability) metric this company emphasizes for its FY guide: one '
+        f'of "EPS", "FCF", "adj_EBITDA", "adj_op_income", or null if it leads '
+        f'with EPS>,\n'
+        f'  "q_next_bottom_line_north_star_metric": <the ONE BOTTOM-LINE metric '
+        f'this company emphasizes for its NEXT-QUARTER guide: "EPS", "FCF", '
+        f'"adj_EBITDA", "adj_op_income", or null>\n'
         f'}}\n'
-        f"NORTH STAR: Pick north_star_metric from how the company FRAMES its own "
-        f"guidance in the press release / prepared remarks headline (e.g. "
-        f"CrowdStrike leads with ARR, many consumption names lead with revenue, "
-        f"some lead with cRPO). If the company genuinely leads with revenue, "
-        f'return "revenue". Only return a non-revenue metric when the company '
-        f"itself features it. Never invent a metric the company did not report.\n"
+        f"NORTH STAR: Pick top_line_north_star_metric and "
+        f"bottom_line_north_star_metric from how the company FRAMES its own "
+        f"guidance in the press release / prepared remarks headline and IR slide "
+        f"deck. The top-line side is revenue/ARR/cRPO/billings/NRR; the "
+        f"bottom-line side is EPS/FCF/adj_EBITDA/adj_op_income. If the company "
+        f'genuinely leads with revenue, return "revenue" for the top line; if it '
+        f'leads with EPS, return "EPS" for the bottom line. Only return a '
+        f"non-default metric when the company itself features it. Never invent a "
+        f"metric the company did not report.\n"
+        f"COMPANY HINTS (prepared-remarks / IR-deck emphasis): CRWD -> ARR + "
+        f"FCF; CRM, NOW -> cRPO + adj_op_income; VEEV, DOCU -> revenue + "
+        f"adj_op_income; NET, DDOG, SNOW -> emphasis varies, capture whichever "
+        f"the IR deck features; ZS, PANW -> billings/revenue + FCF; traditional "
+        f"non-SaaS -> revenue + EPS (default). General rule: whatever the "
+        f"company actually LEADS WITH in prepared remarks / IR slide deck.\n"
         f"CRITICAL -- GROUND THE NORTH-STAR VALUE: If you set north_star_metric "
         f"to ARR, cRPO, billings, or NRR, you MUST also return that metric's "
         f"actual reported figure and its prior-period value. These are disclosed "
@@ -275,15 +312,80 @@ def _extract_saas_metrics(res: dict) -> dict:
             if cons is not None:
                 fields[f"{base}_consensus_prior"] = cons
             fields[f"{base}_units"] = units
-        ns = res.get(f"{horizon}_north_star_metric")
+        # Top-line north-star pointer. Accept the new field name and the legacy
+        # `north_star_metric` (pre-rename) for back-compat.
+        ns = res.get(f"{horizon}_top_line_north_star_metric")
+        if not (isinstance(ns, str) and ns.strip()):
+            ns = res.get(f"{horizon}_north_star_metric")
         if isinstance(ns, str):
             ns = ns.strip()
             if ns and ns.lower() not in ("null", "none", "n/a"):
+                # Persist under both keys so existing readers (which look at
+                # *_north_star_metric) and the new top-line readers both work.
                 fields[f"{horizon}_north_star_metric"] = ns
+                fields[f"{horizon}_top_line_north_star_metric"] = ns
                 ns_units = _north_star_units(ns)
                 if ns_units:
                     fields[f"{horizon}_north_star_units"] = ns_units
+                    fields[f"{horizon}_top_line_north_star_units"] = ns_units
     return {"fields": fields, "any_value": any_value}
+
+
+# Bottom-line (profitability) metric prefixes -> canonical units. All three new
+# dollar metrics report in USD millions; the cap/baseline logic treats them the
+# same as the SaaS USD-millions metrics.
+_BOTTOM_LINE_METRIC_UNITS = {
+    "fcf": "USD millions",
+    "adj_ebitda": "USD millions",
+    "adj_op_income": "USD millions",
+}
+
+
+def _extract_bottom_line_metrics(res: dict) -> dict:
+    """Pull the bottom-line north-star metric families from a sonar response.
+
+    Parallel to _extract_saas_metrics: FCF / adj EBITDA / adj op income for both
+    horizons, plus the per-horizon bottom_line_north_star pointer (+ units).
+    Returns {"fields": {...}, "any_value": bool}. FCF's fy_fcf_* family may also
+    be populated by the legacy FY block; _set is fill-only so there is no clash.
+    """
+    fields: dict = {}
+    any_value = False
+    for horizon in ("fy", "q_next"):
+        for metric, units in _BOTTOM_LINE_METRIC_UNITS.items():
+            base = f"{horizon}_{metric}"
+            new = _num(res.get(f"{base}_guide_midpoint_new"))
+            if new is None:
+                continue
+            any_value = True
+            fields[f"{base}_guide_midpoint_new"] = new
+            prior = _num(res.get(f"{base}_guide_midpoint_prior"))
+            cons = _num(res.get(f"{base}_consensus_prior"))
+            if prior is not None:
+                fields[f"{base}_guide_midpoint_prior"] = prior
+            if cons is not None:
+                fields[f"{base}_consensus_prior"] = cons
+            fields[f"{base}_units"] = units
+        ns = res.get(f"{horizon}_bottom_line_north_star_metric")
+        if isinstance(ns, str):
+            ns = ns.strip()
+            if ns and ns.lower() not in ("null", "none", "n/a"):
+                fields[f"{horizon}_bottom_line_north_star_metric"] = ns
+                ns_units = _bottom_line_north_star_units(ns)
+                if ns_units:
+                    fields[f"{horizon}_bottom_line_north_star_units"] = ns_units
+    return {"fields": fields, "any_value": any_value}
+
+
+def _bottom_line_north_star_units(metric: str) -> str | None:
+    """Map a bottom_line_north_star_metric label to its display units."""
+    m = metric.strip().lower()
+    if m in ("fcf", "free_cash_flow", "adj_ebitda", "adj_op_income",
+             "adj_operating_income", "non_gaap_op_income"):
+        return "USD millions"
+    if m == "eps":
+        return "USD"
+    return None
 
 
 def _north_star_units(metric: str) -> str | None:
@@ -421,8 +523,16 @@ def backfill(only: str | None, dry_run: bool, cap: int, force_gate: bool = False
                     task="finance_estimates",
                     prompt=_prompt(tk, company, date, fy_label),
                     system=_SYSTEM,
-                    max_tokens=500,
-                    extra_meta={"model": "sonar", "purpose": "fy_guide_backfill"},
+                    # The JSON schema carries ~60 fields (revenue/EPS/op/FCF +
+                    # SaaS top-line set + bottom-line FCF/EBITDA/adj-op-income +
+                    # both north-star pointers). 500 tokens truncates it mid-
+                    # object, which then fails JSON parsing and silently drops
+                    # every metric. 900 leaves headroom. Use sonar-pro: plain
+                    # `sonar` cannot ground the ARR/cRPO/FCF/EBITDA figures the
+                    # north-star pills depend on (it returns all-null + default
+                    # revenue/EPS pointers), so the dual pills never light up.
+                    max_tokens=900,
+                    extra_meta={"model": "sonar-pro", "purpose": "fy_guide_backfill"},
                 )
             except Exception as exc:  # noqa: BLE001
                 errored.append(f"{tk}: {exc}")
@@ -454,9 +564,11 @@ def backfill(only: str | None, dry_run: bool, cap: int, force_gate: bool = False
         q_eps_cons = _num(res.get("q_next_eps_consensus_prior"))
         # SaaS north-star metrics (ARR / cRPO / billings / NRR) for both horizons.
         saas = _extract_saas_metrics(res)
+        # Bottom-line north-star metrics (FCF / adj EBITDA / adj op income).
+        bottom = _extract_bottom_line_metrics(res)
         if (rev_mid is None and eps_mid is None and op_mid is None
                 and fcf_mid is None and q_rev_mid is None and q_eps_mid is None
-                and not saas["any_value"]):
+                and not saas["any_value"] and not bottom["any_value"]):
             no_data.append(tk)
             continue
 
@@ -501,6 +613,10 @@ def backfill(only: str | None, dry_run: bool, cap: int, force_gate: bool = False
         # SaaS north-star metrics: write each metric/horizon family + the
         # per-horizon north_star pointer (+ units) when present.
         for key, val in saas["fields"].items():
+            _set(key, val)
+        # Bottom-line north-star metrics: write FCF / adj EBITDA / adj op income
+        # families + the per-horizon bottom_line_north_star pointer (+ units).
+        for key, val in bottom["fields"].items():
             _set(key, val)
         gvc.setdefault("fy_guide_source", "perplexity_sonar")
         gvc.setdefault("fy_guide_fiscal_year", fy_label)
