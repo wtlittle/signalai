@@ -1047,7 +1047,7 @@ def sync_calendar_from_intel(tickers: dict, dry_run: bool = False) -> int:
 
     if updated > 0 and not dry_run:
         cal["updated"] = NOW_ISO
-        CALENDAR_PATH.write_text(json.dumps(cal, indent=2))
+        CALENDAR_PATH.write_text(json.dumps(cal, indent=2, ensure_ascii=False))
 
     return updated
 
@@ -1166,7 +1166,10 @@ def main():
     if args.dry_run:
         print(f"[DRY RUN] {msg}")
     else:
-        INTEL_PATH.write_text(json.dumps(intel, indent=2))
+        # ensure_ascii=False preserves the file's raw-UTF-8 on-disk encoding
+        # (em-dashes etc.) so the sync diff stays limited to changed fields
+        # instead of re-escaping every Unicode character.
+        INTEL_PATH.write_text(json.dumps(intel, indent=2, ensure_ascii=False))
         print(f"[OK] earnings_intel.json synced -- {msg}")
 
     # Backfill structured results_vs_consensus / guide_vs_consensus fields the

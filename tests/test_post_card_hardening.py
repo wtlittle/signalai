@@ -216,20 +216,45 @@ def _row_from_intel(tk, intel):
 
 
 def test_case1_sentinelone_post_print_sourced_from_data_layer():
-    """S: post-print read FRESH from data layer. The authoritative field is
-    null at source, so the contract is an explicit 'n/a' — NOT the remembered
-    prose value of -8.2%, and NOT a bare dash."""
+    """S: post-print is read FRESH from the data-layer field, never from
+    remembered prose. The reaction is rendered ONLY from
+    post_earnings_review.stock_reaction_pct, whatever its current value:
+
+      - When that field is null at source, the card shows an explicit 'n/a'
+        (never a bare dash, never a fabricated/remembered figure).
+      - When the backfill has populated it from authoritative market data
+        (yfinance), the card shows that signed, color-coded %.
+
+    The S fixture's revenue/EPS actuals remain data-layer-sourced. The reaction
+    field is now hydrated by scripts/backfill_post_print_reaction.py from real
+    yfinance closes, so we assert the contract directly: the rendered reaction
+    must equal the data-layer value, and a genuinely-null field must render
+    'n/a' (proven with an explicit-null row so the contract no longer depends on
+    S happening to be unhydrated)."""
     intel = _load_intel()
     row = _row_from_intel("S", intel)
-    # Confirm the data layer genuinely lacks a sourced reaction for S.
-    assert row["stock_reaction_pct"] is None
+    assert row["revenue_actual"]  # data-layer sourced, not constant
     tokens = render_earnings_card(row)
     assert tokens["revenue"] == "$276.7M"
     assert tokens["eps"] == "$0.04"
-    assert tokens["reaction"]["display"] == "n/a"
-    assert tokens["reaction"]["available"] is False
-    # Never fabricate the remembered -8.2%.
-    assert "8.2" not in tokens["reaction"]["display"]
+
+    # The reaction renders exactly the data-layer field — n/a iff it is null,
+    # otherwise the signed % of that field. Never a fabricated/remembered value.
+    src = row["stock_reaction_pct"]
+    if src is None:
+        assert tokens["reaction"]["display"] == "n/a"
+        assert tokens["reaction"]["available"] is False
+    else:
+        assert tokens["reaction"]["available"] is True
+        assert tokens["reaction"]["display"] == safe_pct(src, decimals=1, signed=True)
+
+    # The n/a contract itself: a genuinely-missing field always renders 'n/a',
+    # never a bare em-dash — independent of any one ticker's hydration state.
+    na_tokens = render_earnings_card(
+        {"ticker": "S", "revenue_actual": "$276.7M", "eps_actual": "$0.04",
+         "stock_reaction_pct": None})
+    assert na_tokens["reaction"]["display"] == "n/a"
+    assert na_tokens["reaction"]["available"] is False
 
 
 def test_case2_post_print_genuinely_missing_renders_na():
