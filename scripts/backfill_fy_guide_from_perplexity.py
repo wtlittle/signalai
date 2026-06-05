@@ -214,23 +214,57 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f'with EPS>,\n'
         f'  "q_next_bottom_line_north_star_metric": <the ONE BOTTOM-LINE metric '
         f'this company emphasizes for its NEXT-QUARTER guide: "EPS", "FCF", '
-        f'"adj_EBITDA", "adj_op_income", or null>\n'
+        f'"adj_EBITDA", "adj_op_income", or null>,\n'
+        f'  "north_star_evidence": <a ONE-SENTENCE citation grounding your '
+        f'top-line and bottom-line north-star choices in the company\'s actual '
+        f'IR materials, e.g. "CRWD Q3 FY24 press-release headline reads \'Record '
+        f'Net New ARR of $223.1M\'; FCF margin featured in prepared remarks." '
+        f"Quote the headline / lead KPI you saw. null only if you truly could "
+        f'not find the company\'s emphasis.>\n'
         f'}}\n'
-        f"NORTH STAR: Pick top_line_north_star_metric and "
-        f"bottom_line_north_star_metric from how the company FRAMES its own "
-        f"guidance in the press release / prepared remarks headline and IR slide "
-        f"deck. The top-line side is revenue/ARR/cRPO/billings/NRR; the "
-        f"bottom-line side is EPS/FCF/adj_EBITDA/adj_op_income. If the company "
-        f'genuinely leads with revenue, return "revenue" for the top line; if it '
-        f'leads with EPS, return "EPS" for the bottom line. Only return a '
-        f"non-default metric when the company itself features it. Never invent a "
-        f"metric the company did not report.\n"
-        f"COMPANY HINTS (prepared-remarks / IR-deck emphasis): CRWD -> ARR + "
-        f"FCF; CRM, NOW -> cRPO + adj_op_income; VEEV, DOCU -> revenue + "
-        f"adj_op_income; NET, DDOG, SNOW -> emphasis varies, capture whichever "
-        f"the IR deck features; ZS, PANW -> billings/revenue + FCF; traditional "
-        f"non-SaaS -> revenue + EPS (default). General rule: whatever the "
-        f"company actually LEADS WITH in prepared remarks / IR slide deck.\n"
+        f"NORTH STAR -- IDENTIFY WHAT THE COMPANY LEADS WITH, NOT THE MOST "
+        f"GENERICALLY-QUOTED METRIC: For top_line_north_star_metric, identify "
+        f"which metric the COMPANY LEADS WITH in its quarterly press-release "
+        f"headline, prepared-remarks opening, and investor-day framing. Many "
+        f"SaaS companies lead with ARR, cRPO, billings, or product revenue "
+        f"rather than total revenue -- return the metric the company itself "
+        f"featured most prominently in its most recent earnings communication. "
+        f"Same instruction for bottom_line_north_star_metric: identify which "
+        f"profitability metric the company leads with (e.g. Net New ARR / FCF / "
+        f"adj op income / adj EBITDA / adj EPS), NOT the most universally "
+        f"tracked metric (GAAP EPS). The top-line side is "
+        f"revenue/ARR/cRPO/billings/NRR; the bottom-line side is "
+        f"EPS/FCF/adj_EBITDA/adj_op_income. Never invent a metric the company "
+        f"did not report.\n"
+        f"ANTI-PATTERN -- DO NOT DEFAULT TO 'revenue + EPS': Do NOT default to "
+        f"'revenue + EPS' when the company has a non-GAAP or non-revenue "
+        f"headline metric. GAAP EPS is rarely the metric SaaS companies lead "
+        f"with -- if you cannot find a more company-emphasized profitability "
+        f"metric, return that anyway only after explicitly searching the "
+        f"company's IR materials for FCF / adj op income / adj EBITDA "
+        f"references.\n"
+        f"EXAMPLES OF NORTH STARS BY COMPANY (verify against the company's most "
+        f"recent earnings press release before returning):\n"
+        f"  - CRWD: top=ARR (Net New ARR is the headline), bottom=FCF\n"
+        f"  - CRM (Salesforce): top=cRPO, bottom=adj_op_income (non-GAAP "
+        f"operating income/margin)\n"
+        f"  - NOW (ServiceNow): top=cRPO, bottom=adj_op_income (non-GAAP "
+        f"operating margin)\n"
+        f"  - DDOG: top=revenue, bottom=FCF (FCF and FCF margin are headline)\n"
+        f"  - PANW: top=ARR (NGS ARR) + RPO, bottom=FCF\n"
+        f"  - ZS: top=billings, bottom=FCF\n"
+        f"  - NET (Cloudflare): top=revenue, bottom=FCF\n"
+        f"  - VEEV: top=revenue (subscription services), bottom=adj_op_income "
+        f"(non-GAAP operating income)\n"
+        f"  - DOCU: top=billings + revenue, bottom=adj_op_income or FCF\n"
+        f"  - SNOW: top=revenue (product revenue), bottom=adj_op_income / FCF\n"
+        f"  - MDB: top=revenue (Atlas), bottom=adj_op_income\n"
+        f"  - GWRE: top=ARR, bottom=adj_op_income\n"
+        f"  - CIEN: top=revenue, bottom=adj_op_income (already correct)\n"
+        f"  - AVGO: top=revenue, bottom=adj_EBITDA (already correct)\n"
+        f"  - RBRK: top=ARR, bottom=FCF / adj op margin (already correct)\n"
+        f"  For tickers NOT in this list: research the most recent earnings "
+        f"press release and identify what the company leads with.\n"
         f"CRITICAL -- GROUND THE NORTH-STAR VALUE: If you set north_star_metric "
         f"to ARR, cRPO, billings, or NRR, you MUST also return that metric's "
         f"actual reported figure and its prior-period value. These are disclosed "
@@ -250,9 +284,12 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f"available for every major US-listed name. Before returning null for "
         f"any *_consensus_prior field, search Yahoo Finance Analysts tab, Zacks, "
         f"StreetAccount, Visible Alpha, Refinitiv estimates, FactSet, or "
-        f"Bloomberg consensus. Only return null when the company itself is "
-        f"covered by zero sell-side analysts (extremely rare for any name on a "
-        f"buy-side watchlist).\n\n"
+        f"Bloomberg consensus. For the chosen north-star metric specifically, "
+        f"consensus must come from Visible Alpha / StreetAccount / Bloomberg / "
+        f"Yahoo; for SaaS-specific metrics (ARR, cRPO, billings) Visible Alpha "
+        f"and StreetAccount are the right aggregators. Only return null when the "
+        f"company itself is covered by zero sell-side analysts (extremely rare "
+        f"for any name on a buy-side watchlist).\n\n"
         f"If the company gave no guidance at all on this date, return null for "
         f"every guidance field. Never guess a number you cannot ground in the "
         f"actual release or in a reputable estimate aggregator. Return only the "
@@ -525,13 +562,16 @@ def backfill(only: str | None, dry_run: bool, cap: int, force_gate: bool = False
                     system=_SYSTEM,
                     # The JSON schema carries ~60 fields (revenue/EPS/op/FCF +
                     # SaaS top-line set + bottom-line FCF/EBITDA/adj-op-income +
-                    # both north-star pointers). 500 tokens truncates it mid-
-                    # object, which then fails JSON parsing and silently drops
-                    # every metric. 900 leaves headroom. Use sonar-pro: plain
-                    # `sonar` cannot ground the ARR/cRPO/FCF/EBITDA figures the
-                    # north-star pills depend on (it returns all-null + default
-                    # revenue/EPS pointers), so the dual pills never light up.
-                    max_tokens=900,
+                    # both north-star pointers + a free-text north_star_evidence
+                    # citation). 500 tokens truncates it mid-object, which then
+                    # fails JSON parsing and silently drops every metric. The
+                    # evidence sentence pushed several responses past 900 (CXM
+                    # truncated at ~850 completion tokens), so 1200 restores
+                    # headroom. Use sonar-pro: plain `sonar` cannot ground the
+                    # ARR/cRPO/FCF/EBITDA figures the north-star pills depend on
+                    # (it returns all-null + default revenue/EPS pointers), so
+                    # the dual pills never light up.
+                    max_tokens=1200,
                     extra_meta={"model": "sonar-pro", "purpose": "fy_guide_backfill"},
                 )
             except Exception as exc:  # noqa: BLE001
@@ -618,6 +658,14 @@ def backfill(only: str | None, dry_run: bool, cap: int, force_gate: bool = False
         # families + the per-horizon bottom_line_north_star pointer (+ units).
         for key, val in bottom["fields"].items():
             _set(key, val)
+        # North-star evidence: a free-text citation grounding the north-star
+        # choices. Stored for human review/audit, not parsed into any pill.
+        evidence = res.get("north_star_evidence")
+        if isinstance(evidence, str):
+            evidence = evidence.strip()
+            if evidence and evidence.lower() not in ("null", "none", "n/a"):
+                if force_gate or gvc.get("north_star_evidence") is None:
+                    gvc["north_star_evidence"] = evidence
         gvc.setdefault("fy_guide_source", "perplexity_sonar")
         gvc.setdefault("fy_guide_fiscal_year", fy_label)
         # Mark the widened pass complete so this card is not refetched again,
