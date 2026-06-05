@@ -1050,10 +1050,20 @@ def sync_calendar_from_intel(tickers: dict, dry_run: bool = False) -> int:
         normalized = {k: intel[k] for k in NORMALIZED_GUIDANCE_FIELDS if k in intel}
         if not normalized and gvc:
             normalized = normalize_guidance_envelope(gvc)
-        for field, val in normalized.items():
-            if val is not None and entry.get(field) != val:
-                entry[field] = val
-                changed = True
+        # Always reconcile the full normalized set: write new values AND clear
+        # any stale value the entry already has but the latest intel does not.
+        # Without this, a previously-published bogus delta (e.g. NTNX -74% from
+        # a quarterly/FY units mismatch caught by the sanity guard) would stick
+        # on the calendar entry indefinitely because val=None never overwrites.
+        for field in NORMALIZED_GUIDANCE_FIELDS:
+            new_val = normalized.get(field)
+            if entry.get(field) != new_val:
+                if new_val is None and field in entry:
+                    entry[field] = None
+                    changed = True
+                elif new_val is not None:
+                    entry[field] = new_val
+                    changed = True
 
         if changed:
             updated += 1
