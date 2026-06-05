@@ -24,7 +24,7 @@
       "Story names specific buyer or transaction",
       "Story published before or coincident with the move"
     ],
-    "last_rumor_scan": "2026-06-05T15:11:55.725637+00:00"
+    "last_rumor_scan": "2026-06-05T16:08:46.188294+00:00"
   },
   "pending_review": [
     {
@@ -82,6 +82,33 @@
           "label": "Investing.com",
           "url": "https://www.investing.com/news/analyst-ratings/autodesk-stock-falls-10-as-ptc-acquisition-rumors-surface-93CH-4134090",
           "published_at": "2026-06-03",
+          "tier": 1
+        }
+      ],
+      "gates": {
+        "gate1_move": true,
+        "gate2_tier1": true,
+        "gate3_named_buyer": true,
+        "gate4_timing": true
+      },
+      "status": "pending_review"
+    },
+    {
+      "ticker": "NEM",
+      "company": "Newmont Corporation",
+      "flagged_at": "2026-06-05T16:07:45.571620+00:00",
+      "intraday_move_pct": -6.18,
+      "price_at_flag": 101.63,
+      "buyer": "Newmont",
+      "deal_type": "strategic",
+      "headline": "Bloomberg-reported exploration of a deal for Barrick's Nevada gold assets triggered a move in Newmont and Barrick",
+      "rationale": "A Tier-1 Bloomberg report says Newmont is exploring a potential transaction to acquire Barrick's Nevada gold mining assets, which names a specific buyer and specific asset transaction. The story is the kind of strategic M&A speculation covered by the screen, and it was reported within the last 24 hours based on the provided results; however, the source details available here are indirect via a secondary article, so confidence is not perfect. The timing gate is satisfied because the report appears to precede the session move rather than follow it.",
+      "confidence": 0.89,
+      "sources": [
+        {
+          "label": "Investing.com citing Bloomberg",
+          "url": "https://www.investing.com/news/stock-market-news/barrick-stock-rises-after-report-of-newmont-eyeing-nevada-gold-assets-93CH-4308539",
+          "published_at": null,
           "tier": 1
         }
       ],
