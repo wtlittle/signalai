@@ -733,21 +733,89 @@ function _profitMetricPrefix(label) {
   return label + ' ';
 }
 
+// Build a next-quarter (Q+1) fallback display from the guidance envelope.
+// Used when the company only guides next quarter (e.g. AVGO, MRVL). Vs-Street
+// only; there is no "prior next-Q guide" concept.
+function buildNextQGuidanceDisplay(g) {
+  const num = (v) => (typeof v === 'number' && Number.isFinite(v)) ? v : null;
+  if (!g) return { revenue: null, eps: null };
+
+  let revenue = null;
+  const qRevPct = num(g.guidanceNextQRevenueDeltaPct);
+  if (qRevPct != null) {
+    const direction = classifyGuideDelta(qRevPct);
+    const value = formatGuideDelta({ deltaPct: qRevPct, deltaAbs: null, metric: 'REV' });
+    if (value != null) {
+      revenue = {
+        label: 'REV',
+        deltaPct: qRevPct,
+        direction,
+        priorSource: 'consensus',  // always vs Street for next-Q
+        streetDeltaPct: null,
+        streetDeltaAbs: null,
+        display: value,
+      };
+    }
+  }
+
+  let eps = null;
+  const qEpsPct = num(g.guidanceNextQEpsDeltaPct);
+  const qEpsAbs = num(g.guidanceNextQEpsDeltaAbs);
+  if (qEpsPct != null || qEpsAbs != null) {
+    const direction = classifyGuideDelta(qEpsPct);
+    const value = formatGuideDelta({ deltaPct: qEpsPct, deltaAbs: qEpsAbs, metric: 'EPS' });
+    if (value != null) {
+      const dir = direction === 'n/a' && qEpsAbs != null
+        ? (Math.abs(qEpsAbs) <= 0.0001 ? 'flat' : (qEpsAbs > 0 ? 'raise' : 'cut'))
+        : direction;
+      eps = {
+        label: 'EPS',
+        deltaPct: qEpsPct,
+        deltaAbs: qEpsAbs,
+        direction: dir,
+        priorSource: 'consensus',
+        streetDeltaPct: null,
+        streetDeltaAbs: null,
+        display: value,
+      };
+    }
+  }
+
+  return { revenue, eps };
+}
+
 // Render the split FY guidance row from a normalized { revenue, profitability }
 // object. Returns '' when neither metric is present (caller hides the line).
+// When FY revenue/profitability are absent, falls back to next-quarter (Q+1)
+// guidance pills labeled "Q+1 Guide" -- this handles AVGO-class companies that
+// only guide one quarter out.
 function renderGuidanceChangeRow(g) {
   const { revenue, profitability } = buildGuidanceChangeDisplay(g);
-  if (!revenue && !profitability) return '';
-  const pills = [];
+  const fyPills = [];
   const revPill = _renderGuidePill(revenue, 'guide-revenue', '');
-  if (revPill) pills.push(revPill);
+  if (revPill) fyPills.push(revPill);
   const profPill = profitability
     ? _renderGuidePill(profitability, 'guide-profit', _profitMetricPrefix(profitability.label))
     : '';
-  if (profPill) pills.push(profPill);
-  if (!pills.length) return '';
-  const body = pills.join('<span class="guide-sep">&middot;</span>');
-  return `<div class="earnings-guide-row"><span class="guide-label">FY Guide</span>${body}</div>`;
+  if (profPill) fyPills.push(profPill);
+
+  if (fyPills.length) {
+    const body = fyPills.join('<span class="guide-sep">&middot;</span>');
+    return `<div class="earnings-guide-row"><span class="guide-label">FY Guide</span>${body}</div>`;
+  }
+
+  // FY guide absent -- try next-quarter fallback (AVGO-class).
+  const nq = buildNextQGuidanceDisplay(g);
+  const qPills = [];
+  const qRevPill = _renderGuidePill(nq.revenue, 'guide-revenue', '');
+  if (qRevPill) qPills.push(qRevPill);
+  const qEpsPill = nq.eps
+    ? _renderGuidePill(nq.eps, 'guide-profit', _profitMetricPrefix(nq.eps.label))
+    : '';
+  if (qEpsPill) qPills.push(qEpsPill);
+  if (!qPills.length) return '';
+  const qBody = qPills.join('<span class="guide-sep">&middot;</span>');
+  return `<div class="earnings-guide-row"><span class="guide-label" title="Company only guides next quarter">Q+1 Guide</span>${qBody}</div>`;
 }
 
 // Parse a guidance numeric value that may be a bare number or a string with a
@@ -1536,7 +1604,13 @@ async function fetchEarnings() {
               guidanceFcfPriorSource: p.guidanceFcfPriorSource || null,
               guidanceFcfStreetDeltaPct: p.guidanceFcfStreetDeltaPct != null ? p.guidanceFcfStreetDeltaPct : null,
               guidanceFcfStreetDeltaAbs: p.guidanceFcfStreetDeltaAbs != null ? p.guidanceFcfStreetDeltaAbs : null,
-              guidanceProfitMetricUsed: p.guidanceProfitMetricUsed || null
+              guidanceProfitMetricUsed: p.guidanceProfitMetricUsed || null,
+              // Next-quarter (Q+1) fallback fields for companies that only guide one quarter out.
+              guidanceNextQRevenueDeltaPct: p.guidanceNextQRevenueDeltaPct != null ? p.guidanceNextQRevenueDeltaPct : null,
+              guidanceNextQRevenuePriorSource: p.guidanceNextQRevenuePriorSource || null,
+              guidanceNextQEpsDeltaPct: p.guidanceNextQEpsDeltaPct != null ? p.guidanceNextQEpsDeltaPct : null,
+              guidanceNextQEpsDeltaAbs: p.guidanceNextQEpsDeltaAbs != null ? p.guidanceNextQEpsDeltaAbs : null,
+              guidanceNextQEpsPriorSource: p.guidanceNextQEpsPriorSource || null
             });
           }
         }

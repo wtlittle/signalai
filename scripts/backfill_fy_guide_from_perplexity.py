@@ -89,7 +89,11 @@ _SYSTEM = (
 def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
     return (
         f"Search for {company} ({ticker}) earnings reported on {date} and its "
-        f"full-year {fy_label} guidance.\n\n"
+        f"forward guidance, both full-year {fy_label} AND the next fiscal "
+        f"quarter (Q+1).\n\n"
+        f"IMPORTANT: Some companies only guide next quarter (e.g. AVGO, MRVL, "
+        f"NVDA), not the full year. Always return next-Q numbers when given, "
+        f"even if no FY numbers are guided.\n\n"
         f"The card frames each guidance line two ways:\n"
         f"  * RAISE / FLAT / CUT  -- the NEW guidance midpoint vs the company's "
         f"OWN PRIOR full-year guidance midpoint (the one it gave the previous "
@@ -129,10 +133,19 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f'  "fy_fcf_guide_midpoint_prior": <company PRIOR FY free cash flow '
         f'guide midpoint, or null>,\n'
         f'  "fy_fcf_consensus_prior": <prior FY free cash flow Street consensus '
-        f'midpoint, or null>\n'
+        f'midpoint, or null>,\n'
+        f'  "q_next_rev_guide_midpoint": <new NEXT-QUARTER revenue guidance '
+        f'midpoint in USD dollars, or null>,\n'
+        f'  "q_next_rev_consensus_prior": <prior NEXT-QUARTER revenue Street '
+        f'consensus midpoint, or null>,\n'
+        f'  "q_next_eps_guide_midpoint": <new NEXT-QUARTER non-GAAP EPS guidance '
+        f'midpoint in USD, or null>,\n'
+        f'  "q_next_eps_consensus_prior": <prior NEXT-QUARTER non-GAAP EPS Street '
+        f'consensus midpoint, or null>\n'
         f'}}\n'
-        f"If the company gave no FY guidance on this date, return null for every "
-        f"field. Never guess a number you cannot ground in the actual release."
+        f"If the company gave no guidance at all on this date, return null for "
+        f"every field. Never guess a number you cannot ground in the actual "
+        f"release. Return only the JSON object, nothing else."
     )
 
 
@@ -188,13 +201,17 @@ def _candidates(tickers: dict, only: str | None):
         note_status = rec.get("note_status")
         active = review.get("active")
         reactioned = note_status in ("print_reaction", "call_reaction")
-        if active is not True and not reactioned:
+        # Also include cards where the reaction populator has stamped a
+        # stock_reaction_pct -- proxy for an active post-print card whose note
+        # hasn't been promoted yet (e.g. stub-note cases). Without this the
+        # next-Q backfill skips fresh AMC reporters until enrichment lands.
+        has_reaction_stamp = (
+            review.get("stock_reaction_pct") is not None
+            and review.get("stock_reaction_calc_method") is not None
+        )
+        if active is not True and not reactioned and not has_reaction_stamp:
             continue
         gvc = rec.get("guide_vs_consensus") or {}
-        # Cap: a card that already went through the widened pass is done, even
-        # if some metrics returned null (not every company guides OpInc/FCF).
-        if gvc.get("fy_guide_widened") is True:
-            continue
         rev_present = any(
             gvc.get(k) is not None
             for k in ("fy_rev_guide_midpoint_new", "fy_rev_change_vs_consensus_pct")
@@ -207,10 +224,22 @@ def _candidates(tickers: dict, only: str | None):
             gvc.get(k) is not None
             for k in ("fy_op_profit_guide_midpoint_new", "fy_fcf_guide_midpoint_new")
         )
-        # Fix a card if any pill is missing data the widened pass can supply:
-        # revenue, EPS, or the OpInc/FCF profitability fallback. A card already
-        # carrying all three (and the widened marker) is skipped above.
-        if rev_present and eps_present and profit_present:
+        q_next_present = any(
+            gvc.get(k) is not None
+            for k in ("q_next_rev_guide_midpoint_new", "q_next_eps_guide_midpoint_new")
+        )
+        # A card is fully populated only when we have BOTH the FY widened pass
+        # AND the next-Q pass (next_q_added marker). The widened-only flag is
+        # legacy; if widened is true but no next-Q fields exist, refetch once.
+        fully_done = (
+            gvc.get("fy_guide_widened") is True
+            and gvc.get("next_q_added") is True
+        )
+        if fully_done:
+            continue
+        # Original skip: a card with all FY pills filled AND widened is done.
+        # Now also require next-Q presence to skip (handles AVGO-class).
+        if rev_present and eps_present and profit_present and q_next_present:
             continue
         out.append((tk, rec))
     return out
@@ -275,7 +304,13 @@ def backfill(only: str | None, dry_run: bool, cap: int):
         fcf_mid = _num(res.get("fy_fcf_guide_midpoint_new"))
         fcf_prior = _num(res.get("fy_fcf_guide_midpoint_prior"))
         fcf_cons = _num(res.get("fy_fcf_consensus_prior"))
-        if rev_mid is None and eps_mid is None and op_mid is None and fcf_mid is None:
+        # Next-quarter guidance (for companies that only guide one quarter out).
+        q_rev_mid = _num(res.get("q_next_rev_guide_midpoint"))
+        q_rev_cons = _num(res.get("q_next_rev_consensus_prior"))
+        q_eps_mid = _num(res.get("q_next_eps_guide_midpoint"))
+        q_eps_cons = _num(res.get("q_next_eps_consensus_prior"))
+        if (rev_mid is None and eps_mid is None and op_mid is None
+                and fcf_mid is None and q_rev_mid is None and q_eps_mid is None):
             no_data.append(tk)
             continue
 
@@ -303,11 +338,19 @@ def backfill(only: str | None, dry_run: bool, cap: int):
             _set("fy_fcf_guide_midpoint_new", fcf_mid)
             _set("fy_fcf_guide_midpoint_prior", fcf_prior)
             _set("fy_fcf_consensus_prior", fcf_cons)
+        # Next-quarter midpoints (no prior-guide concept; only vs Street).
+        if q_rev_mid is not None:
+            _set("q_next_rev_guide_midpoint_new", q_rev_mid)
+            _set("q_next_rev_consensus_prior", q_rev_cons)
+        if q_eps_mid is not None:
+            _set("q_next_eps_guide_midpoint_new", q_eps_mid)
+            _set("q_next_eps_consensus_prior", q_eps_cons)
         gvc.setdefault("fy_guide_source", "perplexity_sonar")
         gvc.setdefault("fy_guide_fiscal_year", fy_label)
         # Mark the widened pass complete so this card is not refetched again,
         # even if the company guided only some of the four metrics.
         gvc["fy_guide_widened"] = True
+        gvc["next_q_added"] = True
         rec["guide_vs_consensus"] = gvc
 
         # Derive the card-facing pill fields now, so they persist with the

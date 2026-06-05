@@ -428,6 +428,32 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
     elif "guidanceFcfDeltaPct" in out or "guidanceFcfDeltaAbs" in out:
         out["guidanceProfitMetricUsed"] = "fcf"
 
+    # --- Next-quarter (Q+1) guidance for companies that don't guide FY.
+    # Vs-Street only (no "prior next-Q guide" concept). Used as a fallback
+    # pill on the card when FY revenue/EPS are missing.
+    q_rev = _compute_metric_delta(
+        gvc.get("q_next_rev_guide_midpoint_new"),
+        gvc.get("q_next_rev_consensus_prior"),
+        None,  # no prior next-Q guide concept
+        0.0,
+    )
+    if q_rev and q_rev["deltaPct"] is not None:
+        out["guidanceNextQRevenueDeltaPct"] = q_rev["deltaPct"]
+        out["guidanceNextQRevenuePriorSource"] = "consensus"
+
+    q_eps = _compute_metric_delta(
+        gvc.get("q_next_eps_guide_midpoint_new"),
+        gvc.get("q_next_eps_consensus_prior"),
+        None,
+        0.05,
+    )
+    if q_eps:
+        if q_eps["deltaPct"] is not None:
+            out["guidanceNextQEpsDeltaPct"] = q_eps["deltaPct"]
+        if q_eps.get("deltaAbs") is not None:
+            out["guidanceNextQEpsDeltaAbs"] = q_eps["deltaAbs"]
+        out["guidanceNextQEpsPriorSource"] = "consensus"
+
     return out
 
 
@@ -453,6 +479,12 @@ NORMALIZED_GUIDANCE_FIELDS = (
     "guidanceFcfStreetDeltaPct",
     "guidanceFcfStreetDeltaAbs",
     "guidanceProfitMetricUsed",
+    # Next-quarter fallback (for companies that guide one quarter out only).
+    "guidanceNextQRevenueDeltaPct",
+    "guidanceNextQRevenuePriorSource",
+    "guidanceNextQEpsDeltaPct",
+    "guidanceNextQEpsDeltaAbs",
+    "guidanceNextQEpsPriorSource",
 )
 
 

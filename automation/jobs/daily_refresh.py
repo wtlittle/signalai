@@ -712,6 +712,19 @@ def run():
     # monolithic backfill loop. Runs after the note-sync narrative base lands.
     step_refresh_earnings_universe()
 
+    # Step 6.47: Note-independent post-earnings reaction populator. Iterates
+    # earnings_calendar.json#post_earnings and writes stock_reaction_pct for
+    # every entry using a timestamp-aware fallback chain (EOD -> intraday ->
+    # pre-market -> after-hours -> finnhub). Runs AFTER sync so it can repair
+    # blanks left by stub notes. Mandate: every post-print card must show a
+    # number; never null when any price source is available.
+    try:
+        print("\n--- step: reaction populator ---")
+        from automation.jobs import reaction_populator as _rp
+        _rp.main([])
+    except Exception as exc:
+        print(f"  [WARN] reaction_populator skipped: {exc}")
+
     # Step 6.5: Debate scores (derived from earnings_intel.json) —
     # always. Must run AFTER any step that writes earnings_intel.json.
     # Supabase writes are already performed inside each refresh_*.mjs
