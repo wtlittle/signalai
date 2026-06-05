@@ -137,9 +137,18 @@ async function enrichRecentFromIntel(recent) {
       r.stock_reaction = String(intel.reaction_note).slice(0, 220);
     }
 
-    const rev = (intel.post_earnings_review && intel.post_earnings_review.active === true)
-      ? intel.post_earnings_review
-      : null;
+    // Stock reaction pct — an authoritative market number sourced FRESH from
+    // the data layer. It is read regardless of the review's `active` flag: a
+    // `print_reaction` record (a recent reporter with actuals + a short note
+    // but no full review block yet) carries stock_reaction_pct without
+    // active===true, and the card must still surface the move rather than
+    // "n/a post-print". Only ever fills a null card field; never overwrites.
+    const review = intel.post_earnings_review || null;
+    if (review && review.stock_reaction_pct != null && r.stock_reaction_pct == null) {
+      r.stock_reaction_pct = review.stock_reaction_pct;
+    }
+
+    const rev = (review && review.active === true) ? review : null;
     if (rev) {
       const bullets = rev.what_happened_bullets || [];
       // Revenue actual
@@ -155,10 +164,6 @@ async function enrichRecentFromIntel(recent) {
           const v = parseMetricBullet(b, /\beps\b/i);
           if (v) { r.eps_actual = v; break; }
         }
-      }
-      // Stock reaction pct — prominent number from post_earnings_review
-      if (rev.stock_reaction_pct != null && r.stock_reaction_pct == null) {
-        r.stock_reaction_pct = rev.stock_reaction_pct;
       }
       // Stock reaction fallback — use takeaways_headline so card body isn't "No data"
       if (!r.stock_reaction && rev.takeaways_headline) {
