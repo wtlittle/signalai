@@ -236,6 +236,7 @@ async function renderPopupContent(ticker, data, summary, chart, estimatesData) {
         <span class="popup-change ${percentClass(change1d)}" title="1-day price change">${formatPercent(change1d)}<span class="popup-change-tf">1D</span></span>
       </div>
       ${scoreBadgesHtml}
+      <button type="button" class="btn-sm btn-ghost popup-add-compare" id="popup-add-compare" title="Add to compare">+ Compare</button>
     </div>
   `;
 
@@ -464,6 +465,24 @@ async function renderPopupContent(ticker, data, summary, chart, estimatesData) {
   if (seeMoreBtn) {
     seeMoreBtn.addEventListener('click', () => {
       toggleDeepDive(ticker, data);
+    });
+  }
+
+  // "+ Compare" button — add this ticker to the compare set
+  const addCompareBtn = document.getElementById('popup-add-compare');
+  if (addCompareBtn) {
+    const SC = window.SignalCompare;
+    const syncCompareLabel = () => {
+      const inSet = !!(SC && SC.isSelected && SC.isSelected(ticker));
+      addCompareBtn.textContent = inSet ? '✓ In compare' : '+ Compare';
+      addCompareBtn.classList.toggle('popup-add-compare-on', inSet);
+    };
+    if (SC) syncCompareLabel();
+    addCompareBtn.addEventListener('click', () => {
+      if (!window.SignalCompare) return;
+      if (!window.SignalCompare.isModeOn()) window.SignalCompare.toggleMode();
+      window.SignalCompare.toggleTicker(ticker);
+      syncCompareLabel();
     });
   }
 }

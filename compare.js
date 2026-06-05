@@ -44,6 +44,8 @@
     priceCache: {},
     radarMode: 'relative',           // relative | absolute
     earningsReactionsCache: {},      // { TICKER: [{date, move_pct}, ...] }
+    etfSeriesCache: {},              // { 'ETF_RANGE': series } for alpha badges
+    quarterlyCache: {},              // { TICKER: {revGrowth:[], fcfMargin:[], opMargin:[]} }
   };
 
   const TAB_ORDER = ['overview', 'trends', 'fundamentals', 'scorecard', 'radar', 'intel', 'ai-read'];
@@ -330,6 +332,14 @@
     if (r.price && r.targetMeanPrice) {
       r.upsideToTarget = ((r.targetMeanPrice - r.price) / r.price) * 100;
     }
+    // NTM EPS growth (forward vs trailing). Winner = high.
+    if (typeof r.forwardEps === 'number' && typeof r.trailingEps === 'number' && r.trailingEps !== 0) {
+      r.ntmEpsGrowth = ((r.forwardEps - r.trailingEps) / Math.abs(r.trailingEps)) * 100;
+    }
+    // FY1 revenue estimate (not in local data layer today -> stays null -> n/a).
+    if (r.fy1RevenueEstimate == null && r.revenueEstimates && typeof r.revenueEstimates.average === 'number') {
+      r.fy1RevenueEstimate = r.revenueEstimates.average;
+    }
     // Last earnings reaction from intel
     const intel = getIntel(ticker);
     if (intel && intel.post_earnings_review && intel.post_earnings_review.stock_reaction_pct != null) {
@@ -356,6 +366,7 @@
           <div><span class="cmp-hero-k">% off 52W high</span><span class="cmp-hero-v ${r.pctOffHigh < -20 ? 'cmp-down' : ''}">${fmt.pct(r.pctOffHigh)}</span></div>
           <div><span class="cmp-hero-k">Target upside</span><span class="cmp-hero-v">${fmt.pct(r.upsideToTarget)}</span></div>
         </div>
+        <div class="cmp-hero-alpha" data-ticker="${t}"></div>
       </div>`;
     }).join('');
 
@@ -416,14 +427,150 @@
         <div class="cmp-reactions-grid" id="cmp-reactions-grid"></div>
       </div>
       <div class="cmp-trends-section">
-        <div class="cmp-section-head"><h3>Fundamental snapshot</h3>
-          <span class="cmp-subtle">Quarterly history isn\u2019t in the local data layer, so this is a point-in-time peer comparison. Use the AI Read tab to add narrative on direction.</span></div>
-        <div class="cmp-snap-bars" id="cmp-snap-bars"></div>
+        <div class="cmp-section-head"><h3>Quarterly trend (trailing 6Q, live fetch)</h3>
+          <span class="cmp-subtle">Live quarterly history from Yahoo. Falls back to a point-in-time peer bar where quarterly data is unavailable.</span></div>
+        <div id="cmp-sparklines" class="cmp-sparklines"></div>
       </div>
     `;
     renderPerfLadder(body.querySelector('#cmp-perf-ladder'), tickers, rows);
     renderReactionHistory(body.querySelector('#cmp-reactions-grid'), tickers, rows);
-    renderSnapshotBars(body.querySelector('#cmp-snap-bars'), tickers, rows);
+    renderSparklines(body.querySelector('#cmp-sparklines'), tickers, rows);
+  }
+
+  // ======================= QUARTERLY SPARKLINES =======================
+  const QUARTERLY_CACHE_KEY = 'signalai_compare_quarterly_v1';
+
+  function loadQuarterlyPersist() {
+    try {
+      const raw = localStorage.getItem(QUARTERLY_CACHE_KEY);
+      if (!raw) return;
+      const obj = JSON.parse(raw);
+      if (obj && typeof obj === 'object') {
+        Object.keys(obj).forEach(t => { if (!state.quarterlyCache[t]) state.quarterlyCache[t] = obj[t]; });
+      }
+    } catch (e) { /* ignore */ }
+  }
+  function saveQuarterlyPersist() {
+    try { localStorage.setItem(QUARTERLY_CACHE_KEY, JSON.stringify(state.quarterlyCache)); } catch (e) {}
+  }
+
+  // Fetch trailing-quarter income + cashflow statements, derive the three series.
+  async function fetchQuarterly(ticker) {
+    if (state.quarterlyCache[ticker]) return state.quarterlyCache[ticker];
+    const modules = 'incomeStatementHistoryQuarterly,cashflowStatementHistoryQuarterly';
+    const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=${modules}`;
+    let data = null;
+    try {
+      try {
+        const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
+        if (resp.ok) data = await resp.json();
+      } catch (e) { /* fall through to proxy */ }
+      if (!data && typeof global.CORS_PROXIES !== 'undefined' && Array.isArray(global.CORS_PROXIES)) {
+        for (const proxy of global.CORS_PROXIES) {
+          try {
+            const r2 = await fetch(proxy + encodeURIComponent(url), { signal: AbortSignal.timeout(8000) });
+            if (r2.ok) { data = await r2.json(); break; }
+          } catch (e) { /* try next */ }
+        }
+      }
+    } catch (e) { return null; }
+    const result = data && data.quoteSummary && data.quoteSummary.result && data.quoteSummary.result[0];
+    if (!result) return null;
+    const income = (result.incomeStatementHistoryQuarterly && result.incomeStatementHistoryQuarterly.incomeStatementHistory) || [];
+    const cashflow = (result.cashflowStatementHistoryQuarterly && result.cashflowStatementHistoryQuarterly.cashflowStatements) || [];
+    const num = (cell) => (cell && typeof cell.raw === 'number') ? cell.raw : null;
+    // Yahoo returns most-recent-first; reverse to chronological.
+    const inc = income.slice().reverse();
+    const cf = cashflow.slice().reverse();
+    const revenue = inc.map(q => num(q.totalRevenue));
+    const opIncome = inc.map(q => num(q.operatingIncome));
+    const opCash = cf.map(q => num(q.totalCashFromOperatingActivities));
+    const capex = cf.map(q => num(q.capitalExpenditures));
+    // Revenue growth: YoY (4 quarters back) where possible, else QoQ.
+    const revGrowth = revenue.map((rev, i) => {
+      if (rev == null) return null;
+      const prior = i >= 4 ? revenue[i - 4] : (i >= 1 ? revenue[i - 1] : null);
+      if (prior == null || prior === 0) return null;
+      return ((rev - prior) / Math.abs(prior)) * 100;
+    });
+    const opMargin = revenue.map((rev, i) => (rev && opIncome[i] != null) ? (opIncome[i] / rev) * 100 : null);
+    const fcfMargin = revenue.map((rev, i) => {
+      if (!rev || opCash[i] == null) return null;
+      const fcf = opCash[i] + (capex[i] || 0); // capex is negative on Yahoo
+      return (fcf / rev) * 100;
+    });
+    const series = {
+      revGrowth: revGrowth.filter(v => v != null).slice(-6),
+      fcfMargin: fcfMargin.filter(v => v != null).slice(-6),
+      opMargin: opMargin.filter(v => v != null).slice(-6),
+    };
+    state.quarterlyCache[ticker] = series;
+    saveQuarterlyPersist();
+    return series;
+  }
+
+  // Build an inline SVG sparkline; green if last >= prior, gray otherwise.
+  function sparklineSvg(values) {
+    if (!Array.isArray(values) || values.length < 2) return '';
+    const w = 120, h = 36, pad = 3;
+    const min = Math.min.apply(null, values);
+    const max = Math.max.apply(null, values);
+    const span = (max - min) || 1;
+    const stepX = (w - pad * 2) / (values.length - 1);
+    const pts = values.map((v, i) => {
+      const x = pad + i * stepX;
+      const y = h - pad - ((v - min) / span) * (h - pad * 2);
+      return x.toFixed(1) + ',' + y.toFixed(1);
+    });
+    const rising = values[values.length - 1] >= values[values.length - 2];
+    const color = rising ? '#22c55e' : '#64748b';
+    const lastPt = pts[pts.length - 1].split(',');
+    return `<svg class="cmp-spark-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img">
+      <polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"></polyline>
+      <circle cx="${lastPt[0]}" cy="${lastPt[1]}" r="2" fill="${color}"></circle>
+    </svg>`;
+  }
+
+  async function renderSparklines(root, tickers, rows) {
+    if (!root) return;
+    loadQuarterlyPersist();
+    const metrics = [
+      { key: 'revGrowth', label: 'Revenue growth (q YoY)', unit: '%' },
+      { key: 'fcfMargin', label: 'FCF margin', unit: '%' },
+      { key: 'opMargin',  label: 'Operating margin', unit: '%' },
+    ];
+    root.innerHTML = tickers.map(t =>
+      `<div class="cmp-spark-col" data-ticker="${t}">
+        <div class="cmp-spark-tick">${t}</div>
+        <div class="cmp-spark-body">Loading quarterly history\u2026</div>
+      </div>`
+    ).join('');
+    const results = await Promise.all(tickers.map(t => fetchQuarterly(t).catch(() => null)));
+    tickers.forEach((t, i) => {
+      const col = root.querySelector(`.cmp-spark-col[data-ticker="${t}"]`);
+      if (!col) return;
+      const bodyEl = col.querySelector('.cmp-spark-body');
+      const q = results[i];
+      const hasData = q && metrics.some(m => Array.isArray(q[m.key]) && q[m.key].length >= 2);
+      if (!hasData) {
+        // Fallback: point-in-time snapshot bars for this single ticker.
+        bodyEl.innerHTML = '';
+        renderSnapshotBars(bodyEl, [t], [rows[i]]);
+        return;
+      }
+      bodyEl.innerHTML = metrics.map(m => {
+        const vals = (q[m.key] || []);
+        if (vals.length < 2) {
+          return `<div class="cmp-spark-metric"><span class="cmp-spark-label">${m.label}</span><span class="cmp-spark-na">n/a</span></div>`;
+        }
+        const last = vals[vals.length - 1];
+        return `<div class="cmp-spark-metric">
+          <span class="cmp-spark-label">${m.label}</span>
+          ${sparklineSvg(vals)}
+          <span class="cmp-spark-last">${last.toFixed(1)}${m.unit}</span>
+        </div>`;
+      }).join('');
+    });
   }
 
   function renderPerfLadder(root, tickers, rows) {
@@ -610,6 +757,10 @@
         { key: 'upsideToTarget',   label: 'Implied upside',     fmt: r => fmt.pct(r.upsideToTarget),    winner: 'high' },
         { key: 'numberOfAnalystOpinions', label: 'Analyst count', fmt: r => (r.numberOfAnalystOpinions || '\u2014'), winner: 'high' },
         { key: 'recommendationKey',label: 'Consensus rating',    fmt: r => escapeHtml(r.recommendationKey || '\u2014'), winner: null },
+      ]},
+      { title: 'Forward estimates', rows: [
+        { key: 'ntmEpsGrowth',      label: 'NTM EPS growth (fwd)',  fmt: r => fmt.pct(r.ntmEpsGrowth),        winner: 'high' },
+        { key: 'fy1RevenueEstimate',label: 'FY1 Revenue estimate',  fmt: r => fmt.large(r.fy1RevenueEstimate), winner: 'high' },
       ]},
     ];
 
@@ -836,6 +987,10 @@
     if (legend) legend.innerHTML = legendBits.map(b => `<span class="cmp-bench-bit">${b}</span>`).join('');
 
     if (loading) loading.style.display = 'none';
+
+    // Alpha badges vs subsector ETF (uses already-fetched ticker series).
+    computeAlphaBadges(seriesResults);
+
     if (!datasets.length) {
       if (loading) {
         loading.textContent = 'Price history unavailable. Try a different range or remove CORS blockers.';
@@ -875,6 +1030,43 @@
         }
       }
     });
+  }
+
+  // Fetch (and cache) an ETF price series keyed by ETF+range for alpha badges.
+  async function fetchEtfSeries(etf, range) {
+    const key = etf + '_' + range;
+    if (state.etfSeriesCache[key]) return state.etfSeriesCache[key];
+    const s = await fetchPriceSeries(etf, range);
+    if (s && s.closes && s.closes.length) state.etfSeriesCache[key] = s;
+    return s;
+  }
+
+  // Compute and inject alpha-vs-ETF badges into hero cards. Silent on failure.
+  async function computeAlphaBadges(tickerSeries) {
+    const tickers = state.popupTicker || [];
+    const subsectorOf = (t) => {
+      const d = (global.tickerData || {})[t] || {};
+      return d.subsector || (typeof global.getSubsector === 'function' ? global.getSubsector(t) : null);
+    };
+    await Promise.all(tickers.map(async (t, i) => {
+      const el = document.querySelector(`.cmp-hero-alpha[data-ticker="${t}"]`);
+      if (!el) return;
+      const etf = etfForSubsector(subsectorOf(t));
+      const s = tickerSeries[i];
+      if (!etf || !s || !s.closes || s.closes.length < 2) { el.textContent = ''; return; }
+      const etfSeries = await fetchEtfSeries(etf, state.chartRange);
+      if (!etfSeries || !etfSeries.closes || etfSeries.closes.length < 2) { el.textContent = ''; return; }
+      const tickIdx = indexSeries(s.closes);
+      const etfIdx = indexSeries(etfSeries.closes);
+      const lastTick = tickIdx[tickIdx.length - 1];
+      const lastEtf = etfIdx[etfIdx.length - 1];
+      if (lastTick == null || lastEtf == null) { el.textContent = ''; return; }
+      const alpha = lastTick - lastEtf;
+      const tone = alpha >= 0 ? 'cmp-up' : 'cmp-down';
+      const sign = alpha >= 0 ? '+' : '';
+      el.className = 'cmp-hero-alpha ' + tone;
+      el.textContent = `Alpha vs ${etf}: ${sign}${alpha.toFixed(1)}%`;
+    }));
   }
 
   function benchmarkDataset(label, series, color, dash) {
@@ -965,10 +1157,16 @@
     if (pillar === 'growth') {
       const g = relScore(rows, 'revenueGrowth', 'high', idx);
       const absG = absTier('revenueGrowth', r.revenueGrowth);
+      let score = g.score;
+      let ntmNote = '';
+      if (typeof r.ntmEpsGrowth === 'number' && r.ntmEpsGrowth > 15) {
+        score = Math.min(5, score + 0.5);
+        ntmNote = ` NTM EPS growth ${r.ntmEpsGrowth.toFixed(0)}% (+0.5).`;
+      }
       return {
-        score: g.score,
+        score,
         absTier: absG,
-        reason: `Revenue growth: ${g.score}/5 peer (abs ${absG || 'n/a'}).`,
+        reason: `Revenue growth: ${g.score}/5 peer (abs ${absG || 'n/a'}).${ntmNote}`,
         plain: explainGrowth(r),
       };
     }
@@ -1042,11 +1240,12 @@
   function explainGrowth(r) {
     if (typeof r.revenueGrowth !== 'number') return 'Revenue growth not available.';
     const v = r.revenueGrowth;
-    if (v >= 30) return 'Hyper-growth (' + v.toFixed(0) + '% YoY) — multiple has to be earned.';
-    if (v >= 20) return 'Strong growth (' + v.toFixed(0) + '% YoY) for a software/internet name.';
-    if (v >= 10) return 'Mid-growth (' + v.toFixed(0) + '% YoY) — durability matters more than reacceleration story.';
-    if (v >= 0) return 'Low-single-digit growth (' + v.toFixed(0) + '%) — value lens applies.';
-    return 'Contracting (' + v.toFixed(0) + '%).';
+    const ntm = (typeof r.ntmEpsGrowth === 'number') ? ' NTM EPS growth ' + r.ntmEpsGrowth.toFixed(0) + '%.' : '';
+    if (v >= 30) return 'Hyper-growth (' + v.toFixed(0) + '% YoY) — multiple has to be earned.' + ntm;
+    if (v >= 20) return 'Strong growth (' + v.toFixed(0) + '% YoY) for a software/internet name.' + ntm;
+    if (v >= 10) return 'Mid-growth (' + v.toFixed(0) + '% YoY) — durability matters more than reacceleration story.' + ntm;
+    if (v >= 0) return 'Low-single-digit growth (' + v.toFixed(0) + '%) — value lens applies.' + ntm;
+    return 'Contracting (' + v.toFixed(0) + '%).' + ntm;
   }
   function explainProfitability(r) {
     const parts = [];
@@ -1104,10 +1303,12 @@
         const absChip = s.absTier != null
           ? `<span class="cmp-abs-chip cmp-abs-${s.absTier}" title="Absolute tier">${absLabel(s.absTier)}</span>`
           : '<span class="cmp-abs-chip cmp-abs-na" title="No absolute tier">abs n/a</span>';
+        const scoreInt = Math.round(s.score);
+        const scoreLabel = Number.isInteger(s.score) ? s.score : s.score.toFixed(1);
         html += `<td class="cmp-score-cell">
           <div class="cmp-score-bar">
-            <div class="cmp-score-fill cmp-score-${s.score}" style="width:${s.score * 20}%"></div>
-            <span class="cmp-score-val">${s.score}/5</span>
+            <div class="cmp-score-fill cmp-score-${scoreInt}" style="width:${s.score * 20}%"></div>
+            <span class="cmp-score-val">${scoreLabel}/5</span>
           </div>
           <div class="cmp-score-chips">${absChip}</div>
           <div class="cmp-score-reason">${escapeHtml(s.plain || s.reason)}</div>
@@ -1272,6 +1473,17 @@
     });
     html += '</div>';
 
+    // 1b. Beat-rate strip (positive next-day reactions / total). Filled async below.
+    html += '<div class="cmp-beat-strip" id="cmp-beat-strip">';
+    tickers.forEach(t => {
+      html += `<div class="cmp-beat-cell" data-ticker="${t}">
+        <div class="cmp-beat-label">${t}</div>
+        <div class="cmp-beat-bar"><div class="cmp-beat-fill" style="width:0%"></div></div>
+        <div class="cmp-beat-count">Loading…</div>
+      </div>`;
+    });
+    html += '</div>';
+
     // 2. Last reaction comparison
     html += '<div class="cmp-section-head"><h3>Most recent post-earnings reaction</h3></div>';
     html += '<div class="cmp-intel-reactions">';
@@ -1332,6 +1544,34 @@
 
     html += '</div>';
     body.innerHTML = html;
+    fillBeatStrip(body, tickers);
+  }
+
+  // Populate the beat-rate strip using cached or freshly-computed reactions.
+  async function fillBeatStrip(body, tickers) {
+    const strip = body.querySelector('#cmp-beat-strip');
+    if (!strip) return;
+    const results = await Promise.all(tickers.map(t =>
+      state.earningsReactionsCache[t] ? Promise.resolve(state.earningsReactionsCache[t]) : computeEarningsReactions(t)
+    ));
+    tickers.forEach((t, i) => {
+      const cell = strip.querySelector(`.cmp-beat-cell[data-ticker="${t}"]`);
+      if (!cell) return;
+      const reactions = results[i] || [];
+      const total = reactions.length;
+      const beats = reactions.filter(r => r.move_pct > 0).length;
+      const fillEl = cell.querySelector('.cmp-beat-fill');
+      const countEl = cell.querySelector('.cmp-beat-count');
+      if (!total) {
+        if (fillEl) { fillEl.style.width = '0%'; fillEl.className = 'cmp-beat-fill cmp-na'; }
+        if (countEl) countEl.textContent = 'n/a';
+        return;
+      }
+      const pct = (beats / total) * 100;
+      const tone = pct >= 67 ? 'positive' : pct >= 40 ? 'cmp-beat-mid' : 'negative';
+      if (fillEl) { fillEl.style.width = pct.toFixed(0) + '%'; fillEl.className = 'cmp-beat-fill ' + tone; }
+      if (countEl) countEl.textContent = `${beats} / ${total} positive reactions`;
+    });
   }
 
   // ======================= EXPORT / SNAPSHOT =======================
@@ -1486,8 +1726,21 @@
     const btn = document.getElementById('compare-toggle-btn');
     if (btn) {
       btn.addEventListener('click', toggleMode);
+      btn.setAttribute('title', 'Toggle compare mode (C)');
       renderMode();
     }
+    document.addEventListener('keydown', (event) => {
+      if (event.target && event.target.matches && event.target.matches('input, textarea, select, [contenteditable="true"]')) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key === 'Escape') {
+        if (state.popupOpen) closePopup();
+        else if (state.mode) toggleMode();
+        return;
+      }
+      if (event.key === 'c' || event.key === 'C') {
+        toggleMode();
+      }
+    });
     ensureTray();
     if (state.selected.size > 0) {
       state.mode = true;
