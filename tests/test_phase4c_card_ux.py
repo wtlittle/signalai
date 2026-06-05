@@ -11,12 +11,17 @@ import re
 # ---------------------------------------------------------------------------
 
 def _enrich_stock_reaction_pct(record, intel):
-    """Python mirror of the JS enrichRecentFromIntel stock_reaction_pct logic."""
+    """Python mirror of the JS enrichRecentFromIntel stock_reaction_pct logic.
+
+    stock_reaction_pct is read regardless of the review's `active` flag: a
+    `print_reaction` record (a recent reporter with actuals + a short note but
+    no full review block yet) carries stock_reaction_pct without active===true,
+    and the card must still surface the move rather than "n/a post-print".
+    Only ever fills a null card field; never overwrites.
+    """
     if not intel or not intel.get("post_earnings_review"):
         return record
     rev = intel["post_earnings_review"]
-    if rev.get("active") is not True:
-        return record
     if rev.get("stock_reaction_pct") is not None and record.get("stock_reaction_pct") is None:
         record["stock_reaction_pct"] = rev["stock_reaction_pct"]
     return record
@@ -59,7 +64,27 @@ def test_stock_reaction_pct_not_overwritten():
     assert result["stock_reaction_pct"] == 1.5
 
 
-def test_stock_reaction_pct_skipped_when_inactive():
+def test_stock_reaction_pct_hydrated_when_print_reaction():
+    """A `print_reaction` record (active not True, no full review block yet)
+    still carries stock_reaction_pct and the card must surface it — otherwise a
+    recent reporter renders 'n/a post-print' despite authoritative market data
+    being present. Regression for the render-gate bug where reaction was gated
+    behind active===true."""
+    record = {"ticker": "AVGO", "stock_reaction_pct": None}
+    intel = {
+        "post_earnings_review": {
+            "active": None,
+            "note_status": "print_reaction",
+            "stock_reaction_pct": -12.6,
+        }
+    }
+    result = _enrich_stock_reaction_pct(record, intel)
+    assert result["stock_reaction_pct"] == -12.6
+
+
+def test_stock_reaction_pct_hydrated_when_active_false():
+    """Even an explicitly inactive review surfaces its reaction (read is no
+    longer gated on the active flag)."""
     record = {"ticker": "NVDA"}
     intel = {
         "post_earnings_review": {
@@ -68,7 +93,7 @@ def test_stock_reaction_pct_skipped_when_inactive():
         }
     }
     result = _enrich_stock_reaction_pct(record, intel)
-    assert result.get("stock_reaction_pct") is None
+    assert result["stock_reaction_pct"] == 5.2
 
 
 def test_stock_reaction_pct_zero():
