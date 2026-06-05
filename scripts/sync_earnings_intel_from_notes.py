@@ -288,6 +288,16 @@ def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0
     if abs(base) > tiny_baseline:
         delta_pct = delta_abs / abs(base)
 
+    # Sanity guard: a |delta| > 40% on FY revenue/EPS guidance is essentially
+    # never reality for a watchlist-grade US large/mid-cap. When sonar returns
+    # numbers this extreme it is almost always a quarterly-vs-FY units mismatch
+    # (e.g. NTNX 727.5M Q1 guide compared to 2.825B FY consensus = -74%). Treat
+    # as untrusted and return None so the card renders n/a per the data
+    # integrity mandate rather than publishing a fabricated 70%+ swing.
+    SANITY_MAX_DELTA = 0.40
+    if delta_pct is not None and abs(delta_pct) > SANITY_MAX_DELTA:
+        return None
+
     street_pct = None
     street_abs = None
     if source == "prior_guidance":
@@ -296,6 +306,9 @@ def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0
             street_abs = cur - cons
             if abs(cons) > tiny_baseline:
                 street_pct = street_abs / abs(cons)
+                if abs(street_pct) > SANITY_MAX_DELTA:
+                    street_pct = None
+                    street_abs = None
 
     return {
         "deltaPct": delta_pct,

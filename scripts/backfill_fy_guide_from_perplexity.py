@@ -180,7 +180,15 @@ def _candidates(tickers: dict, only: str | None):
         if rec.get("state") != "post_earnings":
             continue
         review = rec.get("post_earnings_review") or {}
-        if review.get("active") is not True:
+        # Active POST cards include records flagged active=True OR records that
+        # have already been stamped with note_status=print_reaction/
+        # call_reaction (these land active=None until the post_earnings_notes
+        # job promotes them — mirror PR #52's render-layer ungate so the
+        # guidance backfill doesn't skip freshly-printed cards).
+        note_status = rec.get("note_status")
+        active = review.get("active")
+        reactioned = note_status in ("print_reaction", "call_reaction")
+        if active is not True and not reactioned:
             continue
         gvc = rec.get("guide_vs_consensus") or {}
         # Cap: a card that already went through the widened pass is done, even
