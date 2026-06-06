@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-05T23:00:50+00:00",
+  "last_updated": "2026-06-06T01:03:21+00:00",
   "schema_version": 1,
   "tickers": {
     "ADP": {
@@ -9,7 +9,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ADP beats modest Q3 revenue and EPS targets with raised FY guidance on strong operational execution and AI efficiencies.",
       "beat_miss_quality": "Beat/Beat - Quality: Both beats modest (~0.5% rev, 1.2% EPS) but guidance raise (10-11% EPS growth) signals substantive underlying improvement.",
@@ -254,7 +254,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Amazon Q1 2026 earnings reported April 29 with significant Anthropic investment gains boosting bottom line.",
       "beat_miss_quality": "Data not available in search results - specific revenue and EPS figures not provided",
@@ -720,7 +720,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Caterpillar crushes Q1 with 22% revenue growth and 19% EPS beat, driven by strong equipment demand and pricing discipline.",
       "beat_miss_quality": "Quality beat; revenue +7.4%, adjusted EPS +19.3%. Growth driven by $2.3B volume gains and $426M pricing YoY; organic strength.",
@@ -1382,7 +1382,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Generac delivered 12% revenue growth to $1.06B in Q1 2026 on data center strength; net income of $73.3M supported by operational leverage.",
       "beat_miss_quality": "Insufficient consensus estimates in available data; top-line growth trajectory and margin profile suggest quality earnings with strategic momentum.",
@@ -1618,7 +1618,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Alphabet crushes Q1 2026 EPS estimate with $5.11 vs $2.64 consensus, but revenue and guidance details unavailable in search results.",
       "beat_miss_quality": "Beat - EPS $5.11 vs $2.64 est (+93.6%); extreme beat magnitude raises questions on estimate quality vs. operational outperformance.",
@@ -2451,7 +2451,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Meta beat EPS but missed revenue; stock sold off 7.3% despite strong YoY growth aided by one-time items.",
       "beat_miss_quality": "Mixed: EPS beat ($7.31 vs $6.67-$6.89 est), revenue miss ($56.31B vs $56.56B est). Quality concerns: one-time boost materially aided results.",
@@ -2698,7 +2698,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Microsoft beats Q3 on 18% revenue growth and 20% operating income expansion; Azure momentum sustains",
       "beat_miss_quality": "Beat - EPS $4.27 vs $4.07 est (+4.91%); operating leverage via 20% op income growth outpacing revenue",
@@ -2933,7 +2933,8 @@
         "next_q_added": true
       },
       "guidanceRevenueDeltaPct": -0.009703196347031963,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "NEM": {
       "ticker": "NEM",
@@ -3607,7 +3608,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-04",
       "next_earnings_date": "2026-08-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Vertex reports Q1 2026 EPS of $4.47, beating consensus of $4.18-$4.24 by 6-7%, but initial stock reaction was negative.",
       "beat_miss_quality": "Clear beat on EPS (+6.94%), but -1.3% next-day sell-off suggests market questioned quality or pondered guidance/forward visibility concerns.",
@@ -3850,7 +3851,8 @@
       ],
       "history_8q_source": "finnhub",
       "guidanceRevenueDeltaPct": 0.005403319181783096,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "ZBH": {
       "ticker": "ZBH",
@@ -3859,7 +3861,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-28",
       "next_earnings_date": "2026-07-27",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ZBH beats Q1 adjusted EPS by 12.4% on strong revenue growth; management raises FY 2026 guidance.",
       "beat_miss_quality": "Beat: Adjusted EPS $2.09 vs $1.86 est. Quality beat—9.3% revenue growth, 34.1% GAAP EPS increase, raised full-year targets signal momentum.",
@@ -4121,7 +4123,8 @@
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": 0.010131108462455194,
       "guidanceEpsStreetDeltaAbs": 0.08499999999999908,
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "ABT": {
       "ticker": "ABT",
@@ -4130,7 +4133,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-16",
       "next_earnings_date": "2026-07-15",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Neutral. The core Abbott franchise (Libre, medical devices) remains strong, and 7.8% organic growth is solid. However, the acquisition-driven EPS dilution and guidance cut create near-term overhang. This is a \"digest and integrate\" period -- the thesis is intact but the stock needs time to absorb the deal.",
       "beat_miss_quality": "",
@@ -4349,7 +4352,8 @@
       "guidanceEpsStreetDeltaAbs": -0.1999999999999993,
       "guidanceNextQEpsDeltaPct": -0.044776119402985114,
       "guidanceNextQEpsDeltaAbs": -0.06000000000000005,
-      "guidanceNextQEpsPriorSource": "consensus"
+      "guidanceNextQEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "BAC": {
       "ticker": "BAC",
@@ -4358,7 +4362,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-15",
       "next_earnings_date": "2026-07-14",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Reinforces. BAC proved it can deliver meaningful earnings beats even without aggressive rate cuts. The trading franchise improvement and consumer resilience support the thesis. The stock remains levered to NII inflection, but the downside protection from trading and wealth is better than the market gives credit for.",
       "beat_miss_quality": "",
@@ -4566,7 +4570,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-14",
       "next_earnings_date": "2026-07-13",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Reinforces. This was a validation quarter for the Citi turnaround thesis. At a discount to book value with 13%+ RoTCE and improving, the risk/reward remains attractive. The breadth of strength (all 5 segments growing) is a new development and suggests the restructuring has reached an inflection point.",
       "beat_miss_quality": "",
@@ -4684,7 +4688,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-13",
       "next_earnings_date": "2026-07-12",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Reinforces. The quarter validates the thesis that Goldman is the premier pure-play capital markets franchise. Record equities, 48% IB fee growth, and nearly 20% ROE show the operating leverage embedded in this business when the M&A cycle turns. The result reinforces a long bias in a Reflation regime that favors financials.",
       "beat_miss_quality": "",
@@ -4894,7 +4898,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-14",
       "next_earnings_date": "2026-07-13",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Reinforces. JPM remains the gold-standard bank franchise. The 23% ROTCE, $54B in AWM inflows, and balanced segment growth reinforce the fortress balance sheet thesis. The stock deserves its premium multiple, but further upside requires multiple expansion or a rate-cut cycle.",
       "beat_miss_quality": "",
@@ -5102,7 +5106,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-15",
       "next_earnings_date": "2026-07-14",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Reinforces. MS continues to prove that its wealth + IB model generates more stable, higher-quality earnings than a pure trading house. Record wealth management revenue is the most important data point for long-term holders.",
       "beat_miss_quality": "",
@@ -5309,7 +5313,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-16",
       "next_earnings_date": "2026-07-15",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Neutral. The underlying business is healthy -- 16% revenue growth, 32%+ margins, and a rapidly scaling ad business. But the EPS beat was quality-distorted by the WBD fee, and the 9-10% stock drop signals that the market was positioned for a guidance raise that didn't come. The stock remains a \"premium growth\" name that needs to demonstrate subscriber momentum without the subscriber disclosure.",
       "beat_miss_quality": "",
@@ -5517,7 +5521,8 @@
       ],
       "history_8q_source": "finnhub",
       "guidanceRevenueDeltaPct": -0.013618677042801557,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "STZ": {
       "ticker": "STZ",
@@ -5526,7 +5531,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-08",
       "next_earnings_date": "2026-07-07",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "For longs: The beer franchise is intact but not accelerating. Modelo and Corona remain category leaders, and the growth brands (Pacifico, Victoria) are delivering. FCF generation is strong ($1.8B), buybacks are aggressive, and the balance sheet is manageable at ~3x net leverage. The question is whether flat organic revenue growth and a 37-38% beer margin represent a new normal or a trough that improves as Veracruz costs are absorbed and tariff headwinds fade.",
       "beat_miss_quality": "",
@@ -5737,7 +5742,8 @@
       "guidanceEpsDeltaPct": 0.0,
       "guidanceEpsDeltaAbs": 0.0,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "TSM": {
       "ticker": "TSM",
@@ -5746,7 +5752,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-16",
       "next_earnings_date": "2026-07-15",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Strongly reinforces. TSMC is the clearest beneficiary of the AI infrastructure cycle. Four consecutive record quarters, 58% profit growth, 66%+ gross margins, and management guiding further acceleration -- this is the best fundamental setup in semis. The only risks are geopolitical (Taiwan/China) and customer concentration (NVDA/AAPL).",
       "beat_miss_quality": "",
@@ -5957,7 +5963,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-14",
       "next_earnings_date": "2026-07-13",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Neutral to slightly negative. The regulatory tailwind thesis remains intact (asset cap removal would be transformative), but the NII miss undermines near-term confidence. WFC is a \"show me\" story -- needs NII inflection and formal asset cap removal to re-rate.",
       "beat_miss_quality": "",
@@ -6163,7 +6169,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-28",
       "next_earnings_date": "2026-07-27",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Varonis beats Q1 2026 on both EPS and revenue; profitability inflection drives 13.8% post-market pop.",
       "beat_miss_quality": "Quality beat: EPS turned profitable at $0.06 vs -$0.05 est; revenue beat $173.1M vs $168.8M. Demonstrates operational leverage.",
@@ -6483,7 +6489,9 @@
       "guidanceNextQRevenueDeltaPct": 0.0,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaAbs": 0.045,
-      "guidanceNextQEpsPriorSource": "consensus"
+      "guidanceNextQEpsPriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "CSU.TO": {
       "ticker": "CSU.TO",
@@ -6491,7 +6499,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-10",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Constellation Software reports Q1 2026 earnings May 12, 2026. CSU is a high-quality vertical market software roll-up with strong M&A history. Limited real-time technical and price data available in provided search results.",
       "bull_case": {
@@ -6763,7 +6771,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-10",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Sea reported Q1 2026 on May 12: $7.1B revenue (+46.6% YoY, +10% beat vs $6.45B consensus) but EPS $0.67 missed $0.77 estimate. Stock near $85 post-results; Jefferies PT $157 signals confidence. Key tension: strong topline growth masking margin pressure.",
       "bull_case": {
@@ -7045,7 +7053,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-11",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "DT reports Q4 FY2026 (ended Mar 31) this morning at 8:00 AM ET, just hours away. Street consensus: $521M revenue (+17% YoY), $0.39 EPS. Q3 delivered $0.44 EPS vs $0.34 est (+29% beat), setting high bar for guidance credibility on AI/observability tailwinds.",
       "bull_case": {
@@ -7342,7 +7350,14 @@
       "guidanceFcfDeltaPct": 0.02358490566037736,
       "guidanceFcfDeltaAbs": 12500000.0,
       "guidanceFcfPriorSource": "prior_guidance",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceFYFcfDeltaPct": 0.02358490566037736,
+      "guidanceFYFcfDeltaAbs": 12500000.0,
+      "guidanceFYFcfPriorSource": "prior_guidance",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide"
     },
     "GLBE": {
       "ticker": "GLBE",
@@ -7350,7 +7365,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-11",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "GLBE earnings release imminent (5+ hours away at BMO). Limited current price data; most recent quote $32.85 from Jul 2025. Company exhibits volatile quarterly swings (Q4 2025: +373.7% QoQ earnings); key question is whether earnings stability/growth trajectory has improved heading into Q1 2026.",
       "bull_case": {
@@ -7634,7 +7649,8 @@
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceRevenueStreetDeltaPct": 0.0,
       "guidanceNextQRevenueDeltaPct": 0.017683146878383255,
-      "guidanceNextQRevenuePriorSource": "consensus"
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "WIX": {
       "ticker": "WIX",
@@ -7642,7 +7658,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-11",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Wix reports Q1 2026 results pre-market today after Q4 2025 blowout ($1.81 EPS vs $0.98 est.). Street expects revenue of $0.544B (+14.86% YoY) and EPS of $1.21. Options pricing 7.5% move.",
       "bull_case": {
@@ -7917,7 +7933,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-17",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "HD earnings release scheduled for May 19, 2026 before market open. Current price $364.64 in pre-market. Insufficient data provided for technical levels and YTD sector comparison.",
       "bull_case": {
@@ -8202,7 +8218,9 @@
       "guidanceRevenueDeltaPct": -0.004380841121495327,
       "guidanceRevenuePriorSource": "consensus",
       "guidanceEpsStreetDeltaPct": -0.05448504983388706,
-      "guidanceEpsStreetDeltaAbs": -0.8200000000000003
+      "guidanceEpsStreetDeltaAbs": -0.8200000000000003,
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "INTU": {
       "ticker": "INTU",
@@ -8210,7 +8228,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-18",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Intuit reports Q3 FY2026 (ended April 30) on May 20 after market close. Limited pre-earnings technical data available from search results; options market implies ±8.86% move. Stock critical for fintech exposure amid AI-driven automation concerns in tax/accounting software.",
       "bull_case": {
@@ -8492,7 +8510,9 @@
       "guidanceProfitMetricUsed": "eps",
       "guidanceRevenueStreetDeltaPct": 0.007429245283018868,
       "guidanceEpsStreetDeltaPct": 0.07951971001359306,
-      "guidanceEpsStreetDeltaAbs": 1.754999999999999
+      "guidanceEpsStreetDeltaAbs": 1.754999999999999,
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "NVDA": {
       "ticker": "NVDA",
@@ -8500,7 +8520,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-18",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "NVDA enters Q1 FY2027 earnings off Q4 beat (EPS $1.62 vs $1.50, +8%). Stock likely at/near all-time highs as sector leader in AI infrastructure. Forward guidance will drive post-earnings action more than results.",
       "bull_case": {
@@ -8786,7 +8806,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-19",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "LiveRamp posts modest top-line beat and slight EPS outperformance, with stable growth exiting FY26.",
       "bull_case": {
@@ -9066,7 +9086,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-19",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "WDAY trading at $118.62, down 2.31% recently amid broader market weakness. Stock has strong fundamentals (26% FY2026 EPS growth, 13.1% revenue growth), but recent pullback creates asymmetric risk/reward ahead of May 21 earnings. Valuation likely reflects AI platform positioning but growth deceleration concerns.",
       "bull_case": {
@@ -9351,7 +9371,8 @@
       "note_generated_at": "2026-06-04T21:43:43+00:00",
       "note_source": "print_reaction_sweep",
       "guidanceRevenueDeltaPct": -0.004672897196261682,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "ZM": {
       "ticker": "ZM",
@@ -9359,7 +9380,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-19",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ZM trades at $78.38 after modest recent strength. Stock faces key technical resistance near recent highs amid broader SaaS volatility. Earnings trigger likely near-term volatility; key to watch margin trajectory given 88% FY2026 growth and deceleration signals in sequential Q1 performance.",
       "bull_case": {
@@ -9634,7 +9655,8 @@
       "note_generated_at": "2026-06-04T21:43:44+00:00",
       "note_source": "print_reaction_sweep",
       "guidanceRevenueDeltaPct": 0.009453781512605041,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "ZS": {
       "ticker": "ZS",
@@ -9642,7 +9664,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-24",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ZS at $146.17, down 1.81% recently. Cloud security leader faces elevated expectations after Q2 beat (+12% surprise). Key resistance near $150, support near $140.",
       "bull_case": {
@@ -9923,43 +9945,45 @@
       },
       "guide_vs_consensus": {
         "fy_rev_guide_midpoint_new": 3331000000.0,
-        "fy_rev_consensus_prior": 3315500000.0,
+        "fy_rev_consensus_prior": 3300000000.0,
         "fy_eps_guide_midpoint_new": 4.105,
         "fy_eps_consensus_prior": 3.21,
         "fy_guide_source": "perplexity_sonar",
         "fy_guide_fiscal_year": "the current fiscal year",
         "fy_rev_guide_midpoint_prior": 3315500000.0,
-        "fy_eps_guide_midpoint_prior": 4.02,
+        "fy_eps_guide_midpoint_prior": 4.005,
         "fy_guide_widened": true,
         "next_q_added": true,
         "fy_op_profit_guide_midpoint_new": 756000000.0,
         "fy_op_profit_guide_midpoint_prior": 745000000.0,
         "fy_op_profit_consensus_prior": 745000000.0,
-        "fy_op_metric_kind": "operating_profit",
+        "fy_op_metric_kind": "operating_income",
         "q_next_rev_guide_midpoint_new": 876500000.0,
-        "q_next_rev_consensus_prior": 835140000.0,
+        "q_next_rev_consensus_prior": 864660000.0,
         "q_next_eps_guide_midpoint_new": 1.085,
-        "fy_arr_guide_midpoint_new": 3744500000.0,
-        "fy_arr_guide_midpoint_prior": 3737500000.0,
+        "fy_arr_guide_midpoint_new": 3744.5,
+        "fy_arr_guide_midpoint_prior": 3737.5,
         "fy_arr_units": "USD millions",
-        "fy_north_star_metric": "ARR",
-        "fy_top_line_north_star_metric": "ARR",
+        "fy_north_star_metric": "billings",
+        "fy_top_line_north_star_metric": "billings",
         "fy_north_star_units": "USD millions",
         "fy_top_line_north_star_units": "USD millions",
         "q_next_north_star_metric": "revenue",
         "q_next_top_line_north_star_metric": "revenue",
         "q_next_north_star_units": "USD millions",
         "q_next_top_line_north_star_units": "USD millions",
-        "fy_adj_op_income_guide_midpoint_new": 756000000.0,
-        "fy_adj_op_income_guide_midpoint_prior": 745000000.0,
+        "fy_adj_op_income_guide_midpoint_new": 756.0,
+        "fy_adj_op_income_guide_midpoint_prior": 745.0,
         "fy_adj_op_income_consensus_prior": 745000000.0,
         "fy_adj_op_income_units": "USD millions",
         "fy_bottom_line_north_star_metric": "FCF",
         "fy_bottom_line_north_star_units": "USD millions",
-        "q_next_adj_op_income_guide_midpoint_new": 207000000.0,
+        "q_next_adj_op_income_guide_midpoint_new": 207.0,
         "q_next_adj_op_income_units": "USD millions",
-        "q_next_bottom_line_north_star_metric": "EPS",
-        "q_next_bottom_line_north_star_units": "USD"
+        "q_next_bottom_line_north_star_metric": "adj_op_income",
+        "q_next_bottom_line_north_star_units": "USD millions",
+        "q_next_eps_consensus_prior": 1.01,
+        "north_star_evidence": "Zscaler’s investor communications historically emphasize billings growth and free cash flow as key metrics, but in the Q3 FY26 release the formal guidance section leads with revenue and non-GAAP income from operations and EPS while reiterating full-year free cash flow margin targets, and provides explicit quarterly guidance for non-GAAP income from operations."
       },
       "history_8q": [
         {
@@ -10051,9 +10075,9 @@
       "note_source": "print_reaction_sweep",
       "guidanceRevenueDeltaPct": 0.004675011310511235,
       "guidanceRevenuePriorSource": "prior_guidance",
-      "guidanceRevenueStreetDeltaPct": 0.004675011310511235,
-      "guidanceEpsDeltaPct": 0.02114427860696539,
-      "guidanceEpsDeltaAbs": 0.08500000000000085,
+      "guidanceRevenueStreetDeltaPct": 0.009393939393939394,
+      "guidanceEpsDeltaPct": 0.024968789013732968,
+      "guidanceEpsDeltaAbs": 0.10000000000000053,
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": 0.2788161993769472,
       "guidanceEpsStreetDeltaAbs": 0.8950000000000005,
@@ -10063,21 +10087,21 @@
       "guidanceOperatingProfitPriorSource": "prior_guidance",
       "guidanceOperatingProfitStreetDeltaPct": 0.01476510067114094,
       "guidanceOperatingProfitStreetDeltaAbs": 11000000.0,
-      "guidanceNextQRevenueDeltaPct": 0.04952463060085734,
+      "guidanceNextQRevenueDeltaPct": 0.013693243587074688,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceFYArrDeltaPct": 0.0018729096989966556,
-      "guidanceFYArrDeltaAbs": 7000000.0,
+      "guidanceFYArrDeltaAbs": 7.0,
       "guidanceFYArrPriorSource": "prior_guidance",
       "guidanceFYArrUnits": "USD millions",
       "guidanceFYAdjOpIncomeDeltaPct": 0.01476510067114094,
-      "guidanceFYAdjOpIncomeDeltaAbs": 11000000.0,
+      "guidanceFYAdjOpIncomeDeltaAbs": 11.0,
       "guidanceFYAdjOpIncomePriorSource": "prior_guidance",
-      "guidanceFYAdjOpIncomeStreetDeltaPct": 0.01476510067114094,
-      "guidanceFYAdjOpIncomeStreetDeltaAbs": 11000000.0,
+      "guidanceFYAdjOpIncomeStreetDeltaPct": null,
+      "guidanceFYAdjOpIncomeStreetDeltaAbs": null,
       "guidanceFYAdjOpIncomeUnits": "USD millions",
-      "guidanceFYNorthStarMetric": "ARR",
+      "guidanceFYNorthStarMetric": "billings",
       "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceFYTopLineNorthStarMetric": "ARR",
+      "guidanceFYTopLineNorthStarMetric": "billings",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
       "guidanceFYBottomLineNorthStarMetric": "FCF",
       "guidanceFYBottomLineNorthStarUnits": "USD millions",
@@ -10085,8 +10109,15 @@
       "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
-      "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceNextQEpsDeltaPct": 0.07425742574257421,
+      "guidanceNextQEpsDeltaAbs": 0.07499999999999996,
+      "guidanceNextQEpsPriorSource": "consensus",
+      "guidanceFYArrDeltaBasis": "vs_prior_guide",
+      "guidanceFYAdjOpIncomeDeltaBasis": "vs_prior_guide"
     },
     "ACGL": {
       "ticker": "ACGL",
@@ -10095,7 +10126,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-28",
       "next_earnings_date": "2026-07-27",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ACGL delivered modest Q1 earnings beat with $2.50 EPS, but revenue missed consensus, suggesting growth headwinds despite improved underwriting.",
       "beat_miss_quality": "EPS beat modest at +0.8%; revenue miss -6.1%; beat magnitude sharply decelerated vs Q4's 19.7%, signaling momentum loss",
@@ -10322,7 +10353,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-28",
       "next_earnings_date": "2026-07-27",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "FICO delivered strong Q2 2026 with GAAP EPS of $11.14 (+69% YoY) and revenue of $692M (+39% YoY), raising FY guidance.",
       "beat_miss_quality": "Beat; quality results evidenced by EPS growth outpacing revenue growth, indicating margin expansion.",
@@ -10559,7 +10590,9 @@
       "guidanceEpsDeltaAbs": 2.5900000000000034,
       "guidanceEpsPriorSource": "consensus",
       "guidanceProfitMetricUsed": "eps",
-      "guidanceRevenueStreetDeltaPct": 0.06060606060606061
+      "guidanceRevenueStreetDeltaPct": 0.06060606060606061,
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "GLW": {
       "ticker": "GLW",
@@ -10568,7 +10601,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-28",
       "next_earnings_date": "2026-07-27",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Corning posted slight revenue beat and in-line core EPS with impressive 30% YoY earnings growth, but Q2 guidance offered no raise.",
       "beat_miss_quality": "In-line on core EPS ($0.70 vs est), modest revenue beat (+1.78%); quality grounded in 20% YoY sales and 30% YoY core EPS growth.",
@@ -10796,7 +10829,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-28",
       "next_earnings_date": "2026-07-27",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "KMB delivered a clean Q1 beat on both EPS and revenue with organic growth and market-share gains; reaffirmed full-year 2026 outlook.",
       "beat_miss_quality": "Beat: EPS $1.97 vs $1.91 est (+3.1%), Rev $4.163B vs $4.129B est (+0.8%). Quality execution with 3% volume-plus-mix and broad-based share gains.",
@@ -11031,7 +11064,9 @@
       "guidanceEpsDeltaPct": 0.0,
       "guidanceEpsDeltaAbs": 0.0,
       "guidanceEpsPriorSource": "prior_guidance",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "MDLZ": {
       "ticker": "MDLZ",
@@ -11040,7 +11075,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-28",
       "next_earnings_date": "2026-07-27",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Mondelēz posts solid Q1 with 3% organic growth and reaffirms full-year 2026 guidance amid economic volatility.",
       "beat_miss_quality": "In-line. Organic growth of 3% positive but volume/mix negative at -0.5%. Diluted EPS +41.9% but adjusted EPS down 14.9% constant currency suggests mixed quality.",
@@ -11280,7 +11315,13 @@
       "guidanceFcfDeltaPct": 0.0,
       "guidanceFcfDeltaAbs": 0.0,
       "guidanceFcfPriorSource": "prior_guidance",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceFYFcfDeltaPct": 0.0,
+      "guidanceFYFcfDeltaAbs": 0.0,
+      "guidanceFYFcfPriorSource": "prior_guidance",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide"
     },
     "STX": {
       "ticker": "STX",
@@ -11289,7 +11330,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-28",
       "next_earnings_date": "2026-07-27",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Seagate crushes Q3 on AI storage tailwind with record margins; raises Q4 guidance above Street.",
       "beat_miss_quality": "Beat: non-GAAP EPS $4.10 vs $3.47 consensus (+$0.63). Quality beat—record 47% gross margin, robust FCF, guided by AI demand durability.",
@@ -11536,7 +11577,9 @@
       "guidanceEpsDeltaPct": 0.2853470437017994,
       "guidanceEpsDeltaAbs": 1.1099999999999999,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "TER": {
       "ticker": "TER",
@@ -11545,7 +11588,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-28",
       "next_earnings_date": "2026-07-27",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Teradyne posts record Q1 2026 with strong beats on revenue and earnings, driven by robust AI-related semiconductor test demand.",
       "beat_miss_quality": "Beat: Revenue +5.15%, non-GAAP EPS +21.43%. Quality print with significant operational leverage and end-market strength.",
@@ -11783,7 +11826,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Avnet crushed Q3 expectations with record $7.12B revenue (+34% YoY) and adjusted EPS of $1.48, driven by broad-based demand across all regions.",
       "beat_miss_quality": "Strong beat: revenue +12.09%, adjusted EPS +11.28%. Quality earnings—34% YoY growth reflects operational execution, not one-time benefits.",
@@ -12018,7 +12061,9 @@
       "guidanceEpsDeltaPct": 0.25000000000000006,
       "guidanceEpsDeltaAbs": 0.3500000000000001,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "CTSH": {
       "ticker": "CTSH",
@@ -12027,7 +12072,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "CTSH beats EPS by 5% but revenue essentially flat YoY; strong 21% bookings growth and margin expansion offset modest organic deceleration.",
       "beat_miss_quality": "EPS beat (+5.01%), revenue in-line (−0.02%); quality mixed—margin expansion and bookings drive EPS, but organic growth concerns remain.",
@@ -12267,7 +12312,9 @@
       "guidanceEpsDeltaPct": 0.012820512820512872,
       "guidanceEpsDeltaAbs": 0.07000000000000028,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "GEHC": {
       "ticker": "GEHC",
@@ -12276,7 +12323,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "GEHC misses Q1 EPS while cutting FY2026 guidance; Goldman downgrades to Neutral and exits buy rating.",
       "beat_miss_quality": "Miss on both metrics: EPS $0.99 vs $1.07 est (-7.5%), Rev $5,131M vs $5,138M est (-0.1%). Misses are noise-like in magnitude but guidance cut signals real operational pressure.",
@@ -12528,7 +12575,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Tenable beats EPS and revenue, raises FY guidance; stock down 5.7%, signaling market skepticism on growth trajectory.",
       "beat_miss_quality": "Strong beat: EPS +$0.05 vs est (+11.9%), revenue +1.15%. Quality high—margin expansion evident; FY raise shows confidence.",
@@ -12762,7 +12809,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-29",
       "next_earnings_date": "2026-07-28",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Tyler Technologies posts Q1 beats on revenue and EPS with strong SaaS growth and improved cash generation.",
       "beat_miss_quality": "Beat: Revenue +0.64%, EPS +2.81%. Quality print with SaaS +23.5%, FCF doubled, $600M debt repaid; not margin noise.",
@@ -12999,7 +13046,9 @@
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": 0.05120732722731059,
       "guidanceEpsStreetDeltaAbs": 0.6150000000000002,
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "AEM": {
       "ticker": "AEM",
@@ -13008,7 +13057,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "AEM delivers strong Q1 2026 with 66% revenue growth and record operating margins, beating both revenue and EPS estimates.",
       "beat_miss_quality": "Beat: Quality. Revenue beat 6.7%, EPS beat 6.6%, driven by superior operational execution and commodity tailwinds with exceptional leverage.",
@@ -13247,7 +13296,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Check Point delivered Q1 2026 results on April 30 with double-digit non-GAAP EPS growth and 5% revenue expansion, maintaining momentum in AI security.",
       "beat_miss_quality": "Insufficient data in search results to determine vs. consensus; double-digit EPS growth suggests quality execution.",
@@ -13470,7 +13519,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "CLX beats EPS but misses revenue; slashes FY guidance 27-29% citing cost inflation and $476M Glad impairment charge.",
       "beat_miss_quality": "Beat EPS $1.64 vs $1.57; miss revenue $1.67B vs $1.68B. Quality weak—negative guidance and 9M revenue/EPS declines signal structural headwinds.",
@@ -13710,7 +13759,9 @@
       "guidanceEpsDeltaPct": -0.05290102389078506,
       "guidanceEpsDeltaAbs": -0.3100000000000005,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "GDDY": {
       "ticker": "GDDY",
@@ -13719,7 +13770,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "GoDaddy beats EPS guidance with 6% revenue growth and strong EBITDA margin expansion of 210 bps",
       "beat_miss_quality": "Beat on EPS ($1.60 vs $1.52 est); revenue $1.27B with quality gains shown by EBITDA margin expansion.",
@@ -13962,7 +14013,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "LKQ met Q1 EPS estimates on a GAAP basis but adjusted earnings fell 50.8% YoY on rising revenue, masking operational deterioration.",
       "beat_miss_quality": "In-line GAAP EPS ($0.67 vs $0.67 est) but adjusted EPS collapsed 50.8% YoY ($0.30 vs $0.61) — quality is noise, not substance.",
@@ -14203,7 +14254,13 @@
       "guidanceFcfDeltaPct": 0.0,
       "guidanceFcfDeltaAbs": 0.0,
       "guidanceFcfPriorSource": "prior_guidance",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceFYFcfDeltaPct": 0.0,
+      "guidanceFYFcfDeltaAbs": 0.0,
+      "guidanceFYFcfPriorSource": "prior_guidance",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide"
     },
     "LPLA": {
       "ticker": "LPLA",
@@ -14212,7 +14269,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "LPL Financial delivers record Q1 2026 with adjusted EPS of $5.60, +9% YoY with 38% pre-tax margins",
       "beat_miss_quality": "Beat—record quarterly performance with strong margin expansion indicates quality operational growth, not noise",
@@ -14438,7 +14495,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "MHK beats EPS by 4.8% on strong margins but misses revenue; Q2 guidance disappoints.",
       "beat_miss_quality": "Mixed quality: EPS beat offset by revenue miss and weak forward guidance. Margin strength masks top-line softness.",
@@ -14677,7 +14734,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "SanDisk crushes Q3 with adjusted EPS of $23.41 vs. $14.62 consensus estimate, but stock declines 6.4% post-earnings amid profit-taking and new business model concerns.",
       "beat_miss_quality": "Quality beat on earnings (+60% surprise), yet stock reaction suggests market questions sustainability of new business model and pricing power",
@@ -14876,7 +14933,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Atlassian delivers 79% EPS beat and 32% revenue growth, but stock declines as market questions guidance adequacy despite strong fundamentals.",
       "beat_miss_quality": "Beat - quality beats on both EPS (+79%) and revenue (+32% YoY); strong operating margin (34%) and cloud growth (29%) offset by market disappointment over forward outlook",
@@ -15112,7 +15169,8 @@
       "guidanceRevenueDeltaPct": 0.0,
       "guidanceRevenuePriorSource": "consensus",
       "guidanceNextQRevenueDeltaPct": -0.025294117647058825,
-      "guidanceNextQRevenuePriorSource": "consensus"
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "TWLO": {
       "ticker": "TWLO",
@@ -15121,7 +15179,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Twilio beats Q1 EPS by $0.24 and raises guidance as 20% revenue growth and 114% NRR signal platform acceleration",
       "beat_miss_quality": "Beat—quality print. EPS $1.50 vs $1.26 consensus, revenue beat, guidance raised, NRR 114% confirms customer expansion",
@@ -15363,7 +15421,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "VLO posts blowout Q1 2026 with $4.22 EPS and $32.4B revenue, crushing consensus by 33%+.",
       "beat_miss_quality": "Beat - Quality earnings. $4.22 EPS beat $3.16 consensus by 33%; $32.4B rev beat $31.2B by $1.2B.",
@@ -15603,7 +15661,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-04-30",
       "next_earnings_date": "2026-07-29",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "WDC crushes Q3 with 45% YoY revenue growth, 97% YoY EPS surge, and beats guidance; stock sells off 6% on valuation.",
       "beat_miss_quality": "Clear beat on both EPS ($2.72 vs $2.36 est, +15%) and revenue ($3.3B vs $3.3B est). Quality: strong margin expansion (50.5%) and YoY growth rates indicate operational strength, not noise.",
@@ -15849,7 +15907,9 @@
       "guidanceEpsDeltaPct": 0.20817843866171007,
       "guidanceEpsDeltaAbs": 0.56,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "ZETA": {
       "ticker": "ZETA",
@@ -15858,7 +15918,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-01",
       "next_earnings_date": "2026-07-30",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Zeta Global missed Q1 EPS by 35% but delivered 50% revenue growth with narrowing losses.",
       "beat_miss_quality": "EPS miss ($0.13 vs $0.20 est) offset by strong revenue beat; quality hindered by profitability gap.",
@@ -16098,7 +16158,13 @@
       "guidanceFcfPriorSource": "prior_guidance",
       "guidanceProfitMetricUsed": "fcf",
       "guidanceNextQRevenueDeltaPct": 0.01057438115837539,
-      "guidanceNextQRevenuePriorSource": "consensus"
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceFYFcfDeltaPct": 0.09117647058823529,
+      "guidanceFYFcfDeltaAbs": 31000000.0,
+      "guidanceFYFcfPriorSource": "prior_guidance",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide"
     },
     "BWXT": {
       "ticker": "BWXT",
@@ -16107,7 +16173,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-04",
       "next_earnings_date": "2026-08-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "BWXT beats Q1 earnings driven by Naval Nuclear demand surge; raises FY guidance as backlog accelerates.",
       "beat_miss_quality": "Beat: EPS $1.12 vs $0.94 est (+19%), Revenue $860.2M vs $855.5M est (+0.5%). Quality beat from operational leverage, not beat width.",
@@ -16369,7 +16435,14 @@
       "guidanceFcfDeltaAbs": 10000000.0,
       "guidanceFcfPriorSource": "prior_guidance",
       "guidanceProfitMetricUsed": "eps",
-      "guidanceRevenueStreetDeltaPct": -0.013157894736842105
+      "guidanceRevenueStreetDeltaPct": -0.013157894736842105,
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceFYFcfDeltaPct": 0.032,
+      "guidanceFYFcfDeltaAbs": 10000000.0,
+      "guidanceFYFcfPriorSource": "prior_guidance",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide"
     },
     "FANG": {
       "ticker": "FANG",
@@ -16378,7 +16451,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-04",
       "next_earnings_date": "2026-08-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "FANG delivered strong EPS and revenue beats but stock declined 3.5% as market digested slowing YoY growth and forward guidance.",
       "beat_miss_quality": "Beat both metrics with quality: EPS +19.23%, revenue +10.55% surprise. However, YoY EPS declined from $4.54 to $4.23.",
@@ -16608,7 +16681,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-04",
       "next_earnings_date": "2026-08-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Pinterest delivers 18% revenue growth with $1B+ topline beat, record users, and $2B buyback authorization signaling confidence.",
       "beat_miss_quality": "Beat on revenue; quality print driven by user growth and margin expansion, not accounting tricks.",
@@ -16836,7 +16909,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-04",
       "next_earnings_date": "2026-08-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "PLTR delivered a 22% EPS beat but stock sold off 6.9%, suggesting market focused on revenue miss or raised concerns despite earnings upside.",
       "beat_miss_quality": "EPS beat (+22% vs. est.) but negative stock reaction indicates quality concerns; potential revenue miss or guidance disappointment overshadowed earnings beat.",
@@ -17064,7 +17137,8 @@
       ],
       "history_8q_source": "finnhub",
       "guidanceRevenueDeltaPct": 0.000784313725490196,
-      "guidanceRevenuePriorSource": "prior_guidance"
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "ALAB": {
       "ticker": "ALAB",
@@ -17073,7 +17147,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ALAB crushes Q1 2026 earnings with $308.4M revenue (+93% YoY) and $0.61 EPS vs $0.18 estimate (+239% beat)",
       "beat_miss_quality": "Massive beat - EPS crushed consensus at 239% above estimate; quality print with 76.3% gross margin, 93% YoY growth sustained",
@@ -17305,7 +17379,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "AMD beats Q1 earnings with $10.3B revenue (+4.7%) and $1.37 EPS (+9.6%), validating AI chip demand strength.",
       "beat_miss_quality": "Quality beat on both lines. Revenue $10.3B vs $9.84B est; EPS $1.37 vs $1.25 est. Exceeds February guidance range despite pre-report rally.",
@@ -17549,7 +17623,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ANET posts clean Q1 beats but stock falls 5.85% despite record cash flow, signaling market skepticism on forward growth.",
       "beat_miss_quality": "Beat on both metrics (EPS +$0.05, Rev +$44M), quality confirmed by 35% YoY growth and record $1.69B FCF, but sell-off suggests valuation or guidance concerns.",
@@ -17781,7 +17855,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Insufficient data in search results to complete full post-earnings brief for May 6, 2026 Q1 FY2026 report",
       "beat_miss_quality": "Data unavailable: Q1 revenue and EPS actuals vs. estimates not provided in search results",
@@ -18026,7 +18100,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "BlackLine delivers strong Q1 EPS beat, but sequential and YoY softness raise durability questions.",
       "beat_miss_quality": "Strong EPS beat (+25%) offset by weak revenue beat (+1.25%); sequential EPS decline (-11%) and flat YoY (-3%) suggest normalization vs. acceleration.",
@@ -18261,7 +18335,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "CRC beat Q1 expectations with $0.88 EPS and $967M revenue; raised full-year guidance on strong $304M adjusted EBITDA.",
       "beat_miss_quality": "Quality beat across both metrics; $304M EBITDA and raised FY guidance demonstrate operational momentum, not accounting noise.",
@@ -18493,7 +18567,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "DigitalOcean delivered a 91% EPS beat in Q1 2026, posting $0.44 vs $0.23 consensus as AI-native cloud positioning gains traction.",
       "beat_miss_quality": "Beat: EPS $0.44 vs $0.23 est (+91.30%); revenue exceeded. Quality beat suggests operational leverage and strong AI infrastructure demand.",
@@ -18740,7 +18814,9 @@
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": 0.32183908045977,
       "guidanceEpsStreetDeltaAbs": 0.2799999999999999,
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "DVN": {
       "ticker": "DVN",
@@ -18749,7 +18825,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Devon Energy beat on Q1 production and capex while generating $816M free cash flow, though detailed financial results not fully captured in available search summaries.",
       "beat_miss_quality": "Beat on production and capex; quality FCF generation. Limited detail available on revenue/EPS vs. estimates in provided search results.",
@@ -18983,7 +19059,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Freshworks beat Q1 2026 EPS expectations and landed largest deals in company history, but stock weakness post-earnings signals investor concerns.",
       "beat_miss_quality": "EPS beat ($0.11 vs $0.08 est, +37.5%) and revenue beat with strong deal activity, but beat appears driven by large customer wins rather than operational leverage.",
@@ -19213,7 +19289,8 @@
       ],
       "history_8q_source": "finnhub",
       "guidanceRevenueDeltaPct": -0.0005200208008320333,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "IQV": {
       "ticker": "IQV",
@@ -19222,7 +19299,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "IQVIA beats Q1 on strong Commercial Solutions; $2.90 EPS vs $2.83 est, $4.151B rev vs $4.141B est, +8.4% YoY growth.",
       "beat_miss_quality": "Beat — quality driven by Commercial Solutions outperformance; record Q1 exceeded high end of guidance; beats on both metrics.",
@@ -19465,7 +19542,9 @@
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": 0.02728731942215087,
       "guidanceEpsStreetDeltaAbs": 0.33999999999999986,
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "KVYO": {
       "ticker": "KVYO",
@@ -19474,7 +19553,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Klaviyo crushes Q1 earnings with 28% YoY growth, 110% NRR, and raises FY26 guidance",
       "beat_miss_quality": "Beat on revenue and EPS; quality beat driven by profitable swing, strong retention, and raised guidance",
@@ -19705,7 +19784,8 @@
       ],
       "history_8q_source": "finnhub",
       "guidanceRevenueDeltaPct": 0.033356024506466984,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "NVO": {
       "ticker": "NVO",
@@ -19714,7 +19794,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "NVO beats reported sales but EPS misses; adjusted profit beat offsets pricing headwinds; FY guidance narrowly raised.",
       "beat_miss_quality": "Miss: reported EPS $1.03 vs $6.96 est (noise from DKK 26.8B provision reversal); adjusted profit beat (quality).",
@@ -19944,7 +20024,8 @@
       ],
       "history_8q_source": "perplexity_finance",
       "guidanceRevenueDeltaPct": -0.02422907491189427,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "ONTO": {
       "ticker": "ONTO",
@@ -19953,7 +20034,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ONTO beats on revenue and EPS with significant margin expansion; gross margin reaches 55.7%, operating margin 26.7%.",
       "beat_miss_quality": "Beat: +3.09% EPS, +0.99% revenue; quality beat driven by margin expansion and profitability, not just top-line.",
@@ -20186,7 +20267,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "OXY beats Q1 2026 EPS estimates by $0.44, but search results lack detailed financial metrics.",
       "beat_miss_quality": "Beat EPS estimates by $0.44; quality assessment unclear—revenue figures and margins not provided in available search results.",
@@ -20411,7 +20492,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Procore misses EPS but beats revenue in Q1 2026, posting $359.3M (16% YoY) with margin expansion and raised FY guidance",
       "beat_miss_quality": "Mixed: EPS miss (-4.23%) offset by revenue beat (+1.94%); 17% non-GAAP margins and $56M FCF suggest operational quality",
@@ -20633,7 +20714,8 @@
       ],
       "history_8q_source": "perplexity_finance",
       "guidanceRevenueDeltaPct": 0.03517241379310345,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "QLYS": {
       "ticker": "QLYS",
@@ -20642,7 +20724,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Qualys delivered solid Q1 2026 with 10% YoY revenue growth to $175.6M and raised full-year guidance.",
       "beat_miss_quality": "Beat appears likely; guidance raise suggests upside surprise; quality driven by strong profitability ($50.6M GAAP NI).",
@@ -20875,7 +20957,8 @@
       "history_8q_source": "perplexity_finance",
       "guidanceRevenueDeltaPct": 0.004160887656033287,
       "guidanceRevenuePriorSource": "prior_guidance",
-      "guidanceRevenueStreetDeltaPct": 0.004160887656033287
+      "guidanceRevenueStreetDeltaPct": 0.004160887656033287,
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "RPD": {
       "ticker": "RPD",
@@ -20884,7 +20967,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Rapid7 beats Q1 EPS by 44% on $0.36 vs $0.25 consensus, but revenue guidance disappoints amid 0.3% YoY decline.",
       "beat_miss_quality": "EPS beat (44%) appears quality-driven by margin expansion; revenue decline and flat ARR growth signal execution headwinds.",
@@ -21130,7 +21213,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Shopify beats on revenue and adjusted EPS, but Q2 guidance deceleration and $1.1B investment losses trigger 15% selloff.",
       "beat_miss_quality": "Beat on revenue/adj. EPS; miss on GAAP (due to one-time investment writedowns). Quality obscured by non-operational losses masking operational strength.",
@@ -21364,7 +21447,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Amplitude Q1 2026: $93.5M revenue with 17% ARR growth, but EPS miss ($-0.02 vs $-0.01 est) and negative FCF weigh on sentiment.",
       "beat_miss_quality": "EPS miss by $0.01; revenue detail unavailable in sources. Quality concerns: net loss $23.3M, negative free cash flow.",
@@ -21596,7 +21679,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "AppLovin beats Q1 EPS; strong cash flow generation supports operational execution narrative.",
       "beat_miss_quality": "Beat EPS by $0.12 (+3.5%); quality supported by $1.3B FCF; revenue print unavailable in sources.",
@@ -21829,7 +21912,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "CF Industries beats Q1 revenue and EPS estimates, boosted by operational strength and $170M litigation settlement gain.",
       "beat_miss_quality": "Beat both revenue ($1.99B vs $1.88B) and EPS; quality mixed—adjusted EPS beat 66% but $170M settlement gain masks core operating performance.",
@@ -22065,7 +22148,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Shift4 posts Q1 revenue beat but EPS miss as 49% YoY growth faces estimate headwinds.",
       "beat_miss_quality": "Mixed: Revenue $1.12B beat; EPS $0.97 missed $0.99 est. Operational strength (EBITDA +39%) partially offset by earnings shortfall.",
@@ -22309,7 +22392,8 @@
       "guidanceEpsDeltaPct": 0.03896103896103896,
       "guidanceEpsDeltaAbs": 0.20999999999999996,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "FSLY": {
       "ticker": "FSLY",
@@ -22318,7 +22402,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Fastly beats revenue and adjusted EPS expectations with record 65.1% gross margin, but shares tumble after hours",
       "beat_miss_quality": "Beat both revenue (+0.8%) and EPS (+62%); quality beat with record gross margin suggests operational leverage, not accounting noise",
@@ -22555,7 +22639,8 @@
       "guidanceOperatingProfitDeltaPct": 0.18867924528301888,
       "guidanceOperatingProfitDeltaAbs": 10000000.0,
       "guidanceOperatingProfitPriorSource": "prior_guidance",
-      "guidanceProfitMetricUsed": "operating_income"
+      "guidanceProfitMetricUsed": "operating_income",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "FTNT": {
       "ticker": "FTNT",
@@ -22564,7 +22649,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Fortinet crushes Q1 2026 with 32.5% EPS beat and record cash flow; raises FY guidance to 15% growth.",
       "beat_miss_quality": "Quality beat: EPS beat 32.5% on broad-based demand; 41% product revenue surge and 31% billings growth validate execution.",
@@ -22812,7 +22897,9 @@
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": 0.050335570469798654,
       "guidanceEpsStreetDeltaAbs": 150000000.0,
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "GPN": {
       "ticker": "GPN",
@@ -22821,7 +22908,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "GPN delivers adjusted EPS beat but GAAP revenue miss; Worldpay integration drives $1.8B net loss.",
       "beat_miss_quality": "Mixed: Adjusted EPS beat $2.96 vs $2.86 reflects operational strength; GAAP revenue miss and $1.8B acquisition charges muddy quality signal.",
@@ -23064,7 +23151,9 @@
       "guidanceEpsStreetDeltaAbs": 0.16000000000000014,
       "guidanceProfitMetricUsed": "eps",
       "guidanceRevenueDeltaPct": -0.20967741935483872,
-      "guidanceRevenuePriorSource": "consensus"
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "IONQ": {
       "ticker": "IONQ",
@@ -23073,7 +23162,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "IonQ crushes Q1 2026 guidance with $64.7M revenue (+755% YoY), raises FY guidance to $260-270M on strong commercial traction.",
       "beat_miss_quality": "Beat guidance by 30%; quality beat driven by 755% YoY growth, expanded backlog, strong cash position.",
@@ -23307,7 +23396,8 @@
       "history_8q_source": "finnhub",
       "guidanceRevenueDeltaPct": 0.1276595744680851,
       "guidanceRevenuePriorSource": "prior_guidance",
-      "guidanceRevenueStreetDeltaPct": 0.12145577655522641
+      "guidanceRevenueStreetDeltaPct": 0.12145577655522641,
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "KHC": {
       "ticker": "KHC",
@@ -23316,7 +23406,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Kraft Heinz beats Q1 with 16% EPS beat and strong margins, but organic sales slip and Q2 faces SNAP/seasonal headwinds.",
       "beat_miss_quality": "Quality beat: Margin expansion (+230 bps) and pricing power offset organic decline; efficiency gains rather than growth-driven.",
@@ -23557,7 +23647,8 @@
       "guidanceEpsDeltaPct": 0.0,
       "guidanceEpsDeltaAbs": 0.0,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "PTC": {
       "ticker": "PTC",
@@ -23566,7 +23657,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "PTC raised FY26 revenue guidance on Q2 beat, reflecting steady software demand momentum.",
       "beat_miss_quality": "Beat—quality driven; guidance raised and Windchill PLM secured U.S. Army designation.",
@@ -23805,7 +23896,9 @@
       "guidanceEpsDeltaPct": 0.07462686567164177,
       "guidanceEpsDeltaAbs": 0.5499999999999998,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "SEMR": {
       "ticker": "SEMR",
@@ -23814,7 +23907,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Unable to complete post-earnings brief - May 6, 2026 earnings data not found in provided search results.",
       "beat_miss_quality": "Data unavailable. Search results reference earnings scheduled for May 6-8 or May 14, 2026 but contain no actuals.",
@@ -24038,7 +24131,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "SOC misses on revenue and earnings, reports $197M Q1 loss with minimal $1.3M revenue, yet stock rallies 5.6% on apparent debt relief signals.",
       "beat_miss_quality": "Miss/Noise: Significant revenue (-92.11%) and EPS (-114.06%) misses, but positive stock reaction suggests special situation factors driving price.",
@@ -24237,7 +24330,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-06",
       "next_earnings_date": "2026-08-04",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Trimble delivers Q1 beats on revenue and EPS with 48% operating income growth; raises FY2026 guidance above consensus.",
       "beat_miss_quality": "Quality beat: 1.8% revenue beat, 8.2% EPS beat achieved amid 12% YoY revenue growth and exceptional 48% operating income growth.",
@@ -24482,7 +24575,9 @@
       "guidanceEpsDeltaPct": 0.033430232558139594,
       "guidanceEpsDeltaAbs": 0.11500000000000021,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "AFRM": {
       "ticker": "AFRM",
@@ -24491,7 +24586,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Affirm beats Q3 earnings and revenue estimates, delivering 79.53% EPS surprise and 4.09% revenue surprise for quarter ended March 31, 2026.",
       "beat_miss_quality": "Beat both metrics. Earnings beat of 79.53% suggests strong profitability; revenue beat of 4.09% indicates solid execution but modest top-line upside.",
@@ -24732,7 +24827,8 @@
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceRevenueStreetDeltaPct": 0.0,
       "guidanceNextQRevenueDeltaPct": 0.0,
-      "guidanceNextQRevenuePriorSource": "consensus"
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "AKAM": {
       "ticker": "AKAM",
@@ -24741,7 +24837,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Akamai delivered in-line Q1 2026 EPS with modest revenue beat, but earnings declined year-over-year.",
       "beat_miss_quality": "In-line EPS; +0.04% revenue beat; minimal surprise magnitude suggests execution met lowered expectations rather than outperformance.",
@@ -24980,7 +25076,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "BILL crushes Q3 with 68% EPS beat and robust 16% core revenue growth; announces $1B buyback",
       "beat_miss_quality": "Quality beat: 68% EPS outperformance ($0.64 vs $0.38) on 13.5% revenue growth; strong operating leverage",
@@ -25217,7 +25313,8 @@
       "history_8q_source": "finnhub",
       "guidanceRevenueDeltaPct": 0.0223463687150838,
       "guidanceRevenuePriorSource": "prior_guidance",
-      "guidanceRevenueStreetDeltaPct": 0.019814241486068113
+      "guidanceRevenueStreetDeltaPct": 0.019814241486068113,
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "BSY": {
       "ticker": "BSY",
@@ -25226,7 +25323,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Bentley Systems beats revenue and EPS estimates in Q1 2026, driven by 14.5% YoY growth and 92.5% subscription revenue mix.",
       "beat_miss_quality": "Beat on both metrics; quality beat with recurring revenue at $392.5M and 14.5% YoY growth suggests durable underlying demand.",
@@ -25460,7 +25557,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Coinbase reported Q1 2026 earnings on May 7, 2026, but specific financial metrics are not available in provided search results.",
       "beat_miss_quality": "Data unavailable - search results contain only announcement and filing references, not actual results.",
@@ -25689,7 +25786,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "DDOG shatters Q1 expectations with $1.01B revenue (+32% YoY) and materially raises FY2026 guidance to $2.36-$2.44 EPS vs ~$1.80 consensus.",
       "beat_miss_quality": "Beat on revenue; material FY guidance raise signals confidence in execution and demand durability. Quality beat driven by operational leverage.",
@@ -25960,7 +26057,9 @@
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "GCT": {
       "ticker": "GCT",
@@ -25969,7 +26068,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "GigaCloud beats Q1 on both revenue and EPS with robust 32% growth and expanding margins.",
       "beat_miss_quality": "Beat/beat, quality print. 32% revenue growth + 53% EPS growth signals strong operational leverage and execution.",
@@ -26206,7 +26305,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "HubSpot beat Q1 estimates on revenue growth and margin expansion, but multiple analyst downgrades over AI execution risks offset gains.",
       "beat_miss_quality": "Beat on growth (23% reported, 18% cc) and margins (hit 2027 target early), but quality questioned by execution risk concerns.",
@@ -26463,7 +26562,9 @@
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": 0.22357343311506087,
       "guidanceEpsStreetDeltaAbs": 2.3900000000000006,
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "NET": {
       "ticker": "NET",
@@ -26472,7 +26573,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Cloudflare beats EPS expectations with record Q1 revenue but faces market skepticism as 1,100 job cuts coincide with deteriorating GAAP profitability.",
       "beat_miss_quality": "Beat (non-GAAP EPS $0.25 vs $0.23 est, +8.4%); quality concerns—GAAP operating loss worsened; beat driven by cost-cutting opacity masked by non-GAAP adjustments.",
@@ -26626,9 +26727,9 @@
         "fy_op_metric_kind": "operating_income",
         "fy_guide_widened": true,
         "q_next_rev_guide_midpoint_new": 664500000.0,
-        "q_next_rev_consensus_prior": 665300000.0,
+        "q_next_rev_consensus_prior": 665420000.0,
         "q_next_eps_guide_midpoint_new": 0.27,
-        "q_next_eps_consensus_prior": 0.21,
+        "q_next_eps_consensus_prior": 0.27,
         "next_q_added": true,
         "fy_north_star_metric": "revenue",
         "fy_top_line_north_star_metric": "revenue",
@@ -26645,7 +26746,15 @@
         "q_next_adj_op_income_guide_midpoint_new": 90500000.0,
         "q_next_adj_op_income_units": "USD millions",
         "q_next_bottom_line_north_star_metric": "adj_op_income",
-        "q_next_bottom_line_north_star_units": "USD millions"
+        "q_next_bottom_line_north_star_units": "USD millions",
+        "fy_rev_consensus_prior": 2812600000.0,
+        "fy_eps_consensus_prior": 1.2,
+        "fy_op_profit_consensus_prior": 415000000.0,
+        "fy_adj_op_income_consensus_prior": 415000000.0,
+        "fy_adj_op_income_prior_fy_actual": 323800000.0,
+        "fy_adj_op_income_prior_fy_actual_period": "FY25",
+        "q_next_adj_op_income_consensus_prior": 89600000.0,
+        "north_star_evidence": "Cloudflare’s May 7, 2026 Q1 2026 press release headline highlights revenue growth and, in the guidance section, explicitly guides both Q2 and full-year 2026 for total revenue and non-GAAP income from operations, making revenue the primary top-line KPI and non-GAAP operating income the primary bottom-line guidance metric."
       },
       "history_8q": [
         {
@@ -26730,10 +26839,10 @@
         }
       ],
       "history_8q_source": "finnhub",
-      "guidanceNextQRevenueDeltaPct": -0.0012024650533593868,
+      "guidanceNextQRevenueDeltaPct": -0.0013825854347630068,
       "guidanceNextQRevenuePriorSource": "consensus",
-      "guidanceNextQEpsDeltaPct": 0.28571428571428586,
-      "guidanceNextQEpsDeltaAbs": 0.060000000000000026,
+      "guidanceNextQEpsDeltaPct": 0.0,
+      "guidanceNextQEpsDeltaAbs": 0.0,
       "guidanceNextQEpsPriorSource": "consensus",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
@@ -26746,7 +26855,28 @@
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
-      "guidanceNextQBottomLineNorthStarUnits": "USD millions"
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "guidanceRevenueDeltaPct": -0.0012799544905070042,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaPct": -0.004166666666666578,
+      "guidanceEpsDeltaAbs": -0.004999999999999893,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceOperatingProfitDeltaPct": 0.010843373493975903,
+      "guidanceOperatingProfitDeltaAbs": 4500000.0,
+      "guidanceOperatingProfitPriorSource": "consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceFYAdjOpIncomeDeltaPct": 0.2955528103767758,
+      "guidanceFYAdjOpIncomeDeltaAbs": 95700000.0,
+      "guidanceFYAdjOpIncomePriorSource": "prior_fy_actual",
+      "guidanceFYAdjOpIncomeDeltaBasis": "vs_prior_fy_actual",
+      "guidanceFYAdjOpIncomeUnits": "USD millions",
+      "guidanceNextQAdjOpIncomeDeltaPct": 0.010044642857142858,
+      "guidanceNextQAdjOpIncomeDeltaAbs": 900000.0,
+      "guidanceNextQAdjOpIncomePriorSource": "consensus",
+      "guidanceNextQAdjOpIncomeDeltaBasis": "vs_consensus",
+      "guidanceNextQAdjOpIncomeUnits": "USD millions"
     },
     "RNG": {
       "ticker": "RNG",
@@ -26755,7 +26885,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "RingCentral beat Q1 estimates on both revenue (+0.22%) and EPS (+2.92%), with record 7.8% GAAP margins and $141M FCF offsetting modest 5.3% YoY revenue growth.",
       "beat_miss_quality": "In-line beats driven by profitability, not top-line acceleration. Quality evidenced by record operating margins and $609M debt paydown; revenue growth underwhelming for software.",
@@ -27005,7 +27135,9 @@
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaPct": 0.0943396226415093,
       "guidanceNextQEpsDeltaAbs": 0.09999999999999987,
-      "guidanceNextQEpsPriorSource": "consensus"
+      "guidanceNextQEpsPriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "TTD": {
       "ticker": "TTD",
@@ -27014,7 +27146,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Trade Desk reports mixed Q1 2026: revenue beats but EPS significantly misses; 12% YoY growth masks profitability questions",
       "beat_miss_quality": "Mixed print: revenue beat +1.4% but EPS missed -13.5%; top-line growth offset by earnings compression",
@@ -27249,7 +27381,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Block crushes EPS by 42%, misses revenue slightly, raises FY26 gross profit guidance to $12.33B on strong Cash App/Square momentum",
       "beat_miss_quality": "Quality beat: EPS $0.85 vs $0.60 est (+42%), revenue $6.06B vs $6.17B est (-1.8% miss); guidance raise signals operational leverage, not noise",
@@ -27498,7 +27630,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-07",
       "next_earnings_date": "2026-08-05",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ZTS misses Q1 on revenue and EPS amid weak U.S. pet care demand; management cuts FY2026 guidance.",
       "beat_miss_quality": "Miss on both metrics. Quality issue—structural weakness in U.S. pet care (core segment) and full-year guide cut signal demand headwinds, not noise.",
@@ -27736,7 +27868,9 @@
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceEpsStreetDeltaPct": -0.014935988620199207,
       "guidanceEpsStreetDeltaAbs": -0.10500000000000043,
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "HIMS": {
       "ticker": "HIMS",
@@ -27745,7 +27879,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-11",
       "next_earnings_date": "2026-08-09",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Hims & Hers misses EPS badly at -$0.40 vs $0.04 est as revenue growth decelerates to 4% YoY amid margin compression.",
       "beat_miss_quality": "Major miss on profitability. Revenue growth collapsed from 59% (2025) to 4% (Q1 2026) signaling deceleration, not quality execution.",
@@ -27979,7 +28113,8 @@
       "history_8q_source": "perplexity_finance",
       "guidanceRevenueDeltaPct": 0.16,
       "guidanceRevenuePriorSource": "prior_guidance",
-      "guidanceRevenueStreetDeltaPct": 0.11538461538461539
+      "guidanceRevenueStreetDeltaPct": 0.11538461538461539,
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "MNDY": {
       "ticker": "MNDY",
@@ -27988,7 +28123,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-11",
       "next_earnings_date": "2026-08-09",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "monday.com beats Q1 expectations with 24% YoY revenue growth to $351.3M and record operating income, but guidance and analyst commentary unavailable in search results.",
       "beat_miss_quality": "Insufficient data in search results. Revenue $351.3M up 24% YoY with record GAAP/non-GAAP operating income suggests quality beat, but consensus estimates not provided.",
@@ -28219,7 +28354,8 @@
       "guidanceRevenueDeltaPct": 0.0034129692832764505,
       "guidanceRevenuePriorSource": "consensus",
       "guidanceNextQRevenueDeltaPct": 0.0031082226617688614,
-      "guidanceNextQRevenuePriorSource": "consensus"
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "MOS": {
       "ticker": "MOS",
@@ -28228,7 +28364,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-11",
       "next_earnings_date": "2026-08-09",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "MOS reports revenue beat but misses EPS by 75% due to operational deterioration and margin compression",
       "beat_miss_quality": "Revenue beat +3.5% ($3.0B vs $2.9B est) but EPS miss by 75% ($0.05 vs $0.20 est). Noise: revenue resilience masks severe profitability collapse; gross margin only 8%",
@@ -28469,7 +28605,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-25",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "MRVL is trading around $178 after a strong post-AI run, reflecting enthusiasm for its data-center exposure. Shares have meaningfully outperformed both the broader market and semiconductor peers over the past year; key focus is whether it can hold its recent post-Q4 breakout zone into earnings.",
       "bull_case": {
@@ -28792,7 +28928,8 @@
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "SNPS": {
       "ticker": "SNPS",
@@ -28800,7 +28937,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-25",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "SNPS has outperformed broader semi/software peers YTD and trades near recent highs, reflecting optimism on AI/EDA and Ansys. Key support sits around the recent breakout and 50-day moving average; resistance is the prior high. Positioning skews bullish into Q2.",
       "bull_case": {
@@ -29189,7 +29326,14 @@
       "guidanceFcfDeltaPct": 0.05263157894736842,
       "guidanceFcfDeltaAbs": 100000000.0,
       "guidanceFcfPriorSource": "prior_guidance",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceFYFcfDeltaPct": 0.05263157894736842,
+      "guidanceFYFcfDeltaAbs": 100000000.0,
+      "guidanceFYFcfPriorSource": "prior_guidance",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide"
     },
     "CRM": {
       "ticker": "CRM",
@@ -29197,7 +29341,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-25",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "CRM recently traded around $166, modestly off 52-week highs after a strong multi-quarter run. Shares are roughly in line with large-cap software peers year-to-date, with key technical support near the mid-$150s and resistance in the $180–190 area.",
       "bull_case": {
@@ -29481,7 +29625,7 @@
         "fy_guide_widened": true,
         "fy_rev_guide_midpoint_prior": 46000000000.0,
         "q_next_rev_guide_midpoint_new": 11310000000.0,
-        "q_next_rev_guide_midpoint_prior": 11050000000.0,
+        "q_next_rev_guide_midpoint_prior": 11055000000.0,
         "q_next_rev_consensus_prior": 11080000000.0,
         "fy_north_star_metric": "cRPO",
         "fy_top_line_north_star_metric": "cRPO",
@@ -29493,10 +29637,13 @@
         "q_next_top_line_north_star_units": "USD millions",
         "fy_bottom_line_north_star_metric": "adj_op_income",
         "fy_bottom_line_north_star_units": "USD millions",
-        "q_next_bottom_line_north_star_metric": "EPS",
-        "q_next_bottom_line_north_star_units": "USD",
+        "q_next_bottom_line_north_star_metric": "adj_op_income",
+        "q_next_bottom_line_north_star_units": "USD millions",
         "next_q_added": true,
-        "north_star_evidence": "Salesforce’s recent earnings communications consistently highlight current remaining performance obligation (cRPO) growth and non-GAAP operating margin as key metrics, while the Q1 FY27 press release headline for 2026-05-27 emphasizes revenue and GAAP/non-GAAP EPS rather than cRPO."
+        "north_star_evidence": "Salesforce’s FY26 Q4/FY26 commentary highlights total RPO of $72B and CRPO of $35.1B as key growth metrics and provides FY27 guidance for non-GAAP operating margin alongside revenue, indicating cRPO as the primary top-line KPI and non-GAAP operating income/margin as the primary bottom-line metric.[2][4]",
+        "q_next_crpo_guide_midpoint_new": 14.0,
+        "q_next_crpo_guide_midpoint_prior": 14.0,
+        "q_next_crpo_units": "USD millions"
       },
       "history_8q": [
         {
@@ -29589,7 +29736,7 @@
       "guidanceRevenueDeltaPct": 0.0010869565217391304,
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceRevenueStreetDeltaPct": 0.009868421052631578,
-      "guidanceNextQRevenueDeltaPct": 0.023529411764705882,
+      "guidanceNextQRevenueDeltaPct": 0.023066485753052916,
       "guidanceNextQRevenuePriorSource": "prior_guidance",
       "guidanceNextQRevenueStreetDeltaPct": 0.02075812274368231,
       "guidanceFYNorthStarMetric": "cRPO",
@@ -29602,8 +29749,14 @@
       "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
-      "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD"
+      "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceNextQCrpoDeltaPct": 0.0,
+      "guidanceNextQCrpoDeltaAbs": 0.0,
+      "guidanceNextQCrpoPriorSource": "prior_guidance",
+      "guidanceNextQCrpoDeltaBasis": "vs_prior_guide",
+      "guidanceNextQCrpoUnits": "USD millions"
     },
     "SNOW": {
       "ticker": "SNOW",
@@ -29611,7 +29764,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-25",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "SNOW trades around the low-$150s, roughly flat-to-slightly up YTD and broadly in line with high-growth software peers. Shares are consolidating between ~$140 support (post-Q4 gap) and ~$170 resistance (February highs), with options implying a sizable earnings move.",
       "bull_case": {
@@ -29990,10 +30143,10 @@
         "q_next_north_star_units": "USD millions",
         "fy_guide_source": "perplexity_sonar",
         "fy_guide_fiscal_year": "the current fiscal year",
-        "fy_rev_guide_midpoint_new": 5600000000.0,
-        "fy_rev_guide_midpoint_prior": 5450000000.0,
-        "q_next_rev_guide_midpoint_new": 1407500000.0,
-        "q_next_rev_guide_midpoint_prior": 1335000000.0,
+        "fy_rev_guide_midpoint_new": 6200000000.0,
+        "fy_rev_guide_midpoint_prior": 6100000000.0,
+        "q_next_rev_guide_midpoint_new": 1450000000.0,
+        "q_next_rev_guide_midpoint_prior": 1385000000.0,
         "fy_top_line_north_star_metric": "revenue",
         "fy_top_line_north_star_units": "USD millions",
         "q_next_top_line_north_star_metric": "revenue",
@@ -30002,15 +30155,17 @@
         "fy_bottom_line_north_star_units": "USD millions",
         "q_next_bottom_line_north_star_metric": "adj_op_income",
         "q_next_bottom_line_north_star_units": "USD millions",
-        "north_star_evidence": "Snowflake’s Q1 FY27 press release highlights product revenue growth and non-GAAP operating income/margin in the opening bullets, indicating revenue as the primary top-line KPI and non-GAAP operating income as the primary bottom-line KPI.[7]"
+        "north_star_evidence": "Snowflake’s Q1 FY27 earnings materials and recent releases emphasize product revenue growth as the lead top-line metric and provide forward-looking guidance for non-GAAP operating income/margin as the primary bottom-line KPI.",
+        "fy_rev_consensus_prior": 6170000000.0,
+        "q_next_rev_consensus_prior": 1420000000.0
       },
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
       "guidanceNextQNorthStarMetric": "revenue",
       "guidanceNextQNorthStarUnits": "USD millions",
-      "guidanceRevenueDeltaPct": 0.027522935779816515,
+      "guidanceRevenueDeltaPct": 0.01639344262295082,
       "guidanceRevenuePriorSource": "prior_guidance",
-      "guidanceNextQRevenueDeltaPct": 0.054307116104868915,
+      "guidanceNextQRevenueDeltaPct": 0.04693140794223827,
       "guidanceNextQRevenuePriorSource": "prior_guidance",
       "guidanceFYTopLineNorthStarMetric": "revenue",
       "guidanceFYTopLineNorthStarUnits": "USD millions",
@@ -30019,7 +30174,10 @@
       "guidanceNextQTopLineNorthStarMetric": "revenue",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
-      "guidanceNextQBottomLineNorthStarUnits": "USD millions"
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.004862236628849271,
+      "guidanceNextQRevenueStreetDeltaPct": 0.02112676056338028
     },
     "AI": {
       "ticker": "AI",
@@ -30027,7 +30185,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-01",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "C3.ai prints a cleaner EPS beat on cost control with revenues essentially in-line versus expectations.",
       "bull_case": {
@@ -30269,7 +30427,7 @@
         "fy_bottom_line_north_star_units": "USD",
         "q_next_bottom_line_north_star_metric": "EPS",
         "q_next_bottom_line_north_star_units": "USD",
-        "north_star_evidence": "The June 3, 2026 press release titled 'C3 AI Announces Fiscal Fourth Quarter and Full Fiscal Year 2026 Results' leads with total revenue for the quarter and full year and highlights GAAP and non-GAAP net loss per share in the key bullet points."
+        "north_star_evidence": "The June 3, 2026 C3 AI press release is titled 'C3 AI Announces Fiscal Fourth Quarter and Full Fiscal Year 2026 Results' and highlights total revenue and GAAP/non-GAAP net loss per share as the primary performance metrics, with guidance provided only for next-quarter revenue."
       },
       "guidanceRevenueDeltaPct": 0.01669449081803005,
       "guidanceRevenuePriorSource": "prior_guidance",
@@ -30304,7 +30462,8 @@
         "Street likely to modestly lift EPS estimates while largely maintaining cautious revenue assumptions and neutral ratings.",
         "Existing targets (e.g., Wedbush $15, Canaccord $8) already bracket today’s move; expect mostly PT tweaks, not major rating changes.[1]"
       ],
-      "guidance_text": "Management reiterated a path toward narrowing losses while keeping revenue growth expectations broadly in-line with prior commentary; formal next‑quarter and FY guidance brackets were positioned close to consensus with no major reset.[2][7]"
+      "guidance_text": "Management reiterated a path toward narrowing losses while keeping revenue growth expectations broadly in-line with prior commentary; formal next‑quarter and FY guidance brackets were positioned close to consensus with no major reset.[2][7]",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "NTNX": {
       "ticker": "NTNX",
@@ -30312,7 +30471,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-25",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Nutanix posts a clean top- and bottom-line beat in Q3 FY26, underscoring durable growth and operating leverage.",
       "bull_case": {
@@ -30597,7 +30756,8 @@
       "guidanceEpsDeltaAbs": 0.08999999999999986,
       "guidanceEpsPriorSource": "consensus",
       "guidanceProfitMetricUsed": "eps",
-      "intel_cleaned_at": "2026-06-05T18:04:22.926769+00:00"
+      "intel_cleaned_at": "2026-06-05T18:04:22.926769+00:00",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "BRZE": {
       "ticker": "BRZE",
@@ -30605,7 +30765,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-25",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "BRZE last closed at $19.26, near recent lows after a sharp post-Q4 selloff. Shares have materially lagged SaaS peers YTD, with resistance around $22–24 and support in the high-teens where prior downside gaps sit.",
       "bull_case": {
@@ -30896,7 +31056,9 @@
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaPct": 0.03333333333333337,
       "guidanceNextQEpsDeltaAbs": 0.0050000000000000044,
-      "guidanceNextQEpsPriorSource": "consensus"
+      "guidanceNextQEpsPriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "PSTG": {
       "ticker": "PSTG",
@@ -30904,7 +31066,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-25",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Everpure prints a solid top-line beat but delivers a sharp EPS miss as mix and investment weigh on profitability.",
       "bull_case": {
@@ -31193,7 +31355,8 @@
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceNextQRevenueDeltaPct": 0.0,
       "guidanceNextQRevenuePriorSource": "consensus",
-      "intel_cleaned_at": "2026-06-05T18:04:22.926937+00:00"
+      "intel_cleaned_at": "2026-06-05T18:04:22.926937+00:00",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "S": {
       "ticker": "S",
@@ -31202,7 +31365,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-28",
       "next_earnings_date": "2026-08-26",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "SentinelOne posted a clean EPS beat on essentially in-line revenue, reinforcing the margin-improvement story despite a negligible top-line miss.",
       "beat_miss_quality": "EPS beat was high quality on better profitability; revenue miss was de minimis and effectively in-line, unlikely to alter the growth narrative.",
@@ -31327,13 +31490,13 @@
         "rev_surprise_source": "perplexity_finance"
       },
       "guide_vs_consensus": {
-        "fy_rev_guide_midpoint_new": "1227.5M",
-        "fy_rev_consensus_prior": "1236.0M",
+        "fy_rev_guide_midpoint_new": 1200000000.0,
+        "fy_rev_consensus_prior": 1200000000.0,
         "fy_rev_change_vs_consensus_pct": -0.7,
         "fy_rev_change_vs_prior_pct": null,
-        "fy_eps_guide_midpoint_new": "0.98",
+        "fy_eps_guide_midpoint_new": 0.35,
         "fy_eps_guide_midpoint_prior": "0.95",
-        "fy_eps_consensus_prior": "0.96",
+        "fy_eps_consensus_prior": 0.35,
         "fy_eps_guide_change_vs_consensus_pct": 2.1,
         "fy_eps_guide_change_vs_prior_pct": 3.2,
         "fy_op_profit_guide_midpoint_new": 24000000.0,
@@ -31341,8 +31504,34 @@
         "fy_guide_source": "perplexity_sonar",
         "fy_guide_fiscal_year": "the current fiscal year",
         "fy_guide_widened": true,
-        "fy_rev_guide_midpoint_prior": 978000000.0,
-        "next_q_added": true
+        "fy_rev_guide_midpoint_prior": 1000500000.0,
+        "next_q_added": true,
+        "q_next_rev_guide_midpoint_new": 290000000.0,
+        "q_next_rev_guide_midpoint_prior": 271000000.0,
+        "q_next_rev_consensus_prior": 291610000.0,
+        "q_next_eps_guide_midpoint_new": 0.08,
+        "q_next_eps_consensus_prior": 0.08,
+        "fy_north_star_metric": "revenue",
+        "fy_top_line_north_star_metric": "revenue",
+        "fy_north_star_units": "USD millions",
+        "fy_top_line_north_star_units": "USD millions",
+        "q_next_north_star_metric": "revenue",
+        "q_next_top_line_north_star_metric": "revenue",
+        "q_next_north_star_units": "USD millions",
+        "q_next_top_line_north_star_units": "USD millions",
+        "fy_adj_op_income_guide_midpoint_new": 260.0,
+        "fy_adj_op_income_guide_midpoint_prior": 305.0,
+        "fy_adj_op_income_prior_fy_actual": 74.6,
+        "fy_adj_op_income_prior_fy_actual_period": "FY26",
+        "fy_adj_op_income_units": "USD millions",
+        "fy_bottom_line_north_star_metric": "adj_op_income",
+        "fy_bottom_line_north_star_units": "USD millions",
+        "q_next_adj_op_income_guide_midpoint_new": 24.0,
+        "q_next_adj_op_income_guide_midpoint_prior": 13.75,
+        "q_next_adj_op_income_units": "USD millions",
+        "q_next_bottom_line_north_star_metric": "adj_op_income",
+        "q_next_bottom_line_north_star_units": "USD millions",
+        "north_star_evidence": "SentinelOne’s Q1 FY2027 press release ‘Financial Outlook’ section guides both Q2 FY2027 and full-year FY2027 primarily on total revenue and non-GAAP operating income, providing explicit ranges for these metrics while other profitability metrics such as EPS and FCF are secondary."
       },
       "debate_score": {
         "value": 0,
@@ -31441,16 +31630,41 @@
       "reaction_note": "S reported: EPS beat by 100.0% vs consensus; revenue came in in-line vs consensus.",
       "note_generated_at": "2026-06-04T21:43:50+00:00",
       "note_source": "print_reaction_sweep",
-      "guidanceRevenueDeltaPct": -0.006877022653721683,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": 0.03157894736842108,
-      "guidanceEpsDeltaAbs": 0.030000000000000027,
-      "guidanceEpsPriorSource": "prior_guidance",
-      "guidanceEpsStreetDeltaPct": 0.020833333333333353,
-      "guidanceEpsStreetDeltaAbs": 0.020000000000000018,
+      "guidanceRevenueDeltaPct": 0.19940029985007496,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceEpsDeltaPct": 0.021,
+      "guidanceEpsDeltaAbs": null,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsStreetDeltaPct": null,
+      "guidanceEpsStreetDeltaAbs": null,
       "guidanceProfitMetricUsed": "eps",
-      "guidanceRevenueStreetDeltaPct": -0.006877022653721683,
-      "intel_cleaned_at": "2026-06-05T18:04:22.931653+00:00"
+      "guidanceRevenueStreetDeltaPct": 0.0,
+      "intel_cleaned_at": "2026-06-05T18:04:22.931653+00:00",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceNextQRevenueDeltaPct": 0.07011070110701106,
+      "guidanceNextQRevenuePriorSource": "prior_guidance",
+      "guidanceNextQRevenueStreetDeltaPct": -0.005521072665546449,
+      "guidanceNextQEpsDeltaPct": 0.0,
+      "guidanceNextQEpsDeltaAbs": 0.0,
+      "guidanceNextQEpsPriorSource": "consensus",
+      "guidanceFYAdjOpIncomeDeltaPct": 2.485254691689008,
+      "guidanceFYAdjOpIncomeDeltaAbs": 185.4,
+      "guidanceFYAdjOpIncomePriorSource": "prior_fy_actual",
+      "guidanceFYAdjOpIncomeDeltaBasis": "vs_prior_fy_actual",
+      "guidanceFYAdjOpIncomeUnits": "USD millions",
+      "guidanceFYNorthStarMetric": "revenue",
+      "guidanceFYNorthStarUnits": "USD millions",
+      "guidanceFYTopLineNorthStarMetric": "revenue",
+      "guidanceFYTopLineNorthStarUnits": "USD millions",
+      "guidanceFYBottomLineNorthStarMetric": "adj_op_income",
+      "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
+      "guidanceNextQTopLineNorthStarMetric": "revenue",
+      "guidanceNextQTopLineNorthStarUnits": "USD millions",
+      "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions"
     },
     "OKTA": {
       "ticker": "OKTA",
@@ -31458,7 +31672,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-26",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Okta delivered a clean top- and bottom-line beat with solid profitability, but modest upside kept the stock reaction contained.",
       "bull_case": {
@@ -31830,7 +32044,8 @@
       "note_source": "print_reaction_sweep",
       "guidanceRevenueDeltaPct": 0.0,
       "guidanceRevenuePriorSource": "consensus",
-      "intel_cleaned_at": "2026-06-05T18:04:22.930857+00:00"
+      "intel_cleaned_at": "2026-06-05T18:04:22.930857+00:00",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "ASAN": {
       "ticker": "ASAN",
@@ -31838,7 +32053,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-26",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Asana delivered a clean EPS beat and in-line revenue with continued margin expansion in Q1 FY27.",
       "bull_case": {
@@ -32122,8 +32337,8 @@
       "reaction_note": "ASAN reported: EPS beat by 42.9% vs consensus; revenue came in in-line vs consensus.",
       "note_generated_at": "2026-06-04T21:43:51+00:00",
       "note_source": "print_reaction_sweep",
-      "guidanceRevenueDeltaPct": 0.0,
-      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaPct": 0.060810810810810814,
+      "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceRevenueStreetDeltaPct": -0.08080701631128441,
       "guidanceEpsDeltaPct": 0.0,
       "guidanceEpsDeltaAbs": 0.0,
@@ -32135,7 +32350,9 @@
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceNextQEpsDeltaAbs": 0.045000000000000005,
       "guidanceNextQEpsPriorSource": "consensus",
-      "intel_cleaned_at": "2026-06-05T18:04:22.927368+00:00"
+      "intel_cleaned_at": "2026-06-05T18:04:22.927368+00:00",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "MDB": {
       "ticker": "MDB",
@@ -32143,7 +32360,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-26",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "MongoDB posts a clean Q1 FY27 beat on both revenue and EPS, with solid 25%+ top-line growth and continued non-GAAP profitability.",
       "bull_case": {
@@ -32425,7 +32642,7 @@
         "in_quarter_rev_actual_source": "perplexity_finance"
       },
       "guide_vs_consensus": {
-        "fy_rev_guide_midpoint_new": 2860000000.0,
+        "fy_rev_guide_midpoint_new": 2436500000.0,
         "fy_guide_source": "perplexity_sonar",
         "fy_guide_fiscal_year": "the current fiscal year",
         "fy_rev_guide_midpoint_prior": 2890000000.0,
@@ -32438,11 +32655,28 @@
         "fy_op_profit_guide_midpoint_prior": 438400000.0,
         "fy_op_profit_consensus_prior": 427400000.0,
         "fy_op_metric_kind": "operating_income",
-        "q_next_rev_guide_midpoint_new": 730500000.0,
+        "q_next_rev_guide_midpoint_new": 731500000.0,
         "q_next_rev_consensus_prior": 699200000.0,
         "q_next_eps_guide_midpoint_new": 1.595,
         "q_next_eps_consensus_prior": 0.96,
-        "next_q_added": true
+        "next_q_added": true,
+        "fy_north_star_metric": "revenue",
+        "fy_top_line_north_star_metric": "revenue",
+        "fy_north_star_units": "USD millions",
+        "fy_top_line_north_star_units": "USD millions",
+        "q_next_north_star_metric": "revenue",
+        "q_next_top_line_north_star_metric": "revenue",
+        "q_next_north_star_units": "USD millions",
+        "q_next_top_line_north_star_units": "USD millions",
+        "fy_adj_op_income_guide_midpoint_new": 438400000.0,
+        "fy_adj_op_income_units": "USD millions",
+        "fy_bottom_line_north_star_metric": "adj_op_income",
+        "fy_bottom_line_north_star_units": "USD millions",
+        "q_next_adj_op_income_guide_midpoint_new": 154000000.0,
+        "q_next_adj_op_income_units": "USD millions",
+        "q_next_bottom_line_north_star_metric": "adj_op_income",
+        "q_next_bottom_line_north_star_units": "USD millions",
+        "north_star_evidence": "MongoDB’s May 28, 2026 press release led with revenue and non-GAAP income from operations guidance, stating second-quarter revenue of $729 million to $734 million and non-GAAP income from operations of $152.0 million to $156.0 million, while the call also raised full-year FY26 revenue to $2.434 billion to $2.439 billion and non-GAAP income from operations to $436.4 million to $440.4 million.[3][2]"
       },
       "history_8q": [
         {
@@ -32532,9 +32766,9 @@
       "reaction_note": "MDB reported: EPS beat by 10.5% vs consensus; revenue beat by 3.5% vs consensus.",
       "note_generated_at": "2026-06-04T21:43:52+00:00",
       "note_source": "print_reaction_sweep",
-      "guidanceRevenueDeltaPct": -0.010380622837370242,
+      "guidanceRevenueDeltaPct": -0.15692041522491348,
       "guidanceRevenuePriorSource": "prior_guidance",
-      "guidanceRevenueStreetDeltaPct": -0.010380622837370242,
+      "guidanceRevenueStreetDeltaPct": -0.15692041522491348,
       "guidanceEpsDeltaPct": 0.0,
       "guidanceEpsDeltaAbs": 0.0,
       "guidanceEpsPriorSource": "prior_guidance",
@@ -32546,9 +32780,23 @@
       "guidanceOperatingProfitStreetDeltaPct": 0.02573701450631727,
       "guidanceOperatingProfitStreetDeltaAbs": 11000000.0,
       "guidanceProfitMetricUsed": "eps",
-      "guidanceNextQRevenueDeltaPct": 0.044765446224256294,
+      "guidanceNextQRevenueDeltaPct": 0.04619565217391304,
       "guidanceNextQRevenuePriorSource": "consensus",
-      "intel_cleaned_at": "2026-06-05T18:04:22.930701+00:00"
+      "intel_cleaned_at": "2026-06-05T18:04:22.930701+00:00",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceFYNorthStarMetric": "revenue",
+      "guidanceFYNorthStarUnits": "USD millions",
+      "guidanceFYTopLineNorthStarMetric": "revenue",
+      "guidanceFYTopLineNorthStarUnits": "USD millions",
+      "guidanceFYBottomLineNorthStarMetric": "adj_op_income",
+      "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
+      "guidanceNextQTopLineNorthStarMetric": "revenue",
+      "guidanceNextQTopLineNorthStarUnits": "USD millions",
+      "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions"
     },
     "ESTC": {
       "ticker": "ESTC",
@@ -32556,7 +32804,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-26",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Elastic posted a clean F4Q26 beat on EPS with in-line-to-modest revenue upside and reiterated a durable growth and profitability trajectory into FY27.",
       "bull_case": {
@@ -32943,7 +33191,9 @@
       "guidanceEpsDeltaAbs": 0.07999999999999996,
       "guidanceEpsPriorSource": "consensus",
       "guidanceProfitMetricUsed": "eps",
-      "intel_cleaned_at": "2026-06-05T18:04:22.930541+00:00"
+      "intel_cleaned_at": "2026-06-05T18:04:22.930541+00:00",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "PATH": {
       "ticker": "PATH",
@@ -32951,7 +33201,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-26",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "UiPath posts a strong top-line beat but in-line EPS, with AI-driven demand powering robust ARR growth and healthy profitability.",
       "bull_case": {
@@ -33235,7 +33485,8 @@
       "guidanceRevenuePriorSource": "consensus",
       "guidanceNextQRevenueDeltaPct": 0.0012594458438287153,
       "guidanceNextQRevenuePriorSource": "consensus",
-      "intel_cleaned_at": "2026-06-05T18:04:22.927531+00:00"
+      "intel_cleaned_at": "2026-06-05T18:04:22.927531+00:00",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "ADSK": {
       "ticker": "ADSK",
@@ -33243,7 +33494,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-26",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Autodesk posts a clean top- and bottom-line beat in Q1 FY27, with double‑digit growth and raised full-year outlook.",
       "bull_case": {
@@ -33529,7 +33780,9 @@
       "guidanceEpsDeltaAbs": 0.27500000000000036,
       "guidanceEpsPriorSource": "consensus",
       "guidanceProfitMetricUsed": "eps",
-      "intel_cleaned_at": "2026-06-05T18:04:22.927126+00:00"
+      "intel_cleaned_at": "2026-06-05T18:04:22.927126+00:00",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "CRDO": {
       "ticker": "CRDO",
@@ -33537,7 +33790,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-30",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "CRDO delivered a solid EPS beat on strong margins and growth, but modest revenue miss and acquisition overhang tempered the reaction.",
       "bull_case": {
@@ -33866,7 +34119,9 @@
         "Street (aggregate): broadly positive on fundamentals; some PT trims to reflect M&A integration risk and near-term volatility (specific notes not yet widely published).",
         "characterized the move as an overreaction to acquisition headlines following an otherwise clean fundamental beat.[4]"
       ],
-      "guidance_text": "Management guided next-quarter revenue to $465–$475M, above prior consensus around the low $460M range, with margins broadly stable, implying continued strong EPS growth into FY27.[2] Full-year commentary pointed to robust AI and data-center connectivity demand, effectively raising the bar versus prior street models…"
+      "guidance_text": "Management guided next-quarter revenue to $465–$475M, above prior consensus around the low $460M range, with margins broadly stable, implying continued strong EPS growth into FY27.[2] Full-year commentary pointed to robust AI and data-center connectivity demand, effectively raising the bar versus prior street models…",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "LITE": {
       "ticker": "LITE",
@@ -33875,7 +34130,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-05",
       "next_earnings_date": "2026-08-03",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Lumentum delivered a strong Q3 FY26 EPS beat with explosive 90%+ revenue growth and Q4 guidance well ahead of consensus.",
       "beat_miss_quality": "Clean EPS beat on better margins and operating leverage; revenue effectively in line; guidance raise is the key, high‑quality positive.",
@@ -34104,7 +34359,9 @@
       "guidanceEpsDeltaPct": 0.13899613899613913,
       "guidanceEpsDeltaAbs": 0.3600000000000003,
       "guidanceEpsPriorSource": "consensus",
-      "guidanceProfitMetricUsed": "eps"
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "TSEM": {
       "ticker": "TSEM",
@@ -34113,7 +34370,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-13",
       "next_earnings_date": "2026-08-11",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "TSEM posts a clean Q1 beat with strong margin expansion and a bullish Q2 revenue outlook.",
       "beat_miss_quality": "Solid, high-quality beat: upside on both revenue and EPS driven by volume, mix, and margins, partially helped by a favorable tax rate and strong customer prepayments.",
@@ -34346,7 +34603,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-31",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "PANW posts solid top- and bottom-line beats in Q3 with robust 31% Y/Y growth and disciplined execution.",
       "bull_case": {
@@ -34627,12 +34884,12 @@
         "fy_guide_source": "perplexity_sonar_verified_marketbeat_cnbc_panw_ir",
         "fy_guide_widened": true,
         "fy_rev_guide_midpoint_new": 11420000000.0,
-        "fy_rev_guide_midpoint_prior": 11295000000.0,
+        "fy_rev_guide_midpoint_prior": 11300000000.0,
         "fy_eps_guide_midpoint_new": 3.78,
         "fy_eps_guide_midpoint_prior": 3.675,
         "fy_guide_fiscal_year": "FY2026",
-        "fy_rev_consensus_prior": 11145000000.0,
-        "q_next_rev_guide_midpoint_new": 3350000000.0,
+        "fy_rev_consensus_prior": 11310000000.0,
+        "q_next_rev_guide_midpoint_new": 3345000000.0,
         "q_next_rev_consensus_prior": 3300000000.0,
         "q_next_eps_guide_midpoint_new": 0.97,
         "q_next_eps_consensus_prior": 0.53,
@@ -34647,9 +34904,9 @@
         "q_next_top_line_north_star_units": "USD millions",
         "fy_bottom_line_north_star_metric": "FCF",
         "fy_bottom_line_north_star_units": "USD millions",
-        "q_next_bottom_line_north_star_metric": "FCF",
-        "q_next_bottom_line_north_star_units": "USD millions",
-        "fy_arr_guide_midpoint_new": 8925.0,
+        "q_next_bottom_line_north_star_metric": "EPS",
+        "q_next_bottom_line_north_star_units": "USD",
+        "fy_arr_guide_midpoint_new": 8610.0,
         "fy_arr_units": "USD millions",
         "fy_crpo_guide_midpoint_new": 20950.0,
         "fy_crpo_units": "USD millions",
@@ -34657,7 +34914,12 @@
         "q_next_arr_units": "USD millions",
         "q_next_crpo_guide_midpoint_new": 20950.0,
         "q_next_crpo_units": "USD millions",
-        "north_star_evidence": "The Q3 FY26 press release headline and bullet points lead with Next-Generation Security ARR and remaining performance obligation before mentioning revenue, and explicitly highlight adjusted free cash flow margin alongside these metrics."
+        "north_star_evidence": "Palo Alto Networks’ Q3 FY26 press release headline calls out total revenue and Next-Generation Security ARR growth, while the detailed outlook and third-party recaps emphasize adjusted free cash flow margin as the key profitability target and provide explicit Q4 non-GAAP EPS guidance.[3][4][5]",
+        "fy_eps_consensus_prior": 3.7,
+        "fy_arr_guide_midpoint_prior": 8570.0,
+        "fy_arr_consensus_prior": 8620.0,
+        "q_next_arr_guide_midpoint_prior": 7950.0,
+        "q_next_arr_consensus_prior": 8800.0
       },
       "history_8q": [
         {
@@ -34766,14 +35028,14 @@
         "stock_reaction_basis_date": "2026-06-02",
         "stock_reaction_calc_method": "amc_d_plus_1"
       },
-      "guidanceRevenueDeltaPct": 0.011066843736166445,
+      "guidanceRevenueDeltaPct": 0.010619469026548672,
       "guidanceRevenuePriorSource": "prior_guidance",
       "guidanceEpsDeltaPct": 0.028571428571428567,
       "guidanceEpsDeltaAbs": 0.10499999999999998,
       "guidanceEpsPriorSource": "prior_guidance",
       "guidanceProfitMetricUsed": "eps",
-      "guidanceRevenueStreetDeltaPct": 0.024674742036787798,
-      "guidanceNextQRevenueDeltaPct": 0.015151515151515152,
+      "guidanceRevenueStreetDeltaPct": 0.009725906277630416,
+      "guidanceNextQRevenueDeltaPct": 0.013636363636363636,
       "guidanceNextQRevenuePriorSource": "consensus",
       "guidanceFYNorthStarMetric": "ARR",
       "guidanceFYNorthStarUnits": "USD millions",
@@ -34785,8 +35047,8 @@
       "guidanceNextQNorthStarUnits": "USD millions",
       "guidanceNextQTopLineNorthStarMetric": "ARR",
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
-      "guidanceNextQBottomLineNorthStarMetric": "FCF",
-      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQBottomLineNorthStarMetric": "EPS",
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
       "intel_cleaned_at": "2026-06-05T18:04:22.931010+00:00",
       "beat_miss_quality": "Clear beat on both revenue and EPS; quality driven by strong demand and operating leverage rather than one‑offs.",
       "key_metrics": [
@@ -34801,7 +35063,25 @@
       "analyst_reactions": [
         "Street (aggregate): Likely modest PT raises as estimates drift higher on stronger Q3.[2]"
       ],
-      "guidance_text": "Management guided next quarter and FY revenue modestly above prior Street expectations while maintaining EPS leverage, signaling confidence in durable demand and cost discipline (exact figures not yet fully disclosed in sources reviewed)."
+      "guidance_text": "Management guided next quarter and FY revenue modestly above prior Street expectations while maintaining EPS leverage, signaling confidence in durable demand and cost discipline (exact figures not yet fully disclosed in sources reviewed).",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceEpsStreetDeltaPct": 0.02162162162162152,
+      "guidanceEpsStreetDeltaAbs": 0.07999999999999963,
+      "guidanceFYArrDeltaPct": 0.004667444574095682,
+      "guidanceFYArrDeltaAbs": 40.0,
+      "guidanceFYArrPriorSource": "prior_guidance",
+      "guidanceFYArrDeltaBasis": "vs_prior_guide",
+      "guidanceFYArrStreetDeltaPct": -0.001160092807424594,
+      "guidanceFYArrStreetDeltaAbs": -10.0,
+      "guidanceFYArrUnits": "USD millions",
+      "guidanceNextQArrDeltaPct": 0.12264150943396226,
+      "guidanceNextQArrDeltaAbs": 975.0,
+      "guidanceNextQArrPriorSource": "prior_guidance",
+      "guidanceNextQArrDeltaBasis": "vs_prior_guide",
+      "guidanceNextQArrStreetDeltaPct": 0.014204545454545454,
+      "guidanceNextQArrStreetDeltaAbs": 125.0,
+      "guidanceNextQArrUnits": "USD millions"
     },
     "GWRE": {
       "ticker": "GWRE",
@@ -34809,7 +35089,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Guidewire posted a solid top-line beat but modest EPS miss, with the stock selling off sharply on guidance and valuation concerns.",
       "bull_case": {
@@ -35065,7 +35345,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-08-31",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "GitLab posts solid Q1 FY27 beat on both revenue and EPS, underscoring durable DevSecOps demand and disciplined execution.",
       "bull_case": {
@@ -35231,7 +35511,22 @@
         "q_next_rev_consensus_prior": 273400000.0,
         "q_next_eps_guide_midpoint_new": 0.175,
         "q_next_eps_consensus_prior": 0.13,
-        "next_q_added": true
+        "next_q_added": true,
+        "fy_rev_consensus_prior": 1112000000.0,
+        "fy_eps_consensus_prior": 0.8,
+        "fy_north_star_metric": "revenue",
+        "fy_top_line_north_star_metric": "revenue",
+        "fy_north_star_units": "USD millions",
+        "fy_top_line_north_star_units": "USD millions",
+        "q_next_north_star_metric": "revenue",
+        "q_next_top_line_north_star_metric": "revenue",
+        "q_next_north_star_units": "USD millions",
+        "q_next_top_line_north_star_units": "USD millions",
+        "fy_bottom_line_north_star_metric": "EPS",
+        "fy_bottom_line_north_star_units": "USD",
+        "q_next_bottom_line_north_star_metric": "EPS",
+        "q_next_bottom_line_north_star_units": "USD",
+        "north_star_evidence": "GitLab’s Q1 FY2027 press release headline on its IR site reads “GitLab Reports First Quarter Fiscal Year 2027 Financial Results – Total revenue of $264.2 million, up 23% year-over-year,” and its Business Outlook section primarily guides to revenue and non-GAAP net income per share."
       },
       "history_8q": [
         {
@@ -35369,7 +35664,24 @@
         "Street (consensus view): Expect modest PT raises and reaffirmed Buy/Overweight ratings on quality beat.",
         "Likely to flag valuation and GAAP loss profile despite strong fundamentals."
       ],
-      "guidance_text": "Management raised/maintained a trajectory consistent with mid‑20s% growth and expanding margins, implying modest upside vs prior Street assumptions for both next quarter and FY, though exact guide details were not fully disclosed in initial summaries.[3][5]"
+      "guidance_text": "Management raised/maintained a trajectory consistent with mid‑20s% growth and expanding margins, implying modest upside vs prior Street assumptions for both next quarter and FY, though exact guide details were not fully disclosed in initial summaries.[3][5]",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.002697841726618705,
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceEpsStreetDeltaPct": 0.0062500000000000056,
+      "guidanceEpsStreetDeltaAbs": 0.0050000000000000044,
+      "guidanceFYNorthStarMetric": "revenue",
+      "guidanceFYNorthStarUnits": "USD millions",
+      "guidanceFYTopLineNorthStarMetric": "revenue",
+      "guidanceFYTopLineNorthStarUnits": "USD millions",
+      "guidanceFYBottomLineNorthStarMetric": "EPS",
+      "guidanceFYBottomLineNorthStarUnits": "USD",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
+      "guidanceNextQTopLineNorthStarMetric": "revenue",
+      "guidanceNextQTopLineNorthStarUnits": "USD millions",
+      "guidanceNextQBottomLineNorthStarMetric": "EPS",
+      "guidanceNextQBottomLineNorthStarUnits": "USD"
     },
     "AVGO": {
       "ticker": "AVGO",
@@ -35377,7 +35689,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-01",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Broadcom posts strong Q1 growth with record AI-driven revenue, but headline sales and EPS modestly miss elevated Street expectations.",
       "bull_case": {
@@ -35841,7 +36153,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-01",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "CrowdStrike beat EPS but missed revenue expectations, leaving the print mixed despite continued strong growth and a modestly negative stock reaction.",
       "bull_case": {
@@ -36354,7 +36666,14 @@
       "analyst_reactions": [
         "No analyst actions were provided in the supplied results."
       ],
-      "guidance_text": "Next-quarter and FY guidance were not provided in the supplied data. Based on the results shown, investors will likely focus on whether management reaffirmed FY growth and margin targets after the revenue shortfall."
+      "guidance_text": "Next-quarter and FY guidance were not provided in the supplied data. Based on the results shown, investors will likely focus on whether management reaffirmed FY growth and margin targets after the revenue shortfall.",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceFYArrDeltaBasis": "vs_prior_guide",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide",
+      "guidanceFYAdjOpIncomeDeltaBasis": "vs_prior_guide",
+      "guidanceNextQAdjOpIncomeDeltaBasis": "vs_prior_guide"
     },
     "CXM": {
       "ticker": "CXM",
@@ -36362,7 +36681,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-01",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Sprinklr posts a clean top- and bottom-line beat with steady mid‑single‑digit growth to start FY27.",
       "bull_case": {
@@ -36686,7 +37005,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-01",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Veeva Systems reported a solid earnings beat, with revenue and EPS both modestly above consensus on June 3, 2026.",
       "bull_case": {
@@ -36944,9 +37263,9 @@
       },
       "guide_vs_consensus": {
         "q_next_rev_guide_midpoint_new": 903500000.0,
-        "q_next_rev_consensus_prior": 887500000.0,
+        "q_next_rev_consensus_prior": 886820000.0,
         "q_next_eps_guide_midpoint_new": 2.215,
-        "q_next_eps_consensus_prior": 2.07,
+        "q_next_eps_consensus_prior": 2.19,
         "fy_guide_source": "perplexity_sonar",
         "fy_guide_fiscal_year": "the current fiscal year",
         "fy_guide_widened": true,
@@ -36965,12 +37284,12 @@
         "q_next_bottom_line_north_star_units": "USD millions",
         "fy_rev_guide_midpoint_new": 3590000000.0,
         "fy_rev_consensus_prior": 3590000000.0,
-        "north_star_evidence": "Veeva’s Q1 FY27 earnings materials for June 3, 2026 highlight total revenues first and include explicit non-GAAP operating income guidance in the Business Outlook section, consistent with its practice of leading with revenue on the top line and non-GAAP operating income on the bottom line."
+        "north_star_evidence": "Veeva’s earnings materials and historical guidance practice emphasize total revenue growth as the primary top-line metric and explicitly guide non-GAAP operating income each quarter alongside revenue, indicating these as its key performance and outlook metrics."
       },
-      "guidanceNextQRevenueDeltaPct": 0.018028169014084508,
+      "guidanceNextQRevenueDeltaPct": 0.018808777429467086,
       "guidanceNextQRevenuePriorSource": "consensus",
-      "guidanceNextQEpsDeltaPct": 0.07004830917874398,
-      "guidanceNextQEpsDeltaAbs": 0.14500000000000002,
+      "guidanceNextQEpsDeltaPct": 0.01141552511415521,
+      "guidanceNextQEpsDeltaAbs": 0.02499999999999991,
       "guidanceNextQEpsPriorSource": "consensus",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
@@ -36999,7 +37318,8 @@
         "No guidance details were included in the provided materials, limiting assessment of forward confidence."
       ],
       "analyst_reactions": [],
-      "guidance_text": "I do not have next-quarter or full-year guidance figures from the provided results. The available source set only confirms the prior fiscal 2026 Q2 and Q3/FY26 guidance from August 2025, not the June 2026 print’s updated outlook."
+      "guidance_text": "I do not have next-quarter or full-year guidance figures from the provided results. The available source set only confirms the prior fiscal 2026 Q2 and Q3/FY26 guidance from August 2025, not the June 2026 print’s updated outlook.",
+      "guidanceRevenueDeltaBasis": "vs_consensus"
     },
     "FIVE": {
       "ticker": "FIVE",
@@ -37007,7 +37327,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-01",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Five Below posts a sizable top- and bottom-line beat in Q1 FY26, but the stock sells off on elevated expectations and guidance scrutiny.",
       "bull_case": {
@@ -37308,7 +37628,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-01",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Medtronic posted solid FY26/Q4 EPS slightly above expectations with the strongest annual top-line growth in a decade, while revenue modestly topped Street and the dividend was raised again.",
       "bull_case": {
@@ -37606,7 +37926,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-01",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "PVH posts a very strong Q1 beat on both revenue and EPS, easing near-term fears around demand and margins.",
       "bull_case": {
@@ -37902,7 +38222,8 @@
         "Maintained Hold rating; expects shares to track the market near term.",
         "Street (consensus view): Likely upward estimate revisions and modest PT increases on stronger earnings power."
       ],
-      "guidance_text": "Management raised/maintained a constructive outlook for the next quarter and FY, with revenue and EPS guidance now modestly above prior consensus, reflecting confidence in brand momentum and cost discipline."
+      "guidance_text": "Management raised/maintained a constructive outlook for the next quarter and FY, with revenue and EPS guidance now modestly above prior consensus, reflecting confidence in brand momentum and cost discipline.",
+      "guidanceEpsDeltaBasis": "vs_consensus"
     },
     "RBRK": {
       "ticker": "RBRK",
@@ -37910,7 +38231,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Rubrik delivered a clean top- and bottom-line beat in Q1 FY27, underscoring strong subscription momentum and operating leverage post-IPO.",
       "bull_case": {
@@ -38382,7 +38703,8 @@
         "reiterates cautious stance, maintains Sell-equivalent view despite the beat.[2]",
         "early commentary highlighting quality of beat and robust subscription KPIs; some target raises likely as models reset higher."
       ],
-      "guidance_text": "Management guided next quarter and FY revenue and operating margin ahead of prior Street expectations, citing sustained demand for data security and AI-driven offerings, while keeping a conservative stance on macro-sensitive large deals."
+      "guidance_text": "Management guided next quarter and FY revenue and operating margin ahead of prior Street expectations, citing sustained demand for data security and AI-driven offerings, while keeping a conservative stance on macro-sensitive large deals.",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide"
     },
     "IOT": {
       "ticker": "IOT",
@@ -38390,7 +38712,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Samsara delivered a revenue beat with another quarter of strong ARR growth, but EPS missed as the company continued to invest for scale.",
       "bull_case": {
@@ -38679,7 +39001,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "Ciena posts a strong Q2 with sizable EPS upside and solid top-line outperformance, driven by robust optical demand and operating leverage.",
       "bull_case": {
@@ -38962,14 +39284,15 @@
         "fy_top_line_north_star_units": "USD millions",
         "q_next_top_line_north_star_metric": "revenue",
         "q_next_top_line_north_star_units": "USD millions",
-        "fy_adj_op_income_guide_midpoint_new": 1190.0,
+        "fy_adj_op_income_guide_midpoint_new": 1190000000.0,
         "fy_adj_op_income_units": "USD millions",
         "fy_bottom_line_north_star_metric": "adj_op_income",
         "fy_bottom_line_north_star_units": "USD millions",
-        "q_next_adj_op_income_guide_midpoint_new": 304.0,
+        "q_next_adj_op_income_guide_midpoint_new": 307750000.0,
         "q_next_adj_op_income_units": "USD millions",
         "q_next_bottom_line_north_star_metric": "adj_op_income",
-        "q_next_bottom_line_north_star_units": "USD millions"
+        "q_next_bottom_line_north_star_units": "USD millions",
+        "north_star_evidence": "Ciena’s Q2 FY26 press release and guidance section state that it is 'providing revenue guidance for fiscal third quarter 2026 of $1.625 billion plus or minus $50 million' and 'raising revenue guidance for fiscal year 2026 to $6.3 billion plus or minus $100 million' and further guide 'adjusted (non-GAAP) operating expense...' and 'adjusted (non-GAAP) operating margin between 19% and 20%', highlighting revenue and non-GAAP operating margin/income as the primary guided metrics.[1][3]"
       },
       "guidanceNextQRevenueDeltaPct": 0.04838709677419355,
       "guidanceNextQRevenuePriorSource": "consensus",
@@ -39011,7 +39334,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "DocuSign posts solid top- and bottom-line beat with strong margins but stock sells off on guidance and growth worries.",
       "bull_case": {
@@ -39268,13 +39591,13 @@
       "guide_vs_consensus": {
         "next_q_added": true,
         "fy_guide_widened": true,
-        "fy_rev_guide_midpoint_new": 3496000000.0,
+        "fy_rev_guide_midpoint_new": 3419000000.0,
         "fy_rev_consensus_prior": 3511000000.0,
-        "fy_eps_guide_midpoint_new": 4.43,
+        "fy_eps_guide_midpoint_new": 4.23,
         "fy_eps_consensus_prior": 4.43,
         "q_next_rev_guide_midpoint_new": 867000000.0,
-        "q_next_rev_consensus_prior": 872000000.0,
-        "q_next_eps_guide_midpoint_new": 1.05,
+        "q_next_rev_consensus_prior": 866100000.0,
+        "q_next_eps_guide_midpoint_new": 1.03,
         "q_next_eps_consensus_prior": 1.05,
         "fy_north_star_metric": "revenue",
         "fy_north_star_units": "USD millions",
@@ -39290,19 +39613,27 @@
         "fy_bottom_line_north_star_units": "USD millions",
         "q_next_bottom_line_north_star_metric": "adj_op_income",
         "q_next_bottom_line_north_star_units": "USD millions",
-        "north_star_evidence": "The Q1 FY27 press release and prepared remarks headline quarterly and full-year guidance primarily in terms of total revenue growth, and in the guidance section DocuSign provides specific forward ranges for non-GAAP operating margin and income alongside revenue, indicating these are its key top-line and bottom-line guided metrics.",
-        "q_next_rev_guide_midpoint_prior": 824000000.0
+        "north_star_evidence": "DocuSign’s Q1 FY27 press release headline reads “DocuSign Announces First Quarter Fiscal 2027 Financial Results” and the Business Outlook section leads with total revenue guidance and explicitly guides non-GAAP operating income and margin for both Q2 FY27 and FY27.",
+        "q_next_rev_guide_midpoint_prior": 824000000.0,
+        "fy_op_profit_guide_midpoint_new": 990000000.0,
+        "fy_op_metric_kind": "operating_income",
+        "fy_adj_op_income_guide_midpoint_new": 990.0,
+        "fy_adj_op_income_prior_fy_actual": 902.0,
+        "fy_adj_op_income_prior_fy_actual_period": "FY26",
+        "fy_adj_op_income_units": "USD millions",
+        "q_next_adj_op_income_guide_midpoint_new": 265.0,
+        "q_next_adj_op_income_units": "USD millions"
       },
-      "guidanceRevenueDeltaPct": -0.004272287097692965,
+      "guidanceRevenueDeltaPct": -0.026203360865850185,
       "guidanceRevenuePriorSource": "consensus",
-      "guidanceEpsDeltaPct": 0.0,
-      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsDeltaPct": -0.045146726862302325,
+      "guidanceEpsDeltaAbs": -0.1999999999999993,
       "guidanceEpsPriorSource": "consensus",
       "guidanceProfitMetricUsed": "eps",
       "guidanceNextQRevenueDeltaPct": 0.05218446601941747,
       "guidanceNextQRevenuePriorSource": "prior_guidance",
-      "guidanceNextQEpsDeltaPct": 0.0,
-      "guidanceNextQEpsDeltaAbs": 0.0,
+      "guidanceNextQEpsDeltaPct": -0.019047619047619063,
+      "guidanceNextQEpsDeltaAbs": -0.020000000000000018,
       "guidanceNextQEpsPriorSource": "consensus",
       "guidanceFYNorthStarMetric": "revenue",
       "guidanceFYNorthStarUnits": "USD millions",
@@ -39316,7 +39647,7 @@
       "guidanceNextQTopLineNorthStarUnits": "USD millions",
       "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
       "guidanceNextQBottomLineNorthStarUnits": "USD millions",
-      "guidanceNextQRevenueStreetDeltaPct": -0.005733944954128441,
+      "guidanceNextQRevenueStreetDeltaPct": 0.0010391409767925182,
       "note_status": "archived_stub",
       "intel_cleaned_at": "2026-06-05T18:04:22.929886+00:00",
       "beat_miss_quality": "Clean beat on revenue and EPS; quality supported by strong operating and FCF margins, though growth and guidance tempered enthusiasm.",
@@ -39336,7 +39667,14 @@
         "reiterates Buy (Rank #2), expects shares to outperform near term.[3]",
         "early commentary flags strong execution but calls guidance and growth ‘good, not great’, keeping a balanced stance."
       ],
-      "guidance_text": "Management guided next quarter and FY revenue roughly in line to modestly ahead of prior commentary, but not enough upside versus buyside expectations, reinforcing a mid‑single to high‑single digit growth profile.[2][4] Profitability guidance (high-20s non-GAAP operating margin) remains disciplined, suggesting further…"
+      "guidance_text": "Management guided next quarter and FY revenue roughly in line to modestly ahead of prior commentary, but not enough upside versus buyside expectations, reinforcing a mid‑single to high‑single digit growth profile.[2][4] Profitability guidance (high-20s non-GAAP operating margin) remains disciplined, suggesting further…",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceFYAdjOpIncomeDeltaPct": 0.0975609756097561,
+      "guidanceFYAdjOpIncomeDeltaAbs": 88.0,
+      "guidanceFYAdjOpIncomePriorSource": "prior_fy_actual",
+      "guidanceFYAdjOpIncomeDeltaBasis": "vs_prior_fy_actual",
+      "guidanceFYAdjOpIncomeUnits": "USD millions"
     },
     "TTAN": {
       "ticker": "TTAN",
@@ -39344,7 +39682,7 @@
       "state": "post_earnings",
       "inflection_status": "POST",
       "next_earnings_date": "2026-09-02",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ServiceTitan posts solid top-line growth but delivers a sharp EPS miss, prompting questions on profitability vs. investment spend.",
       "bull_case": {
@@ -39581,7 +39919,7 @@
       "inflection_status": "POST",
       "last_earnings_date": "2026-05-21",
       "next_earnings_date": "2026-08-19",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_post_earnings_note",
       "bottom_line": "ROST posts blowout Q1 with 17% comps, margin expansion, and a raised FY26 EPS outlook.",
       "beat_miss_quality": "Beat; high-quality upside driven by traffic-led comps and merchandise margin expansion, not one-time items or financial engineering.[2][4]",
@@ -39817,7 +40155,8 @@
       "guidanceProfitMetricUsed": "eps",
       "guidanceNextQEpsDeltaPct": 0.13513513513513506,
       "guidanceNextQEpsDeltaAbs": 0.22499999999999987,
-      "guidanceNextQEpsPriorSource": "consensus"
+      "guidanceNextQEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_prior_guide"
     },
     "ORCL": {
       "ticker": "ORCL",
@@ -39825,7 +40164,7 @@
       "state": "pre_earnings",
       "inflection_status": "PRE",
       "next_earnings_date": "2026-06-10",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_pre_earnings_note",
       "bottom_line": "ORCL recently traded around $191, near its highs after a strong post-Q3 rally.[3][2] Shares have solidly outperformed large-cap software peers year-to-date, helped by accelerating cloud and AI infrastructure demand. Key technical levels: ~$180 support, ~$200 resistance, with the 50-day moving average just below spot.",
       "bull_case": {
@@ -40167,7 +40506,7 @@
       "state": "pre_earnings",
       "inflection_status": "PRE",
       "next_earnings_date": "2026-06-11",
-      "intel_updated_at": "2026-06-05T23:00:50+00:00",
+      "intel_updated_at": "2026-06-06T01:03:21+00:00",
       "refresh_reason": "synced_from_pre_earnings_note",
       "bottom_line": "ADBE trades around the mid-$230s, well below prior ~$330 resistance and above major support near $170, after a sharp pullback from 2025 highs.[1][2] Technicals are range-bound into Q2 FY26 earnings with investors weighing strong ARR growth against AI/valuation concerns.",
       "bull_case": {

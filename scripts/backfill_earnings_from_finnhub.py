@@ -227,7 +227,10 @@ def backfill(only: str | None, dry_run: bool):
             skipped_nodata.append(tk)
 
     if (eps_written or rev_written) and not dry_run:
-        INTEL_PATH.write_text(json.dumps(intel, indent=2, ensure_ascii=False))
+        # Atomic write: .tmp + os.replace so a crash mid-write cannot tear the file.
+        _tmp = INTEL_PATH.with_suffix(INTEL_PATH.suffix + ".tmp")
+        _tmp.write_text(json.dumps(intel, indent=2, ensure_ascii=False))
+        os.replace(_tmp, INTEL_PATH)
 
     return eps_written, rev_written, skipped_present, skipped_nodata
 

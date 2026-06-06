@@ -128,6 +128,7 @@ function parseTickerData(ticker, chart, quote) {
     row.earningsGrowth = quote.earningsGrowth ?? null;
     row.forwardEps = quote.forwardEps ?? null;
     row.trailingEps = quote.trailingEps ?? null;
+    row.revenueEstimateAvg = quote.revenueEstimateAvg ?? null;
     row.enterpriseToRevenue = quote.enterpriseToRevenue ?? null;
     row.enterpriseToEbitda = quote.enterpriseToEbitda ?? null;
     row.sector = quote.sector ?? null;

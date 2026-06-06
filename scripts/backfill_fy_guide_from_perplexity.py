@@ -135,6 +135,10 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f'guide midpoint, or null>,\n'
         f'  "fy_fcf_consensus_prior": <prior FY free cash flow Street consensus '
         f'midpoint, or null>,\n'
+        f'  "fy_fcf_prior_fy_actual": <company most-recently-REPORTED full-year '
+        f'ACTUAL free cash flow USD dollars, or null>,\n'
+        f'  "fy_fcf_prior_fy_actual_period": <which FY that actual is from, e.g. '
+        f'"FY25", or null>,\n'
         f'  "q_next_rev_guide_midpoint": <new NEXT-QUARTER revenue guidance '
         f'midpoint in USD dollars, or null>,\n'
         f'  "q_next_rev_guide_midpoint_prior": <company PRIOR NEXT-QUARTER '
@@ -160,24 +164,32 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f'  "fy_arr_guide_midpoint_new": <new FY ARR midpoint USD millions, or null>,\n'
         f'  "fy_arr_guide_midpoint_prior": <company PRIOR FY ARR guide midpoint, or null>,\n'
         f'  "fy_arr_consensus_prior": <prior FY ARR Street consensus midpoint, or null>,\n'
+        f'  "fy_arr_prior_fy_actual": <company most-recently-REPORTED full-year ACTUAL ending ARR USD millions, or null>,\n'
+        f'  "fy_arr_prior_fy_actual_period": <which FY that actual is from, e.g. "FY25", or null>,\n'
         f'  "q_next_arr_guide_midpoint_new": <new NEXT-Q ARR midpoint USD millions, or null>,\n'
         f'  "q_next_arr_guide_midpoint_prior": <company PRIOR NEXT-Q ARR guide, or null>,\n'
         f'  "q_next_arr_consensus_prior": <prior NEXT-Q ARR Street consensus, or null>,\n'
         f'  "fy_crpo_guide_midpoint_new": <new FY cRPO midpoint USD millions, or null>,\n'
         f'  "fy_crpo_guide_midpoint_prior": <company PRIOR FY cRPO guide, or null>,\n'
         f'  "fy_crpo_consensus_prior": <prior FY cRPO Street consensus, or null>,\n'
+        f'  "fy_crpo_prior_fy_actual": <company most-recently-REPORTED full-year ACTUAL ending cRPO USD millions, or null>,\n'
+        f'  "fy_crpo_prior_fy_actual_period": <which FY that actual is from, e.g. "FY25", or null>,\n'
         f'  "q_next_crpo_guide_midpoint_new": <new NEXT-Q cRPO midpoint USD millions, or null>,\n'
         f'  "q_next_crpo_guide_midpoint_prior": <company PRIOR NEXT-Q cRPO guide, or null>,\n'
         f'  "q_next_crpo_consensus_prior": <prior NEXT-Q cRPO Street consensus, or null>,\n'
         f'  "fy_billings_guide_midpoint_new": <new FY billings midpoint USD millions, or null>,\n'
         f'  "fy_billings_guide_midpoint_prior": <company PRIOR FY billings guide, or null>,\n'
         f'  "fy_billings_consensus_prior": <prior FY billings Street consensus, or null>,\n'
+        f'  "fy_billings_prior_fy_actual": <company most-recently-REPORTED full-year ACTUAL billings USD millions, or null>,\n'
+        f'  "fy_billings_prior_fy_actual_period": <which FY that actual is from, e.g. "FY25", or null>,\n'
         f'  "q_next_billings_guide_midpoint_new": <new NEXT-Q billings midpoint USD millions, or null>,\n'
         f'  "q_next_billings_guide_midpoint_prior": <company PRIOR NEXT-Q billings guide, or null>,\n'
         f'  "q_next_billings_consensus_prior": <prior NEXT-Q billings Street consensus, or null>,\n'
         f'  "fy_nrr_guide_midpoint_new": <new FY NRR/NDR percent (e.g. 118), or null>,\n'
         f'  "fy_nrr_guide_midpoint_prior": <company PRIOR FY NRR guide percent, or null>,\n'
         f'  "fy_nrr_consensus_prior": <prior FY NRR Street consensus percent, or null>,\n'
+        f'  "fy_nrr_prior_fy_actual": <company most-recently-REPORTED full-year ACTUAL NRR/NDR percent, or null>,\n'
+        f'  "fy_nrr_prior_fy_actual_period": <which FY that actual is from, e.g. "FY25", or null>,\n'
         f'  "q_next_nrr_guide_midpoint_new": <new NEXT-Q NRR/NDR percent, or null>,\n'
         f'  "q_next_nrr_guide_midpoint_prior": <company PRIOR NEXT-Q NRR guide percent, or null>,\n'
         f'  "q_next_nrr_consensus_prior": <prior NEXT-Q NRR Street consensus percent, or null>,\n'
@@ -193,12 +205,16 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f'  "fy_adj_ebitda_guide_midpoint_new": <new FY adj EBITDA midpoint USD millions, or null>,\n'
         f'  "fy_adj_ebitda_guide_midpoint_prior": <company PRIOR FY adj EBITDA guide, or null>,\n'
         f'  "fy_adj_ebitda_consensus_prior": <prior FY adj EBITDA Street consensus, or null>,\n'
+        f'  "fy_adj_ebitda_prior_fy_actual": <company most-recently-REPORTED full-year ACTUAL adj EBITDA USD millions, or null>,\n'
+        f'  "fy_adj_ebitda_prior_fy_actual_period": <which FY that actual is from, e.g. "FY25", or null>,\n'
         f'  "q_next_adj_ebitda_guide_midpoint_new": <new NEXT-Q adj EBITDA midpoint USD millions, or null>,\n'
         f'  "q_next_adj_ebitda_guide_midpoint_prior": <company PRIOR NEXT-Q adj EBITDA guide, or null>,\n'
         f'  "q_next_adj_ebitda_consensus_prior": <prior NEXT-Q adj EBITDA Street consensus, or null>,\n'
         f'  "fy_adj_op_income_guide_midpoint_new": <new FY adj (non-GAAP) operating income midpoint USD millions, or null>,\n'
         f'  "fy_adj_op_income_guide_midpoint_prior": <company PRIOR FY adj op income guide, or null>,\n'
         f'  "fy_adj_op_income_consensus_prior": <prior FY adj op income Street consensus, or null>,\n'
+        f'  "fy_adj_op_income_prior_fy_actual": <company most-recently-REPORTED full-year ACTUAL adj (non-GAAP) operating income USD millions, or null>,\n'
+        f'  "fy_adj_op_income_prior_fy_actual_period": <which FY that actual is from, e.g. "FY25", or null>,\n'
         f'  "q_next_adj_op_income_guide_midpoint_new": <new NEXT-Q adj (non-GAAP) operating income midpoint USD millions, or null>,\n'
         f'  "q_next_adj_op_income_guide_midpoint_prior": <company PRIOR NEXT-Q adj op income guide, or null>,\n'
         f'  "q_next_adj_op_income_consensus_prior": <prior NEXT-Q adj op income Street consensus, or null>,\n'
@@ -300,6 +316,18 @@ def _prompt(ticker: str, company: str, date: str, fy_label: str) -> str:
         f"UNITS: ARR / cRPO / billings in USD MILLIONS (number only). NRR as a "
         f"plain percent number. Keep units consistent with the prior/consensus "
         f"values for the same metric so the comparison is apples-to-apples.\n"
+        f"PRIOR-FY ACTUAL (REQUIRED FOR A REAL GROWTH RATE): For every north-star "
+        f"metric the company guides this fiscal year (ARR, cRPO, NRR, billings, "
+        f"FCF, adj_EBITDA, adj_op_income), ALSO return the company's most "
+        f"recently REPORTED FULL-YEAR ACTUAL value for that same metric via the "
+        f"_prior_fy_actual field, plus which fiscal year it is from via "
+        f"_prior_fy_actual_period (e.g. \"FY25\"). This is the realized prior-year "
+        f"figure from the company's last annual report / 10-K / Q4 release, NOT a "
+        f"guide and NOT a consensus. It lets us compute a genuine FY-guide vs "
+        f"prior-FY-actual growth rate. UNITS MUST MATCH the corresponding "
+        f"_guide_midpoint_new field for that metric (same USD millions / percent "
+        f"basis) so new-vs-actual is directly comparable. Return null only if you "
+        f"cannot ground the prior-year actual in the company's filings.\n"
         f"CONSENSUS GROUNDING: Wall Street consensus midpoints are publicly "
         f"available for every major US-listed name. Before returning null for "
         f"any *_consensus_prior field, search Yahoo Finance Analysts tab, Zacks, "
@@ -368,6 +396,16 @@ def _extract_saas_metrics(res: dict) -> dict:
                 fields[f"{base}_guide_midpoint_prior"] = prior
             if cons is not None:
                 fields[f"{base}_consensus_prior"] = cons
+            # Prior-FY actual (FY horizon only) -> drives a real FY-guide vs
+            # prior-FY-actual growth rate in normalize_guidance_envelope.
+            if horizon == "fy":
+                pfa = _num(res.get(f"{base}_prior_fy_actual"))
+                if pfa is not None:
+                    fields[f"{base}_prior_fy_actual"] = pfa
+                    period = res.get(f"{base}_prior_fy_actual_period")
+                    if isinstance(period, str) and period.strip() and \
+                            period.strip().lower() not in ("null", "none", "n/a"):
+                        fields[f"{base}_prior_fy_actual_period"] = period.strip()
             fields[f"{base}_units"] = units
         # Top-line north-star pointer. Accept the new field name and the legacy
         # `north_star_metric` (pre-rename) for back-compat.
@@ -422,6 +460,16 @@ def _extract_bottom_line_metrics(res: dict) -> dict:
                 fields[f"{base}_guide_midpoint_prior"] = prior
             if cons is not None:
                 fields[f"{base}_consensus_prior"] = cons
+            # Prior-FY actual (FY horizon only) -> real FY-guide vs prior-FY
+            # growth rate in normalize_guidance_envelope.
+            if horizon == "fy":
+                pfa = _num(res.get(f"{base}_prior_fy_actual"))
+                if pfa is not None:
+                    fields[f"{base}_prior_fy_actual"] = pfa
+                    period = res.get(f"{base}_prior_fy_actual_period")
+                    if isinstance(period, str) and period.strip() and \
+                            period.strip().lower() not in ("null", "none", "n/a"):
+                        fields[f"{base}_prior_fy_actual_period"] = period.strip()
             fields[f"{base}_units"] = units
         ns = res.get(f"{horizon}_bottom_line_north_star_metric")
         if isinstance(ns, str):

@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -221,7 +222,10 @@ def main() -> int:
         )
 
     if not args.dry_run:
-        INTEL.write_text(json.dumps(data, indent=2) + "\n")
+        # Atomic write: .tmp + os.replace so a crash mid-write cannot tear the file.
+        _tmp = INTEL.with_suffix(INTEL.suffix + ".tmp")
+        _tmp.write_text(json.dumps(data, indent=2) + "\n")
+        os.replace(_tmp, INTEL)
 
     print(f"[OK] written={written} no_consensus={no_consensus} errors={errored}")
     return 0

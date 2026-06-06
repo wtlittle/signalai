@@ -297,7 +297,10 @@ def main():
             populated.append(tk)
 
     if not args.dry_run and populated:
-        INTEL_PATH.write_text(json.dumps(intel, indent=2, ensure_ascii=False))
+        # Atomic write: .tmp + os.replace so a crash mid-write cannot tear the file.
+        _tmp = INTEL_PATH.with_suffix(INTEL_PATH.suffix + ".tmp")
+        _tmp.write_text(json.dumps(intel, indent=2, ensure_ascii=False))
+        os.replace(_tmp, INTEL_PATH)
 
     tag = "[DRY RUN] " if args.dry_run else "[OK] "
     print(f"{tag}populated={len(populated)} preprint_skipped={len(skipped_preprint)} "

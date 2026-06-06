@@ -163,7 +163,10 @@ def main():
         print(f"  FY op guide kind={gvc.get('fy_op_metric_kind')} new={gvc.get('fy_op_profit_guide_midpoint_new')}")
         print(f"  FY fcf guide new={gvc.get('fy_fcf_guide_midpoint_new')}")
 
-    INTEL.write_text(json.dumps(intel, indent=2, default=str))
+    # Atomic write: .tmp + os.replace so a crash mid-write cannot tear the file.
+    _tmp = INTEL.with_suffix(INTEL.suffix + ".tmp")
+    _tmp.write_text(json.dumps(intel, indent=2, default=str))
+    os.replace(_tmp, INTEL)
     print("\nSaved.")
 
 

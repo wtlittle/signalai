@@ -755,6 +755,7 @@
         { key: 'recommendationKey',label: 'Consensus rating',    fmt: r => escapeHtml(r.recommendationKey || '\u2014'), winner: null },
       ]},
       { title: 'Forward estimates', rows: [
+        { key: 'revenueEstimateAvg', label: 'FY1 Revenue estimate', fmt: r => fmt.large(r.revenueEstimateAvg), winner: 'high' },
         { key: '_nsTopGrowth',    label: 'NTM top-line growth',    fmt: (r, t) => fmt.northStar(r._nsTop),    winner: 'high' },
         { key: '_nsBottomGrowth', label: 'NTM bottom-line growth', fmt: (r, t) => fmt.northStar(r._nsBottom), winner: 'high' },
       ]},

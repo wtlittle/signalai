@@ -79,6 +79,10 @@ const CORS_PROXIES = [
   'https://api.allorigins.win/raw?url=',
   'https://corsproxy.io/?url=',
 ];
+// Expose for cross-file callers (compare.js reads window.CORS_PROXIES for its
+// Yahoo quoteSummary fallback). Without this the const stays file-scoped and the
+// proxy fallback in compare.js silently never fires.
+if (typeof window !== 'undefined') window.CORS_PROXIES = CORS_PROXIES;
 let activeProxyIndex = 0;
 let _proxyTestDone = false;
 let _proxyWorking = false;
@@ -266,6 +270,7 @@ function mapQuoteRow(r) {
     forwardEps: r.forward_eps, trailingEps: r.trailing_eps,
     enterpriseToRevenue: r.enterprise_to_revenue, enterpriseToEbitda: r.enterprise_to_ebitda,
     operatingMargins: r.operating_margins,
+    revenueEstimateAvg: r.revenue_estimate_avg ?? null,
     sector: r.sector, industry: r.industry,
     city: r.city, state: r.state, country: r.country,
   };

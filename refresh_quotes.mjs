@@ -79,7 +79,7 @@ async function getYahooCreds() {
 // --- Fetch fundamentals via v10 quoteSummary ---
 async function fetchFundamentals(ticker, creds) {
   if (!creds) return null;
-  const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=defaultKeyStatistics,financialData,price,assetProfile&crumb=${encodeURIComponent(creds.crumb)}`;
+  const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=defaultKeyStatistics,financialData,price,assetProfile,earningsTrend&crumb=${encodeURIComponent(creds.crumb)}`;
   try {
     const resp = await fetch(url, {
       headers: {
@@ -97,6 +97,9 @@ async function fetchFundamentals(ticker, creds) {
     const fd = result.financialData || {};
     const pr = result.price || {};
     const ap = result.assetProfile || {};
+    // FY1 (current full year, period '0y') consensus revenue estimate average.
+    const fy1Trend = (result.earningsTrend?.trend || []).find(t => t.period === '0y');
+    const revenueEstimateAvg = fy1Trend?.revenueEstimate?.avg?.raw ?? null;
 
     return {
       market_cap: pr.marketCap?.raw || null,
@@ -124,6 +127,7 @@ async function fetchFundamentals(ticker, creds) {
       enterprise_to_revenue: ks.enterpriseToRevenue?.raw || null,
       enterprise_to_ebitda: ks.enterpriseToEbitda?.raw || null,
       operating_margins: fd.operatingMargins?.raw ? fd.operatingMargins.raw * 100 : null,
+      revenue_estimate_avg: revenueEstimateAvg,
       sector: ap.sector || pr.sector || null,
       industry: ap.industry || pr.industry || null,
       city: ap.city || null,
@@ -240,6 +244,9 @@ for (let i = 0; i < tickers.length; i++) {
     const fund = await fetchFundamentals(ticker, creds);
     if (fund) {
       Object.assign(row, fund);
+      // revenue_estimate_avg is a snapshot-only field (the Supabase quotes table
+      // has no such column); carry it on snapQuote below, not the DB row.
+      delete row.revenue_estimate_avg;
       fundSuccess++;
     }
 
@@ -286,6 +293,7 @@ for (let i = 0; i < tickers.length; i++) {
       snapQuote.enterpriseToRevenue = fund.enterprise_to_revenue;
       snapQuote.enterpriseToEbitda = fund.enterprise_to_ebitda;
       snapQuote.operatingMargins = fund.operating_margins;
+      snapQuote.revenueEstimateAvg = fund.revenue_estimate_avg;
       snapQuote.sector = fund.sector;
       snapQuote.industry = fund.industry;
     }

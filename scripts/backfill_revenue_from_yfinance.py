@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -145,7 +146,10 @@ def main() -> int:
         print(f"  [WRITE] {t}: rev_actual={_money_str(rev_actual)} (Δ{best_diff}d)")
 
     if not args.dry_run:
-        INTEL.write_text(json.dumps(data, indent=2) + "\n")
+        # Atomic write: .tmp + os.replace so a crash mid-write cannot tear the file.
+        _tmp = INTEL.with_suffix(INTEL.suffix + ".tmp")
+        _tmp.write_text(json.dumps(data, indent=2) + "\n")
+        os.replace(_tmp, INTEL)
 
     print(f"[OK] rev_actual_written={written} already_complete={skipped_complete} no_match={no_match} errors={errors}")
     return 0

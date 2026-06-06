@@ -44,6 +44,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -57,6 +58,15 @@ PRE_DIR = ROOT / "notes" / "pre_earnings"
 POST_DIR = ROOT / "notes" / "post_earnings"
 
 NOW_ISO = datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    """Write text to a sibling .tmp then os.replace, so a crash mid-write can
+    never leave a torn JSON file on disk (project convention; see _dump_json in
+    automation/jobs/reaction_populator.py)."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text)
+    os.replace(tmp, path)
 
 
 # ---------------------------------------------------------------------------
@@ -263,16 +273,28 @@ def select_guidance_baseline(consensus_prior, prior_guide):
     return None, None
 
 
-def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0.0):
+def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0.0,
+                          prior_fy_actual=None):
     """Compute the delta dict for one metric from new/prior midpoints.
 
-    Returns ``{deltaPct, deltaAbs, priorSource, streetDeltaPct, streetDeltaAbs}``
-    where the primary delta is vs the preferred baseline (prior_guide first,
-    consensus fallback). deltaPct is a fraction (None when the baseline is
+    Returns ``{deltaPct, deltaAbs, priorSource, basis, streetDeltaPct,
+    streetDeltaAbs}``. deltaPct is a fraction (None when the baseline is
     zero / near-zero so callers use deltaAbs). Returns None when the new
     midpoint or all baselines are missing.
 
-    streetDeltaPct / streetDeltaAbs are populated ONLY when the primary baseline
+    Baseline priority for the PRIMARY delta:
+      1. prior_fy_actual (when present) -> a REAL FY-guide vs prior-FY-actual
+         growth rate (basis "vs_prior_fy_actual"). This is exactly what the
+         Compare tab's NTM-growth rows want, so it wins when available. A genuine
+         YoY growth rate can legitimately exceed 40% for a fast-growing SaaS
+         name, so the quarterly-vs-FY units-mismatch sanity cap below does NOT
+         apply to this path.
+      2. prior_guide (basis "vs_prior_guide") then consensus (basis
+         "vs_consensus") -- the original raise/cut-then-vs-Street logic, which
+         keeps the 40% sanity cap because a >40% swing there signals a
+         quarterly-vs-FY units mismatch rather than reality.
+
+    streetDeltaPct / streetDeltaAbs are populated ONLY when the chosen baseline
     is the prior guide AND a prior Street consensus is ALSO present, so the card
     can render "Raise +X%, +Y% vs Street" without re-computing. They are None
     otherwise.
@@ -280,6 +302,21 @@ def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0
     cur = _parse_guide_num(new_mid)
     if cur is None:
         return None
+
+    # 1) Prior-FY-actual growth rate takes priority when grounded. No sanity cap
+    #    here: a real YoY growth rate can exceed 40% for a high-growth reporter.
+    pfa = _parse_guide_num(prior_fy_actual)
+    if pfa is not None and abs(pfa) > tiny_baseline:
+        delta_abs = cur - pfa
+        return {
+            "deltaPct": delta_abs / abs(pfa),
+            "deltaAbs": delta_abs,
+            "priorSource": "prior_fy_actual",
+            "basis": "vs_prior_fy_actual",
+            "streetDeltaPct": None,
+            "streetDeltaAbs": None,
+        }
+
     base, source = select_guidance_baseline(consensus_prior, prior_guide)
     if base is None:
         return None
@@ -298,6 +335,8 @@ def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0
     if delta_pct is not None and abs(delta_pct) > SANITY_MAX_DELTA:
         return None
 
+    basis = "vs_prior_guide" if source == "prior_guidance" else "vs_consensus"
+
     street_pct = None
     street_abs = None
     if source == "prior_guidance":
@@ -314,6 +353,7 @@ def _compute_metric_delta(new_mid, consensus_prior, prior_guide, tiny_baseline=0
         "deltaPct": delta_pct,
         "deltaAbs": delta_abs,
         "priorSource": source,
+        "basis": basis,
         "streetDeltaPct": street_pct,
         "streetDeltaAbs": street_abs,
     }
@@ -343,10 +383,13 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
         gvc.get("fy_rev_consensus_prior"),
         gvc.get("fy_rev_guide_midpoint_prior"),
         0.0,
+        prior_fy_actual=gvc.get("fy_rev_prior_fy_actual"),
     )
     if rev and rev["deltaPct"] is not None:
         out["guidanceRevenueDeltaPct"] = rev["deltaPct"]
         out["guidanceRevenuePriorSource"] = rev["priorSource"]
+        if rev.get("basis"):
+            out["guidanceRevenueDeltaBasis"] = rev["basis"]
         if rev.get("streetDeltaPct") is not None:
             out["guidanceRevenueStreetDeltaPct"] = rev["streetDeltaPct"]
     else:
@@ -355,9 +398,11 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
         if cons is not None:
             out["guidanceRevenueDeltaPct"] = cons
             out["guidanceRevenuePriorSource"] = "consensus"
+            out["guidanceRevenueDeltaBasis"] = "vs_consensus"
         elif prior is not None:
             out["guidanceRevenueDeltaPct"] = prior
             out["guidanceRevenuePriorSource"] = "prior_guidance"
+            out["guidanceRevenueDeltaBasis"] = "vs_prior_guide"
 
     # --- EPS (primary profitability) --- tiny baseline guard for near-zero EPS.
     eps = _compute_metric_delta(
@@ -371,6 +416,8 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
             out["guidanceEpsDeltaPct"] = eps["deltaPct"]
         out["guidanceEpsDeltaAbs"] = eps["deltaAbs"]
         out["guidanceEpsPriorSource"] = eps["priorSource"]
+        if eps.get("basis"):
+            out["guidanceEpsDeltaBasis"] = eps["basis"]
         if eps.get("streetDeltaPct") is not None:
             out["guidanceEpsStreetDeltaPct"] = eps["streetDeltaPct"]
         if eps.get("streetDeltaAbs") is not None:
@@ -381,9 +428,11 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
         if cons is not None:
             out["guidanceEpsDeltaPct"] = cons
             out["guidanceEpsPriorSource"] = "consensus"
+            out["guidanceEpsDeltaBasis"] = "vs_consensus"
         elif prior is not None:
             out["guidanceEpsDeltaPct"] = prior
             out["guidanceEpsPriorSource"] = "prior_guidance"
+            out["guidanceEpsDeltaBasis"] = "vs_prior_guide"
 
     # --- Operating profit / income (fallback profitability) ---
     op = _compute_metric_delta(
@@ -408,12 +457,15 @@ def normalize_guidance_envelope(gvc: dict | None) -> dict:
         gvc.get("fy_fcf_consensus_prior"),
         gvc.get("fy_fcf_guide_midpoint_prior"),
         0.0,
+        prior_fy_actual=gvc.get("fy_fcf_prior_fy_actual"),
     )
     if fcf:
         if fcf["deltaPct"] is not None:
             out["guidanceFcfDeltaPct"] = fcf["deltaPct"]
         out["guidanceFcfDeltaAbs"] = fcf["deltaAbs"]
         out["guidanceFcfPriorSource"] = fcf["priorSource"]
+        if fcf.get("basis"):
+            out["guidanceFcfDeltaBasis"] = fcf["basis"]
         if fcf.get("streetDeltaPct") is not None:
             out["guidanceFcfStreetDeltaPct"] = fcf["streetDeltaPct"]
         if fcf.get("streetDeltaAbs") is not None:
@@ -507,6 +559,9 @@ def _normalize_saas_metrics(gvc: dict, out: dict) -> None:
                 gvc.get(f"{base}_consensus_prior"),
                 gvc.get(f"{base}_guide_midpoint_prior"),
                 tiny,
+                # Prior-FY actual exists only for the FY horizon; it yields a real
+                # FY-guide vs prior-FY-actual growth rate (preferred when present).
+                prior_fy_actual=gvc.get(f"{base}_prior_fy_actual"),
             )
             if not delta:
                 continue
@@ -516,6 +571,8 @@ def _normalize_saas_metrics(gvc: dict, out: dict) -> None:
             if delta.get("deltaAbs") is not None:
                 out[f"{field}DeltaAbs"] = delta["deltaAbs"]
             out[f"{field}PriorSource"] = delta.get("priorSource") or "consensus"
+            if delta.get("basis"):
+                out[f"{field}DeltaBasis"] = delta["basis"]
             if delta.get("streetDeltaPct") is not None:
                 out[f"{field}StreetDeltaPct"] = delta["streetDeltaPct"]
             if delta.get("streetDeltaAbs") is not None:
@@ -559,6 +616,7 @@ def _normalize_bottom_line_metrics(gvc: dict, out: dict) -> None:
                 gvc.get(f"{base}_consensus_prior"),
                 gvc.get(f"{base}_guide_midpoint_prior"),
                 tiny,
+                prior_fy_actual=gvc.get(f"{base}_prior_fy_actual"),
             )
             if not delta:
                 continue
@@ -568,6 +626,8 @@ def _normalize_bottom_line_metrics(gvc: dict, out: dict) -> None:
             if delta.get("deltaAbs") is not None:
                 out[f"{field}DeltaAbs"] = delta["deltaAbs"]
             out[f"{field}PriorSource"] = delta.get("priorSource") or "consensus"
+            if delta.get("basis"):
+                out[f"{field}DeltaBasis"] = delta["basis"]
             if delta.get("streetDeltaPct") is not None:
                 out[f"{field}StreetDeltaPct"] = delta["streetDeltaPct"]
             if delta.get("streetDeltaAbs") is not None:
@@ -590,10 +650,12 @@ def _normalize_bottom_line_metrics(gvc: dict, out: dict) -> None:
 NORMALIZED_GUIDANCE_FIELDS = (
     "guidanceRevenueDeltaPct",
     "guidanceRevenuePriorSource",
+    "guidanceRevenueDeltaBasis",
     "guidanceRevenueStreetDeltaPct",
     "guidanceEpsDeltaPct",
     "guidanceEpsDeltaAbs",
     "guidanceEpsPriorSource",
+    "guidanceEpsDeltaBasis",
     "guidanceEpsStreetDeltaPct",
     "guidanceEpsStreetDeltaAbs",
     "guidanceOperatingProfitDeltaPct",
@@ -604,6 +666,7 @@ NORMALIZED_GUIDANCE_FIELDS = (
     "guidanceFcfDeltaPct",
     "guidanceFcfDeltaAbs",
     "guidanceFcfPriorSource",
+    "guidanceFcfDeltaBasis",
     "guidanceFcfStreetDeltaPct",
     "guidanceFcfStreetDeltaAbs",
     "guidanceProfitMetricUsed",
@@ -622,7 +685,7 @@ NORMALIZED_GUIDANCE_FIELDS = (
     for h_token in ("FY", "NextQ")
     for m_token in ("Arr", "Crpo", "Nrr", "Billings")
     for suffix in (
-        "DeltaPct", "DeltaAbs", "PriorSource",
+        "DeltaPct", "DeltaAbs", "PriorSource", "DeltaBasis",
         "StreetDeltaPct", "StreetDeltaAbs", "Units",
     )
 ) + tuple(
@@ -631,7 +694,7 @@ NORMALIZED_GUIDANCE_FIELDS = (
     for h_token in ("FY", "NextQ")
     for m_token in ("Fcf", "AdjEbitda", "AdjOpIncome")
     for suffix in (
-        "DeltaPct", "DeltaAbs", "PriorSource",
+        "DeltaPct", "DeltaAbs", "PriorSource", "DeltaBasis",
         "StreetDeltaPct", "StreetDeltaAbs", "Units",
     )
 ) + tuple(
@@ -1259,7 +1322,7 @@ def sync_calendar_from_intel(tickers: dict, dry_run: bool = False) -> int:
 
     if updated > 0 and not dry_run:
         cal["updated"] = NOW_ISO
-        CALENDAR_PATH.write_text(json.dumps(cal, indent=2, ensure_ascii=False))
+        _atomic_write_text(CALENDAR_PATH, json.dumps(cal, indent=2, ensure_ascii=False))
 
     return updated
 
@@ -1371,9 +1434,36 @@ def main():
             refreshed += 1
             refreshed_t.append(ticker)
 
+    # Re-derive the normalized split-guidance fields for EVERY ticker carrying a
+    # guide_vs_consensus envelope, not just note-backed ones. merge_intel only
+    # refreshes these for tickers that have a note (via REFRESH_ALWAYS), so a
+    # note-less reporter would otherwise keep stale normalized fields computed by
+    # an older normalizer (e.g. missing the new *DeltaBasis / prior-FY-actual
+    # values). Reconcile the full set: write fresh values AND clear any field the
+    # latest envelope no longer supports.
+    renorm = 0
+    for tk, rec in tickers.items():
+        gvc = rec.get("guide_vs_consensus")
+        if not gvc:
+            continue
+        normalized = normalize_guidance_envelope(gvc)
+        changed_rec = False
+        for field in NORMALIZED_GUIDANCE_FIELDS:
+            new_val = normalized.get(field)
+            if rec.get(field) != new_val:
+                if new_val is None and field in rec:
+                    rec[field] = None
+                    changed_rec = True
+                elif new_val is not None:
+                    rec[field] = new_val
+                    changed_rec = True
+        if changed_rec:
+            renorm += 1
+
     intel["last_updated"] = NOW_ISO
 
     msg = (f"seeded={seeded} upgraded={upgraded} refreshed={refreshed} skipped={skipped}"
+           + (f" renorm={renorm}" if renorm else "")
            + (" (force-rebuild)" if args.force_rebuild else ""))
     if args.dry_run:
         print(f"[DRY RUN] {msg}")
@@ -1381,7 +1471,7 @@ def main():
         # ensure_ascii=False preserves the file's raw-UTF-8 on-disk encoding
         # (em-dashes etc.) so the sync diff stays limited to changed fields
         # instead of re-escaping every Unicode character.
-        INTEL_PATH.write_text(json.dumps(intel, indent=2, ensure_ascii=False))
+        _atomic_write_text(INTEL_PATH, json.dumps(intel, indent=2, ensure_ascii=False))
         print(f"[OK] earnings_intel.json synced -- {msg}")
 
     # Backfill structured results_vs_consensus / guide_vs_consensus fields the
