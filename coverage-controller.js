@@ -712,71 +712,61 @@
     }
 
     var selected = _compareSelection();
-    var isSuggestion = false;
-    var tickers = selected;
-    if (!tickers || tickers.length < 2) {
-      // Show suggestion table as a preview, but make it visually distinct.
-      tickers = _suggestedTickers();
-      isSuggestion = true;
-    }
+    var hasSelection = selected && selected.length >= 2;
 
-    var data = _tickerData();
-    var rows = tickers.map(function (t) { return data[t] || { ticker: t }; });
-
-    function bestOf(key, dir) {
-      var vals = rows.map(function (r) { return r[key]; }).filter(function (v) { return typeof v === 'number'; });
-      if (!vals.length) return null;
-      return dir === 'min' ? Math.min.apply(null, vals) : Math.max.apply(null, vals);
-    }
-    var bestCheap = bestOf('evSales', 'min');
-    var bestGrowth = bestOf('revenueGrowth', 'max');
-    var bestM1 = bestOf('m1', 'max');
-
-    function cell(val, fmt, isBest) {
-      var html = fmt(val);
-      return '<td class="num' + (isBest ? ' compare-best' : '') + '">' + html + '</td>';
-    }
-
-    var headerCells = rows.map(function (r) {
-      var name = _commonName(r.ticker, r.name);
-      return '<th class="compare-th"><div class="compare-th-ticker">' + _escapeHtml(r.ticker) + '</div>' +
-             '<div class="compare-th-name">' + _escapeHtml(name || '') + '</div></th>';
-    }).join('');
-
-    var metrics = [
-      { label: 'Price',         key: 'price',          fmt: _fmtPrice,  best: null },
-      { label: 'Mkt Cap',       key: 'marketCap',      fmt: _fmtLarge,  best: null },
-      { label: 'EV',            key: 'ev',             fmt: _fmtLarge,  best: null },
-      { label: 'EV / Sales',    key: 'evSales',        fmt: _fmtMult,   best: bestCheap },
-      { label: 'EV / FCF',      key: 'evFcf',          fmt: _fmtMult,   best: null },
-      { label: 'Revenue gr.',   key: 'revenueGrowth',  fmt: _fmtPct,    best: bestGrowth },
-      { label: 'YTD',           key: 'ytd',            fmt: _fmtPct,    best: null },
-      { label: '1M',            key: 'm1',             fmt: _fmtPct,    best: bestM1 },
-      { label: '3M',            key: 'm3',             fmt: _fmtPct,    best: null },
-      { label: '1Y',            key: 'y1',             fmt: _fmtPct,    best: null }
-    ];
-
-    var bodyRows = metrics.map(function (m) {
-      var cells = rows.map(function (r) {
-        var v = r[m.key];
-        var isBest = (m.best != null && v === m.best);
-        return cell(v, m.fmt, isBest);
-      }).join('');
-      return '<tr><th class="compare-row-label">' + m.label + '</th>' + cells + '</tr>';
-    }).join('');
-
-    var tableClass = 'compare-mvp-table' + (isSuggestion ? ' is-suggestion' : '');
-
+    // Layout: picker bar at top, then either the rich Compare surface
+    // (>=2 picked) or suggestion baskets (<2 picked).
     pane.innerHTML =
-      _renderPickerBar(selected, isSuggestion) +
-      '<div class="compare-mvp-table-wrap">' +
-        '<table class="' + tableClass + '">' +
-          '<thead><tr><th class="compare-row-label-head">Metric</th>' + headerCells + '</tr></thead>' +
-          '<tbody>' + bodyRows + '</tbody>' +
-        '</table>' +
-      '</div>';
-
+      _renderPickerBar(selected, false) +
+      '<div class="compare-content-slot" id="compare-content-slot"></div>';
     _wireComparePicker(pane);
+
+    var slot = pane.querySelector('#compare-content-slot');
+    if (!slot) return;
+
+    if (hasSelection && global.SignalCompare && typeof global.SignalCompare.renderTabSurface === 'function') {
+      global.SignalCompare.renderTabSurface(slot, selected);
+    } else {
+      // <2 tickers picked: show suggestion baskets (Sprint 2b will enrich this).
+      _renderCompareEmptyState(slot, selected || []);
+      if (global.SignalCompare && typeof global.SignalCompare.unmountTabSurface === 'function') {
+        global.SignalCompare.unmountTabSurface();
+      }
+    }
+  }
+
+  /** Stub empty state. Sprint 2b replaces this with rich suggestion baskets. */
+  function _renderCompareEmptyState(slot, selected) {
+    var hint = selected.length === 0
+      ? 'Pick 2-4 tickers above to start comparing.'
+      : 'Pick at least 1 more ticker above.';
+    var picks = _suggestedTickers().slice(0, 4);
+    var chips = picks.map(function (t) {
+      var d = _tickerData()[t] || {};
+      var name = _commonName(t, d.name);
+      var change = (typeof d.change1d === 'number') ? d.change1d : null;
+      var changeStr = (change == null) ? '' : ((change > 0 ? '+' : '') + change.toFixed(1) + '%');
+      var changeCls = change == null ? '' : (change > 0 ? ' pos' : ' neg');
+      return '<button type="button" class="cmp-empty-chip" data-ticker="' + _escapeHtml(t) + '">' +
+        '<span class="cmp-empty-chip-tk">' + _escapeHtml(t) + '</span>' +
+        '<span class="cmp-empty-chip-name">' + _escapeHtml(name || '') + '</span>' +
+        '<span class="cmp-empty-chip-change' + changeCls + '">' + _escapeHtml(changeStr) + '</span>' +
+      '</button>';
+    }).join('');
+    slot.innerHTML =
+      '<div class="cmp-empty-state">' +
+        '<div class="cmp-empty-hint">' + _escapeHtml(hint) + '</div>' +
+        '<div class="cmp-empty-subhint">Quick start — top movers today:</div>' +
+        '<div class="cmp-empty-chips">' + chips + '</div>' +
+      '</div>';
+    slot.querySelectorAll('.cmp-empty-chip').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var t = btn.dataset.ticker;
+        if (t && global.SignalCompare && typeof global.SignalCompare.toggleTicker === 'function') {
+          global.SignalCompare.toggleTicker(t);
+        }
+      });
+    });
   }
 
   // ---------------------------------------------------------------

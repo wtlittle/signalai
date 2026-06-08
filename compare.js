@@ -46,6 +46,8 @@
     earningsReactionsCache: {},      // { TICKER: [{date, move_pct}, ...] }
     etfSeriesCache: {},              // { 'ETF_RANGE': series } for alpha badges
     quarterlyCache: {},              // { TICKER: {revGrowth:[], fcfMargin:[], opMargin:[]} }
+    surfaceBodyEl: null,             // when set, renderActiveTab renders here (tab surface mode)
+    surfaceContainer: null,          // outer container for the tab surface
   };
 
   const TAB_ORDER = ['overview', 'trends', 'fundamentals', 'scorecard', 'radar', 'intel', 'ai-read'];
@@ -222,6 +224,9 @@
   function openPopup(tickers) {
     state.popupTicker = tickers.slice();
     state.popupOpen = true;
+    // While modal is open, suppress surface routing so renderActiveTab targets
+    // the modal body. The surface re-binds itself on signalcompare:modal-closed.
+    state.surfaceBodyEl = null;
     hydrateTab();
     if (!TAB_ORDER.includes(state.activeTab)) state.activeTab = 'overview';
     state.chartRange = '3M';
@@ -234,13 +239,19 @@
   }
 
   function closePopup() {
+    const wasOpen = state.popupOpen;
     state.popupOpen = false;
-    state.popupTicker = null;
+    // Don't null popupTicker if the surface is still mounted — we want the
+    // tab to keep showing the same selection after the modal closes.
+    if (!state.surfaceContainer) state.popupTicker = null;
     document.body.style.overflow = '';
     const overlay = document.getElementById('compare-popup-overlay');
     if (overlay) overlay.classList.remove('active');
     if (state.chart) { state.chart.destroy(); state.chart = null; }
     if (state.radarChart) { state.radarChart.destroy(); state.radarChart = null; }
+    if (wasOpen) {
+      document.dispatchEvent(new CustomEvent('signalcompare:modal-closed'));
+    }
   }
 
   function ensureOverlay() {
@@ -303,8 +314,14 @@
     renderActiveTab();
   }
 
-  function renderActiveTab() {
-    const body = document.getElementById('compare-body');
+  /**
+   * Render the active tab's content into a body element. When called with no
+   * argument, falls back to `state.surfaceBodyEl` (if the Compare tab surface
+   * is mounted) or the modal's `#compare-body`. This lets the same render
+   * functions power both the modal AND the in-tab surface.
+   */
+  function renderActiveTab(bodyEl) {
+    const body = bodyEl || state.surfaceBodyEl || document.getElementById('compare-body');
     if (!body) return;
     const tickers = state.popupTicker || [];
     const rows = tickers.map(t => augmentRow(t, (global.tickerData || {})[t] || { ticker: t }));
@@ -323,6 +340,126 @@
         return;
       default: return renderOverview(body, tickers, rows);
     }
+  }
+
+  // ======================= TAB SURFACE (Rich Compare as a tab) =======================
+  /**
+   * Mount the Rich Compare experience inside an arbitrary container (the
+   * Compare tab in coverage-controller). Uses a left-rail vertical tab layout
+   * and shares the same renderActiveTab() pipeline as the modal popup.
+   *
+   * @param {HTMLElement} container outer container that owns the surface
+   * @param {string[]} tickers      array of tickers to compare (>= 2)
+   * @param {object} [opts]
+   * @param {string} [opts.bodyId='compare-body']  id assigned to the body el
+   *                                              (uses 'compare-body' so the
+   *                                              existing render functions that
+   *                                              do getElementById('cmp-chart')
+   *                                              etc. find their canvases)
+   */
+  function renderTabSurface(container, tickers, opts) {
+    if (!container || !Array.isArray(tickers)) return;
+    opts = opts || {};
+    state.popupTicker = tickers.slice();
+    state.popupOpen = false;
+    hydrateTab();
+    if (!TAB_ORDER.includes(state.activeTab)) state.activeTab = 'overview';
+
+    state.surfaceContainer = container;
+    const bodyId = opts.bodyId || 'compare-body';
+
+    container.innerHTML =
+      '<div class="cmp-surface">' +
+        '<div class="cmp-surface-header">' +
+          '<div class="cmp-surface-title">' +
+            '<h3 class="cmp-surface-title-main">' + tickers.map(escapeHtml).join(' <span class="cmp-vs">vs</span> ') + '</h3>' +
+            '<div class="cmp-surface-subtitle" id="cmp-surface-subtitle"></div>' +
+          '</div>' +
+          '<div class="cmp-surface-header-actions">' +
+            '<button type="button" class="btn-sm btn-ghost" id="cmp-surface-modal" title="Open in modal (quick-peek)">Open in modal</button>' +
+            '<button type="button" class="btn-sm btn-ghost" id="cmp-surface-export" title="Copy comparison as Markdown">Copy as MD</button>' +
+            '<button type="button" class="btn-sm btn-ghost" id="cmp-surface-snapshot" title="Save current view to local notes">Save snapshot</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cmp-surface-grid">' +
+          '<nav class="cmp-surface-rail" role="tablist" aria-label="Compare sections">' +
+            TAB_ORDER.map(function (t) {
+              return '<button type="button" class="cmp-rail-tab' + (state.activeTab === t ? ' active' : '') +
+                '" data-tab="' + t + '" role="tab" aria-selected="' + (state.activeTab === t ? 'true' : 'false') + '">' +
+                '<span class="cmp-rail-tab-label">' + escapeHtml(TAB_LABELS[t]) + '</span>' +
+                '<span data-help="compare.tab.' + t + '"></span>' +
+              '</button>';
+            }).join('') +
+          '</nav>' +
+          '<div class="cmp-surface-body" id="' + bodyId + '"></div>' +
+        '</div>' +
+      '</div>';
+
+    // Populate subtitle (names)
+    const namesLine = tickers.map(function (t) {
+      const d = (global.tickerData || {})[t] || {};
+      const name = (typeof global.getCommonName === 'function') ? global.getCommonName(t, d.name) : (d.name || t);
+      return name;
+    }).join('  \u00b7  ');
+    const subtitleEl = container.querySelector('#cmp-surface-subtitle');
+    if (subtitleEl) subtitleEl.textContent = namesLine;
+
+    // Resolve body element and remember it so renderActiveTab() routes here.
+    const bodyEl = container.querySelector('#' + bodyId);
+    state.surfaceBodyEl = bodyEl;
+
+    // Wire rail tab clicks
+    container.querySelectorAll('.cmp-rail-tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const t = btn.dataset.tab;
+        if (!t || t === state.activeTab) return;
+        container.querySelectorAll('.cmp-rail-tab').forEach(function (b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        state.activeTab = t;
+        persistTab(t);
+        renderActiveTab();
+      });
+    });
+
+    // Header actions
+    const modalBtn = container.querySelector('#cmp-surface-modal');
+    if (modalBtn) {
+      modalBtn.addEventListener('click', function () {
+        // Quick-peek the same selection in the modal. Modal sets surfaceBodyEl=null
+        // via openPopup so its renderActiveTab targets the modal body.
+        state.surfaceBodyEl = null;
+        openPopup(state.popupTicker || []);
+        // Restore the surface binding when the modal closes so the tab keeps working.
+        const restore = function () {
+          if (state.surfaceContainer && document.body.contains(state.surfaceContainer)) {
+            const body = state.surfaceContainer.querySelector('#' + bodyId);
+            if (body) state.surfaceBodyEl = body;
+          }
+          document.removeEventListener('signalcompare:modal-closed', restore);
+        };
+        document.addEventListener('signalcompare:modal-closed', restore);
+      });
+    }
+    const exportBtn = container.querySelector('#cmp-surface-export');
+    if (exportBtn) exportBtn.addEventListener('click', exportAsMarkdown);
+    const snapBtn = container.querySelector('#cmp-surface-snapshot');
+    if (snapBtn) snapBtn.addEventListener('click', saveSnapshot);
+
+    // Render the active tab into the surface body.
+    renderActiveTab(bodyEl);
+  }
+
+  /** Tear down the tab-surface binding (called when the Compare tab unmounts
+   *  or selection drops below 2). */
+  function unmountTabSurface() {
+    state.surfaceBodyEl = null;
+    state.surfaceContainer = null;
+    if (state.chart) { state.chart.destroy(); state.chart = null; }
+    if (state.radarChart) { state.radarChart.destroy(); state.radarChart = null; }
   }
 
   // ======================= ROW AUGMENTATION =======================
@@ -1850,6 +1987,10 @@
     closePopup,
     updateTray,
     refreshTrayVisibility: function () { updateTray(); },
+    renderTabSurface: renderTabSurface,
+    unmountTabSurface: unmountTabSurface,
+    TAB_ORDER: TAB_ORDER.slice(),
+    TAB_LABELS: Object.assign({}, TAB_LABELS),
     MAX_PICK: MAX_PICK
   };
 
