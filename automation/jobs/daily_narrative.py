@@ -112,15 +112,16 @@ PROMPT_TEMPLATE = """You are writing a 3-sentence end-of-day briefing for a buy-
 OBSERVED DATA:
 {context}
 
-Write exactly 3 sentences:
-1) What happened today — the headline move and what is actually driving it (cite the data and the named news catalyst from your knowledge of today's session if obvious).
-2) What it means in context — connect to the regime, factor leadership, or the sector rotation visible in the data above.
-3) What to watch tomorrow — one specific catalyst, data print, or signal worth tracking (earnings/economic data/policy/follow-through risk).
+Return TWO short paragraphs separated by a blank line:
+
+PARAGRAPH 1 (What happened): Exactly 2 sentences. (a) The headline move and what is actually driving it (cite the data and the named news catalyst from your knowledge of today's session if obvious). (b) What it means in context — connect to the regime, factor leadership, or the sector rotation visible in the data above.
+
+PARAGRAPH 2 (Tomorrow watch): Exactly 1 sentence. One specific catalyst, data print, or signal worth tracking (earnings/economic data/policy/follow-through risk).
 
 Constraints: No emoji. No markdown headers or bold. Plain prose. Each sentence under 35 words. Do not invent specific company news that is not consistent with the data above. If unsure about a catalyst, say "the move appears to reflect" rather than asserting a cause.
 
 Return JSON only:
-{{"text": "Sentence 1. Sentence 2. Sentence 3."}}
+{{"happened": "Sentence 1. Sentence 2.", "tomorrow": "Sentence 3."}}
 """
 
 
@@ -152,30 +153,42 @@ def run():
         print(f"  ERROR: sonar call failed: {exc}")
         return 2
 
-    text = None
+    happened = None
+    tomorrow = None
     if isinstance(resp, dict):
-        text = resp.get("text") or resp.get("narrative")
-        if not text and "raw" in resp:
-            # Try to fish JSON out of raw
+        happened = resp.get("happened")
+        tomorrow = resp.get("tomorrow")
+        if (not happened or not tomorrow) and "raw" in resp:
             raw = resp["raw"]
             try:
                 parsed = json.loads(raw)
-                text = parsed.get("text")
+                happened = happened or parsed.get("happened")
+                tomorrow = tomorrow or parsed.get("tomorrow")
             except (ValueError, TypeError):
                 pass
-    if not text or not str(text).strip():
-        print(f"  ERROR: no usable text in response (keys={list(resp.keys()) if isinstance(resp, dict) else type(resp).__name__})")
+        # Back-compat fallback: old single-text field
+        if not happened and not tomorrow:
+            text = resp.get("text") or resp.get("narrative")
+            if text:
+                happened = str(text)
+
+    if not (happened or tomorrow):
+        print(f"  ERROR: no usable text in response")
         return 3
 
-    text = str(text).strip()
+    happened = str(happened or "").strip()
+    tomorrow = str(tomorrow or "").strip()
     macro["daily_narrative"] = {
-        "text": text,
+        "happened": happened,
+        "tomorrow": tomorrow,
         "generated_at": datetime.utcnow().isoformat() + "Z",
         "model": "sonar",
     }
     MACRO_PATH.write_text(json.dumps(macro, indent=2))
-    print(f"  Wrote {len(text)} chars to macro_data.daily_narrative")
-    print(f"  Preview: {text[:160]}{'...' if len(text) > 160 else ''}")
+    total = len(happened) + len(tomorrow)
+    print(f"  Wrote {total} chars to macro_data.daily_narrative (happened={len(happened)}, tomorrow={len(tomorrow)})")
+    print(f"  Happened: {happened[:140]}{'...' if len(happened) > 140 else ''}")
+    print(f"  Tomorrow: {tomorrow[:140]}{'...' if len(tomorrow) > 140 else ''}")
     return 0
 
 

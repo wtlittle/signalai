@@ -84,50 +84,389 @@ WEEKLY_REQUIRED_KEYS = [
 ]
 
 
-def _render_value_pick(p):
-    """Render a single value pick block.
+# --------------------------------------------------------------------------- #
+# Enriched pick rendering helpers (price, sector valuation, 52w range)
+# --------------------------------------------------------------------------- #
+def _fmt_pct_signed(v):
+    if v is None:
+        return NA
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return NA
+    return f"{'+' if f >= 0 else ''}{f:.1f}%"
 
-    Header:  "TICKER — Name (P/E X, Yield Y%)"
-    Then Thesis / Catalyst / Risk on their own lines.
+
+def _fmt_price(v):
+    if v is None:
+        return NA
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return NA
+    return f"${f:,.2f}"
+
+
+def _fmt_mult(v):
+    """Format a valuation multiple as e.g. '14.1x'. Returns n/a on failure."""
+    if v is None:
+        return NA
+    try:
+        return f"{float(v):.1f}x"
+    except (TypeError, ValueError):
+        return NA
+
+
+def _fmt_mult_range(low, high):
+    lo = _fmt_mult(low)
+    hi = _fmt_mult(high)
+    if lo == NA and hi == NA:
+        return NA
+    return f"{lo}–{hi}"
+
+
+def _price_line(p):
+    """One-liner: '$188.32  1D +0.5%  1W -1.2%  1M -3.4%  YTD -8.1%'."""
+    parts = [_fmt_price(p.get("_price"))]
+    for lbl, key in (("1D", "_change1d"), ("1W", "_change1w"), ("1M", "_change1m"), ("YTD", "_changeYtd")):
+        v = p.get(key)
+        if v is not None:
+            parts.append(f"{lbl} {_fmt_pct_signed(v)}")
+    return "  ".join(parts)
+
+
+def _valuation_line(p):
+    """One-liner: 'EV/Sales 7.4x (52w implied 5.3x–8.2x)' or 'Forward P/E n/a'."""
+    name = p.get("_multiple_name") or DEFAULT_MULTIPLE
+    cur = _fmt_mult(p.get("_multiple_current"))
+    rng = _fmt_mult_range(p.get("_multiple_low_52w"), p.get("_multiple_high_52w"))
+    if rng == NA:
+        return f"{name} {cur}"
+    return f"{name} {cur}  (52w implied {rng})"
+
+
+def _render_value_pick(p):
+    """Render an ENRICHED value pick block (plain text, pretty).
+
+    Layout:
+      TICKER — Name (Sector)
+        Price:      $X.XX  1D ±X%  1W ±X%  1M ±X%  YTD ±X%
+        Valuation:  EV/Sales/EV-EBITDA/P/E  X.Xx  (52w implied X.Xx–Y.Yx)
+        Thesis:     ...
+        Catalyst:   ...
+        Risk:       ...
+    Yield shown only when present in the source JSON. Multi-line wrapping NOT
+    performed (email clients handle it). Truncated upstream values preserved.
     """
     ticker = _na(p.get("ticker"))
     name = _na(_first(p, "name", "company"))
-    pe = _first(p, "pe_ratio", "pe", "forward_pe")
+    sector = _na(p.get("_sector"))
     yld = _first(p, "dividend_yield", "yield")
-
-    pe_str = _na(pe)
-    yld_str = _na(yld)
-    # Dividend yield may already include a % in the data; only append when absent.
+    yld_str = _na(yld) if yld is not None else NA
     if yld_str != NA and not yld_str.endswith("%"):
         yld_str = f"{yld_str}%"
 
-    header = f"{ticker} — {name} (P/E {pe_str}, Yield {yld_str})"
-    lines = [header]
-    lines.append(f"Thesis: {_na(p.get('thesis'))}")
-    lines.append(f"Catalyst: {_na(p.get('catalyst'))}")
-    lines.append(f"Risk: {_na(p.get('risk'))}")
+    lines = []
+    header = f"{ticker} — {name}"
+    if sector != NA:
+        header += f"  ({sector})"
+    lines.append(header)
+    lines.append(f"  Price:      {_price_line(p)}")
+    val_line = _valuation_line(p)
+    if yld_str != NA:
+        val_line += f"  |  Div Yield {yld_str}"
+    lines.append(f"  Valuation:  {val_line}")
+    lines.append(f"  Thesis:     {_na(p.get('thesis'))}")
+    lines.append(f"  Catalyst:   {_na(p.get('catalyst'))}")
+    lines.append(f"  Risk:       {_na(p.get('risk'))}")
     return "\n".join(lines)
 
 
 def _render_momentum_pick(p):
-    """Render a single momentum pick block.
+    """Render an ENRICHED momentum pick block (plain text, pretty).
 
-    Header:  "TICKER — Name"
-    Then:    "1M: ... Rev: ...", "Catalyst: ...", "R/R: ..."
-    Truncated upstream values are preserved as-is (no padding).
+    Layout:
+      TICKER — Name (Sector)
+        Price:      $X.XX  1D ±X%  1W ±X%  1M ±X%  YTD ±X%
+        Valuation:  EV/Sales/EV-EBITDA/P/E  X.Xx  (52w implied X.Xx–Y.Yx)
+        Rev:        Y%  |  1W (briefing): ...  |  3M (briefing): ...
+        Catalyst:   ...
+        R/R:        ...
+    Falls back to briefing-supplied perf strings only when the structured
+    perf fields are absent (preserves 'pulled from briefing prose' fidelity).
     """
     ticker = _na(p.get("ticker"))
     name = _na(_first(p, "name", "company"))
-    one_month = _first(p, "one_month_perf", "1m", "one_month")
+    sector = _na(p.get("_sector"))
     rev = _first(p, "revenue_growth", "rev_growth", "rev")
     catalyst = p.get("catalyst")
     rr = _first(p, "risk_reward", "r_r", "rr")
+    one_week = _first(p, "one_week_perf")
+    three_month = _first(p, "three_month_perf")
 
-    lines = [f"{ticker} — {name}"]
-    lines.append(f"1M: {_na(one_month)}  Rev: {_na(rev)}")
-    lines.append(f"Catalyst: {_na(catalyst)}")
-    lines.append(f"R/R: {_na(rr)}")
+    lines = []
+    header = f"{ticker} — {name}"
+    if sector != NA:
+        header += f"  ({sector})"
+    lines.append(header)
+    lines.append(f"  Price:      {_price_line(p)}")
+    lines.append(f"  Valuation:  {_valuation_line(p)}")
+
+    extras = []
+    if rev is not None:
+        extras.append(f"Rev growth {_na(rev)}")
+    # Surface briefing-prose perf only if structured 1d/1w/1m didn't render anything useful
+    if p.get("_change1w") is None and one_week:
+        extras.append(f"1W (briefing) {_na(one_week)}")
+    if p.get("_change1m") is None and three_month:
+        extras.append(f"3M (briefing) {_na(three_month)}")
+    if extras:
+        lines.append(f"  Context:    " + "  |  ".join(extras))
+
+    lines.append(f"  Catalyst:   {_na(catalyst)}")
+    lines.append(f"  R/R:        {_na(rr)}")
     return "\n".join(lines)
+
+
+# --------------------------------------------------------------------------- #
+# HTML weekly renderer (color-coded, table layouts)
+# --------------------------------------------------------------------------- #
+HTML_STYLES = """
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1d1d1f; line-height: 1.5; max-width: 740px; margin: 0 auto; padding: 24px; background: #fafafa; }
+  h1 { font-size: 22px; margin: 0 0 4px 0; font-weight: 600; }
+  .sub { color: #666; font-size: 13px; margin-bottom: 24px; }
+  h2 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #555; margin: 28px 0 12px 0; padding-bottom: 6px; border-bottom: 1px solid #d0d0d0; }
+  .narrative { background: #fff; border-left: 3px solid #0070f3; padding: 14px 16px; margin: 12px 0; border-radius: 4px; }
+  .narrative p { margin: 0 0 8px 0; }
+  .narrative p:last-child { margin: 0; }
+  .tomorrow { color: #0070f3; font-weight: 500; }
+  table.idx { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.idx td { padding: 6px 10px; border-bottom: 1px solid #eee; }
+  table.idx td.lbl { font-weight: 500; }
+  table.idx td.num { font-variant-numeric: tabular-nums; text-align: right; }
+  .pick { background: #fff; padding: 14px 18px; margin: 10px 0; border-radius: 6px; border: 1px solid #e5e5e5; }
+  .pick-head { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+  .pick-sector { color: #777; font-weight: 400; font-size: 13px; }
+  .pick table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 6px 0; }
+  .pick table td { padding: 3px 6px 3px 0; vertical-align: top; }
+  .pick td.k { color: #666; width: 90px; font-weight: 500; }
+  .pick td.v { font-variant-numeric: tabular-nums; }
+  .up { color: #007a3d; font-weight: 500; }
+  .dn { color: #c41a1a; font-weight: 500; }
+  .multline { display: inline-block; padding: 2px 6px; background: #f4f4f4; border-radius: 3px; font-size: 12px; }
+  .narr-line { font-size: 13px; color: #444; margin: 4px 0 0 0; }
+  ul.trends, ul.risks { margin: 6px 0; padding-left: 20px; font-size: 13px; }
+  ul.trends li, ul.risks li { margin: 4px 0; }
+  .mover { font-size: 13px; padding: 4px 0; border-bottom: 1px dotted #eee; }
+  .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 12px; color: #888; }
+  .footer a { color: #0070f3; text-decoration: none; }
+"""
+
+
+def _html_pct(v):
+    if v is None:
+        return f'<span style="color:#999">n/a</span>'
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return f'<span style="color:#999">n/a</span>'
+    cls = "up" if f >= 0 else "dn"
+    sign = "+" if f >= 0 else ""
+    return f'<span class="{cls}">{sign}{f:.1f}%</span>'
+
+
+def _html_pct_str(s):
+    """Color-code a free-form percent string like '+12%' or '≈+35%' or '-3.5%'."""
+    if not s:
+        return '<span style="color:#999">n/a</span>'
+    s = str(s)
+    # Look for first +/- digit pattern to decide color
+    import re
+    m = re.search(r"([+-]?)\s*(\d+(?:\.\d+)?)\s*%", s)
+    if not m:
+        return s
+    sign = m.group(1)
+    if sign == "-":
+        return f'<span class="dn">{s}</span>'
+    return f'<span class="up">{s}</span>'
+
+
+def _render_value_pick_html(p):
+    ticker = _na(p.get("ticker"))
+    name = _na(_first(p, "name", "company"))
+    sector = _na(p.get("_sector"))
+    price = _fmt_price(p.get("_price"))
+    yld = _first(p, "dividend_yield", "yield")
+    yld_str = _na(yld) if yld is not None else NA
+    if yld_str != NA and not yld_str.endswith("%"):
+        yld_str = f"{yld_str}%"
+
+    perf = "&nbsp;&nbsp;".join(
+        f"{lbl} {_html_pct(p.get(key))}"
+        for lbl, key in (("1D", "_change1d"), ("1W", "_change1w"), ("1M", "_change1m"), ("YTD", "_changeYtd"))
+        if p.get(key) is not None
+    )
+    if not perf:
+        perf = '<span style="color:#999">n/a</span>'
+
+    mult_name = p.get("_multiple_name") or DEFAULT_MULTIPLE
+    mult_cur = _fmt_mult(p.get("_multiple_current"))
+    mult_range = _fmt_mult_range(p.get("_multiple_low_52w"), p.get("_multiple_high_52w"))
+    val_html = f'<strong>{mult_name}</strong> {mult_cur}'
+    if mult_range != NA:
+        val_html += f' &nbsp;<span class="multline">52w implied {mult_range}</span>'
+    if yld_str != NA:
+        val_html += f' &nbsp;<span class="multline">Div Yield {yld_str}</span>'
+
+    return f"""
+<div class="pick">
+  <div class="pick-head">{ticker} — {name} <span class="pick-sector">({sector})</span></div>
+  <table>
+    <tr><td class="k">Price</td><td class="v">{price} &nbsp; {perf}</td></tr>
+    <tr><td class="k">Valuation</td><td class="v">{val_html}</td></tr>
+    <tr><td class="k">Thesis</td><td>{_na(p.get('thesis'))}</td></tr>
+    <tr><td class="k">Catalyst</td><td>{_na(p.get('catalyst'))}</td></tr>
+    <tr><td class="k">Risk</td><td>{_na(p.get('risk'))}</td></tr>
+  </table>
+</div>"""
+
+
+def _render_momentum_pick_html(p):
+    ticker = _na(p.get("ticker"))
+    name = _na(_first(p, "name", "company"))
+    sector = _na(p.get("_sector"))
+    price = _fmt_price(p.get("_price"))
+    rev = _first(p, "revenue_growth", "rev_growth", "rev")
+    one_week_brief = _first(p, "one_week_perf")
+    three_month_brief = _first(p, "three_month_perf")
+
+    perf = "&nbsp;&nbsp;".join(
+        f"{lbl} {_html_pct(p.get(key))}"
+        for lbl, key in (("1D", "_change1d"), ("1W", "_change1w"), ("1M", "_change1m"), ("YTD", "_changeYtd"))
+        if p.get(key) is not None
+    )
+    if not perf:
+        perf = '<span style="color:#999">n/a</span>'
+
+    mult_name = p.get("_multiple_name") or DEFAULT_MULTIPLE
+    mult_cur = _fmt_mult(p.get("_multiple_current"))
+    mult_range = _fmt_mult_range(p.get("_multiple_low_52w"), p.get("_multiple_high_52w"))
+    val_html = f'<strong>{mult_name}</strong> {mult_cur}'
+    if mult_range != NA:
+        val_html += f' &nbsp;<span class="multline">52w implied {mult_range}</span>'
+
+    context_bits = []
+    if rev is not None:
+        context_bits.append(f'Rev growth {_html_pct_str(rev)}')
+    if p.get("_change1w") is None and one_week_brief:
+        context_bits.append(f'1W (briefing) {_html_pct_str(one_week_brief)}')
+    if p.get("_change1m") is None and three_month_brief:
+        context_bits.append(f'3M (briefing) {_html_pct_str(three_month_brief)}')
+    ctx_row = ""
+    if context_bits:
+        ctx_row = f'<tr><td class="k">Context</td><td class="v">{" &nbsp;|&nbsp; ".join(context_bits)}</td></tr>'
+
+    return f"""
+<div class="pick">
+  <div class="pick-head">{ticker} — {name} <span class="pick-sector">({sector})</span></div>
+  <table>
+    <tr><td class="k">Price</td><td class="v">{price} &nbsp; {perf}</td></tr>
+    <tr><td class="k">Valuation</td><td class="v">{val_html}</td></tr>
+    {ctx_row}
+    <tr><td class="k">Catalyst</td><td>{_na(p.get('catalyst'))}</td></tr>
+    <tr><td class="k">R/R</td><td>{_na(_first(p, 'risk_reward', 'r_r', 'rr'))}</td></tr>
+  </table>
+</div>"""
+
+
+def render_weekly_html(data):
+    """Render the full weekly briefing as HTML (table-based, color-coded).
+
+    Shares the same enriched picks that the plain-text path uses. Inline
+    CSS only (Gmail strips <style> in some clients; we include both for
+    safety).
+    """
+    from automation.jobs.weekly_pick_enricher import enrich_picks
+    snap_path = os.path.join(CANONICAL_DIR, "data-snapshot.json")
+    snap = _load_json(snap_path) or {}
+    quotes = snap.get("quotes") or {}
+
+    value_picks_e = enrich_picks(data.get("value_picks") or [], quotes)
+    momentum_picks_e = enrich_picks(data.get("momentum_picks") or [], quotes)
+
+    week_ending = _na(data.get("week_ending"))
+    market_summary = _na(_first(data, "market_summary", "narrative"))
+
+    # Indices block
+    idx = data.get("index_returns") or {}
+    idx_rows = ""
+    for label in ("S&P 500", "NASDAQ Composite", "Dow Jones"):
+        if label in idx:
+            idx_rows += f'<tr><td class="lbl">{label}</td><td class="num">{_html_pct_str(idx[label])}</td></tr>'
+    for label, v in idx.items():
+        if label not in ("S&P 500", "NASDAQ Composite", "Dow Jones"):
+            idx_rows += f'<tr><td class="lbl">{label}</td><td class="num">{_html_pct_str(v)}</td></tr>'
+
+    # Value & momentum picks
+    value_html = "".join(_render_value_pick_html(p) for p in value_picks_e) or "<p>n/a</p>"
+    momentum_html = "".join(_render_momentum_pick_html(p) for p in momentum_picks_e) or "<p>n/a</p>"
+
+    # Trends
+    trends = data.get("trends") or []
+    trends_html = "".join(
+        f'<li><strong>{_na(_first(t, "theme", "name"))}:</strong> {_na(_first(t, "summary", "description"))} '
+        f'<span style="color:#888">[{", ".join(str(x) for x in (t.get("tickers") or []))}]</span></li>'
+        for t in trends
+    ) or "<li>n/a</li>"
+
+    # Risks
+    risks = data.get("risks") or []
+    risks_html = "".join(
+        f'<li><strong>{_na(_first(r, "risk", "name"))}:</strong> {_na(r.get("impact"))}</li>'
+        for r in risks
+    ) or "<li>n/a</li>"
+
+    # Movers
+    movers = data.get("watchlist_movers") or []
+    movers_html = "".join(
+        f'<div class="mover"><strong>{_na(m.get("ticker"))}</strong> {_html_pct_str(_first(m, "move_pct", "change"))} — {_na(_first(m, "reason", "note"))}</div>'
+        for m in movers
+    ) or "<p>n/a</p>"
+
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>{HTML_STYLES}</style></head>
+<body>
+<h1>SignalAI Weekly Briefing</h1>
+<div class="sub">Week Ending {week_ending}</div>
+
+<h2>Market Summary</h2>
+<div class="narrative"><p>{market_summary}</p></div>
+
+<h2>Index Returns (Week)</h2>
+<table class="idx">{idx_rows or '<tr><td>n/a</td></tr>'}</table>
+
+<h2>Top 5 Value Picks</h2>
+{value_html}
+
+<h2>Top 5 Momentum Picks</h2>
+{momentum_html}
+
+<h2>Key Trends</h2>
+<ul class="trends">{trends_html}</ul>
+
+<h2>Risks</h2>
+<ul class="risks">{risks_html}</ul>
+
+<h2>Notable Watchlist Movers</h2>
+{movers_html}
+
+<div class="footer">
+  <a href="{DASHBOARD_LINK}">Dashboard</a> &nbsp;|&nbsp;
+  <a href="{GITHUB_PAGES_LINK}">GitHub Pages</a>
+</div>
+
+</body></html>
+"""
 
 
 def render_weekly(data):
@@ -164,13 +503,22 @@ def render_weekly(data):
         out.append(NA)
     out.append("")
 
+    # Enrich picks once (shared across both pick sections)
+    from automation.jobs.weekly_pick_enricher import enrich_picks
+    snap = _load_json(os.path.join(CANONICAL_DIR, "data-snapshot.json")) or {}
+    snap_quotes = snap.get("quotes") or {}
+    value_picks_e = enrich_picks(data.get("value_picks") or [], snap_quotes)
+    momentum_picks_e = enrich_picks(data.get("momentum_picks") or [], snap_quotes)
+
+    DIV = "─" * 64
+
     # TOP 5 VALUE PICKS
     out.append("TOP 5 VALUE PICKS")
-    value_picks = data.get("value_picks") or []
-    if value_picks:
-        for i, p in enumerate(value_picks):
+    out.append(DIV)
+    if value_picks_e:
+        for i, p in enumerate(value_picks_e):
             out.append(_render_value_pick(p))
-            if i < len(value_picks) - 1:
+            if i < len(value_picks_e) - 1:
                 out.append("")
     else:
         out.append(NA)
@@ -178,11 +526,11 @@ def render_weekly(data):
 
     # TOP 5 MOMENTUM PICKS
     out.append("TOP 5 MOMENTUM PICKS")
-    momentum_picks = data.get("momentum_picks") or []
-    if momentum_picks:
-        for i, p in enumerate(momentum_picks):
+    out.append(DIV)
+    if momentum_picks_e:
+        for i, p in enumerate(momentum_picks_e):
             out.append(_render_momentum_pick(p))
-            if i < len(momentum_picks) - 1:
+            if i < len(momentum_picks_e) - 1:
                 out.append("")
     else:
         out.append(NA)
@@ -365,15 +713,24 @@ def _render_narrative(macro_data, indices, quotes):
     valid; missing layers degrade gracefully.
     """
     lines = ["WHAT MOVED & WHAT TO WATCH"]
-    llm = None
+    happened = tomorrow = None
+    legacy_text = None
     if isinstance(macro_data, dict):
         dn = macro_data.get("daily_narrative")
         if isinstance(dn, dict):
-            llm = dn.get("text") or dn.get("narrative")
+            happened = dn.get("happened")
+            tomorrow = dn.get("tomorrow")
+            legacy_text = dn.get("text") or dn.get("narrative")
         elif isinstance(dn, str):
-            llm = dn
-    if llm and str(llm).strip():
-        for para in str(llm).strip().split("\n"):
+            legacy_text = dn
+    if happened:
+        lines.append(str(happened).strip())
+        lines.append("")
+    if tomorrow:
+        lines.append(f"Tomorrow watch: {str(tomorrow).strip()}")
+        lines.append("")
+    if not happened and not tomorrow and legacy_text:
+        for para in str(legacy_text).strip().split("\n"):
             para = para.strip()
             if para:
                 lines.append(para)
@@ -849,7 +1206,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Render a deterministic plain-text SignalAI email body."
     )
-    parser.add_argument("--mode", required=True, choices=["weekly", "daily"])
+    parser.add_argument("--mode", required=True, choices=["weekly", "daily", "weekly_html"])
     parser.add_argument("--input", default=None,
                         help="Input JSON path (weekly mode; default weekly_briefing.json)")
     parser.add_argument("--output", required=True, help="Output text file path")
@@ -857,7 +1214,7 @@ def main(argv=None):
                         help="Canonical data dir for daily mode")
     args = parser.parse_args(argv)
 
-    if args.mode == "weekly":
+    if args.mode in ("weekly", "weekly_html"):
         input_path = args.input or "weekly_briefing.json"
         data = _load_json(input_path)
         if data is None:
@@ -870,7 +1227,7 @@ def main(argv=None):
                 + ", ".join(missing) + "\n"
             )
             return 3
-        body = render_weekly(data)
+        body = render_weekly_html(data) if args.mode == "weekly_html" else render_weekly(data)
     else:  # daily
         body = render_daily(args.data_dir)
 
