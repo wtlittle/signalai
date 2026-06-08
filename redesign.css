@@ -1962,15 +1962,16 @@
 .sig-help-icon {
   appearance: none;
   background: rgba(148, 163, 184, 0.10);
-  border: 1px solid rgba(148, 163, 184, 0.28);
+  border: 1px solid rgba(148, 163, 184, 0.30);
   color: var(--text-secondary, #9ca3af);
   width: 14px;
   height: 14px;
   min-width: 14px;
   border-radius: 999px;
-  font: 700 9.5px/1 'Inter', system-ui, sans-serif;
+  /* Lowercase serif italic 'i' reads as the canonical info glyph. */
+  font: italic 700 10.5px/1 'Georgia', 'Times New Roman', serif;
   padding: 0;
-  margin: -6px 0 -6px 6px; /* keep visual baseline; padding below grows hit area */
+  margin: -6px 0 -6px 6px;
   cursor: help;
   display: inline-flex;
   align-items: center;
@@ -1978,6 +1979,11 @@
   vertical-align: middle;
   position: relative;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sig-help-icon > span {
+  /* Optical center the 'i' — serif italic glyph sits slightly off-center. */
+  display: inline-block;
+  transform: translate(0.5px, -0.5px);
 }
 /* Invisible hit area so cursor-on-the-label works too. */
 .sig-help-icon::before {

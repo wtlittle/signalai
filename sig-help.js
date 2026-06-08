@@ -171,12 +171,12 @@
   function iconHtml(key, extraClass) {
     var hasContent = global.SignalHelp && global.SignalHelp.has(key);
     var cls = 'sig-help-icon' + (hasContent ? '' : ' sig-help-icon-missing') + (extraClass ? ' ' + extraClass : '');
-    var aria = 'Help: ' + key;
+    var aria = 'More info: ' + key;
     // Use a button so it's keyboard-focusable; type="button" to avoid form submits.
     return (
       '<button type="button" class="' + cls + '" data-help-key="' + _attr(key) +
       '" aria-label="' + _attr(aria) + '" aria-expanded="false" tabindex="0">' +
-      '<span aria-hidden="true">?</span>' +
+      '<span aria-hidden="true">i</span>' +
       '</button>'
     );
   }
