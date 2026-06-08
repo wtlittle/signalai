@@ -128,6 +128,31 @@ function classify(sector, industry) {
   return null;
 }
 
+// Finnhub /stock/profile2 fallback for tickers that aren't in
+// data-snapshot.json yet (e.g. a freshly-added ticker the quote refresh
+// hasn't picked up). Returns {sector, industry} or null. Free tier only
+// exposes finnhubIndustry (coarse, e.g. "Technology"), which classify()
+// maps through SECTOR_TO_SUBSECTOR — enough to avoid leaving the ticker
+// uncategorized. Requires FINNHUB_API_KEY (or the custom-cred proxy).
+async function finnhubProfile(ticker) {
+  const key = process.env.FINNHUB_API_KEY;
+  if (!key && !(process.env.HTTPS_PROXY || process.env.https_proxy)) return null;
+  // Finnhub uses plain US symbols; strip exchange suffixes like ".TO".
+  const sym = ticker.split('.')[0];
+  const url = `https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(sym)}`
+    + (key ? `&token=${encodeURIComponent(key)}` : '');
+  try {
+    const resp = await fetch(url, { signal: AbortSignal.timeout(20000) });
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    const industry = data && data.finnhubIndustry ? data.finnhubIndustry : null;
+    // finnhubIndustry doubles as both sector and industry signal on free tier.
+    return { sector: industry, industry };
+  } catch (e) {
+    return null;
+  }
+}
+
 // ─── Main ───
 
 console.log('=== Subsector Update ===');
@@ -138,13 +163,13 @@ let utilsCode = readFileSync(UTILS_PATH, 'utf-8');
 // 2. Extract DEFAULT_TICKERS
 const tickerMatch = utilsCode.match(/const DEFAULT_TICKERS = \[([\s\S]*?)\];/);
 if (!tickerMatch) { console.error('Could not find DEFAULT_TICKERS'); process.exit(1); }
-const allTickers = tickerMatch[1].match(/'([A-Z]+)'/g).map(t => t.replace(/'/g, ''));
+const allTickers = tickerMatch[1].match(/'([A-Z.^]+)'/g).map(t => t.replace(/'/g, ''));
 console.log(`Total tickers: ${allTickers.length}`);
 
 // 3. Extract existing SUBSECTOR_MAP entries
 const mapMatch = utilsCode.match(/const SUBSECTOR_MAP = \{([\s\S]*?)\};/);
 if (!mapMatch) { console.error('Could not find SUBSECTOR_MAP'); process.exit(1); }
-const existingKeys = new Set(mapMatch[1].match(/'([A-Z]+)'/g)?.map(t => t.replace(/'/g, '')) || []);
+const existingKeys = new Set(mapMatch[1].match(/'([A-Z.^]+)'/g)?.map(t => t.replace(/'/g, '')) || []);
 
 // 4. Find tickers missing from SUBSECTOR_MAP
 const missing = allTickers.filter(t => !existingKeys.has(t));
@@ -164,20 +189,31 @@ try {
   process.exit(1);
 }
 
-// 6. Classify missing tickers
+// 6. Classify missing tickers. Snapshot first; for any ticker the snapshot
+// doesn't have yet (e.g. a just-added ticker), fall back to Finnhub so the
+// ticker is never left uncategorized — this is the gap that let FROG slip
+// through with no subsector.
 const newMappings = [];
 for (const ticker of missing) {
-  const quote = snapshot.quotes?.[ticker];
+  let quote = snapshot.quotes?.[ticker];
+  let origin = 'snapshot';
   if (!quote) {
-    console.log(`  ${ticker}: No data in snapshot — skipping`);
+    const profile = await finnhubProfile(ticker);
+    if (profile) {
+      quote = profile;
+      origin = 'finnhub';
+    }
+  }
+  if (!quote) {
+    console.log(`  ${ticker}: No data in snapshot or Finnhub — skipping`);
     continue;
   }
   const subsector = classify(quote.sector, quote.industry);
   if (subsector) {
     newMappings.push({ ticker, subsector, sector: quote.sector, industry: quote.industry });
-    console.log(`  ${ticker}: ${subsector} (from ${quote.industry || quote.sector})`);
+    console.log(`  ${ticker}: ${subsector} (from ${quote.industry || quote.sector}, via ${origin})`);
   } else {
-    console.log(`  ${ticker}: Could not classify (sector=${quote.sector}, industry=${quote.industry})`);
+    console.log(`  ${ticker}: Could not classify (sector=${quote.sector}, industry=${quote.industry}, via ${origin})`);
   }
 }
 
