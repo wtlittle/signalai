@@ -125,6 +125,26 @@
     updateTray();
     const cb = document.querySelector('.compare-checkbox[data-ticker="' + t + '"]');
     if (cb) cb.checked = state.selected.has(t);
+    _emitSelectionChanged();
+  }
+
+  // Selection-change notifier so other surfaces (e.g. Compare tab MVP picker) can subscribe.
+  function _emitSelectionChanged() {
+    try {
+      document.dispatchEvent(new CustomEvent('signalcompare:selection-changed', {
+        detail: { selected: Array.from(state.selected) }
+      }));
+    } catch (_) {}
+  }
+
+  function getSelected() { return Array.from(state.selected); }
+  function clearSelection() {
+    if (state.selected.size === 0) return;
+    state.selected.clear();
+    persistSelection();
+    updateTray();
+    document.querySelectorAll('.compare-checkbox:checked').forEach(function (cb) { cb.checked = false; });
+    _emitSelectionChanged();
   }
 
   // ======================= TRAY =======================
@@ -1821,13 +1841,16 @@
     isModeOn,
     isSelected,
     toggleTicker,
+    getSelected,
+    clearSelection,
     rowCheckboxHtml,
     headerCheckboxHtml,
     wireRowCheckboxes,
     openPopup,
     closePopup,
     updateTray,
-    refreshTrayVisibility: function () { updateTray(); }
+    refreshTrayVisibility: function () { updateTray(); },
+    MAX_PICK: MAX_PICK
   };
 
   // Wire toggle button when DOM ready

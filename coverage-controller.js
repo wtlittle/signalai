@@ -463,39 +463,266 @@
     return pane;
   }
 
+  // Returns the user-selected ticker set from SignalCompare (now the single source
+  // of truth). Falls back to legacy DOM-checkbox scan only if the API is missing.
   function _compareSelection() {
-    if (global.SignalCompare && global.SignalCompare.isModeOn) {
-      // Reach into SignalCompare via documented public API — read selected via DOM checkboxes
-      var checked = Array.from(document.querySelectorAll('.compare-checkbox:checked'))
-        .map(function (cb) { return cb.dataset.ticker; })
-        .filter(Boolean);
-      if (checked.length >= 2) return checked.slice(0, 4);
+    if (global.SignalCompare && typeof global.SignalCompare.getSelected === 'function') {
+      return global.SignalCompare.getSelected().slice(0, 4);
     }
-    // Fallback: top 4 by 1M absolute move (so the workspace is never empty)
+    return Array.from(document.querySelectorAll('.compare-checkbox:checked'))
+      .map(function (cb) { return cb.dataset.ticker; })
+      .filter(Boolean)
+      .slice(0, 4);
+  }
+
+  // Default "suggested" set when the user hasn't picked anything yet. Top 4 by
+  // 1M absolute move so the workspace shows something useful but is clearly
+  // labeled as a suggestion (not a user choice).
+  function _suggestedTickers() {
     var data = _tickerData();
-    var ranked = Object.keys(data)
+    return Object.keys(data)
       .filter(function (t) { return typeof data[t].m1 === 'number'; })
       .sort(function (a, b) { return Math.abs(data[b].m1) - Math.abs(data[a].m1); })
       .slice(0, 4);
-    return ranked;
+  }
+
+  var _compareSearchState = { q: '', activeIndex: -1 };
+  var _compareWiredSelectionListener = false;
+
+  function _escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function _searchableUniverse() {
+    var data = _tickerData();
+    var out = [];
+    Object.keys(data).forEach(function (t) {
+      var row = data[t] || {};
+      out.push({ ticker: t, name: _commonName(t, row.name) || '' });
+    });
+    return out.sort(function (a, b) { return a.ticker.localeCompare(b.ticker); });
+  }
+
+  function _filterUniverse(q) {
+    var needle = (q || '').trim().toUpperCase();
+    if (!needle) return [];
+    var uni = _searchableUniverse();
+    var startsWith = [], contains = [];
+    for (var i = 0; i < uni.length && startsWith.length + contains.length < 30; i++) {
+      var u = uni[i];
+      var t = u.ticker.toUpperCase();
+      var n = (u.name || '').toUpperCase();
+      if (t.indexOf(needle) === 0) startsWith.push(u);
+      else if (t.indexOf(needle) > -1 || n.indexOf(needle) > -1) contains.push(u);
+    }
+    return startsWith.concat(contains).slice(0, 12);
+  }
+
+  function _renderPickerBar(selected, isSuggestion) {
+    var maxPick = (global.SignalCompare && global.SignalCompare.MAX_PICK) || 4;
+    var chips = selected.map(function (t) {
+      return (
+        '<span class="cmp-chip" data-ticker="' + _escapeHtml(t) + '">' +
+          '<span class="cmp-chip-tk">' + _escapeHtml(t) + '</span>' +
+          '<button type="button" class="cmp-chip-x" data-remove="' + _escapeHtml(t) + '" aria-label="Remove ' + _escapeHtml(t) + '">x</button>' +
+        '</span>'
+      );
+    }).join('');
+    var emptyHint = (selected.length === 0)
+      ? '<span class="cmp-chip-empty">No tickers picked yet</span>'
+      : '';
+    var statusText;
+    if (selected.length === 0) {
+      statusText = 'Pick 2-' + maxPick + ' tickers to compare.';
+    } else if (selected.length === 1) {
+      statusText = 'Pick at least 1 more (up to ' + maxPick + ').';
+    } else {
+      statusText = 'Comparing ' + selected.length + ' name' + (selected.length === 1 ? '' : 's') + '. Best in row highlighted.';
+    }
+    if (isSuggestion) statusText = 'Showing suggested top movers. Pick names above to customize.';
+
+    var disableOpenRich = (selected.length < 2) ? ' disabled' : '';
+    return (
+      '<div class="compare-mvp-picker">' +
+        '<div class="cmp-picker-row">' +
+          '<div class="cmp-chips" id="cmp-chips">' + chips + emptyHint + '</div>' +
+          '<div class="cmp-search-wrap">' +
+            '<input type="text" class="cmp-search" id="cmp-search" autocomplete="off" spellcheck="false" ' +
+              'placeholder="Add ticker or name (e.g. NVDA, Snowflake)" ' +
+              ((selected.length >= maxPick) ? 'disabled ' : '') + '/>' +
+            '<div class="cmp-suggest" id="cmp-suggest" hidden></div>' +
+          '</div>' +
+          '<button type="button" class="btn-sm cmp-btn-open" id="cmp-open-rich"' + disableOpenRich + '>Open in Rich Compare</button>' +
+          '<button type="button" class="btn-sm cmp-btn-clear" id="cmp-clear"' + (selected.length === 0 ? ' disabled' : '') + '>Clear</button>' +
+        '</div>' +
+        '<div class="cmp-picker-status">' + _escapeHtml(statusText) + '</div>' +
+      '</div>'
+    );
+  }
+
+  function _renderSuggestionsList(items, activeIndex) {
+    if (!items.length) return '';
+    return items.map(function (it, i) {
+      var isSelected = global.SignalCompare && global.SignalCompare.isSelected && global.SignalCompare.isSelected(it.ticker);
+      var cls = 'cmp-suggest-item' + (i === activeIndex ? ' is-active' : '') + (isSelected ? ' is-picked' : '');
+      var rightLabel = isSelected ? '<span class="cmp-suggest-tag">picked</span>' : '';
+      return (
+        '<button type="button" class="' + cls + '" data-ticker="' + _escapeHtml(it.ticker) + '" data-index="' + i + '">' +
+          '<span class="cmp-suggest-tk">' + _escapeHtml(it.ticker) + '</span>' +
+          '<span class="cmp-suggest-name">' + _escapeHtml(it.name) + '</span>' +
+          rightLabel +
+        '</button>'
+      );
+    }).join('');
+  }
+
+  function _wireComparePicker(pane) {
+    var chipsEl = pane.querySelector('#cmp-chips');
+    var searchEl = pane.querySelector('#cmp-search');
+    var suggestEl = pane.querySelector('#cmp-suggest');
+    var openRichBtn = pane.querySelector('#cmp-open-rich');
+    var clearBtn = pane.querySelector('#cmp-clear');
+
+    function closeSuggest() {
+      _compareSearchState.activeIndex = -1;
+      if (suggestEl) { suggestEl.hidden = true; suggestEl.innerHTML = ''; }
+    }
+
+    function openSuggest() {
+      if (!suggestEl) return;
+      var items = _filterUniverse(_compareSearchState.q);
+      if (!items.length) { closeSuggest(); return; }
+      if (_compareSearchState.activeIndex >= items.length) _compareSearchState.activeIndex = 0;
+      suggestEl.innerHTML = _renderSuggestionsList(items, _compareSearchState.activeIndex);
+      suggestEl.hidden = false;
+    }
+
+    function pickFromSuggestion(t) {
+      if (!t) return;
+      var sc = global.SignalCompare;
+      if (!sc) return;
+      var maxPick = sc.MAX_PICK || 4;
+      if (!sc.isSelected(t) && sc.getSelected().length >= maxPick) return;
+      sc.toggleTicker(t);
+      if (searchEl) { searchEl.value = ''; }
+      _compareSearchState.q = '';
+      closeSuggest();
+      renderCompareSurface();
+      setTimeout(function () {
+        var s = document.getElementById('cmp-search');
+        if (s && !s.disabled) s.focus();
+      }, 0);
+    }
+
+    if (chipsEl) {
+      chipsEl.addEventListener('click', function (e) {
+        var btn = e.target && e.target.closest && e.target.closest('[data-remove]');
+        if (!btn) return;
+        var t = btn.getAttribute('data-remove');
+        if (global.SignalCompare && t) {
+          global.SignalCompare.toggleTicker(t);
+          renderCompareSurface();
+        }
+      });
+    }
+
+    if (searchEl) {
+      searchEl.addEventListener('input', function (e) {
+        _compareSearchState.q = e.target.value;
+        _compareSearchState.activeIndex = 0;
+        openSuggest();
+      });
+      searchEl.addEventListener('focus', function () {
+        if (_compareSearchState.q) openSuggest();
+      });
+      searchEl.addEventListener('keydown', function (e) {
+        var items = _filterUniverse(_compareSearchState.q);
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (!items.length) return;
+          _compareSearchState.activeIndex = (_compareSearchState.activeIndex + 1) % items.length;
+          openSuggest();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (!items.length) return;
+          _compareSearchState.activeIndex = (_compareSearchState.activeIndex - 1 + items.length) % items.length;
+          openSuggest();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (!items.length) return;
+          var idx = Math.max(0, _compareSearchState.activeIndex);
+          pickFromSuggestion(items[idx].ticker);
+        } else if (e.key === 'Escape') {
+          if (suggestEl && !suggestEl.hidden) { e.stopPropagation(); closeSuggest(); }
+        }
+      });
+    }
+
+    if (suggestEl) {
+      suggestEl.addEventListener('mousedown', function (e) {
+        var btn = e.target && e.target.closest && e.target.closest('[data-ticker]');
+        if (!btn) return;
+        e.preventDefault();
+        pickFromSuggestion(btn.getAttribute('data-ticker'));
+      });
+    }
+
+    document.addEventListener('click', function (e) {
+      if (!suggestEl || suggestEl.hidden) return;
+      if (suggestEl.contains(e.target) || (searchEl && searchEl.contains(e.target))) return;
+      closeSuggest();
+    });
+
+    if (openRichBtn) {
+      openRichBtn.addEventListener('click', function () {
+        var sc = global.SignalCompare;
+        if (!sc || sc.getSelected().length < 2) return;
+        sc.openPopup(sc.getSelected());
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        if (global.SignalCompare && global.SignalCompare.clearSelection) {
+          global.SignalCompare.clearSelection();
+          renderCompareSurface();
+        }
+      });
+    }
   }
 
   function renderCompareSurface() {
     var pane = _ensureComparePane();
     if (!pane) return;
     var placeholder = document.getElementById('compare-placeholder');
-    var tickers = _compareSelection();
-    if (!tickers || tickers.length < 2) {
-      pane.innerHTML = '';
-      if (placeholder) placeholder.style.display = '';
-      return;
-    }
     if (placeholder) placeholder.style.display = 'none';
+
+    // Wire the SignalCompare selection-changed listener once. When selection
+    // mutates from anywhere else (watchlist checkbox, keyboard shortcut, popup
+    // "+ Compare" button), the Compare tab re-renders if it's currently active.
+    if (!_compareWiredSelectionListener) {
+      _compareWiredSelectionListener = true;
+      document.addEventListener('signalcompare:selection-changed', function () {
+        var router = global.SignalRouter;
+        var current = router && router.current && router.current();
+        if (current === 'compare') renderCompareSurface();
+      });
+    }
+
+    var selected = _compareSelection();
+    var isSuggestion = false;
+    var tickers = selected;
+    if (!tickers || tickers.length < 2) {
+      // Show suggestion table as a preview, but make it visually distinct.
+      tickers = _suggestedTickers();
+      isSuggestion = true;
+    }
 
     var data = _tickerData();
     var rows = tickers.map(function (t) { return data[t] || { ticker: t }; });
 
-    // Determine "best" column for each metric (delta highlighting)
     function bestOf(key, dir) {
       var vals = rows.map(function (r) { return r[key]; }).filter(function (v) { return typeof v === 'number'; });
       if (!vals.length) return null;
@@ -512,8 +739,8 @@
 
     var headerCells = rows.map(function (r) {
       var name = _commonName(r.ticker, r.name);
-      return '<th class="compare-th"><div class="compare-th-ticker">' + r.ticker + '</div>' +
-             '<div class="compare-th-name">' + (name || '') + '</div></th>';
+      return '<th class="compare-th"><div class="compare-th-ticker">' + _escapeHtml(r.ticker) + '</div>' +
+             '<div class="compare-th-name">' + _escapeHtml(name || '') + '</div></th>';
     }).join('');
 
     var metrics = [
@@ -538,28 +765,18 @@
       return '<tr><th class="compare-row-label">' + m.label + '</th>' + cells + '</tr>';
     }).join('');
 
+    var tableClass = 'compare-mvp-table' + (isSuggestion ? ' is-suggestion' : '');
+
     pane.innerHTML =
-      '<div class="compare-mvp-toolbar">' +
-        '<span class="compare-mvp-hint">Comparing ' + rows.length + ' names. Best in row highlighted.</span>' +
-        '<button type="button" class="btn-sm" id="compare-mvp-pick">Pick from Coverage</button>' +
-      '</div>' +
+      _renderPickerBar(selected, isSuggestion) +
       '<div class="compare-mvp-table-wrap">' +
-        '<table class="compare-mvp-table">' +
+        '<table class="' + tableClass + '">' +
           '<thead><tr><th class="compare-row-label-head">Metric</th>' + headerCells + '</tr></thead>' +
           '<tbody>' + bodyRows + '</tbody>' +
         '</table>' +
       '</div>';
 
-    var pickBtn = document.getElementById('compare-mvp-pick');
-    if (pickBtn) {
-      pickBtn.addEventListener('click', function () {
-        if (global.SignalRouter) global.SignalRouter.go('coverage');
-        setTimeout(function () {
-          var t = document.getElementById('compare-toggle-btn');
-          if (t && global.SignalCompare && !global.SignalCompare.isModeOn()) t.click();
-        }, 60);
-      });
-    }
+    _wireComparePicker(pane);
   }
 
   // ---------------------------------------------------------------
