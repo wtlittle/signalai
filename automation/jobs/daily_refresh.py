@@ -399,6 +399,21 @@ def step_subsector_refresh():
     run_node_script("update_subsectors.mjs")
 
 
+def step_audit_categories():
+    """Step 6b: Warn (don't block) if any watchlist ticker is still
+    uncategorized after the subsector refresh. This is the regression guard:
+    update_subsectors.mjs should have backfilled every new ticker from
+    snapshot/Finnhub, so a non-empty list here means the backfill could not
+    classify something and it needs a manual SUBSECTOR_MAP entry.
+    """
+    print("\n=== Step 6b: Category Audit (warn-only) ===")
+    try:
+        from automation.jobs.audit_categories import run as run_audit
+        run_audit(strict=False)
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARN] category audit failed: {exc}")
+
+
 def step_sync_earnings_intel():
     """Step 6.4: Sync earnings_intel.json from markdown notes.
 
@@ -736,6 +751,9 @@ def run():
     # avoids a redundant Node spawn at 5:30 PM.
     if mode in ("bmo", "full"):
         step_subsector_refresh()
+        # Step 6b: warn-only regression guard — surfaces any ticker the
+        # subsector refresh could not categorize. Never blocks the pipeline.
+        step_audit_categories()
 
     # Step 6.4: Sync earnings_intel.json from the markdown notes on disk.
     # Must run AFTER step_generate_notes so the latest pre/post notes are
