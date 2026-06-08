@@ -426,6 +426,8 @@ const DEFAULT_TICKERS = [
   // --- Weekly Briefing Picks (Week 11: 2026-05-22) ---
   'PFE','EMN','CTVA',                 // Value picks (pharma FCF anchor / specialty chem destock / ag genetics) -- GPN, STZ already in watchlist
   'ROST','SITM',                      // Momentum picks (off-price retail beat / MEMS timing into AI racks) -- ARM, MRVL, WDAY already in watchlist
+  // --- User Addition (2026-06-08) ---
+  'FROG',                             // JFrog - DevOps / software supply chain platform (binary mgmt, DevSecOps)
 ];
 
 // --- Default private companies ---
