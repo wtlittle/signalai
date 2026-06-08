@@ -23,6 +23,7 @@ Outputs:
 """
 import json
 import os
+import re
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -41,6 +42,25 @@ MIN_INTRADAY_MOVE_PCT = float(os.environ.get("RUMOR_MIN_MOVE_PCT", "3.0"))
 PENDING_TTL_DAYS = int(os.environ.get("RUMOR_PENDING_TTL_DAYS", "14"))
 ALERT_CONFIDENCE_THRESHOLD = float(os.environ.get("RUMOR_ALERT_CONFIDENCE", "0.6"))
 TIER1_DOMAINS = ("reuters.com", "wsj.com", "bloomberg.com", "ft.com", "cnbc.com")
+
+_CORP_SUFFIX_RE = re.compile(
+    r"\b(inc|incorporated|corp|corporation|co|company|ltd|limited|plc|"
+    r"holdings|group|sa|nv|ag|lp|llc)\b",
+    re.IGNORECASE,
+)
+
+
+def _norm_company(name: str | None) -> str:
+    """Normalize a company name for self-referential comparison.
+
+    Strips corporate suffixes and punctuation so "Autodesk" matches
+    "Autodesk, Inc.". Mirrors render_email._norm_company.
+    """
+    if not name:
+        return ""
+    s = _CORP_SUFFIX_RE.sub(" ", str(name).lower())
+    s = re.sub(r"[^a-z0-9]+", " ", s)
+    return s.strip()
 
 
 def _load_ma_status() -> dict:
@@ -108,12 +128,21 @@ Apply these 4 gates. ALL must hold for confirmed_rumor=true:
 
 CRITICAL: If you cannot find a credible Tier-1 source with a named buyer published within 24h, return confirmed_rumor=false. Do NOT speculate or fabricate. Better to return false than invent details.
 
+Identify BOTH sides of the rumor:
+- "buyer": the acquiring / bidding entity (named string), null if unknown.
+- "target": the company being acquired (named string), null if unknown.
+- "buyer_ticker"/"target_ticker": the US-listed stock symbol for each side IF it has one (US listings only, uppercase, e.g. \"PTC\"). Use null when the entity is private, foreign-listed, or you are not certain of the symbol.
+{ticker} is one side of this deal — fill in whichever side it is and identify the counterparty.
+
 Return ONLY this JSON shape — no prose, no markdown fences:
 {{
   "ticker": "{ticker}",
   "confirmed_rumor": true | false,
   "confidence": 0.0 to 1.0,
   "buyer": "string or null",
+  "target": "string or null",
+  "buyer_ticker": "US symbol or null",
+  "target_ticker": "US symbol or null",
   "deal_type": "strategic | take-private | bid | unsolicited | strategic-review | null",
   "headline": "one-line summary or null",
   "rationale": "2-3 sentences explaining which gates held and why, or which failed",
@@ -144,6 +173,11 @@ def _validate_candidate(result: dict, candidate: dict) -> dict | None:
         confidence = float(confidence)
     except (TypeError, ValueError):
         confidence = 0.5
+
+    def _sym(v):
+        s = str(v).strip().upper() if v else ""
+        return s or None
+
     return {
         "ticker": candidate["ticker"],
         "company": candidate["name"],
@@ -151,6 +185,9 @@ def _validate_candidate(result: dict, candidate: dict) -> dict | None:
         "intraday_move_pct": candidate["change1d"],
         "price_at_flag": candidate["price"],
         "buyer": result.get("buyer"),
+        "buyer_ticker": _sym(result.get("buyer_ticker")),
+        "target": result.get("target"),
+        "target_ticker": _sym(result.get("target_ticker")),
         "deal_type": result.get("deal_type"),
         "headline": result.get("headline"),
         "rationale": result.get("rationale"),
@@ -159,6 +196,38 @@ def _validate_candidate(result: dict, candidate: dict) -> dict | None:
         "gates": gates,
         "status": "pending_review",
     }
+
+
+def _is_self_referential(entry: dict) -> bool:
+    """True when the rumor names the scanned company as its own counterparty.
+
+    Catches buyer == target as well as buyer/target name == the scanned
+    company itself (the ADSK→"Autodesk" data bug), so bogus rows never reach
+    pending_review. Mirrors the defensive filter in render_email.
+    """
+    buyer = _norm_company(entry.get("buyer"))
+    target = _norm_company(entry.get("target"))
+    company = _norm_company(entry.get("company"))
+    if buyer and target and buyer == target:
+        return True
+    # A one-sided rumor where the only named party is the company itself
+    # (no distinct counterparty) is noise, not a deal.
+    if buyer and company and buyer == company and not target:
+        return True
+    if target and company and target == company and not buyer:
+        return True
+    return False
+
+
+def _make_cross_ref(entry: dict, target_ticker: str) -> dict:
+    """Clone a pending_review entry keyed to the counterparty ticker so the
+    target's panel surfaces the same rumor. Marks it as a cross-reference and
+    points back at the originally-scanned ticker."""
+    clone = dict(entry)
+    clone["ticker"] = target_ticker
+    clone["cross_ref"] = True
+    clone["cross_ref_from"] = entry["ticker"]
+    return clone
 
 
 def run() -> dict:
@@ -170,6 +239,12 @@ def run() -> dict:
     snapshot = json.loads(DATA_SNAPSHOT.read_text())
     ma = _load_ma_status()
     _expire_old_pending(ma)
+
+    try:
+        watchlist = set(load_tickers())
+    except Exception as exc:
+        print(f"[rumor_scan] could not load watchlist tickers: {exc}")
+        watchlist = set()
 
     tracked = set((ma.get("deals") or {}).keys())
     pending = ma.get("pending_review") or []
@@ -210,20 +285,51 @@ def run() -> dict:
             print(f"  [{c['ticker']}] no credible rumor (change1d={c['change1d']:+.2f}%)")
             continue
 
+        # Drop self-referential candidates at scan time (buyer == target, or
+        # the only named party is the scanned company) so bogus rows never
+        # accumulate in pending_review.
+        if _is_self_referential(entry):
+            print(f"  [{c['ticker']}] dropped self-referential rumor "
+                  f"(buyer={entry.get('buyer')!r} target={entry.get('target')!r})")
+            continue
+
         pending.append(entry)
         added.append(entry)
-        print(f"  [{c['ticker']}] FLAGGED rumor: buyer={entry['buyer']!r} conf={entry['confidence']:.2f}")
+        print(f"  [{c['ticker']}] FLAGGED rumor: buyer={entry['buyer']!r} "
+              f"target={entry.get('target')!r} conf={entry['confidence']:.2f}")
+
+        # Cross-list onto the counterparty's panel when the target is a US
+        # symbol on the watchlist and distinct from the scanned ticker.
+        target_ticker = entry.get("target_ticker")
+        if target_ticker and target_ticker != entry["ticker"] and target_ticker in watchlist:
+            if not any(
+                p.get("ticker") == target_ticker and p.get("cross_ref_from") == entry["ticker"]
+                for p in pending
+            ):
+                cross = _make_cross_ref(entry, target_ticker)
+                pending.append(cross)
+                added.append(cross)
+                print(f"  [{c['ticker']}] cross-listed rumor onto {target_ticker} (target on watchlist)")
 
         # Emit alert when high-confidence
         if entry["confidence"] >= ALERT_CONFIDENCE_THRESHOLD:
+            buyer = entry.get("buyer") or "unnamed buyer"
+            target = entry.get("target") or "unnamed target"
             try:
                 emit_alert(
                     alert_type="ma_rumor",
-                    summary=f"{c['ticker']} potential M&A: {entry.get('buyer') or 'unnamed buyer'} — {entry.get('headline') or 'rumor flagged'}",
+                    summary=f"{c['ticker']} potential M&A: {buyer} → {target} — {entry.get('headline') or 'rumor flagged'}",
                     ticker=c["ticker"],
                     severity="warning",
                     link=(entry["sources"][0].get("url") if entry["sources"] else None),
-                    extra={"confidence": entry["confidence"], "deal_type": entry.get("deal_type")},
+                    extra={
+                        "confidence": entry["confidence"],
+                        "deal_type": entry.get("deal_type"),
+                        "buyer": entry.get("buyer"),
+                        "buyer_ticker": entry.get("buyer_ticker"),
+                        "target": entry.get("target"),
+                        "target_ticker": entry.get("target_ticker"),
+                    },
                 )
             except Exception as exc:
                 print(f"  [{c['ticker']}] emit_alert failed: {exc}")
