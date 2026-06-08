@@ -114,6 +114,23 @@ def step_daily_narrative():
         print(f"  [WARN] daily_narrative failed: {exc}; renderer will use mechanical fallback")
 
 
+def step_today_events():
+    """Step 2c: Generate today's forward-look (events scheduled TODAY) via sonar.
+
+    Writes today_events.json at the repo root so the 11:30 UTC email render cron
+    stays a pure renderer with no LLM calls (the renderer just reads this file).
+    Non-fatal: on any failure the job itself writes an empty-but-valid payload,
+    and the renderer degrades to "None scheduled." regardless.
+    """
+    print("\n=== Step 2c: Today Events (forward look) ===")
+    try:
+        from automation.jobs.today_events import run as run_today_events
+        out_path = ROOT_DIR / "today_events.json"
+        run_today_events(str(out_path))
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARN] today_events failed: {exc}; renderer will show 'None scheduled.'")
+
+
 def step_earnings_events():
     """Step 3: Detect earnings events (yfinance, no LLM cost)."""
     print("\n=== Step 3: Earnings Event Detection ===")
@@ -678,6 +695,9 @@ def run():
     if mode in ("bmo", "full"):
         step_macro_refresh()
         step_daily_narrative()
+        # Forward look for TODAY (events scheduled today). Produced here so the
+        # 11:30 UTC email cron stays a pure renderer; it reads today_events.json.
+        step_today_events()
 
     # Step 3: Earnings events (no LLM) — always. The detection logic is
     # cheap and is the source of truth for downstream steps.

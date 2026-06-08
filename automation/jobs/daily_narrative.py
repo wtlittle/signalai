@@ -1,9 +1,12 @@
 """
-Daily market narrative — small Perplexity sonar call that writes a 2-3 sentence
-"what happened today + what to watch tomorrow" blurb into
-``macro_data.json#daily_narrative``.
+Daily market narrative — small Perplexity sonar call that writes a 2-sentence
+"what happened today" recap into ``macro_data.json#daily_narrative``.
 
-Cheap (~$0.005/run): sonar model, ~300 input + 200 output tokens. The renderer
+The forward look ("what to watch") is no longer produced here — it is owned by
+automation/jobs/today_events.py, which surfaces real scheduled events. This job
+now produces only the ``happened`` recap.
+
+Cheap (~$0.004/run): sonar model, ~300 input + 150 output tokens. The renderer
 layers this on top of the deterministic mechanical narrative. If this step
 fails for any reason (API down, parse error), the renderer falls back to
 mechanical-only — no email failure.
@@ -112,16 +115,12 @@ PROMPT_TEMPLATE = """You are writing a 3-sentence end-of-day briefing for a buy-
 OBSERVED DATA:
 {context}
 
-Return TWO short paragraphs separated by a blank line:
+Write exactly 2 sentences (What happened): (a) The headline move and what is actually driving it (cite the data and the named news catalyst from your knowledge of today's session if obvious). (b) What it means in context — connect to the regime, factor leadership, or the sector rotation visible in the data above.
 
-PARAGRAPH 1 (What happened): Exactly 2 sentences. (a) The headline move and what is actually driving it (cite the data and the named news catalyst from your knowledge of today's session if obvious). (b) What it means in context — connect to the regime, factor leadership, or the sector rotation visible in the data above.
-
-PARAGRAPH 2 (Tomorrow watch): Exactly 1 sentence. One specific catalyst, data print, or signal worth tracking (earnings/economic data/policy/follow-through risk).
-
-Constraints: No emoji. No markdown headers or bold. Plain prose. Each sentence under 35 words. Do not invent specific company news that is not consistent with the data above. If unsure about a catalyst, say "the move appears to reflect" rather than asserting a cause.
+Constraints: No emoji. No markdown headers or bold. Plain prose. Each sentence under 35 words. Do not invent specific company news that is not consistent with the data above. If unsure about a catalyst, say "the move appears to reflect" rather than asserting a cause. Do NOT include any forward-looking "tomorrow" or "what to watch" content — that is handled elsewhere.
 
 Return JSON only:
-{{"happened": "Sentence 1. Sentence 2.", "tomorrow": "Sentence 3."}}
+{{"happened": "Sentence 1. Sentence 2."}}
 """
 
 
@@ -154,41 +153,30 @@ def run():
         return 2
 
     happened = None
-    tomorrow = None
     if isinstance(resp, dict):
         happened = resp.get("happened")
-        tomorrow = resp.get("tomorrow")
-        if (not happened or not tomorrow) and "raw" in resp:
-            raw = resp["raw"]
+        if not happened and "raw" in resp:
             try:
-                parsed = json.loads(raw)
-                happened = happened or parsed.get("happened")
-                tomorrow = tomorrow or parsed.get("tomorrow")
+                happened = json.loads(resp["raw"]).get("happened")
             except (ValueError, TypeError):
                 pass
         # Back-compat fallback: old single-text field
-        if not happened and not tomorrow:
-            text = resp.get("text") or resp.get("narrative")
-            if text:
-                happened = str(text)
+        if not happened:
+            happened = resp.get("text") or resp.get("narrative")
 
-    if not (happened or tomorrow):
+    if not happened:
         print(f"  ERROR: no usable text in response")
         return 3
 
-    happened = str(happened or "").strip()
-    tomorrow = str(tomorrow or "").strip()
+    happened = str(happened).strip()
     macro["daily_narrative"] = {
         "happened": happened,
-        "tomorrow": tomorrow,
         "generated_at": datetime.utcnow().isoformat() + "Z",
         "model": "sonar",
     }
     MACRO_PATH.write_text(json.dumps(macro, indent=2))
-    total = len(happened) + len(tomorrow)
-    print(f"  Wrote {total} chars to macro_data.daily_narrative (happened={len(happened)}, tomorrow={len(tomorrow)})")
+    print(f"  Wrote {len(happened)} chars to macro_data.daily_narrative (happened={len(happened)})")
     print(f"  Happened: {happened[:140]}{'...' if len(happened) > 140 else ''}")
-    print(f"  Tomorrow: {tomorrow[:140]}{'...' if len(tomorrow) > 140 else ''}")
     return 0
 
 

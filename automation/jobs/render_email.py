@@ -712,24 +712,22 @@ def _render_narrative(macro_data, indices, quotes):
     transparent 'what the tape actually did' check. Either layer alone is
     valid; missing layers degrade gracefully.
     """
-    lines = ["WHAT MOVED & WHAT TO WATCH"]
-    happened = tomorrow = None
+    # The forward look ("what to watch") now lives in the WHAT TO EXPECT TODAY
+    # block (rendered above this one), so this section is the recap only.
+    lines = ["WHAT MOVED YESTERDAY"]
+    happened = None
     legacy_text = None
     if isinstance(macro_data, dict):
         dn = macro_data.get("daily_narrative")
         if isinstance(dn, dict):
             happened = dn.get("happened")
-            tomorrow = dn.get("tomorrow")
             legacy_text = dn.get("text") or dn.get("narrative")
         elif isinstance(dn, str):
             legacy_text = dn
     if happened:
         lines.append(str(happened).strip())
         lines.append("")
-    if tomorrow:
-        lines.append(f"Tomorrow watch: {str(tomorrow).strip()}")
-        lines.append("")
-    if not happened and not tomorrow and legacy_text:
+    if not happened and legacy_text:
         for para in str(legacy_text).strip().split("\n"):
             para = para.strip()
             if para:
@@ -1166,6 +1164,123 @@ def _render_macro_tilt(macro_data):
     return lines
 
 
+def _today_events_is_fresh(payload, now_utc=None):
+    """True when the today_events payload was generated within the last 24h.
+
+    A stale file (e.g. yesterday's, if the producer failed to run) must not
+    surface as today's forward look, so the renderer treats it as absent.
+    """
+    if not isinstance(payload, dict):
+        return False
+    gen = payload.get("generated_at_utc")
+    if not gen:
+        return False
+    raw = str(gen).strip().replace("Z", "+00:00")
+    try:
+        ts = datetime.fromisoformat(raw)
+    except ValueError:
+        return False
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    now = now_utc or datetime.now(timezone.utc)
+    return (now - ts).total_seconds() < 24 * 3600
+
+
+def _pretty_date(iso_date):
+    """Format YYYY-MM-DD as 'Monday, June 8, 2026'. Falls back to the input."""
+    try:
+        d = datetime.strptime(str(iso_date)[:10], "%Y-%m-%d")
+    except (ValueError, TypeError):
+        return str(iso_date)
+    # %-d (no leading zero) is platform-specific; strip manually for safety.
+    return d.strftime("%A, %B ") + str(d.day) + d.strftime(", %Y")
+
+
+def _render_today_events(payload, today, now_utc=None):
+    """Forward-look block: events scheduled TODAY + watchlist earnings + debates.
+
+    Renders 'None scheduled.' when the payload is missing, stale (>24h), or has
+    no events. Watchlist-earnings and debates subsections are omitted when empty.
+    Never fabricates — every line comes straight from the today_events JSON.
+    """
+    heading = f"WHAT TO EXPECT TODAY — {_pretty_date(today)}"
+    lines = [heading]
+    lines.append("-" * len(heading))
+
+    if not _today_events_is_fresh(payload, now_utc):
+        lines.append("None scheduled.")
+        return lines
+
+    events = payload.get("events") or []
+    if not events:
+        lines.append("None scheduled.")
+        return lines
+
+    for ev in events:
+        if not isinstance(ev, dict):
+            continue
+        time_et = _na(ev.get("time_et"))
+        name = _na(ev.get("name"))
+        tickers = ev.get("tickers_sectors") or []
+        tick_str = ""
+        if isinstance(tickers, list) and tickers:
+            tick_str = "  [" + ", ".join(str(t) for t in tickers) + "]"
+        # Append " ET" only to clock times (HH:MM); "All day"/"TBD"/n/a stand alone.
+        if re.match(r"^\d{1,2}:\d{2}$", time_et):
+            time_label = f"{time_et} ET"
+        else:
+            time_label = time_et
+        lines.append(f"{time_label:<9} {name}{tick_str}")
+        watch = _na(ev.get("what_to_watch"))
+        if watch != NA:
+            lines.append(f"{'':<9} {watch}")
+        lines.append("")
+    # Drop the trailing blank line left by the loop.
+    if lines and lines[-1] == "":
+        lines.pop()
+
+    earnings = payload.get("watchlist_earnings") or []
+    if earnings:
+        lines.append("")
+        lines.append("Watchlist earnings today:")
+        for e in earnings:
+            if not isinstance(e, dict):
+                continue
+            ticker = _na(e.get("ticker"))
+            timing = _na(e.get("time"))
+            eps = e.get("consensus_eps")
+            rev = e.get("consensus_rev_m")
+            bits = []
+            if isinstance(eps, (int, float)):
+                bits.append(f"EPS ${eps:.2f}e")
+            if isinstance(rev, (int, float)):
+                # Render revenue in billions when large, else millions.
+                if abs(rev) >= 1000:
+                    bits.append(f"Rev ${rev / 1000:.2f}Be")
+                else:
+                    bits.append(f"Rev ${rev:.0f}Me")
+            consensus = ", ".join(bits) if bits else "consensus n/a"
+            lines.append(f"  {ticker:<6} {timing:<6} {consensus}")
+
+    debates = payload.get("key_debates") or []
+    if debates:
+        lines.append("")
+        lines.append("Key debates today:")
+        for d in debates:
+            if not isinstance(d, dict):
+                continue
+            topic = _na(d.get("topic"))
+            lines.append(f"  - {topic}")
+            bull = _na(d.get("bull"))
+            bear = _na(d.get("bear"))
+            if bull != NA:
+                lines.append(f"      Bull: {bull}")
+            if bear != NA:
+                lines.append(f"      Bear: {bear}")
+
+    return lines
+
+
 def render_daily(data_dir):
     """Render the full daily briefing body as plain text from canonical paths."""
     snapshot = _load_json(os.path.join(data_dir, "data-snapshot.json")) or {}
@@ -1173,6 +1288,7 @@ def render_daily(data_dir):
     intel = _load_json(os.path.join(data_dir, "earnings_intel.json"))
     ma = _load_json(os.path.join(data_dir, "ma_status.json"))
     macro = _load_json(os.path.join(data_dir, "macro_data.json"))
+    today_events = _load_json(os.path.join(data_dir, "today_events.json"))
 
     quotes = snapshot.get("quotes") or {}
     indices = (macro or {}).get("indices") if isinstance(macro, dict) else {}
@@ -1184,6 +1300,7 @@ def render_daily(data_dir):
     out.append("")
 
     for section in (
+        _render_today_events(today_events, today),
         _render_narrative(macro, indices, quotes),
         _render_market_snapshot(indices),
         _render_top_movers(quotes),
