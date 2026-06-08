@@ -272,6 +272,125 @@ def _pct(value):
     return f"{'+' if f >= 0 else ''}{f:.1f}%"
 
 
+# --------------------------------------------------------------------------- #
+# Market narrative (top-of-email blurb)
+# --------------------------------------------------------------------------- #
+def _mechanical_narrative(indices, quotes, factors):
+    """Deterministic 'what moved + leadership/laggards' blurb.
+
+    Built from observed numbers only — NEVER fabricates 'why'. Synthesizes:
+      - index direction (S&P / NASDAQ / Russell + VIX)
+      - top 3 down and top 3 up sectors of movers among watchlist
+      - factor leadership snapshot (1M MTUM vs VLUE vs QUAL)
+    Returns a list of sentence strings (typically 2-4). Empty list if no data.
+    """
+    sentences = []
+    idx = indices or {}
+
+    # Sentence 1: index move
+    def _pct_val(d, key):
+        if not isinstance(d, dict):
+            return None
+        v = _first(d, key, key.replace("_", ""))
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return None
+
+    sp = _pct_val(idx.get("^GSPC"), "change1d")
+    ndq = _pct_val(idx.get("^IXIC"), "change1d")
+    rut = _pct_val(idx.get("^RUT"),  "change1d")
+    vix = _pct_val(idx.get("^VIX"),  "change1d")
+
+    if sp is not None or ndq is not None:
+        parts = []
+        if sp  is not None: parts.append(f"S&P {_pct(sp)}")
+        if ndq is not None: parts.append(f"NASDAQ {_pct(ndq)}")
+        if rut is not None: parts.append(f"Russell {_pct(rut)}")
+        if vix is not None: parts.append(f"VIX {_pct(vix)}")
+        sentences.append("Tape: " + ", ".join(parts) + ".")
+
+    # Sentence 2: leadership / laggard among watchlist top-movers by sector
+    sector_buckets = {}
+    for sym, q in (quotes or {}).items():
+        if sym in _INDEX_TICKERS:
+            continue
+        try:
+            c = float(q.get("change1d"))
+        except (TypeError, ValueError):
+            continue
+        if abs(c) < 2.0:
+            continue
+        sec = q.get("sector") or "Other"
+        sector_buckets.setdefault(sec, []).append((c, sym))
+    if sector_buckets:
+        # Mean move per sector among large movers
+        ranked = sorted(
+            ((sum(c for c, _ in v) / len(v), s, v) for s, v in sector_buckets.items() if len(v) >= 2),
+            key=lambda x: x[0],
+        )
+        if ranked:
+            worst = ranked[0]
+            best = ranked[-1]
+            bits = []
+            if worst[0] < -1.5:
+                names = ", ".join(sym for _, sym in sorted(worst[2])[:3])
+                bits.append(f"{worst[1]} under pressure (avg {_pct(worst[0])} across {len(worst[2])} names: {names})")
+            if best[0] > 1.5 and best[1] != worst[1]:
+                names = ", ".join(sym for _, sym in sorted(best[2], reverse=True)[:3])
+                bits.append(f"{best[1]} bid (avg {_pct(best[0])}: {names})")
+            if bits:
+                sentences.append("Leadership: " + "; ".join(bits) + ".")
+
+    # Sentence 3: factor regime snapshot
+    if isinstance(factors, dict):
+        fbits = []
+        for code, label in (("MTUM", "Momentum"), ("VLUE", "Value"), ("QUAL", "Quality"), ("IWF", "Growth")):
+            f = factors.get(code) or {}
+            m1 = _first(f, "change_1m", "change1m")
+            if m1 is not None:
+                fbits.append(f"{label} {_pct(m1)}")
+        if fbits:
+            sentences.append("Factor 1M: " + ", ".join(fbits) + ".")
+
+    return sentences
+
+
+def _render_narrative(macro_data, indices, quotes):
+    """Render the top-of-email narrative block.
+
+    Layered: LLM-composed blurb (when present in macro_data.daily_narrative)
+    sits on top; mechanical observed-indicators sentences sit below as a
+    transparent 'what the tape actually did' check. Either layer alone is
+    valid; missing layers degrade gracefully.
+    """
+    lines = ["WHAT MOVED & WHAT TO WATCH"]
+    llm = None
+    if isinstance(macro_data, dict):
+        dn = macro_data.get("daily_narrative")
+        if isinstance(dn, dict):
+            llm = dn.get("text") or dn.get("narrative")
+        elif isinstance(dn, str):
+            llm = dn
+    if llm and str(llm).strip():
+        for para in str(llm).strip().split("\n"):
+            para = para.strip()
+            if para:
+                lines.append(para)
+        lines.append("")
+
+    factors = (macro_data or {}).get("factors") if isinstance(macro_data, dict) else None
+    mech = _mechanical_narrative(indices, quotes, factors)
+    if mech:
+        lines.append("Indicators:")
+        for s in mech:
+            lines.append(f"  {s}")
+
+    if len(lines) == 1:
+        lines.append("No narrative available.")
+    return lines
+
+
 _INDEX_DISPLAY = [
     ("^GSPC", "S&P 500"),
     ("^IXIC", "NASDAQ"),
@@ -708,6 +827,7 @@ def render_daily(data_dir):
     out.append("")
 
     for section in (
+        _render_narrative(macro, indices, quotes),
         _render_market_snapshot(indices),
         _render_top_movers(quotes),
         _render_earnings_today(calendar, today),

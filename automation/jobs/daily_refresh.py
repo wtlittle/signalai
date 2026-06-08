@@ -99,6 +99,21 @@ def step_macro_refresh():
     print(f"  Regime: {regime.get('name', 'Unknown')}")
 
 
+def step_daily_narrative():
+    """Step 2b: Generate 3-sentence market narrative via Perplexity sonar.
+
+    Writes macro_data.json#daily_narrative. Non-fatal: if the call fails,
+    the daily email renderer falls back to mechanical-only narrative.
+    """
+    try:
+        from automation.jobs.daily_narrative import run as run_narrative
+        rc = run_narrative()
+        if rc != 0:
+            print(f"  [WARN] daily_narrative exited non-zero ({rc}); renderer will use mechanical fallback")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARN] daily_narrative failed: {exc}; renderer will use mechanical fallback")
+
+
 def step_earnings_events():
     """Step 3: Detect earnings events (yfinance, no LLM cost)."""
     print("\n=== Step 3: Earnings Event Detection ===")
@@ -662,6 +677,7 @@ def run():
     # be redundant.
     if mode in ("bmo", "full"):
         step_macro_refresh()
+        step_daily_narrative()
 
     # Step 3: Earnings events (no LLM) — always. The detection logic is
     # cheap and is the source of truth for downstream steps.
