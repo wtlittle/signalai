@@ -1382,15 +1382,15 @@
       renderScreenerSurface();
     });
 
-    // Drilldown: must keep the legacy openPopup-on-ticker behavior AND
-    // render our inline panel. Compose by hand.
+    // Drilldown: render the inline panel only. Historically we also fired
+    // openPopup() here to keep the legacy ticker popup as a fallback, but
+    // now that the drilldown surface renders the saved institutional note
+    // the popup just covers it and confuses the user. The ticker popup is
+    // still reachable by clicking any ticker in the watchlist/coverage
+    // tables — drilldown routing should land you on the drilldown.
     router.register('drilldown', {
       onActivate: function (params) {
         renderDrilldownSurface(params);
-        if (params && params.ticker && typeof global.openPopup === 'function') {
-          // Keep legacy popup launch behind a defer so the inline panel paints first.
-          setTimeout(function () { global.openPopup(params.ticker); }, 30);
-        }
       }
     });
   }
