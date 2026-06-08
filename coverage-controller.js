@@ -727,10 +727,33 @@
     if (hasSelection && global.SignalCompare && typeof global.SignalCompare.renderTabSurface === 'function') {
       global.SignalCompare.renderTabSurface(slot, selected);
     } else {
-      // <2 tickers picked: show suggestion baskets (Sprint 2b will enrich this).
-      _renderCompareEmptyState(slot, selected || []);
+      // <2 tickers picked: show rich suggestion baskets.
       if (global.SignalCompare && typeof global.SignalCompare.unmountTabSurface === 'function') {
         global.SignalCompare.unmountTabSurface();
+      }
+      if (global.SignalCompareBaskets && typeof global.SignalCompareBaskets.render === 'function') {
+        global.SignalCompareBaskets.render(slot, {
+          toggle: function (t) {
+            if (global.SignalCompare && typeof global.SignalCompare.toggleTicker === 'function') {
+              global.SignalCompare.toggleTicker(t);
+            }
+          },
+          replace: function (tickers) {
+            var sc = global.SignalCompare;
+            if (!sc) return;
+            if (typeof sc.clearSelection === 'function') sc.clearSelection();
+            var cap = sc.MAX_PICK || 4;
+            tickers.slice(0, cap).forEach(function (t) {
+              if (typeof sc.toggleTicker === 'function' && !sc.isSelected(t)) sc.toggleTicker(t);
+            });
+          },
+          onChange: renderCompareSurface,
+          escapeHtml: _escapeHtml,
+          commonName: _commonName
+        });
+      } else {
+        // Module not loaded — fall back to the minimal quick-start stub.
+        _renderCompareEmptyState(slot, selected || []);
       }
     }
   }

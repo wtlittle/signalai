@@ -64,6 +64,45 @@
     },
 
     // -------------------------------------------------------------
+    // COMPARE TAB — suggestion baskets
+    // -------------------------------------------------------------
+    'compare.basket.movers': {
+      title: 'Movers today',
+      oneLiner: 'Tickers moving the most today.',
+      howToRead: 'Useful for catching post-print, pre-print, or news-driven action across your watchlist. Ranked by absolute 1-day move.'
+    },
+    'compare.basket.debated': {
+      title: 'Highly debated peers',
+      oneLiner: 'Highest debate-score names where investor opinion is most split.',
+      howToRead: 'Best ground for compare-and-contrast work. Debate score blends analyst dispersion, short interest, earnings-reaction volatility, and multiple compression.'
+    },
+    'compare.basket.favored': {
+      title: 'Favored sectors',
+      oneLiner: 'Subsectors the macro panel is currently flagging as favored.',
+      howToRead: 'Pulled from the live macro factor tilt. Representative names from each favored sector are surfaced as a starting cohort.'
+    },
+    'compare.basket.unfavored': {
+      title: 'Unfavored sectors',
+      oneLiner: 'Subsectors flagged as unfavored by the macro panel.',
+      howToRead: 'Useful for paired short ideas or risk monitoring. Mirrors the macro panel avoid list.'
+    },
+    'compare.basket.high-quant-debate': {
+      title: 'High quant + high debate',
+      oneLiner: 'Names in the top quartile on BOTH alpha/quant score and debate score.',
+      howToRead: 'Good asymmetric setups: high underlying quality paired with high disagreement. Falls back to a both-above-60 cut when the universe is small.'
+    },
+    'compare.basket.pre-earnings': {
+      title: 'Pre-earnings setup',
+      oneLiner: 'Reporting this week with elevated debate.',
+      howToRead: 'Often the highest-payoff compare slots. Filters the earnings calendar to names with a debate score of 60 or higher.'
+    },
+    'compare.basket.ma-rumors': {
+      title: 'M&A rumor candidates',
+      oneLiner: 'Names with pending M&A rumor flags from the rumor scan job.',
+      howToRead: 'Compare to peers or rumored acquirers for context. Each chip shows the rumored buyer and the scan confidence; ranked by confidence.'
+    },
+
+    // -------------------------------------------------------------
     // PROPRIETARY PILLS
     // -------------------------------------------------------------
     'pill.northstar.topline': {
