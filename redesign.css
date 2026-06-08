@@ -1951,3 +1951,106 @@
 .pipeline-modal-table .pm-ticker { font-weight: 700; white-space: nowrap; }
 .pipeline-modal-table .pm-missing { color: #7a2e0e; }
 .pipeline-modal .pm-clean { color: var(--text-secondary, #475569); margin: 0; }
+
+/* =================================================================== */
+/* sig-help: (?) icon + popover                                          */
+/* =================================================================== */
+.sig-help-icon {
+  appearance: none;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.30);
+  color: #94a3b8;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+  margin-left: 6px;
+  cursor: help;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.sig-help-icon:hover,
+.sig-help-icon:focus,
+.sig-help-icon[aria-expanded="true"] {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: rgba(59, 130, 246, 0.55);
+  color: #93c5fd;
+  outline: none;
+}
+.sig-help-icon-missing {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.sig-help-icon-inline {
+  position: relative;
+  top: -1px;
+}
+
+.sig-help-pop {
+  position: absolute;
+  z-index: 9999;
+  max-width: 340px;
+  min-width: 240px;
+  background: #0b1220;
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(15, 23, 42, 0.5);
+  color: #e2e8f0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  padding: 12px 14px;
+  pointer-events: auto;
+}
+.sig-help-pop[hidden] { display: none; }
+.sig-help-pop-arrow {
+  position: absolute;
+  top: -7px;
+  width: 12px;
+  height: 12px;
+  background: #0b1220;
+  border-left: 1px solid rgba(59, 130, 246, 0.45);
+  border-top: 1px solid rgba(59, 130, 246, 0.45);
+  transform: rotate(45deg);
+}
+.sig-help-pop.sig-help-pop-above .sig-help-pop-arrow {
+  top: auto;
+  bottom: -7px;
+  border-left: 0;
+  border-top: 0;
+  border-right: 1px solid rgba(59, 130, 246, 0.45);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.45);
+}
+.sig-help-pop-body {
+  position: relative;
+}
+.sig-help-pop-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #93c5fd;
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.sig-help-pop-oneliner {
+  color: #e2e8f0;
+  margin-bottom: 10px;
+}
+.sig-help-pop-howto-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+.sig-help-pop-howto {
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.5;
+}
