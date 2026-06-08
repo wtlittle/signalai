@@ -206,8 +206,16 @@
     return fallback || t;
   }
   function _subsectorFor(t, d) {
+    // Precedence: curated SUBSECTOR_MAP (via getSubsector) wins over the
+    // coarser yfinance/snapshot `subsector` field. We deliberately curate
+    // some tickers (e.g. FROG -> DevOps & Automation) where the upstream
+    // industry classification (Software - Application -> Enterprise Software)
+    // would be wrong for our peer-group analysis.
+    if (t && typeof global.getSubsector === 'function') {
+      var curated = global.getSubsector(t);
+      if (curated && curated !== 'Other') return curated;
+    }
     if (d && d.subsector) return d.subsector;
-    if (typeof global.getSubsector === 'function') return global.getSubsector(t);
     return 'Other';
   }
   function _daysToEarnings(d) {

@@ -26,6 +26,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from automation.shared.tickers import (  # noqa: E402
+    load_active_universe,
+    load_universe_v1_tickers,
     load_tickers,
     load_subsector_map,
     load_common_names,
@@ -33,19 +35,30 @@ from automation.shared.tickers import (  # noqa: E402
 
 
 def find_uncategorized() -> list[str]:
-    """Return watchlist tickers with no SUBSECTOR_MAP entry."""
-    tickers = load_tickers()
+    """Return active-universe tickers with no SUBSECTOR_MAP entry.
+
+    The active universe is the union of UNIVERSE_V1 (default coverage on
+    the dashboard) and DEFAULT_TICKERS (full historical list). Auditing
+    only DEFAULT_TICKERS is the bug that let KO/PEP/LLY/JNJ/XOM/... — all
+    UNIVERSE_V1 names — show up under "Other" on the dashboard.
+    """
+    tickers = load_active_universe()
     submap = load_subsector_map()
     return [t for t in tickers if t not in submap]
 
 
 def run(strict: bool = False) -> int:
-    tickers = load_tickers()
+    tickers = load_active_universe()
+    v1 = set(load_universe_v1_tickers())
+    full = set(load_tickers())
     submap = load_subsector_map()
     names = load_common_names()
     uncategorized = [t for t in tickers if t not in submap]
 
-    print(f"=== Category Audit: {len(tickers)} watchlist tickers ===")
+    print(
+        f"=== Category Audit: {len(tickers)} active-universe tickers "
+        f"({len(v1)} UNIVERSE_V1 + {len(full)} DEFAULT_TICKERS, deduped) ==="
+    )
     print(f"  categorized:   {len(tickers) - len(uncategorized)}")
     print(f"  uncategorized: {len(uncategorized)}")
 

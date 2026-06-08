@@ -146,6 +146,29 @@ const SUBSECTOR_MAP = {
   // Weekly Briefing Picks (Week 11: 2026-05-22)
   'PFE': 'Pharma', 'EMN': 'Specialty Chemicals', 'CTVA': 'Agriculture',
   'ROST': 'Retail', 'SITM': 'Semiconductors',
+  // --- UNIVERSE_V1 Defaults Backfill (2026-06-08) ---
+  // These ship in the default coverage (universe-v1.js) but were missing
+  // SUBSECTOR_MAP entries, so they rendered under "Other" on the dashboard.
+  // Industrial / Vertical Software
+  'ANSS': 'Industrial Software',
+  // Consumer Staples (beverages / food / household / tobacco)
+  'KO': 'Consumer Staples', 'PEP': 'Consumer Staples',
+  'PG': 'Consumer Staples', 'CL': 'Consumer Staples', 'PM': 'Consumer Staples',
+  // Financials — money-center bank / card issuer / Berkshire conglomerate
+  'C': 'Diversified Banking',
+  'AXP': 'Consumer Finance',
+  'BRK.B': 'Insurance',
+  // Energy — super-majors, E&P, oilfield services
+  'XOM': 'Energy', 'CVX': 'Energy', 'SLB': 'Energy',
+  'EOG': 'E&P Oil & Gas',
+  // Healthcare — pharma, devices
+  'LLY': 'Pharmaceuticals', 'JNJ': 'Pharmaceuticals', 'MRK': 'Pharmaceuticals',
+  'ISRG': 'Medical Devices',
+  // Aerospace & Defense / Diversified Industrials / Transports
+  'RTX': 'Aerospace & Defense', 'LMT': 'Aerospace & Defense', 'BA': 'Aerospace & Defense',
+  'GE': 'Industrials', 'HON': 'Industrials', 'DE': 'Industrials', 'UNP': 'Industrials',
+  // Industrial gases
+  'LIN': 'Specialty Chemicals', 'APD': 'Specialty Chemicals',
 };
 
 // Subsector display order
