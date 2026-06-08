@@ -557,7 +557,7 @@
           '<button type="button" class="btn-sm cmp-btn-open" id="cmp-open-rich"' + disableOpenRich + '>Open in Rich Compare</button>' +
           '<button type="button" class="btn-sm cmp-btn-clear" id="cmp-clear"' + (selected.length === 0 ? ' disabled' : '') + '>Clear</button>' +
         '</div>' +
-        '<div class="cmp-picker-status">' + _escapeHtml(statusText) + ' <span data-help="compare.surface"></span></div>' +
+        '<div class="cmp-picker-status"><span data-help="compare.surface">' + _escapeHtml(statusText) + '</span></div>' +
       '</div>'
     );
   }

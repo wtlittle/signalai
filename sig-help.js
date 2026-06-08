@@ -19,12 +19,32 @@
 (function (global) {
   'use strict';
 
-  var OPEN_DELAY_MS = 200;
-  var CLOSE_DELAY_MS = 120;
+  var OPEN_DELAY_MS = 120;
+  var CLOSE_DELAY_MS = 220;
   var _popoverEl = null;
-  var _activeTrigger = null;
+  var _activeTrigger = null;   // the .sig-help-icon button (canonical trigger)
+  var _activeParent = null;    // the [data-help] parent element (visual cue)
   var _openTimer = null;
   var _closeTimer = null;
+
+  /** Given any node that may be the icon, an icon child, or a [data-help]
+   *  parent, return both the canonical icon-trigger (button) and the parent
+   *  (for visual highlight). */
+  function _resolveTrigger(node) {
+    if (!node || !node.closest) return null;
+    var icon = node.closest('.sig-help-icon');
+    if (icon) {
+      var iconParent = icon.parentElement && icon.parentElement.closest('[data-help-upgraded]');
+      return { icon: icon, parent: iconParent };
+    }
+    // Only treat parent as a trigger if it was tagged at upgrade time.
+    var parent = node.closest('[data-help-parent-trigger]');
+    if (parent) {
+      var iconInside = parent.querySelector('.sig-help-icon');
+      return iconInside ? { icon: iconInside, parent: parent } : null;
+    }
+    return null;
+  }
 
   function _ensurePopover() {
     if (_popoverEl) return _popoverEl;
@@ -98,7 +118,7 @@
     pop.style.visibility = '';
   }
 
-  function _open(trigger) {
+  function _open(trigger, parent) {
     var key = trigger.getAttribute('data-help-key');
     if (!key) return;
     var content = global.SignalHelp && global.SignalHelp.get(key);
@@ -106,24 +126,40 @@
       console.warn('[sig-help] missing help content for key:', key);
       return;
     }
+    // Clear stale highlight if switching triggers.
+    if (_activeParent && _activeParent !== parent) {
+      _activeParent.classList.remove('sig-help-active');
+    }
     _activeTrigger = trigger;
+    _activeParent = parent || null;
     _populate(content);
     _position(trigger);
     trigger.setAttribute('aria-expanded', 'true');
+    if (_activeParent) _activeParent.classList.add('sig-help-active');
+    // Animate in on next frame so the transition fires.
+    var pop = _popoverEl;
+    requestAnimationFrame(function () {
+      if (pop && _activeTrigger === trigger) pop.classList.add('sig-help-pop-open');
+    });
   }
 
   function _close() {
     _cancelOpen();
     _cancelClose();
-    if (_popoverEl) _popoverEl.hidden = true;
+    if (_popoverEl) {
+      _popoverEl.classList.remove('sig-help-pop-open');
+      _popoverEl.hidden = true;
+    }
     if (_activeTrigger) _activeTrigger.setAttribute('aria-expanded', 'false');
+    if (_activeParent) _activeParent.classList.remove('sig-help-active');
     _activeTrigger = null;
+    _activeParent = null;
   }
 
-  function _scheduleOpen(trigger) {
+  function _scheduleOpen(trigger, parent) {
     _cancelOpen();
     _cancelClose();
-    _openTimer = setTimeout(function () { _open(trigger); }, OPEN_DELAY_MS);
+    _openTimer = setTimeout(function () { _open(trigger, parent); }, OPEN_DELAY_MS);
   }
   function _scheduleClose() {
     _cancelClose();
@@ -151,20 +187,29 @@
   }
 
   // Delegate event handling on document — works for static and dynamic markup.
+  // Both the (?) icon AND the [data-help-upgraded] parent label act as triggers.
   function _wireDelegation() {
     if (document.body.dataset.sigHelpWired === '1') return;
     document.body.dataset.sigHelpWired = '1';
 
     document.body.addEventListener('mouseover', function (e) {
-      var t = e.target && e.target.closest && e.target.closest('.sig-help-icon');
-      if (!t) return;
-      if (_activeTrigger === t) { _cancelClose(); return; }
-      _scheduleOpen(t);
+      var r = _resolveTrigger(e.target);
+      if (!r) return;
+      if (_activeTrigger === r.icon) { _cancelClose(); return; }
+      _scheduleOpen(r.icon, r.parent);
     });
 
     document.body.addEventListener('mouseout', function (e) {
-      var t = e.target && e.target.closest && e.target.closest('.sig-help-icon');
-      if (!t) return;
+      var r = _resolveTrigger(e.target);
+      if (!r) return;
+      // If we are moving onto the popover or staying within the same trigger
+      // region (icon <-> parent), do not close.
+      var to = e.relatedTarget;
+      if (to && _popoverEl && _popoverEl.contains(to)) return;
+      if (to && to.closest) {
+        var stillR = _resolveTrigger(to);
+        if (stillR && stillR.icon === r.icon) return;
+      }
       _cancelOpen();
       _scheduleClose();
     });
@@ -172,7 +217,8 @@
     document.body.addEventListener('focusin', function (e) {
       var t = e.target && e.target.closest && e.target.closest('.sig-help-icon');
       if (!t) return;
-      _open(t);
+      var parent = t.parentElement && t.parentElement.closest('[data-help-upgraded]');
+      _open(t, parent);
     });
     document.body.addEventListener('focusout', function (e) {
       var t = e.target && e.target.closest && e.target.closest('.sig-help-icon');
@@ -181,15 +227,14 @@
     });
 
     document.body.addEventListener('click', function (e) {
-      var t = e.target && e.target.closest && e.target.closest('.sig-help-icon');
-      if (t) {
+      var r = _resolveTrigger(e.target);
+      if (r) {
         e.preventDefault();
         e.stopPropagation();
-        if (_activeTrigger === t && _popoverEl && !_popoverEl.hidden) _close();
-        else _open(t);
+        if (_activeTrigger === r.icon && _popoverEl && !_popoverEl.hidden) _close();
+        else _open(r.icon, r.parent);
         return;
       }
-      // Click outside closes popover.
       if (_popoverEl && !_popoverEl.hidden && !_popoverEl.contains(e.target)) _close();
     });
 
@@ -206,12 +251,28 @@
   }
 
   // Auto-upgrade [data-help] elements: each one gets a (?) icon inserted after it.
+  // If the node already has its own text content, mark it as a parent trigger so
+  // hovering the label (e.g. "Quality" header) opens the popover too. If it's an
+  // empty hook (just a placeholder span), only the icon itself acts as the trigger.
   function _autoUpgrade(root) {
     var scope = root || document;
     var nodes = scope.querySelectorAll('[data-help]:not([data-help-upgraded])');
     nodes.forEach(function (node) {
       var key = node.getAttribute('data-help');
       if (!key) return;
+      var hadOwnText = (node.textContent || '').trim().length > 0;
+      // Suppress parent-trigger behavior inside sortable cells / interactive
+      // ancestors so it never steals their click handler.
+      var inInteractive = !!(node.closest && (
+        node.closest('th.sortable') ||
+        node.closest('button') ||
+        node.closest('a[href]') ||
+        node.closest('[role="button"]') ||
+        node.closest('[role="tab"]')
+      ));
+      if (hadOwnText && !inInteractive) {
+        node.setAttribute('data-help-parent-trigger', '1');
+      }
       node.setAttribute('data-help-upgraded', '1');
       node.insertAdjacentHTML('beforeend', ' ' + iconHtml(key, 'sig-help-icon-inline'));
     });
