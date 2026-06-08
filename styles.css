@@ -155,6 +155,16 @@ body {
   color: var(--text-muted);
   flex-shrink: 0;
 }
+.search-dropdown-action {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.search-dropdown-action-add {
+  color: var(--text-muted);
+}
 .search-dropdown-empty {
   padding: 10px;
   font-size: 11px;
@@ -9434,6 +9444,17 @@ mark.search-highlight {
 }
 .row-flash {
   animation: row-flash-anim 0.6s ease-out 1;
+}
+
+/* Search "Open overview" jump: longer, more prominent flash than the
+ * live-quotes update so the user can locate the row they searched for. */
+@keyframes row-flash-search-anim {
+  0%   { background-color: rgba(110, 168, 255, 0.32); }
+  60%  { background-color: rgba(110, 168, 255, 0.20); }
+  100% { background-color: transparent; }
+}
+.row-flash-search {
+  animation: row-flash-search-anim 1.2s ease-out 1;
 }
 
 /* "n/a" placeholder for cells where a metric is not meaningful for the row's

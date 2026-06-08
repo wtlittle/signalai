@@ -545,10 +545,74 @@ function closeDropdown() {
   searchActiveIndex = -1;
 }
 
+// Scroll the watchlist row for `ticker` into view and briefly highlight it.
+function scrollAndFlashRow(ticker) {
+  const cell = $body && $body.querySelector(`.cell-ticker[data-ticker="${ticker}"]`);
+  const row = cell ? cell.closest('tr') : null;
+  if (!row) return false;
+  row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  row.classList.remove('row-flash-search');
+  // Force reflow so re-adding the class restarts the animation.
+  void row.offsetWidth;
+  row.classList.add('row-flash-search');
+  setTimeout(() => row.classList.remove('row-flash-search'), 1300);
+  return true;
+}
+
+// Find tickers already on the watchlist matching `query` by symbol or name.
+// Returns dropdown-result objects flagged with `existing: true`.
+function findWatchlistMatches(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const matches = [];
+  (tickerList || []).forEach(t => {
+    const sym = t.toLowerCase();
+    const d = tickerData[t] || {};
+    const name = (typeof getCommonName === 'function' ? getCommonName(t, d.name) : (d.name || t)) || '';
+    const symStarts = sym.startsWith(q);
+    const symHas = sym.includes(q);
+    const nameHas = name.toLowerCase().includes(q);
+    if (symHas || nameHas) {
+      matches.push({
+        symbol: t,
+        name: name,
+        exchange: d.exchange || '',
+        existing: true,
+        // exact symbol match sorts first, then symbol-prefix, then name hits
+        _rank: sym === q ? 0 : (symStarts ? 1 : (symHas ? 2 : 3)),
+      });
+    }
+  });
+  matches.sort((a, b) => a._rank - b._rank);
+  return matches.slice(0, 8);
+}
+
+// Route a chosen dropdown result: open+highlight if already on the watchlist,
+// otherwise add it.
+function selectSearchResult(r) {
+  if (!r || !r.symbol) return;
+  if (r.existing) {
+    closeDropdown();
+    $tickerInput.value = '';
+    selectedSymbol = null;
+    openPopup(r.symbol);
+    scrollAndFlashRow(r.symbol);
+  } else {
+    addTickerBySymbol(r.symbol);
+  }
+}
+
 function renderDropdown(results, query) {
-  searchResults = results;
+  // Merge watchlist "Open" matches ahead of remote "Add" results, de-duping
+  // any symbols that are already on the watchlist.
+  const existing = findWatchlistMatches(query);
+  const existingSet = new Set(existing.map(r => r.symbol.toUpperCase()));
+  const adds = (results || []).filter(r => r && r.symbol && !existingSet.has(r.symbol.toUpperCase()));
+  const merged = existing.concat(adds);
+
+  searchResults = merged;
   searchActiveIndex = -1;
-  if (!results.length) {
+  if (!merged.length) {
     if (query.length >= 1) {
       $searchDropdown.innerHTML = '<div class="search-dropdown-empty">No results</div>';
       $searchDropdown.classList.add('active');
@@ -557,13 +621,18 @@ function renderDropdown(results, query) {
     }
     return;
   }
-  $searchDropdown.innerHTML = results.map((r, i) => {
+  $searchDropdown.innerHTML = merged.map((r, i) => {
     const nameEsc = (r.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const symEsc = (r.symbol || '').replace(/</g, '&lt;');
     const exEsc = (r.exchange || '').replace(/</g, '&lt;');
-    return `<div class="search-dropdown-item" data-index="${i}" data-symbol="${symEsc}">
+    const action = r.existing
+      ? `<span class="search-dropdown-action">Open ${symEsc} overview</span>`
+      : `<span class="search-dropdown-action search-dropdown-action-add">Add ${symEsc}</span>`;
+    const cls = r.existing ? 'search-dropdown-item search-dropdown-item-existing' : 'search-dropdown-item';
+    return `<div class="${cls}" data-index="${i}" data-symbol="${symEsc}">
       <span class="search-dropdown-symbol">${symEsc}</span>
       <span class="search-dropdown-name">${nameEsc}</span>
+      ${action}
       <span class="search-dropdown-exchange">${exEsc}</span>
     </div>`;
   }).join('');
@@ -573,8 +642,8 @@ function renderDropdown(results, query) {
   $searchDropdown.querySelectorAll('.search-dropdown-item').forEach(el => {
     el.addEventListener('mousedown', (e) => {
       e.preventDefault(); // prevent blur
-      const sym = el.dataset.symbol;
-      if (sym) addTickerBySymbol(sym);
+      const idx = parseInt(el.dataset.index, 10);
+      if (idx >= 0 && idx < searchResults.length) selectSearchResult(searchResults[idx]);
     });
   });
 }
@@ -612,8 +681,11 @@ async function doSearch(query) {
     }
   } catch (e) {
     console.warn('Search failed:', e);
-    // Fallback: treat input as raw ticker
-    closeDropdown();
+    // Remote search failed — still surface any matching watchlist tickers so
+    // the user can open an existing row even when the backend is unreachable.
+    if ($tickerInput.value.trim().toLowerCase() === query.toLowerCase()) {
+      renderDropdown([], query);
+    }
   }
 }
 
@@ -641,7 +713,11 @@ $tickerInput.addEventListener('keydown', (e) => {
   } else if (e.key === 'Enter') {
     e.preventDefault();
     if (searchActiveIndex >= 0 && searchActiveIndex < searchResults.length) {
-      addTickerBySymbol(searchResults[searchActiveIndex].symbol);
+      selectSearchResult(searchResults[searchActiveIndex]);
+    } else if (searchResults.length && searchResults[0].existing) {
+      // No explicit selection, but the top match is an existing watchlist
+      // ticker — prefer opening it over adding a new symbol.
+      selectSearchResult(searchResults[0]);
     } else if ($tickerInput.value.trim()) {
       // Direct add as raw ticker if no dropdown selection
       addTickerBySymbol($tickerInput.value.trim().toUpperCase());
@@ -658,7 +734,9 @@ $tickerInput.addEventListener('blur', () => {
 
 $addBtn.addEventListener('click', () => {
   if (searchActiveIndex >= 0 && searchActiveIndex < searchResults.length) {
-    addTickerBySymbol(searchResults[searchActiveIndex].symbol);
+    selectSearchResult(searchResults[searchActiveIndex]);
+  } else if (searchResults.length && searchResults[0].existing) {
+    selectSearchResult(searchResults[0]);
   } else if ($tickerInput.value.trim()) {
     addTickerBySymbol($tickerInput.value.trim().toUpperCase());
   }
