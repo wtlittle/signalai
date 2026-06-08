@@ -237,6 +237,98 @@
     };
   }
 
+  // ----- Manifest hydration (cross-device seeding) ----------------------
+  // The dashboard reads from localStorage, which is per-device. Committed
+  // notes live in notes/drilldown/index.json + per-note markdown files. On
+  // load we seed localStorage from that manifest so committed drilldowns
+  // appear on every device. Idempotent: each manifest id is recorded in
+  // SEEDED_KEY so re-visits never duplicate a version.
+  var SEEDED_KEY = 'ss_drilldown_seeded';
+  var MANIFEST_URL = 'notes/drilldown/index.json';
+
+  function _readSeeded() {
+    try {
+      var raw = localStorage.getItem(SEEDED_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (_) { return []; }
+  }
+
+  function _markSeeded(id) {
+    var seen = _readSeeded();
+    if (seen.indexOf(id) === -1) {
+      seen.push(id);
+      try { localStorage.setItem(SEEDED_KEY, JSON.stringify(seen)); } catch (_) {}
+    }
+  }
+
+  // Strip the leading YAML frontmatter block backend.py / save_drilldown.py
+  // emit, returning just the embedded HTML body.
+  function _stripFrontmatter(text) {
+    if (typeof text !== 'string') return '';
+    var m = text.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n+/);
+    return m ? text.slice(m[0].length) : text;
+  }
+
+  var _hydrating = null;
+
+  function hydrateFromManifest() {
+    if (typeof fetch !== 'function') return Promise.resolve(false);
+    // Coalesce concurrent calls (boot auto-run + a manual invocation) so a
+    // single manifest entry can't be seeded twice in one session.
+    if (_hydrating) return _hydrating;
+    _hydrating = _doHydrate().then(function (r) { _hydrating = null; return r; },
+                                  function (e) { _hydrating = null; throw e; });
+    return _hydrating;
+  }
+
+  function _doHydrate() {
+    var seeded = _readSeeded();
+    return fetch(MANIFEST_URL, { cache: 'no-cache' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('manifest ' + res.status);
+        return res.json();
+      })
+      .then(function (manifest) {
+        var entries = (manifest && Array.isArray(manifest.drilldowns)) ? manifest.drilldowns : [];
+        var pending = entries.filter(function (e) {
+          return e && e.id && seeded.indexOf(e.id) === -1 && e.markdown_path;
+        });
+        if (!pending.length) return false;
+        return Promise.all(pending.map(function (e) {
+          return fetch(e.markdown_path, { cache: 'no-cache' })
+            .then(function (r) { if (!r.ok) throw new Error(e.markdown_path + ' ' + r.status); return r.text(); })
+            .then(function (text) {
+              // Re-check seeded state synchronously: another in-flight fetch
+              // for the same id may have completed while this one awaited.
+              if (_readSeeded().indexOf(e.id) !== -1) return false;
+              var html = _stripFrontmatter(text);
+              if (!html) { _markSeeded(e.id); return false; }
+              save(e.ticker, {
+                html: html,
+                trigger: e.trigger || 'manual',
+                part: e.part || null,
+                company_name: e.title || null,
+                generated_at: e.saved_at_utc || undefined,
+              });
+              _markSeeded(e.id);
+              return true;
+            })
+            .catch(function (err) {
+              console.warn('[drilldown-library] hydrate skipped', e.id, err);
+              return false;
+            });
+        })).then(function (results) {
+          return results.some(Boolean);
+        });
+      })
+      .catch(function (err) {
+        // Manifest 404 / network failure: keep empty-state, log once.
+        console.warn('[drilldown-library] manifest hydration unavailable', err);
+        return false;
+      });
+  }
+
   // Rough storage-usage estimate for UI.
   function storageUsage() {
     try {
@@ -257,5 +349,18 @@
     import: importJson,
     onChange: onChange,
     storageUsage: storageUsage,
+    hydrateFromManifest: hydrateFromManifest,
   };
+
+  // Seed localStorage from the committed manifest on boot. save() already
+  // broadcasts 'signalstack:drilldown-library-changed', so the drilldown
+  // surface re-renders automatically once seeding completes.
+  if (typeof document !== 'undefined') {
+    var _boot = function () { try { hydrateFromManifest(); } catch (_) {} };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', _boot);
+    } else {
+      _boot();
+    }
+  }
 })(typeof window !== 'undefined' ? window : this);
