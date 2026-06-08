@@ -313,19 +313,9 @@ function renderTable() {
       }
 
       // Click ticker to open popup (guard in case fallback row was rendered).
-      // In Compare mode, the same click should toggle the row's compare
-      // checkbox instead of opening the drilldown — otherwise users keep
-      // surfacing the popup when they're trying to multi-select.
+      // The compare checkbox is the only control that toggles compare selection.
       const tickerCell = tr.querySelector('.cell-ticker');
-      if (tickerCell) tickerCell.addEventListener('click', (e) => {
-        if (window.SignalCompare && window.SignalCompare.isModeOn && window.SignalCompare.isModeOn()) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (typeof window.SignalCompare.toggleTicker === 'function') {
-            window.SignalCompare.toggleTicker(ticker);
-          }
-          return;
-        }
+      if (tickerCell) tickerCell.addEventListener('click', () => {
         openPopup(ticker);
       });
 
