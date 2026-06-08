@@ -272,18 +272,39 @@ def _pct(value):
     return f"{'+' if f >= 0 else ''}{f:.1f}%"
 
 
-def _render_market_snapshot(quotes):
-    """SPY/QQQ/DIA/IWM price + change1d, only those present in quotes."""
+_INDEX_DISPLAY = [
+    ("^GSPC", "S&P 500"),
+    ("^IXIC", "NASDAQ"),
+    ("^RUT",  "Russell 2000"),
+    ("^VIX",  "VIX"),
+]
+
+
+def _render_market_snapshot(indices):
+    """Major indices line — price + 1d/1w/1m/YTD when available.
+
+    Pulls from macro_data.json#indices (^GSPC, ^IXIC, ^RUT, ^VIX). Never
+    fabricates: missing keys collapse to n/a per field.
+    """
     lines = ["MARKET SNAPSHOT"]
-    present = [s for s in ("SPY", "QQQ", "DIA", "IWM") if s in (quotes or {})]
-    if not present:
+    if not isinstance(indices, dict) or not indices:
         lines.append("None today.")
         return lines
-    for sym in present:
-        q = quotes[sym]
-        price = _na(q.get("price"))
-        chg = _pct(q.get("change1d"))
-        lines.append(f"{sym}: {price} ({chg})")
+    for sym, label in _INDEX_DISPLAY:
+        q = indices.get(sym)
+        if not isinstance(q, dict):
+            continue
+        price = q.get("price")
+        try:
+            price_str = f"{float(price):,.2f}"
+        except (TypeError, ValueError):
+            price_str = _na(price)
+        c1d = _pct(q.get("change1d"))
+        c1w = _pct(_first(q, "change1w", "change_1w"))
+        c1m = _pct(_first(q, "change1m", "change_1m"))
+        lines.append(f"{label:<13} {price_str:>10}   1D {c1d:>7}  1W {c1w:>7}  1M {c1m:>7}")
+    if len(lines) == 1:
+        lines.append("None today.")
     return lines
 
 
@@ -500,6 +521,54 @@ def _render_yesterday_reactions(intel_data, today):
     return lines
 
 
+def _render_yesterday_reactions_v2(intel_data, today):
+    """Top 5 tickers (by |reaction|) that reported in the prior session.
+
+    Reads ``post_earnings_review.stock_reaction_pct`` directly (populated by
+    automation/jobs/reaction_populator.py) instead of regex-extracting from
+    prose. Falls back to the regex path only if the structured field is
+    missing. Never fabricates.
+    """
+    lines = ["YESTERDAY'S REACTIONS"]
+    tickers = (intel_data or {}).get("tickers") if isinstance(intel_data, dict) else None
+    if not tickers:
+        lines.append("None today.")
+        return lines
+
+    prior = _prior_session_date(today)
+    rows = []
+    for sym, intel in tickers.items():
+        if not isinstance(intel, dict):
+            continue
+        last = str(_first(intel, "last_earnings_date", "earnings_date") or "")[:10]
+        if not last or (prior and last != prior):
+            continue
+        per = intel.get("post_earnings_review") or {}
+        pct = per.get("stock_reaction_pct") if isinstance(per, dict) else None
+        if pct is None:
+            pct = _extract_reaction_pct(intel)
+        classification = _classify_beat_miss(intel)
+        note = _na(_first(intel, "bottom_line"))
+        if note != NA:
+            note = note.split(". ")[0].strip()
+            if len(note) > 140:
+                note = note[:137] + "..."
+        rows.append((abs(pct) if pct is not None else -1.0, pct, sym, classification, note))
+
+    if not rows:
+        lines.append("None today.")
+        return lines
+
+    rows.sort(key=lambda x: x[0], reverse=True)
+    for _, pct, sym, classification, note in rows[:5]:
+        try:
+            pct_str = f"{'+' if float(pct) >= 0 else ''}{float(pct):.1f}%"
+        except (TypeError, ValueError):
+            pct_str = NA
+        lines.append(f"{sym} {pct_str} — {classification}; {note}")
+    return lines
+
+
 _CORP_SUFFIX_RE = re.compile(
     r"\b(?:inc|incorporated|corp|corporation|co|company|ltd|limited|plc|"
     r"holdings|group|sa|nv|ag|lp|llc)\b",
@@ -567,11 +636,15 @@ def _render_ma_rumors(ma_data):
 
 
 def _render_macro_tilt(macro_data):
-    """Top 3 favored and top 3 unfavored sectors with their score.
+    """Regime + the sectors the regime model says should lead vs lag.
 
-    Sectors come from regime.favored_sectors / regime.avoid_sectors (ETF
-    tickers). The displayed score is the sector's 1-month change from the
-    sectors[] block when available; otherwise n/a. Never fabricates.
+    Logic explained inline in the email so the user knows what they're reading:
+      - regime is the macro model's current call (e.g. Goldilocks)
+      - regime-favored sectors are the ones the model says SHOULD lead under
+        the current regime; the % is their actual 1M ETF change (a confirmation
+        / disconfirmation signal, not a recommendation)
+      - regime-avoid sectors are the model's expected laggards.
+    Never fabricates.
     """
     lines = ["MACRO TILT"]
     if not isinstance(macro_data, dict):
@@ -580,28 +653,35 @@ def _render_macro_tilt(macro_data):
     regime = macro_data.get("regime") or {}
     sectors = macro_data.get("sectors") or {}
 
+    regime_name = _na(regime.get("regime"))
+    regime_desc = _na(regime.get("desc"))
+    if regime_desc != NA and len(regime_desc) > 110:
+        regime_desc = regime_desc[:107] + "..."
+
     def _sector_line(etf):
         meta = sectors.get(etf) or {}
         label = _na(_first(meta, "sectorName", "name")) if meta else NA
         score = _first(meta, "change_1m", "change1m") if meta else None
         score_str = _pct(score) if score is not None else NA
-        return f"{etf} ({label}): {score_str}"
+        return f"{etf} ({label}): 1M {score_str}"
 
     favored = regime.get("favored_sectors") or []
     avoid = _first(regime, "avoid_sectors", "unfavored_sectors") or []
 
+    lines.append(f"Regime: {regime_name} — {regime_desc}")
+
     if not favored and not avoid:
-        lines.append("None today.")
+        lines.append("No regime tilts available.")
         return lines
 
-    lines.append("Favored:")
+    lines.append("Regime-favored sectors (model expects leadership; 1M shows whether it is playing out):")
     if favored:
         for etf in favored[:3]:
             lines.append(f"  {_sector_line(etf)}")
     else:
         lines.append(f"  {NA}")
 
-    lines.append("Unfavored:")
+    lines.append("Regime-avoid sectors (model expects lagging):")
     if avoid:
         for etf in avoid[:3]:
             lines.append(f"  {_sector_line(etf)}")
@@ -619,17 +699,19 @@ def render_daily(data_dir):
     macro = _load_json(os.path.join(data_dir, "macro_data.json"))
 
     quotes = snapshot.get("quotes") or {}
+    indices = (macro or {}).get("indices") if isinstance(macro, dict) else {}
     today = _format_et(snapshot.get("generated"))  # YYYY-MM-DD in ET
 
     out = []
     out.append(f"SignalAI Daily Briefing — {today}")
+    out.append("=" * 64)
     out.append("")
 
     for section in (
-        _render_market_snapshot(quotes),
+        _render_market_snapshot(indices),
         _render_top_movers(quotes),
         _render_earnings_today(calendar, today),
-        _render_yesterday_reactions(intel, today),
+        _render_yesterday_reactions_v2(intel, today),
         _render_ma_rumors(ma),
         _render_macro_tilt(macro),
     ):
