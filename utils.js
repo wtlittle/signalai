@@ -59,6 +59,7 @@ const SUBSECTOR_MAP = {
   'MNDY': 'Enterprise Software', 'ASAN': 'Enterprise Software',
   'AMZN': 'Hyperscalers', 'GOOG': 'Hyperscalers', 'META': 'Hyperscalers', 'MSFT': 'Hyperscalers',
   'GTLB': 'DevOps & Automation', 'PATH': 'DevOps & Automation',
+  'FROG': 'DevOps & Automation',
   'ADBE': 'Enterprise Software',
   'AVGO': 'Semiconductors', 'MRVL': 'Semiconductors', 'ARM': 'Semiconductors', 'NVDA': 'Semiconductors', 'TSM': 'Semiconductors',
   'AMD': 'Semiconductors', 'SNPS': 'Semiconductors', 'CDNS': 'Semiconductors',
@@ -270,6 +271,8 @@ const COMMON_NAMES = {
   'ALAB': 'Astera Labs', 'FIVE': 'Five Below', 'CAT': 'Caterpillar', 'GNRC': 'Generac', 'NEM': 'Newmont',
   // User Addition (2026-04-29)
   'CSU.TO': 'Constellation Software',
+  // User Addition (2026-06-08)
+  'FROG': 'JFrog',
 };
 
 function cleanCompanyName(name) {
