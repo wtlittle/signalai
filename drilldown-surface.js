@@ -380,6 +380,74 @@
     t._h = setTimeout(function () { t.style.opacity = '0'; }, 5000);
   }
 
+  // Pop the saved drilldown HTML into a new window and trigger the browser
+  // print dialog. The analyst picks 'Save as PDF' as the destination — this
+  // gives a polished PDF with all the institutional styling preserved, no
+  // third-party PDF library required. Suggested filename is set via the
+  // injected <title> so most browsers default Save-as-PDF to it.
+  function _downloadAsPdf(ticker, version) {
+    if (!version || !version.html) {
+      _toast('No saved HTML to export for ' + ticker + '.', 'error');
+      return;
+    }
+    var dateStr = (version.generated_at || '').slice(0, 10) || new Date().toISOString().slice(0, 10);
+    var filename = ticker + '_drilldown_v' + version.version + '_' + dateStr;
+    // Inject a <title> + print-trigger into the saved HTML. We rewrite any
+    // existing <title> so the browser's Save-as-PDF default filename is
+    // predictable. Print CSS forces backgrounds + colors to render.
+    var printCss =
+      '<style media="print">' +
+        '@page { size: Letter; margin: 0.5in; }' +
+        'html, body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #ffffff !important; }' +
+        'a { color: inherit; text-decoration: underline; }' +
+      '</style>';
+    var titleTag = '<title>' + filename.replace(/</g, '&lt;') + '</title>';
+    var injected = String(version.html);
+    if (/<title[^>]*>[\s\S]*?<\/title>/i.test(injected)) {
+      injected = injected.replace(/<title[^>]*>[\s\S]*?<\/title>/i, titleTag);
+    } else if (/<head[^>]*>/i.test(injected)) {
+      injected = injected.replace(/<head[^>]*>/i, function (m) { return m + titleTag; });
+    } else {
+      injected = titleTag + injected;
+    }
+    if (/<\/head>/i.test(injected)) {
+      injected = injected.replace(/<\/head>/i, printCss + '</head>');
+    } else {
+      injected = printCss + injected;
+    }
+    // Append a small bootstrap that focuses the window and fires print().
+    // afterprint handler closes the popup so the analyst returns to the
+    // dashboard. Some browsers (Safari) suppress afterprint; closing on a
+    // timeout fallback is too aggressive (kills the dialog), so we just
+    // leave the window open in that case.
+    var bootScript =
+      '<script>(function(){' +
+        'function go(){try{window.focus();window.print();}catch(e){}}' +
+        'window.addEventListener("afterprint",function(){try{window.close();}catch(e){}});' +
+        'if(document.readyState==="complete"){setTimeout(go,150);}' +
+        'else{window.addEventListener("load",function(){setTimeout(go,150);});}' +
+      '})();<\/script>';
+    if (/<\/body>/i.test(injected)) {
+      injected = injected.replace(/<\/body>/i, bootScript + '</body>');
+    } else {
+      injected = injected + bootScript;
+    }
+    var w = global.open('', '_blank');
+    if (!w) {
+      _toast('Popup blocked. Allow popups for this site to export PDF.', 'error');
+      return;
+    }
+    try {
+      w.document.open();
+      w.document.write(injected);
+      w.document.close();
+      _toast('Opening print dialog \u2014 choose "Save as PDF".', 'ok');
+    } catch (err) {
+      try { w.close(); } catch (_) {}
+      _toast('PDF export failed: ' + (err && err.message ? err.message : 'unknown error'), 'error');
+    }
+  }
+
   // ----- Surface markup -------------------------------------------------
 
   function _ensureSurface() {
@@ -908,6 +976,7 @@
           '<div class="dd-viewer-actions">' +
             '<button type="button" class="btn-sm" data-dd-act="back-to-versions">← Back</button>' +
             '<button type="button" class="btn-sm" data-dd-act="open-window" data-ver="' + v.version + '">Open in new tab</button>' +
+            '<button type="button" class="btn-sm" data-dd-act="download-pdf" data-ver="' + v.version + '">Download PDF</button>' +
             '<button type="button" class="btn-sm" data-dd-act="copy-html" data-ver="' + v.version + '">Copy HTML</button>' +
             '<button type="button" class="btn-sm btn-primary" data-dd-act="refresh">↻ Refresh</button>' +
           '</div>' +
@@ -1024,6 +1093,12 @@
       var blob = new Blob([v3.html], { type: 'text/html' });
       var url = URL.createObjectURL(blob);
       global.open(url, '_blank', 'noopener');
+      return;
+    }
+    if (act === 'download-pdf') {
+      var vpdf = lib.getVersion(state.ticker, parseInt(target.dataset.ver, 10));
+      if (!vpdf) return;
+      _downloadAsPdf(state.ticker, vpdf);
       return;
     }
     if (act === 'copy-html') {
