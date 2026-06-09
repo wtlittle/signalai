@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from automation.shared.paths import ROOT_DIR, EARNINGS_CALENDAR, EARNINGS_INTEL, MACRO_DATA
 from automation.shared.cache import clear_stale_cache
-from automation.shared.tickers import load_tickers, load_common_names
+from automation.shared.tickers import load_tickers, load_common_names, load_active_universe
 from automation.shared.io_helpers import read_json, write_json
 from automation.perplexity.client import call_perplexity
 from automation.perplexity.prompts import build_news_prompt, build_news_tagging_prompt
@@ -82,6 +82,37 @@ def step_market_data():
 
     print("  Running refresh_comps_outperf.mjs...")
     run_node_script("refresh_comps_outperf.mjs", supabase_env)
+
+
+def step_quarterly_enrichment(tickers: list[str] | None = None):
+    """Step 1b: Enrich data-snapshot.json with quarterly trend series.
+
+    The Compare tab's "Quarterly trend" sparklines used to fetch Yahoo's v10
+    quoteSummary directly from the browser, but Yahoo now requires Crumb cookie
+    auth and returns 401 to anonymous fetches. We fetch server-side via yfinance
+    (which handles auth) and attach the derived series to the snapshot so the
+    client can prefer it.
+
+    Runs AFTER step_market_data so the snapshot's quotes section is fresh for
+    this run. Ordering relative to the Supabase writes each refresh_*.mjs
+    performs does not matter: the quarterly series live only in the JSON
+    snapshot the dashboard fetches from GitHub Pages, not in Supabase tables.
+
+    Defensive: per-ticker failures are isolated; a yfinance hiccup never breaks
+    the rest of daily_refresh.
+    """
+    print("\n=== Step 1b: Quarterly Trend Enrichment (yfinance) ===")
+    try:
+        from automation.jobs.quarterly_enrichment import enrich
+        symbols = tickers if tickers else load_active_universe()
+        ok, failures = enrich(symbols)
+        print(f"  Populated quarterly series for {ok}/{len(symbols)} tickers.")
+        if failures:
+            shown = ", ".join(f"{t} ({why})" for t, why in failures[:10])
+            more = f" (+{len(failures) - 10} more)" if len(failures) > 10 else ""
+            print(f"  [WARN] {len(failures)} ticker(s) had no usable quarterly data: {shown}{more}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARN] quarterly enrichment failed: {exc}")
 
 
 def step_macro_refresh():
@@ -666,8 +697,13 @@ def step_market_intel_harvest():
 # step was a silent no-op every run. Removed to eliminate dead code.
 
 
-def run():
+def run(tickers: list[str] | None = None):
     """Daily pipeline — gated by REFRESH_MODE env var.
+
+    Args:
+        tickers: optional explicit universe (e.g. from --tickers) used to scope
+            the quarterly enrichment step for fast verification runs. When None,
+            the enrichment covers the full active universe.
 
     Modes:
       * "bmo"  — 6 AM ET pre-market run. Detects new earnings events,
@@ -703,6 +739,13 @@ def run():
     # reflects yesterday's close.
     if mode in ("amc", "full"):
         step_market_data()
+
+    # Step 1b: Quarterly trend enrichment (yfinance, no LLM) — AMC + full.
+    # Runs after the market-data refresh so the snapshot's quotes section is
+    # fresh for this run, and attaches the Compare-tab sparkline series the
+    # browser can no longer fetch from Yahoo directly (Crumb auth wall).
+    if mode in ("amc", "full"):
+        step_quarterly_enrichment(tickers)
 
     # Step 2: Macro (no LLM) — BMO + full only. Macro indicators (rates,
     # VIX, regime) refresh once per day pre-market; AMC re-pull would
@@ -844,4 +887,29 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="SignalAI daily refresh pipeline")
+    parser.add_argument(
+        "--tickers",
+        help="Comma-separated ticker list to scope the quarterly enrichment "
+             "(e.g. NVDA,AVGO,AMD). Defaults to the full active universe.",
+    )
+    parser.add_argument(
+        "--quarterly-only",
+        action="store_true",
+        help="Run ONLY the quarterly enrichment step against the snapshot. "
+             "Use for fast verification / backfill without the full pipeline "
+             "(no Node refresh, no Perplexity calls).",
+    )
+    args = parser.parse_args()
+
+    explicit_tickers = (
+        [t.strip().upper() for t in args.tickers.split(",") if t.strip()]
+        if args.tickers else None
+    )
+
+    if args.quarterly_only:
+        step_quarterly_enrichment(explicit_tickers)
+    else:
+        run(explicit_tickers)
