@@ -9044,6 +9044,29 @@ mark.search-highlight {
 .cmp-ai-row.cmp-ai-bull { border-left: 3px solid var(--green); }
 .cmp-ai-row.cmp-ai-bear { border-left: 3px solid var(--red); }
 .cmp-ai-row.cmp-ai-watch { border-left: 3px solid #f59e0b; }
+.cmp-ai-per-ticker-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.cmp-ai-summary-snip {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+.cmp-ai-summary-arrow {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-muted);
+  vertical-align: middle;
+  margin: 0 4px;
+  transition: transform 0.15s ease;
+}
+.cmp-ai-ticker-details[open] > summary .cmp-ai-summary-arrow {
+  transform: rotate(180deg);
+}
 
 /* Enhancement 3 — Alpha badge on hero cards */
 .cmp-hero-alpha {

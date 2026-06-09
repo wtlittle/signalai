@@ -197,13 +197,18 @@
       html += '<div class="cmp-ai-block cmp-ai-risk"><h4>What invalidates this</h4><p>' + escapeHtml(parsed.what_invalidates) + '</p></div>';
     }
     if (Array.isArray(parsed.per_ticker) && parsed.per_ticker.length) {
-      html += '<div class="cmp-ai-block"><h4>Per-ticker read</h4><div class="cmp-ai-per-ticker">';
+      html += '<div class="cmp-ai-block"><h4>Per-ticker read</h4>'
+        + '<div class="cmp-ai-per-ticker-hint">First ticker expanded by default. Click any header to toggle.</div>'
+        + '<div class="cmp-ai-per-ticker">';
       parsed.per_ticker.forEach(function (p, idx) {
         if (!p || !p.ticker) return;
-        var bullSnip = p.bull ? escapeHtml(String(p.bull).slice(0, 60)) : 'n/a';
+        var bullSnip = p.bull ? escapeHtml(String(p.bull).slice(0, 80)) : 'n/a';
+        if (p.bull && p.bull.length > 80) bullSnip += '\u2026';
         var openAttr = idx === 0 ? ' open' : '';
         html += '<details class="cmp-ai-ticker-details"' + openAttr + '>'
-          + '<summary><span class="cmp-ai-summary-tick">' + escapeHtml(p.ticker) + '</span> &mdash; Bull: ' + bullSnip + '</summary>'
+          + '<summary><span class="cmp-ai-summary-tick">' + escapeHtml(p.ticker) + '</span>'
+          + ' <span class="cmp-ai-summary-arrow"></span>'
+          + ' <span class="cmp-ai-summary-snip">Bull: ' + bullSnip + '</span></summary>'
           + '<div class="cmp-ai-row cmp-ai-bull"><strong>Bull:</strong> ' + (p.bull ? escapeHtml(p.bull) : 'n/a') + '</div>'
           + '<div class="cmp-ai-row cmp-ai-bear"><strong>Bear:</strong> ' + (p.bear ? escapeHtml(p.bear) : 'n/a') + '</div>'
           + '<div class="cmp-ai-row cmp-ai-watch"><strong>Watch:</strong> ' + (p.watch ? escapeHtml(p.watch) : 'n/a') + '</div>'
