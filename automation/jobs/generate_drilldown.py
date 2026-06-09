@@ -25,6 +25,7 @@ PROMPT_PATH = ROOT / 'drilldown_prompt.md'
 
 from automation.perplexity.client import call_perplexity
 from automation.jobs.save_drilldown import save_drilldown
+from automation.jobs.drilldown_validator import validate
 
 
 def _fmt(v, decimals=None):
@@ -222,25 +223,11 @@ def _extract_html(content):
     return content.strip()
 
 
-def generate_one(ticker, snap, prompt_template, company_name=None):
-    ticker = ticker.strip().upper()
-    data_block = build_signal_data_block(ticker, snap)
-    prompt_body = prompt_template.replace('[SIGNAL_DATA_BLOCK]', data_block)
-    header = (
-        f'Run the canonical Signal Stack institutional drilldown engine on {ticker}. '
-        'Use the prompt below verbatim. The [SIGNAL_DATA_BLOCK] has been pre-filled '
-        'with live data — treat it as ground truth. Output ONE complete '
-        'self-contained HTML document covering all 14 sections inside a single '
-        'fenced ```html block, and nothing else.\n\n'
-    )
-    full_prompt = header + prompt_body
+def _call_model(ticker, full_prompt, system):
+    """Single Perplexity deep-research call returning extracted, validated HTML.
 
-    system = (
-        'You are Signal Stack AI\'s institutional Drilldown engine. Output a single '
-        'self-contained HTML document inside one fenced ```html block. No prose outside '
-        'the block. No <script> tags.'
-    )
-
+    Raises RuntimeError on queue/skip/dry-run states or unusable/truncated HTML.
+    """
     # A complete 14-section institutional primer (~3,500-6,000 words of HTML)
     # plus the model's reasoning tokens needs ample completion headroom; 16k
     # truncated NET/NVDA mid-document. Default high, allow env override.
@@ -288,6 +275,64 @@ def generate_one(ticker, snap, prompt_template, company_name=None):
             'Likely hit the completion-token cap. Raise DRILLDOWN_MAX_TOKENS and retry; '
             'not saving a partial note.'
         )
+    return html
+
+
+def _save_failed(ticker, html, failures):
+    """Persist a note that failed validation for inspection (never published)."""
+    failed_dir = ROOT / 'notes' / 'drilldown' / '_failed'
+    failed_dir.mkdir(parents=True, exist_ok=True)
+    stamp = _dt.datetime.now(_dt.timezone.utc).strftime('%Y-%m-%dT%H%M%SZ')
+    path = failed_dir / f'{ticker}_{stamp}.md'
+    note = (
+        f'<!-- VALIDATION FAILED:\n  - ' + '\n  - '.join(failures) + '\n-->\n' + html
+    )
+    path.write_text(note, encoding='utf-8')
+    return path
+
+
+def generate_one(ticker, snap, prompt_template, company_name=None):
+    ticker = ticker.strip().upper()
+    data_block = build_signal_data_block(ticker, snap)
+    prompt_body = prompt_template.replace('[SIGNAL_DATA_BLOCK]', data_block)
+    header = (
+        f'Run the canonical Signal Stack institutional drilldown engine on {ticker}. '
+        'Use the prompt below verbatim. The [SIGNAL_DATA_BLOCK] has been pre-filled '
+        'with live data — treat it as ground truth. Output ONE complete '
+        'self-contained HTML document covering all 14 sections inside a single '
+        'fenced ```html block, and nothing else.\n\n'
+    )
+    full_prompt = header + prompt_body
+
+    system = (
+        'You are Signal Stack AI\'s institutional Drilldown engine. Output a single '
+        'self-contained HTML document inside one fenced ```html block. No prose outside '
+        'the block. No <script> tags.'
+    )
+
+    # Generate, validate, and retry once on validation failure with a strict
+    # re-instruction prefix. A note that still fails is quarantined, not saved.
+    html = _call_model(ticker, full_prompt, system)
+    ok, failures = validate(html)
+    if not ok:
+        print(f'  [validator] {ticker} v1 FAILED: {failures}', file=sys.stderr)
+        retry_prefix = (
+            'PREVIOUS ATTEMPT FAILED these automated checks:\n  - '
+            + '\n  - '.join(failures)
+            + '\nFix every one and resubmit. Do NOT output the literal string '
+            '"MISSING" — use an em-dash "—" or search the web to fill the gap. '
+            'Every section header MUST be <div class="section-title">…</div> '
+            '(never <h2>). Every financial cell MUST carry a <a href="claim:N"> '
+            'citation. Emit ONLY the corrected HTML in one fenced ```html block.\n\n'
+        )
+        html = _call_model(ticker, retry_prefix + full_prompt, system)
+        ok, failures = validate(html)
+        if not ok:
+            failed_path = _save_failed(ticker, html, failures)
+            raise RuntimeError(
+                f'{ticker}: drilldown failed validation after one retry: {failures}. '
+                f'Quarantined at {failed_path.relative_to(ROOT)}; not published.'
+            )
 
     q = (snap.get('quotes') or {}).get(ticker) or {}
     price = q.get('price')
@@ -304,21 +349,28 @@ def generate_one(ticker, snap, prompt_template, company_name=None):
         price_at_gen=price,
     )
     print(f'  Saved {md_path.relative_to(ROOT)} ({entry["size_bytes"]} bytes, '
-          f'{entry["word_count"]} words)')
+          f'{entry["word_count"]} words) — validator PASS')
     return md_path, entry
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description='Generate institutional drilldowns.')
-    parser.add_argument('--tickers', nargs='+', required=True)
+    parser.add_argument('--tickers', nargs='+', help='one or more tickers')
+    parser.add_argument('--ticker', help='single ticker (alias for --tickers)')
     args = parser.parse_args(argv)
+
+    tickers = list(args.tickers or [])
+    if args.ticker:
+        tickers.append(args.ticker)
+    if not tickers:
+        parser.error('provide --ticker TICKER or --tickers T1 T2 ...')
 
     snap = _load_snapshot()
     prompt_template = PROMPT_PATH.read_text(encoding='utf-8')
 
     results = []
     errors = []
-    for t in args.tickers:
+    for t in tickers:
         try:
             md_path, entry = generate_one(t, snap, prompt_template)
             results.append(entry)
