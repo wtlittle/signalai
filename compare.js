@@ -1230,7 +1230,8 @@
       const tone = alpha >= 0 ? 'cmp-up' : 'cmp-down';
       const sign = alpha >= 0 ? '+' : '';
       el.className = 'cmp-hero-alpha ' + tone;
-      el.textContent = `Alpha vs ${etf}: ${sign}${alpha.toFixed(1)}%`;
+      el.title = `Alpha vs ${etf} over ${state.chartRange} (rebased-100 last minus ETF last). Recomputes on range change.`;
+      el.textContent = `Alpha vs ${etf} (${state.chartRange}): ${sign}${alpha.toFixed(1)}%`;
     }));
   }
 
