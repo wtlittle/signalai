@@ -133,6 +133,10 @@ function parseTickerData(ticker, chart, quote) {
     row.enterpriseToEbitda = quote.enterpriseToEbitda ?? null;
     row.sector = quote.sector ?? null;
     row.industry = quote.industry ?? null;
+    // Quarterly trend series for the Compare tab sparklines, enriched
+    // server-side into the snapshot by daily_refresh (yfinance handles Yahoo's
+    // Crumb auth the browser cannot). compare.js fetchQuarterly reads this.
+    row.quarterly = quote.quarterly ?? null;
     // Build headquarters string from city/state/country
     if (quote.city) {
       const parts = [quote.city];

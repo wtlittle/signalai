@@ -610,6 +610,37 @@
   // Fetch trailing-quarter income + cashflow statements, derive the three series.
   async function fetchQuarterly(ticker) {
     if (state.quarterlyCache[ticker]) return state.quarterlyCache[ticker];
+    // Prefer server-side snapshot data. daily_refresh enriches the snapshot via
+    // yfinance (which handles Yahoo's Crumb auth); the live browser fetch below
+    // is now an auth-walled fallback that rarely succeeds. The snapshot series
+    // are attached to the ticker row as `quarterly` (see parseTickerData).
+    const fromSnapshot = (q) => {
+      if (!q || typeof q !== 'object') return null;
+      const hasData = ['revGrowth', 'fcfMargin', 'opMargin']
+        .some(k => Array.isArray(q[k]) && q[k].length > 0);
+      if (!hasData) return null;
+      return {
+        revGrowth: Array.isArray(q.revGrowth) ? q.revGrowth.slice(-6) : [],
+        fcfMargin: Array.isArray(q.fcfMargin) ? q.fcfMargin.slice(-6) : [],
+        opMargin: Array.isArray(q.opMargin) ? q.opMargin.slice(-6) : [],
+      };
+    };
+    // 1. The ticker row (populated from the snapshot quotes section).
+    let series = fromSnapshot(global.tickerData && global.tickerData[ticker] && global.tickerData[ticker].quarterly);
+    // 2. Fall back to the raw snapshot (covers the Supabase-row path, where the
+    //    row carries no quarterly because Supabase tables don't store it).
+    if (!series && typeof loadSnapshot === 'function') {
+      try {
+        const snapData = await loadSnapshot();
+        const q = snapData && snapData.tickers && snapData.tickers[ticker] && snapData.tickers[ticker].quarterly;
+        series = fromSnapshot(q || (snapData && snapData.quotes && snapData.quotes[ticker] && snapData.quotes[ticker].quarterly));
+      } catch (e) { /* fall through to live fetch */ }
+    }
+    if (series) {
+      state.quarterlyCache[ticker] = series;
+      saveQuarterlyPersist();
+      return series;
+    }
     const modules = 'incomeStatementHistoryQuarterly,cashflowStatementHistoryQuarterly';
     const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=${modules}`;
     let data = null;
@@ -652,7 +683,7 @@
       const fcf = opCash[i] + (capex[i] || 0); // capex is negative on Yahoo
       return (fcf / rev) * 100;
     });
-    const series = {
+    series = {
       revGrowth: revGrowth.filter(v => v != null).slice(-6),
       fcfMargin: fcfMargin.filter(v => v != null).slice(-6),
       opMargin: opMargin.filter(v => v != null).slice(-6),
