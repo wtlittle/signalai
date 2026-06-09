@@ -32,65 +32,15 @@ from automation.perplexity.prompts import (
 TODAY = date.today()
 
 
-# --- Structured-output schemas (advisory for sonar-deep-research, but they
-# meaningfully reduce drift to off-spec/thin shapes). Passed through
-# call_perplexity via extra_meta["response_format"]. Perplexity requires
-# type == "json_schema"; "json_object" is rejected with HTTP 400. ---
-_VALUE_ITEM_PROPS = {
-    "ticker": {"type": "string"},
-    "name": {"type": "string"},
-    "price": {"type": ["number", "null"]},
-    "52_week_high": {"type": ["number", "null"]},
-    "52_week_low": {"type": ["number", "null"]},
-    "pct_off_high": {"type": "string"},
-    "market_cap": {"type": "string"},
-    "pe_ratio": {"type": ["number", "null"]},
-    "ev_ebitda": {"type": ["number", "null"]},
-    "revenue_growth": {"type": "string"},
-    "fcf_yield": {"type": "string"},
-    "fcf_ttm": {"type": "string"},
-    "debt_equity": {"type": ["number", "null"]},
-    "analyst_target": {"type": ["number", "null"]},
-    "analyst_consensus": {"type": "string"},
-    "why_undervalued": {"type": "string"},
-    "bull_case": {"type": "string"},
-    "why_could_go_lower": {"type": "string"},
-}
-_VALUE_RESPONSE_FORMAT = {
-    "type": "json_schema",
-    "json_schema": {"schema": {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "properties": _VALUE_ITEM_PROPS,
-            "required": list(_VALUE_ITEM_PROPS.keys()),
-        },
-    }},
-}
-
-_MOMENTUM_ITEM_PROPS = {
-    "ticker": {"type": "string"},
-    "name": {"type": "string"},
-    "price": {"type": ["number", "null"]},
-    "one_week_perf": {"type": "string"},
-    "one_month_perf": {"type": "string"},
-    "three_month_perf": {"type": "string"},
-    "revenue_growth": {"type": "string"},
-    "catalyst": {"type": "string"},
-    "risk_reward": {"type": "string"},
-}
-_MOMENTUM_RESPONSE_FORMAT = {
-    "type": "json_schema",
-    "json_schema": {"schema": {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "properties": _MOMENTUM_ITEM_PROPS,
-            "required": list(_MOMENTUM_ITEM_PROPS.keys()),
-        },
-    }},
-}
-
+# --- Structured-output schema for the trends call (advisory for
+# sonar-deep-research, but it meaningfully reduces drift to off-spec shapes).
+# Passed through call_perplexity via extra_meta["response_format"].
+#
+# Perplexity requires response_format.json_schema.schema to have a ROOT TYPE OF
+# OBJECT ("array" roots are rejected with HTTP 400), so json_schema is only
+# applied to the trends call (object). The value and momentum calls return bare
+# JSON arrays and therefore rely on strong prompt-engineered JSON requirements
+# (see build_weekly_value_prompt / build_weekly_momentum_prompt) instead.
 _TRENDS_RESPONSE_FORMAT = {
     "type": "json_schema",
     "json_schema": {"schema": {
@@ -215,7 +165,6 @@ def _fetch_value():
         build_weekly_value_prompt(),
         system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 18 value-pick keys. No markdown. No prose. No code fences. No explanation. Only JSON.",
         max_tokens=8000,
-        extra_meta={"response_format": _VALUE_RESPONSE_FORMAT},
     )
 
 
@@ -227,7 +176,6 @@ def _fetch_momentum():
         build_weekly_momentum_prompt(),
         system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 9 momentum-pick keys. No markdown. No prose. No code fences. No explanation. Only JSON.",
         max_tokens=6000,
-        extra_meta={"response_format": _MOMENTUM_RESPONSE_FORMAT},
     )
 
 
