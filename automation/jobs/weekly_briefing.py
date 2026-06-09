@@ -375,9 +375,9 @@ def run(output_path: Path | None = None) -> dict:
     # Auto-archive (only when writing to the default location)
     if out == WEEKLY_BRIEFING:
         try:
-            from automation.jobs.backfill_briefings import save_archive_briefing, patch_live_briefing_archive_index
+            from automation.jobs.backfill_briefings import save_archive_briefing, patch_index_only
             save_archive_briefing(TODAY, briefing)
-            patch_live_briefing_archive_index([TODAY])
+            patch_index_only()
         except Exception as exc:
             print(f"  [weekly_briefing] archive failed: {exc}")
 
@@ -415,7 +415,12 @@ def main():
     parser = argparse.ArgumentParser(description="Generate weekly market briefing via sonar-deep-research")
     parser.add_argument("--output", "-o", type=str, default=None,
                         help="Output path for weekly_briefing.json (default: repo weekly_briefing.json)")
+    parser.add_argument("--week-ending", type=str, default=None,
+                        help="Regenerate a specific past week (YYYY-MM-DD); overrides today's date")
     args = parser.parse_args()
+    if args.week_ending:
+        global TODAY
+        TODAY = date.fromisoformat(args.week_ending)
     output_path = Path(args.output) if args.output else None
     run(output_path=output_path)
 
