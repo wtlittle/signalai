@@ -465,7 +465,7 @@ def generate_one(ticker, snap, prompt_template, company_name=None):
     # Generate, validate, and retry once on validation failure with a strict
     # re-instruction prefix. A note that still fails is quarantined, not saved.
     html = _call_model(ticker, full_prompt, system)
-    ok, failures = validate(html)
+    ok, failures = validate(html, ticker=ticker)
     if not ok:
         print(f'  [validator] {ticker} v1 FAILED: {failures}', file=sys.stderr)
         retry_prefix = (
@@ -478,7 +478,7 @@ def generate_one(ticker, snap, prompt_template, company_name=None):
             'citation. Emit ONLY the corrected HTML in one fenced ```html block.\n\n'
         )
         html = _call_model(ticker, retry_prefix + full_prompt, system)
-        ok, failures = validate(html)
+        ok, failures = validate(html, ticker=ticker)
         if not ok:
             failed_path = _save_failed(ticker, html, failures)
             raise RuntimeError(

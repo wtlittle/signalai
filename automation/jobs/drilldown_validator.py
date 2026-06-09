@@ -9,10 +9,14 @@ catches those failures before a note is published to the Drilldown Library.
 
 Checks (all must pass):
   a. ZERO occurrences of the literal string "MISSING" in the rendered note.
-  b. All 14 canonical sections present (matched on section-title text).
+  b. All 14 canonical sections present (matched on section-title text). The
+     first section is now titled "Investment Overview" (renamed from
+     "Header / Metadata"); "header"/"metadata" stay accepted as aliases.
   c. >= 20 `claim:` link occurrences.
   d. Word count between 3000 and 8000 (text only, tags/style stripped).
   e. Every section header uses class="section-title" (and no <h2>/<h3> headers).
+  f. ARR-led tickers (ARR_LED_TICKERS) surface >= 3 ARR-family metrics
+     (ARR / Net new ARR / NRR / RPO / cRPO). Skipped when no ticker is passed.
 
 CLI:
     python -m automation.jobs.drilldown_validator <file.md>
@@ -27,18 +31,44 @@ MIN_CLAIMS = 20
 MIN_WORDS = 3000
 MAX_WORDS = 8000
 
+# ARR-led SaaS cohort: companies that report ARR (not GAAP revenue) as their
+# headline growth metric. For these, the rendered note must anchor commentary on
+# ARR-family metrics. Kept in sync with drilldown_prompt.md and the
+# financial-metric-prioritization skill (§2a). See ARR_REQUIRED_TERMS below.
+ARR_LED_TICKERS = {
+    'RBRK', 'NET', 'CRWD', 'ZS', 'OKTA', 'DDOG', 'MDB', 'SNOW', 'ESTC', 'S',
+    'NTNX', 'BILL', 'GTLB', 'FROG', 'CFLT', 'DT', 'PD', 'BOX', 'ASAN', 'MNDY',
+    'SMAR', 'ZUO', 'AI', 'PATH', 'U', 'RNG', 'FIVN', 'TWLO', 'FSLY', 'NCNO',
+    'BSY', 'AVPT', 'DOMO',
+}
+
+# Each entry is (display_label, list_of_case_insensitive_substrings). An ARR-led
+# note must surface at least MIN_ARR_TERMS of these.
+ARR_REQUIRED_TERMS = [
+    ('ARR', ['arr']),
+    ('Net new ARR', ['net new arr']),
+    ('NRR', ['nrr', 'net dollar retention', 'net revenue retention']),
+    ('RPO', ['rpo']),
+    ('cRPO', ['crpo', 'current rpo', 'current remaining performance']),
+]
+MIN_ARR_TERMS = 3
+
 # The 14 canonical sections, keyed by a stable label and matched against the
 # rendered section-title text via keyword alternatives. The on-disk gold
 # standard (FROG) uses these exact titles; the keyword sets tolerate minor
 # wording drift while still pinning each required section.
 REQUIRED_SECTIONS = [
-    ('HEADER', ['header', 'metadata']),
+    # First section is the report-header block (detected structurally via
+    # class="report-header"); the prompt now titles it "Investment Overview".
+    # "header"/"metadata" remain accepted aliases for transition compatibility
+    # with notes generated under the old "Header / Metadata" title.
+    ('INVESTMENT OVERVIEW (HEADER)', ['investment overview', 'header', 'metadata']),
     ('DEBATE FRAMING', ['debate framing', 'one-sentence', 'one sentence']),
     ('CATALYSTS', ['catalyst']),
     ('VALUATION', ['valuation', 'underwriting']),
     ('BUSINESS MODEL', ['business model', 'kpi dashboard']),
-    ('INVESTMENT OVERVIEW', ['investment overview', 'bull / base / bear',
-                             'bull/base/bear', 'investment thesis']),
+    ('BULL / BASE / BEAR', ['bull / base / bear', 'bull/base/bear',
+                            'investment thesis', 'base / bear']),
     ('FINANCIAL MODEL SNAPSHOT', ['financial model']),
     ('SENSITIVITY', ['sensitivity']),
     ('INDUSTRY / COMPETITIVE', ['industry structure', 'competitive positioning',
@@ -107,8 +137,14 @@ def _section_labels(html):
     return cleaned
 
 
-def validate(text):
-    """Run all checks. Return (ok: bool, failures: list[str])."""
+def validate(text, ticker=None):
+    """Run all checks. Return (ok: bool, failures: list[str]).
+
+    When ``ticker`` is supplied and belongs to the ARR-led cohort
+    (ARR_LED_TICKERS), an extra check (f) requires the note to surface at least
+    MIN_ARR_TERMS ARR-family metrics. Omitting ``ticker`` skips that check so
+    callers that lack the symbol keep working unchanged.
+    """
     body = _strip_frontmatter(text)
     failures = []
 
@@ -144,7 +180,7 @@ def validate(text):
     )
     missing_sections = []
     for label, keywords in REQUIRED_SECTIONS:
-        if label == 'HEADER' and has_report_header:
+        if label == 'INVESTMENT OVERVIEW (HEADER)' and has_report_header:
             continue
         if not any(kw in haystack for kw in keywords):
             missing_sections.append(label)
@@ -168,12 +204,32 @@ def validate(text):
             f'(d) word count {wc} outside [{MIN_WORDS}, {MAX_WORDS}]'
         )
 
+    # (f) ARR-led tickers must anchor on ARR-family metrics.
+    if ticker and ticker.strip().upper() in ARR_LED_TICKERS:
+        low = body.lower()
+        present = [
+            label for label, subs in ARR_REQUIRED_TERMS
+            if any(s in low for s in subs)
+        ]
+        if len(present) < MIN_ARR_TERMS:
+            failures.append(
+                f'(f) {ticker.strip().upper()} is ARR-led but only '
+                f'{len(present)}/{len(ARR_REQUIRED_TERMS)} ARR metrics present '
+                f'({present or "none"}) — need >= {MIN_ARR_TERMS} of '
+                'ARR / Net new ARR / NRR / RPO / cRPO'
+            )
+
     return (not failures), failures
 
 
-def validate_file(path):
+def validate_file(path, ticker=None):
     text = Path(path).read_text(encoding='utf-8')
-    return validate(text)
+    if ticker is None:
+        # Infer ticker from a leading "TICKER_" filename (e.g. NET_2026-06-09_p1.md).
+        m = re.match(r'^([A-Za-z0-9.]+)_', Path(path).name)
+        if m:
+            ticker = m.group(1)
+    return validate(text, ticker=ticker)
 
 
 def main(argv=None):
