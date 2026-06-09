@@ -913,6 +913,9 @@
       ]},
       { title: 'Forward estimates', rows: [
         { key: 'revenueEstimateAvg', label: 'FY1 Revenue estimate', fmt: r => fmt.large(r.revenueEstimateAvg), winner: 'high' },
+        // NTM EPS growth: (forwardEps - trailingEps) / |trailingEps| * 100. Winner = high.
+        // Computed in augmentRow() as r.ntmEpsGrowth. Renders n/a when either EPS field is missing.
+        { key: 'ntmEpsGrowth',    label: 'NTM EPS growth (fwd)',   fmt: r => typeof r.ntmEpsGrowth === 'number' ? fmt.pct(r.ntmEpsGrowth) : '\u2014', winner: 'high' },
         { key: '_nsTopGrowth',    label: 'NTM top-line growth',    fmt: (r, t) => fmt.northStar(r._nsTop),    winner: 'high' },
         { key: '_nsBottomGrowth', label: 'NTM bottom-line growth', fmt: (r, t) => fmt.northStar(r._nsBottom), winner: 'high' },
       ]},
@@ -1325,14 +1328,19 @@
       const absG = absTier('revenueGrowth', r.revenueGrowth);
       let score = g.score;
       let ntmNote = '';
-      // Metric-agnostic NTM bonus: read the company's top-line north star
-      // (ARR / cRPO / NRR / billings / revenue) and apply +0.5 when its growth
-      // exceeds 15%. Names the actual metric so the explanation matches what
-      // the Forward-estimates row shows.
+      // NTM top-line north-star bonus: ARR / cRPO / NRR / billings / revenue.
+      // Apply +0.5 when its growth exceeds 15%.
       const ns = getNorthStarGrowth(r.ticker, 'top', r);
       if (ns && typeof ns.growthPct === 'number' && ns.growthPct > 15) {
         score = Math.min(5, score + 0.5);
         ntmNote = ` NTM ${ns.label} growth ${ns.growthPct.toFixed(0)}% (+0.5).`;
+      }
+      // NTM EPS growth bonus (spec Enhancement 4): if forward EPS growth > 15%
+      // add +0.5 (capped at 5). Only applied when ntmEpsGrowth is available
+      // and the north-star bonus was not already applied (to avoid double-counting).
+      if (!ntmNote && typeof r.ntmEpsGrowth === 'number' && r.ntmEpsGrowth > 15) {
+        score = Math.min(5, score + 0.5);
+        ntmNote = ` NTM EPS growth ${r.ntmEpsGrowth.toFixed(0)}% (+0.5).`;
       }
       return {
         score,
