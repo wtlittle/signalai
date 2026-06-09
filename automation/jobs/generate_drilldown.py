@@ -26,6 +26,29 @@ PROMPT_PATH = ROOT / 'drilldown_prompt.md'
 from automation.perplexity.client import call_perplexity
 from automation.jobs.save_drilldown import save_drilldown
 from automation.jobs.drilldown_validator import validate
+from automation.sources.annual_history import fetch_5yr_history
+from automation.shared.supabase_client import fetch_rows
+
+# Supabase table holding per-ticker TAM / competitor intel harvested by
+# automation/jobs/market_intel_refresh.py (90-day TTL). Distinct from the
+# subsector-keyed `market_intel` table the legacy harvester writes.
+_MARKET_INTEL_TABLE = "market_intel_ticker"
+
+
+def fetch_market_intel(ticker: str) -> dict | None:
+    """Pull the per-ticker market-intel row from Supabase, or None.
+
+    Returns the row dict (tam_usd_bn, tam_source_url, category_cagr_pct,
+    drivers[], competitors[], updated_at) so build_signal_data_block can inject
+    it as the `market_intel` key. Never raises -- a missing table or row yields
+    None and the block falls back to "model must source from search tools".
+    """
+    ticker = ticker.strip().upper()
+    rows = fetch_rows(
+        _MARKET_INTEL_TABLE,
+        params={"ticker": f"eq.{ticker}", "limit": "1"},
+    )
+    return rows[0] if rows else None
 
 
 def _fmt(v, decimals=None):
@@ -74,12 +97,48 @@ def _fmt_b(v):
         return 'MISSING'
 
 
+def _dash(v):
+    """Render a value for the NEW data-block sections (history_5y / market_intel).
+
+    Per the zero-fabrication mandate: a null/empty value renders as an em-dash,
+    never the literal string "MISSING".
+    """
+    if v is None or v == '':
+        return '—'
+    return str(v)
+
+
+def _dash_b(v):
+    """Format a USD value as $X.XXB, or em-dash when null."""
+    if v is None:
+        return '—'
+    try:
+        return f'${float(v) / 1e9:.2f}B'
+    except (TypeError, ValueError):
+        return '—'
+
+
+def _dash_num(v, decimals=2):
+    if v is None:
+        return '—'
+    try:
+        return f'{float(v):.{decimals}f}'
+    except (TypeError, ValueError):
+        return '—'
+
+
 def _load_snapshot():
     return json.loads(SNAPSHOT_PATH.read_text(encoding='utf-8'))
 
 
-def build_signal_data_block(ticker, snap):
-    """Replicate drilldown-surface.js _buildSignalDataBlock from snapshot data."""
+def build_signal_data_block(ticker, snap, history_5y=None, market_intel=None):
+    """Replicate drilldown-surface.js _buildSignalDataBlock from snapshot data.
+
+    ``history_5y`` (list of annual rows from fetch_5yr_history) and
+    ``market_intel`` (per-ticker Supabase row from fetch_market_intel) are
+    injected as their own sections when supplied. Both are sourced from live
+    data and treated as ground truth by the model.
+    """
     q = (snap.get('quotes') or {}).get(ticker) or {}
     est = (snap.get('estimates') or {}).get(ticker) or {}
     asum = (snap.get('analyst_summary') or {}).get(ticker) or {}
@@ -185,6 +244,82 @@ def build_signal_data_block(ticker, snap):
         lines.append('StructuralDrivers: ' + (mi.get('structural_drivers') or 'MISSING'))
     else:
         lines.append('(MISSING — model must source TAM and category growth from search tools)')
+
+    lines += ['', '## 5-YEAR ANNUAL HISTORY']
+    if history_5y:
+        lines.append('FiscalYear | Revenue | OperatingIncome | EBIT | NetIncome | '
+                     'DilutedEPS | FCF | DilutedShares  (em-dash = not reported; '
+                     'never substitute estimates)')
+        for row in history_5y:
+            lines.append(
+                _dash(row.get('fy')) + ' | ' +
+                _dash_b(row.get('revenue')) + ' | ' +
+                _dash_b(row.get('operating_income')) + ' | ' +
+                _dash_b(row.get('ebit')) + ' | ' +
+                _dash_b(row.get('net_income')) + ' | ' +
+                _dash_num(row.get('eps_diluted'), 2) + ' | ' +
+                _dash_b(row.get('fcf')) + ' | ' +
+                _dash_num(row.get('shares_diluted'), 0)
+            )
+        # Per-cell provenance so the model can attribute figures and we can audit.
+        prov = []
+        for row in history_5y:
+            tags = sorted({
+                v for k, v in row.items()
+                if k.endswith('_source') and v
+            })
+            if tags:
+                prov.append(f"{row.get('fy')}={','.join(tags)}")
+        if prov:
+            lines.append('Provenance: ' + '; '.join(prov))
+    else:
+        lines.append('(No 5-year history assembled — source FY-4..FY annual '
+                     'revenue/operating income/EBIT/net income/diluted EPS/FCF/'
+                     'diluted shares from search tools; show em-dash for any cell '
+                     'you cannot verify.)')
+
+    lines += ['', '## MARKET INTEL (per-ticker, Supabase market_intel_ticker)']
+    if market_intel:
+        lines.append('TAM_USD_Bn: ' + _dash_num(market_intel.get('tam_usd_bn'), 1))
+        lines.append('TAM_SourceURL: ' + _dash(market_intel.get('tam_source_url')))
+        lines.append('Category_CAGR_Pct: ' + _dash_num(market_intel.get('category_cagr_pct'), 1))
+        lines.append('UpdatedAt: ' + _dash(market_intel.get('updated_at')))
+        drivers = market_intel.get('drivers') or []
+        if isinstance(drivers, str):
+            try:
+                drivers = json.loads(drivers)
+            except (ValueError, TypeError):
+                drivers = [drivers]
+        lines.append('Drivers:')
+        if drivers:
+            for d in drivers:
+                lines.append('  - ' + _dash(d))
+        else:
+            lines.append('  —')
+        competitors = market_intel.get('competitors') or []
+        if isinstance(competitors, str):
+            try:
+                competitors = json.loads(competitors)
+            except (ValueError, TypeError):
+                competitors = []
+        lines.append('Competitors (name | ticker | quadrant | threat | source):')
+        if competitors:
+            for c in competitors:
+                if not isinstance(c, dict):
+                    continue
+                lines.append(
+                    '  ' + _dash(c.get('name')) + ' | ' +
+                    _dash(c.get('ticker')) + ' | ' +
+                    _dash(c.get('quadrant')) + ' | ' +
+                    _dash(c.get('threat')) + ' | ' +
+                    _dash(c.get('source_url'))
+                )
+        else:
+            lines.append('  —')
+    else:
+        lines.append('(No per-ticker market intel cached — source TAM, category '
+                     'CAGR, growth drivers, and the competitive quadrant from '
+                     'search tools.)')
 
     lines += ['', '[/SIGNAL_DATA_BLOCK]']
     return '\n'.join(lines)
@@ -293,7 +428,24 @@ def _save_failed(ticker, html, failures):
 
 def generate_one(ticker, snap, prompt_template, company_name=None):
     ticker = ticker.strip().upper()
-    data_block = build_signal_data_block(ticker, snap)
+
+    # Enrich the block with 5-year annual history (priority source chain) and
+    # the per-ticker market-intel row (Supabase). Both degrade gracefully: a
+    # failure leaves the section telling the model to source from search tools.
+    try:
+        history_5y = fetch_5yr_history(ticker).get('history_5y')
+    except Exception as exc:
+        print(f'  [WARN] {ticker}: 5yr history enrichment failed: {exc}')
+        history_5y = None
+    try:
+        market_intel = fetch_market_intel(ticker)
+    except Exception as exc:
+        print(f'  [WARN] {ticker}: market_intel fetch failed: {exc}')
+        market_intel = None
+
+    data_block = build_signal_data_block(
+        ticker, snap, history_5y=history_5y, market_intel=market_intel
+    )
     prompt_body = prompt_template.replace('[SIGNAL_DATA_BLOCK]', data_block)
     header = (
         f'Run the canonical Signal Stack institutional drilldown engine on {ticker}. '
