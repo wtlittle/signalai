@@ -932,7 +932,9 @@ def build_weekly_value_prompt() -> str:
     so EVERY key below is required for every pick. Do not collapse to a thin
     thesis/catalyst/risk shape -- that breaks the card.
     """
-    return """You are a buy-side value-equity analyst. Screen the full US stock market and select the 5 best value stocks currently trading near their 52-week lows that still have strong, defensible fundamentals (positive or improving free cash flow, manageable leverage, a credible re-rating path).
+    return """OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Do NOT write a research report, framework, headings, or any prose outside the JSON. Any text that is not part of the JSON array will be discarded and the response treated as a failure. Your response must BEGIN with the character [ and END with the character ].
+
+You are a buy-side value-equity analyst. Screen the full US stock market and select the 5 best value stocks currently trading near their 52-week lows that still have strong, defensible fundamentals (positive or improving free cash flow, manageable leverage, a credible re-rating path).
 
 Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 18 keys below, with these EXACT key names. Do NOT rename, omit, or add keys. Do NOT substitute a thin {thesis, catalyst, risk, pb_ratio, dividend_yield} shape -- that schema is WRONG and will be rejected.
 
@@ -975,7 +977,9 @@ def build_weekly_momentum_prompt() -> str:
     The dashboard renders a 9-field card per pick, so EVERY key below is
     required for every pick.
     """
-    return """You are a buy-side momentum analyst. Screen the full US stock market and select the 5 strongest momentum stocks -- names with the best recent trailing performance that is backed by a genuine fundamental catalyst (not a low-float squeeze).
+    return """OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Do NOT write a research report, framework, headings, or any prose outside the JSON. Any text that is not part of the JSON array will be discarded and the response treated as a failure. Your response must BEGIN with the character [ and END with the character ].
+
+You are a buy-side momentum analyst. Screen the full US stock market and select the 5 strongest momentum stocks -- names with the best recent trailing performance that is backed by a genuine fundamental catalyst (not a low-float squeeze).
 
 Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 9 keys below, with these EXACT key names. Do NOT rename, omit, or add keys.
 
