@@ -4624,6 +4624,18 @@ mark.search-highlight {
 .pd-bull-title { color: var(--green); }
 .pd-bear-title { color: var(--red); }
 
+/* Subheading inside a long drilldown section (>300 words). Bold, a notch
+   smaller than .section-title, with top margin to break up walls of prose. */
+.subsection-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
 .pd-description {
   font-size: 13px;
   color: var(--text-secondary);
