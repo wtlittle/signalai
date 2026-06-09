@@ -286,6 +286,13 @@ def call_perplexity(
     }
     if chosen_model == "sonar-deep-research":
         body["reasoning_effort"] = (extra_meta or {}).get("reasoning_effort", DEFAULT_REASONING_EFFORT)
+    # Optional structured-output enforcement. Perplexity accepts
+    # response_format.type == "json_schema" (json_object is rejected). The
+    # schema is advisory for deep-research but meaningfully reduces drift to
+    # off-spec shapes; callers pass it via extra_meta to keep this opt-in.
+    response_format = (extra_meta or {}).get("response_format")
+    if response_format:
+        body["response_format"] = response_format
 
     dry_run = os.environ.get("DRY_RUN", "false").lower() == "true"
     if dry_run:

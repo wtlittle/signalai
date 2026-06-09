@@ -32,6 +32,102 @@ from automation.perplexity.prompts import (
 TODAY = date.today()
 
 
+# --- Structured-output schemas (advisory for sonar-deep-research, but they
+# meaningfully reduce drift to off-spec/thin shapes). Passed through
+# call_perplexity via extra_meta["response_format"]. Perplexity requires
+# type == "json_schema"; "json_object" is rejected with HTTP 400. ---
+_VALUE_ITEM_PROPS = {
+    "ticker": {"type": "string"},
+    "name": {"type": "string"},
+    "price": {"type": ["number", "null"]},
+    "52_week_high": {"type": ["number", "null"]},
+    "52_week_low": {"type": ["number", "null"]},
+    "pct_off_high": {"type": "string"},
+    "market_cap": {"type": "string"},
+    "pe_ratio": {"type": ["number", "null"]},
+    "ev_ebitda": {"type": ["number", "null"]},
+    "revenue_growth": {"type": "string"},
+    "fcf_yield": {"type": "string"},
+    "fcf_ttm": {"type": "string"},
+    "debt_equity": {"type": ["number", "null"]},
+    "analyst_target": {"type": ["number", "null"]},
+    "analyst_consensus": {"type": "string"},
+    "why_undervalued": {"type": "string"},
+    "bull_case": {"type": "string"},
+    "why_could_go_lower": {"type": "string"},
+}
+_VALUE_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {"schema": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": _VALUE_ITEM_PROPS,
+            "required": list(_VALUE_ITEM_PROPS.keys()),
+        },
+    }},
+}
+
+_MOMENTUM_ITEM_PROPS = {
+    "ticker": {"type": "string"},
+    "name": {"type": "string"},
+    "price": {"type": ["number", "null"]},
+    "one_week_perf": {"type": "string"},
+    "one_month_perf": {"type": "string"},
+    "three_month_perf": {"type": "string"},
+    "revenue_growth": {"type": "string"},
+    "catalyst": {"type": "string"},
+    "risk_reward": {"type": "string"},
+}
+_MOMENTUM_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {"schema": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": _MOMENTUM_ITEM_PROPS,
+            "required": list(_MOMENTUM_ITEM_PROPS.keys()),
+        },
+    }},
+}
+
+_TRENDS_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {"schema": {
+        "type": "object",
+        "properties": {
+            "index_returns": {"type": "object"},
+            "trends": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "theme": {"type": "string"},
+                        "summary": {"type": "string"},
+                        "tickers": {"type": "array", "items": {"type": "string"}},
+                    },
+                    "required": ["theme", "summary"],
+                },
+            },
+            "risks": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "risk": {"type": "string"},
+                        "impact": {"type": "string"},
+                    },
+                    "required": ["risk", "impact"],
+                },
+            },
+            "watchlist_movers": {"type": "array"},
+            "narrative": {"type": "string"},
+        },
+        "required": ["index_returns", "trends", "risks", "narrative"],
+    }},
+}
+
+
 def _salvage_json_array(raw_text: str) -> list | None:
     """Attempt to recover a list of JSON objects from a broken response.
 
@@ -117,8 +213,9 @@ def _fetch_value():
     return call_perplexity(
         "MARKET", "weekly_value",
         build_weekly_value_prompt(),
-        system="You are a senior equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. No markdown. No prose. No code fences. No explanation. Only JSON.",
+        system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 18 value-pick keys. No markdown. No prose. No code fences. No explanation. Only JSON.",
         max_tokens=8000,
+        extra_meta={"response_format": _VALUE_RESPONSE_FORMAT},
     )
 
 
@@ -128,8 +225,9 @@ def _fetch_momentum():
     return call_perplexity(
         "MARKET", "weekly_momentum",
         build_weekly_momentum_prompt(),
-        system="You are a senior equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. No markdown. No prose. No code fences. No explanation. Only JSON.",
+        system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 9 momentum-pick keys. No markdown. No prose. No code fences. No explanation. Only JSON.",
         max_tokens=6000,
+        extra_meta={"response_format": _MOMENTUM_RESPONSE_FORMAT},
     )
 
 
@@ -139,8 +237,9 @@ def _fetch_trends(tickers: list[str]):
     return call_perplexity(
         "MARKET", "weekly_trends",
         build_weekly_trends_prompt(tickers),
-        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. No markdown. No prose. No code fences. No explanation. Only JSON.",
-        max_tokens=6000,
+        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. The 'narrative' field must contain a full markdown research report (4000+ chars, ## headers, citations) as an escaped JSON string. trends and risks are arrays of objects. No markdown outside the JSON. No prose. No code fences. Only JSON.",
+        max_tokens=9000,
+        extra_meta={"response_format": _TRENDS_RESPONSE_FORMAT},
     )
 
 

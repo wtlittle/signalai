@@ -926,87 +926,130 @@ Return ONLY this JSON. No prose.
 
 
 def build_weekly_value_prompt() -> str:
-    """Weekly briefing — top 5 value stocks near 52-week lows."""
-    return """Search the full US stock market for the top 5 value stocks currently trading near their 52-week lows that have strong fundamentals.
+    """Weekly briefing — top 5 value stocks near 52-week lows.
 
-For each stock return this JSON array. No prose. No preamble.
+    Buy-side value-screen note. The dashboard renders an 18-field card per pick,
+    so EVERY key below is required for every pick. Do not collapse to a thin
+    thesis/catalyst/risk shape -- that breaks the card.
+    """
+    return """You are a buy-side value-equity analyst. Screen the full US stock market and select the 5 best value stocks currently trading near their 52-week lows that still have strong, defensible fundamentals (positive or improving free cash flow, manageable leverage, a credible re-rating path).
+
+Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 18 keys below, with these EXACT key names. Do NOT rename, omit, or add keys. Do NOT substitute a thin {thesis, catalyst, risk, pb_ratio, dividend_yield} shape -- that schema is WRONG and will be rejected.
 
 [
   {
-    "ticker": "...",
-    "name": "...",
+    "ticker": "<symbol>",
+    "name": "<full company name>",
     "price": 0.0,
-    "high_52w": 0.0,
-    "low_52w": 0.0,
-    "pct_off_high": "-X%",
-    "market_cap": "...",
+    "52_week_high": 0.0,
+    "52_week_low": 0.0,
+    "pct_off_high": "-X.X%",
+    "market_cap": "<e.g. 12.4B>",
     "pe_ratio": 0.0,
     "ev_ebitda": 0.0,
-    "revenue_growth": "X%",
-    "fcf_yield": "X%",
-    "fcf_ttm": "...",
+    "revenue_growth": "X.X%",
+    "fcf_yield": "X.X%",
+    "fcf_ttm": "<e.g. 1.2B>",
     "debt_equity": 0.0,
     "analyst_target": 0.0,
-    "analyst_consensus": "Buy/Hold/Sell",
-    "why_undervalued": "2 sentences max",
-    "bull_case": "2 sentences max",
-    "why_could_go_lower": "2-3 sentences max — the dominant bear thesis: the specific risk, concern, or structural issue that could drive the stock further down. Must be distinct from why_undervalued (which explains the discount); this is what could make the discount deserved or wider."
+    "analyst_consensus": "Strong Buy/Buy/Hold/Sell",
+    "why_undervalued": "<3-5 full sentences: the specific valuation gap vs history/peers and WHY the market is mispricing it>",
+    "bull_case": "<3-5 full sentences: the concrete catalysts and fundamental drivers that re-rate the stock higher>",
+    "why_could_go_lower": "<3-5 full sentences: the dominant bear thesis -- the specific risk or structural issue that could drive the stock further down. Must be DISTINCT from why_undervalued; this is what could make the discount deserved or wider>"
   }
 ]
 
-CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array. It must be parseable by Python json.loads() without any preprocessing. Do NOT include any markdown formatting, prose explanation, section headers, bullet points, or code fences. Do NOT wrap in ```json or ``` markers. The first character of your response must be [ and the last character must be ]. If you cannot fit all 5 picks within the token limit, return however many complete picks you have — never truncate a pick mid-object."""
+Field rules:
+- "price", "52_week_high", "52_week_low", "pe_ratio", "ev_ebitda", "debt_equity", "analyst_target" are NUMBERS (no quotes, no currency symbols). Use null only if genuinely unavailable.
+- "pct_off_high", "revenue_growth", "fcf_yield" are percent STRINGS like "-23.4%" / "12.5%".
+- "market_cap" and "fcf_ttm" are magnitude STRINGS like "12.4B".
+- "why_undervalued", "bull_case", "why_could_go_lower" must each be 3-5 complete sentences of genuine buy-side reasoning -- never one-liners, never empty.
+- NEVER fabricate a number; use null when you cannot verify it. Citations in brackets are allowed inside the prose string fields.
+
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array parseable by Python json.loads() without preprocessing. No markdown, no prose, no section headers, no code fences. Do NOT wrap in ```json or ``` markers. The first character must be [ and the last character must be ]. Emit all 5 picks; never truncate a pick mid-object."""
 
 
 def build_weekly_momentum_prompt() -> str:
-    """Weekly briefing — top 5 momentum stocks."""
-    return """Search the full US stock market for the top 5 momentum stocks showing the strongest recent performance with fundamental catalysts.
+    """Weekly briefing — top 5 momentum stocks.
 
-For each stock return this JSON array. No prose. No preamble.
+    The dashboard renders a 9-field card per pick, so EVERY key below is
+    required for every pick.
+    """
+    return """You are a buy-side momentum analyst. Screen the full US stock market and select the 5 strongest momentum stocks -- names with the best recent trailing performance that is backed by a genuine fundamental catalyst (not a low-float squeeze).
+
+Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 9 keys below, with these EXACT key names. Do NOT rename, omit, or add keys.
 
 [
   {
-    "ticker": "...",
-    "name": "...",
+    "ticker": "<symbol>",
+    "name": "<full company name>",
     "price": 0.0,
-    "one_week_perf": "X%",
-    "one_month_perf": "X%",
-    "three_month_perf": "X%",
-    "revenue_growth": "X%",
-    "catalyst": "1-2 sentences on what is driving the move",
-    "risk_reward": "1-2 sentences on risk/reward from here"
+    "one_week_perf": "X.X%",
+    "one_month_perf": "X.X%",
+    "three_month_perf": "X.X%",
+    "revenue_growth": "X.X%",
+    "catalyst": "<2-3 full sentences on the specific fundamental catalyst driving the move>",
+    "risk_reward": "<2-3 full sentences on the risk/reward setup from the current price>"
   }
 ]
 
-CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array. It must be parseable by Python json.loads() without any preprocessing. Do NOT include any markdown formatting, prose explanation, section headers, bullet points, or code fences. Do NOT wrap in ```json or ``` markers. The first character of your response must be [ and the last character must be ]. If you cannot fit all 5 picks within the token limit, return however many complete picks you have — never truncate a pick mid-object."""
+Field rules:
+- "price" is a NUMBER (no quotes, no currency symbol).
+- "one_week_perf", "one_month_perf", "three_month_perf", "revenue_growth" are percent STRINGS like "+8.3%" / "-2.1%".
+- "catalyst" and "risk_reward" must each be 2-3 complete sentences -- never one-liners, never empty.
+- NEVER fabricate a number; use a best-available figure or null. Citations in brackets are allowed inside the prose string fields.
+
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array parseable by Python json.loads() without preprocessing. No markdown, no prose, no section headers, no code fences. Do NOT wrap in ```json or ``` markers. The first character must be [ and the last character must be ]. Emit all 5 picks; never truncate a pick mid-object."""
 
 
 def build_weekly_trends_prompt(watchlist_tickers: list[str]) -> str:
-    """Weekly briefing — market trends, risks, watchlist movers."""
-    tickers_str = ", ".join(watchlist_tickers[:50])
-    return f"""Summarize this week's US equity market. Include:
-1. Weekly index returns (S&P 500, Nasdaq, Russell 2000) — closing values and % change
-2. 3-5 key market trends/themes
-3. 3-5 risks to watch next week
-4. Material updates for these watchlist tickers (only if earnings, analyst changes, or >5% weekly move): {tickers_str}
-5. A 2-3 sentence market narrative summary
+    """Weekly briefing — market trends, risks, watchlist movers, and a full
+    markdown research narrative.
 
-Return ONLY this JSON. No prose.
+    The dashboard renders the narrative as a multi-section research report, so
+    it must be a long markdown document (## headers + inline citations), NOT a
+    2-3 sentence blurb. trends and risks are lists of OBJECTS, not strings.
+    """
+    tickers_str = ", ".join(watchlist_tickers[:50])
+    return f"""You are a senior market strategist writing a buy-side weekly market briefing. Produce a deep, well-sourced summary of this week's US equity market covering:
+1. Weekly index returns (S&P 500, Nasdaq, Russell 2000) — closing values and % change
+2. 3-5 key market trends/themes (each with the tickers most exposed)
+3. 3-5 risks to watch next week (each with the specific market impact)
+4. Material updates for these watchlist tickers (only earnings, analyst changes, or >5% weekly move): {tickers_str}
+5. A full markdown research narrative (see requirements below)
+
+Return ONLY a single valid JSON object with EXACTLY these keys:
 
 {{
   "index_returns": {{
-    "sp500": {{"close": 0.0, "weekly_return": "X%", "ytd_return": "X%"}},
-    "nasdaq": {{"close": 0.0, "weekly_return": "X%", "ytd_return": "X%"}},
-    "russell2000": {{"close": 0.0, "weekly_return": "X%", "ytd_return": "X%"}}
+    "sp500": {{"close": 0.0, "weekly_return": "X.X%", "ytd_return": "X.X%"}},
+    "nasdaq": {{"close": 0.0, "weekly_return": "X.X%", "ytd_return": "X.X%"}},
+    "russell2000": {{"close": 0.0, "weekly_return": "X.X%", "ytd_return": "X.X%"}}
   }},
-  "trends": ["trend 1 (max 40 words)", "trend 2", "trend 3"],
-  "risks": ["risk 1 (max 40 words)", "risk 2", "risk 3"],
-  "watchlist_movers": [
-    {{"ticker": "...", "weekly_move": "+X%", "thirty_day_move": "+X%", "catalyst": "...", "detail": "..."}}
+  "trends": [
+    {{"theme": "<short theme title>", "summary": "<2-4 sentences on the theme>", "tickers": ["TICK1", "TICK2"]}}
   ],
-  "narrative": "2-3 sentence summary"
+  "risks": [
+    {{"risk": "<short risk title>", "impact": "<2-4 sentences on the specific market impact and what to watch>"}}
+  ],
+  "watchlist_movers": [
+    {{"ticker": "...", "weekly_move": "+X.X%", "thirty_day_move": "+X.X%", "catalyst": "<what happened>", "detail": "<1-2 sentence detail>"}}
+  ],
+  "narrative": "<FULL MARKDOWN RESEARCH REPORT — see requirements>"
 }}
 
-CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object. It must be parseable by Python json.loads() without any preprocessing. Do NOT include any markdown formatting, prose explanation, section headers, bullet points, or code fences. Do NOT wrap in ```json or ``` markers. The first character of your response must be {{ and the last character must be }}."""
+NARRATIVE REQUIREMENTS (this is the most important field):
+- It must be a substantial markdown research report of AT LEAST 4000 characters (target 6000-9000).
+- It must open with a single "# " title line, then use multiple "## " section headers (e.g. ## Market Recap, ## Sector Leadership, ## Macro & Rates, ## What To Watch Next Week).
+- Write in flowing buy-side analyst prose with concrete numbers (index levels, % moves, yields, notable single-stock moves) and inline bracketed citations like [3] tied to your sources.
+- Do NOT collapse the narrative into one paragraph or a 2-3 sentence summary — a short narrative will be rejected.
+- "trends" and "risks" are arrays of OBJECTS using the exact keys shown (theme/summary/tickers and risk/impact). Do NOT return plain strings.
+
+Field rules:
+- index_returns "close" values are NUMBERS; "weekly_return"/"ytd_return" are percent STRINGS like "+1.8%".
+- NEVER fabricate a number; use null when you cannot verify it. Provide all five sections.
+
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object parseable by Python json.loads() without preprocessing. The narrative markdown lives INSIDE the JSON string value for "narrative" (escape newlines as \\n). Do NOT wrap the whole response in ```json or ``` markers. The first character of your response must be {{ and the last character must be }}."""
 
 
 def _temporal_header(week_ending) -> str:
