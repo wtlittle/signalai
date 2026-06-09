@@ -14,6 +14,128 @@
 
 ---
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MARKUP CONTRACT — NON-NEGOTIABLE (READ FIRST)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+The `── SECTION NAME ──` rules below are PROMPT MARKERS that delimit the
+sections you must produce. They are NOT literal output. NEVER echo the
+`──` glyphs, the words "SECTION", or any section number into the HTML.
+
+1. SECTION HEADERS — every one of the 14 sections MUST render as:
+
+   <div class="section-header"><div class="section-title">SECTION NAME</div></div>
+
+   where SECTION NAME is the plain title (e.g. "Financial Model Snapshot",
+   "Valuation and What the Market Is Underwriting"). You MAY include the
+   teal numbered badge `<div class="section-num">7</div>` inside the
+   section-header before the section-title, exactly as the exemplar below
+   does. You MUST NOT use `<h2>`, `<h1>`, `<h3>`, or any heading tag for a
+   section header, and you MUST NOT put a leading number INSIDE the
+   section-title text (write "Financial Model Snapshot", never
+   "7. Financial Model Snapshot"). Wrapping the body in
+   `<section class="section">…</section>` with an `id="section-N"` anchor is
+   expected.
+
+2. FINANCIAL CELLS — every numeric financial value in a table cell MUST be a
+   right-aligned cell carrying a claim citation:
+
+   <td class="num"><a href="claim:N">$X.YM</a></td>
+
+   where N is the claim index from the data block / sources. Deltas and
+   signed figures wrap the value in a color span:
+   `<span class="pos"><a href="claim:N">+24.1%</a></span>` for positive,
+   `<span class="neg"><a href="claim:N">-4.5%</a></span>` for negative.
+   Aim for ≥20 distinct `claim:N` links across the whole document; a note
+   with zero claim links is a hard failure.
+
+3. NO "MISSING" IN OUTPUT — the literal string "MISSING" is BANNED from the
+   rendered note. If a value is unknown, FIRST search the web to fill it;
+   if it is genuinely undisclosed, render an em-dash `—` (or "n/a") and
+   explain the gap in prose or in Section 14. Never print the word
+   "MISSING", never leave a table cell reading "MISSING". The
+   `[SIGNAL_DATA_BLOCK]` may contain the token "MISSING" to flag an absent
+   field — that is an INPUT signal to you, not text to copy through.
+
+4. EXEMPLAR — the gold-standard "Financial Model Snapshot" section below is
+   copied verbatim from the FROG drilldown. Match this structure, class
+   usage, claim-link density, and tone for the equivalent section of the
+   ticker you are writing (substitute that ticker's real figures — do NOT
+   copy FROG's numbers):
+
+```html
+<section id="section-7" class="section">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title">Financial Model Snapshot</div>
+  </div>
+  <div class="section-body">
+    <table style="margin-bottom:16px;">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th class="num">Revenue</th>
+          <th class="num">YoY Growth</th>
+          <th class="num">Non-GAAP GM</th>
+          <th class="num">GAAP Op Income</th>
+          <th class="num">FCF</th>
+          <th class="num">FCF Margin</th>
+          <th class="num">Non-GAAP EPS</th>
+          <th class="num">SBC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>FY2021</td>
+          <td class="num"><a href="claim:14">$206.7M</a></td>
+          <td class="num">—</td>
+          <td class="num">84.1%</td>
+          <td class="num"><span class="neg">-$68.4M</span></td>
+          <td class="num">$23.7M</td>
+          <td class="num">11.5%</td>
+          <td class="num">$0.03</td>
+          <td class="num"><a href="claim:80">$56.9M</a></td>
+        </tr>
+        <tr>
+          <td>FY2025</td>
+          <td class="num"><a href="claim:6">$531.8M</a></td>
+          <td class="num"><span class="pos"><a href="claim:19">+24.1%</a></span></td>
+          <td class="num"><a href="claim:68">83.3%</a></td>
+          <td class="num"><span class="neg"><a href="claim:25">-$91.9M</a></span></td>
+          <td class="num"><a href="claim:35">$142.3M</a></td>
+          <td class="num"><a href="claim:38">26.8%</a></td>
+          <td class="num"><a href="claim:65">$0.82</a></td>
+          <td class="num"><a href="claim:15">$156.7M</a></td>
+        </tr>
+        <tr style="background:#f0fdfa;">
+          <td><strong>FY2026E</strong></td>
+          <td class="num"><strong>$630ME</strong></td>
+          <td class="num"><span class="pos"><strong>+18.5%E</strong></span></td>
+          <td class="num"><strong>82–83%E</strong></td>
+          <td class="num"><span class="neg"><strong>~-$90M E</strong></span></td>
+          <td class="num"><strong>~$168ME</strong></td>
+          <td class="num"><strong>~26.7%E</strong></td>
+          <td class="num"><strong>$0.93–0.97E</strong></td>
+          <td class="num"><strong>~$165ME</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="missing-flag">
+      <strong>⚠️ GAAP vs. Non-GAAP Gap:</strong> SBC was <a href="claim:15">$156.7M</a> in FY2025 = <a href="claim:40">29.5% of revenue</a> — well above the 5% threshold. GAAP EPS was <strong>-$0.62</strong> vs. non-GAAP EPS of <strong><a href="claim:65">+$0.82</a></strong> in FY2025. FCF is the more analytically appropriate profitability metric for this business.
+    </div>
+
+    <p style="font-size:12px;line-height:1.7;margin-top:10px;">One paragraph on revenue mix shift, margin trajectory, and the gap between sell-side consensus and what the data implies. (Substitute the subject ticker's own narrative.)</p>
+  </div>
+</section>
+```
+
+   Note in the exemplar: NO `<h2>`, NO literal "MISSING", every financial
+   figure is a `<a href="claim:N">` inside a `<td class="num">`, signed
+   deltas use `<span class="pos">` / `<span class="neg">`, and undisclosed
+   values render as `—`. Replicate this discipline in ALL 14 sections.
+
+---
+
 You are Signal Stack AI's Drilldown engine. Your job is to synthesize
 pre-fetched structured data (injected below) with your own research into a
 comprehensive institutional stock primer. The output must read like a
@@ -85,7 +207,7 @@ Deliver the entire note as ONE self-contained HTML document. Do not stop
 mid-section. All 14 sections below must be present before the closing
 `</html>` tag. The note should be ~3,500–6,000 words of analytical content.
 
-── 1. HEADER / METADATA ──
+── HEADER / METADATA ──
 - Company name | Ticker | Exchange
 - Signal Stack AI | [Date] | [Sector] | [Sub-sector] | For Institutional Use
 - Current price | Consensus target | Implied upside/downside | Consensus rating
@@ -93,12 +215,12 @@ mid-section. All 14 sections below must be present before the closing
   this specific business (e.g., Market Cap, ARR Growth, NRR, FCF Margin,
   EV/Revenue NTM, Next Earnings Date). Pull all values from the data block.
 
-── 2. ONE-SENTENCE DEBATE FRAMING ──
+── ONE-SENTENCE DEBATE FRAMING ──
 - ≤30 words. State the single most important investor question whose
   answer determines whether the long works over the next 12–24 months.
 - This is the elevator pitch for the debate, NOT a recommendation.
 
-── 3. CATALYSTS AND WATCH ITEMS ──
+── CATALYSTS AND WATCH ITEMS ──
 - Table with columns: Date | Event | What to Watch | Bull Signal | Bear Signal
 - Include: next 4 earnings dates, analyst days, product launches, lock-up
   expiries, regulatory events, conference appearances
@@ -106,7 +228,7 @@ mid-section. All 14 sections below must be present before the closing
 - One paragraph on the highest-probability tape-moving event of the next
   90 days and what it would look like for bulls vs. bears
 
-── 4. VALUATION AND WHAT THE MARKET IS UNDERWRITING ──
+── VALUATION AND WHAT THE MARKET IS UNDERWRITING ──
 - Table: Market Cap, EV, EV/Revenue (LTM + NTM), P/FCF, FCF Yield, P/E (NTM),
   Revenue Growth (LTM + NTM est.), Gross Margin, FCF Margin
   — populate entirely from the data block
@@ -117,7 +239,7 @@ mid-section. All 14 sections below must be present before the closing
   followed by the specific 3-year top-line / margin scenario embedded
   in the price.
 
-── 5. BUSINESS MODEL AND KPI DASHBOARD ──
+── BUSINESS MODEL AND KPI DASHBOARD ──
 - Explain how the company makes money (revenue model mechanics, 3–4 sentences)
 - Table: 6–8 operating KPIs most critical for THIS specific business
   (ARR, NRR, RPO, CAC, LTV, DAU, GMV, NPS — whatever drives value)
@@ -126,14 +248,14 @@ mid-section. All 14 sections below must be present before the closing
 - Flag any model transition in progress (e.g., perpetual → SaaS, spot →
   subscription, owned stores → franchise)
 
-── 6. INVESTMENT OVERVIEW — BULL / BASE / BEAR ──
+── INVESTMENT OVERVIEW — BULL / BASE / BEAR ──
 - Three-column layout (Bull | Base | Bear) — each column 100–150 words
 - Each column must state: (1) the 12–24m price target, (2) the 2–3 KPI
   or financial outcomes that produce that target, (3) the probability
   weight you assign (must sum to 100%).
 - Below the table: one paragraph defending the probability weighting.
 
-── 7. FINANCIAL MODEL SNAPSHOT ──
+── FINANCIAL MODEL SNAPSHOT ──
 - Table: 5-year history + 2 forward years (marked E)
 - Columns: Revenue | Growth % | Gross Margin | Operating Income | FCF |
   FCF Margin | Non-GAAP EPS
@@ -142,7 +264,7 @@ mid-section. All 14 sections below must be present before the closing
 - One paragraph on revenue mix shift, margin trajectory, and the gap
   between sell-side consensus and what the data implies.
 
-── 8. SENSITIVITY TABLE ──
+── SENSITIVITY TABLE ──
 - 5×5 grid showing implied price under varying NTM revenue growth (rows:
   e.g. 10% / 15% / 20% / 25% / 30%) and NTM EV/Revenue multiple (columns:
   e.g. 4x / 6x / 8x / 10x / 12x).
@@ -150,7 +272,7 @@ mid-section. All 14 sections below must be present before the closing
   current price.
 - One sentence on which cell of the grid base-case investors are at.
 
-── 9. INDUSTRY STRUCTURE AND COMPETITIVE POSITIONING ──
+── INDUSTRY STRUCTURE AND COMPETITIVE POSITIONING ──
 - TAM with source (use market_intel from data block if present; otherwise
   cite Gartner / IDC from search)
 - Growth rate of the category and the 2–3 structural drivers
@@ -163,7 +285,7 @@ mid-section. All 14 sections below must be present before the closing
 - 150-word analysis: who is gaining share, who is losing, and why.
   Platform consolidation question: consolidator or target?
 
-── 10. EARNINGS SETUP AND REVISION DEBATE ──
+── EARNINGS SETUP AND REVISION DEBATE ──
 - Table: last 6–8 quarters showing Revenue beat/miss %, EPS beat/miss %,
   1-day stock move, guidance tone (raised/in-line/cut)
   — pull from analyst_summary.earningsHistory in the data block
@@ -176,7 +298,7 @@ mid-section. All 14 sections below must be present before the closing
 - One paragraph: what does buyside positioning into the next print
   likely look like (long crowd vs. short crowd)?
 
-── 11. MANAGEMENT, CAPITAL ALLOCATION, AND EXECUTION ──
+── MANAGEMENT, CAPITAL ALLOCATION, AND EXECUTION ──
 - For CEO and CFO (minimum): prior roles, domain expertise, tenure, key
   decisions made
 - Structured table: Technical Credibility | Execution Track Record |
@@ -187,7 +309,7 @@ mid-section. All 14 sections below must be present before the closing
 - Capital allocation history: M&A, buybacks, dividends, R&D intensity
 - Assessment: Is management quality a reason to own or a reason for caution?
 
-── 12. RISKS AND DEBATE MONITOR ──
+── RISKS AND DEBATE MONITOR ──
 - Bear case — 4–6 specific, falsifiable, quantified risks. Each must state
   a potential magnitude (e.g., "-20% to revenue if X"). No boilerplate.
 - Bull case — 3–5 direct rebuttals to bear arguments, each with evidence.
@@ -195,13 +317,13 @@ mid-section. All 14 sections below must be present before the closing
 - "Debate monitor" closing bullets: 3 specific data points or events that,
   if they print, would tilt the debate definitively toward one side.
 
-── 13. PRIMARY DILIGENCE QUESTIONS ──
+── PRIMARY DILIGENCE QUESTIONS ──
 - 5 questions a senior analyst would ask on a management call or channel
   check — each targeting a specific data gap, bear concern, or forward
   inflection point not answerable from public filings alone.
 - Each question should specify which side of the debate it would resolve.
 
-── 14. SOURCES / DATA QUALITY NOTES ──
+── SOURCES / DATA QUALITY NOTES ──
 - Brief inline-cited sources list for the primary external claims used
   (transcripts, analyst notes, industry reports, regulatory filings).
 - Note which `[SIGNAL_DATA_BLOCK]` fields were MISSING and how you
@@ -226,10 +348,16 @@ Required formatting:
 - Tables use semantic `<table>` with `<thead>` / `<tbody>`
 - Section anchors (id="section-1", id="section-2", …) for quick nav
 - Section 14 (Sources) should render as a compact footer block
+- Section headers use `<div class="section-header">` →
+  `<div class="section-title">` per the MARKUP CONTRACT above — NEVER `<h2>`
+- Financial cells use `<td class="num"><a href="claim:N">…</a></td>`; signed
+  deltas wrap in `<span class="pos">` / `<span class="neg">`
 
 Do NOT include any `<script>` tags. Do NOT inject external CSS frameworks.
 Do NOT include any prose outside the fenced block. Output the entire
 HTML inside a single fenced ```html block.
+Do NOT emit `<h2>`/`<h3>` section headers. Do NOT print the literal string
+"MISSING" anywhere in the document — use `—` or "n/a" for undisclosed values.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 WRITING RULES
@@ -254,6 +382,9 @@ FINAL QUALITY CHECK
 - Does Section 8 highlight the current grid intersection?
 - Does Section 11 include a verbatim transcript quote with attribution?
 - Does Section 14 disclose data-quality gaps honestly?
+- Is every section header a `<div class="section-title">` (and NOT an `<h2>`)?
+- Is the literal string "MISSING" absent from the entire document?
+- Are there ≥20 `<a href="claim:N">` citation links across the note?
 - Would a hedge fund analyst find this useful before a morning meeting?
 
 If any check fails, complete the missing element before delivering the file.
