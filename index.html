@@ -15,7 +15,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260609a">
+<link rel="stylesheet" href="styles.css?v=20260609b">
 <link rel="stylesheet" href="redesign.css?v=20260608f">
 <script src="snapshot-config.js?v=20260422e"></script>
 <script src="snapshot-banner.js?v=20260422"></script>
@@ -445,41 +445,32 @@
     <!-- === SURFACE: NEWS ====================================== -->
     <section class="surface surface-news" data-surface="news" hidden>
       <div class="surface-header">
-        <h2>Market News</h2>
-        <p class="surface-sub">Coverage-scoped news, signal-tagged and ranked by relevance to your book.</p>
-      </div>
-
-      <div class="news-filter-bar" id="news-filter-bar">
-        <div class="news-filter-group">
-          <span class="news-filter-label">Scope</span>
-          <button class="news-filter-pill active" data-scope="coverage">My Coverage</button>
-          <button class="news-filter-pill" data-scope="all">All Market</button>
-        </div>
-        <div class="news-filter-group">
-          <span class="news-filter-label">Signal</span>
-          <button class="news-filter-pill active" data-signal="all">All</button>
-          <button class="news-filter-pill" data-signal="earnings">Earnings</button>
-          <button class="news-filter-pill" data-signal="guidance">Guidance</button>
-          <button class="news-filter-pill" data-signal="ma">M&amp;A</button>
-          <button class="news-filter-pill" data-signal="analyst">Analyst</button>
-          <button class="news-filter-pill" data-signal="macro">Macro</button>
-        </div>
-        <div class="news-filter-group">
-          <span class="news-filter-label">Time</span>
-          <button class="news-filter-pill active" data-time="24h">24H</button>
-          <button class="news-filter-pill" data-time="48h">48H</button>
-          <button class="news-filter-pill" data-time="1w">1W</button>
-        </div>
-        <div class="news-filter-group news-filter-end">
-          <button class="news-premarket-btn" id="news-premarket-btn" title="Last 12 hours only, ranked by impact on your coverage">
-            ☀ Pre-market Brief
-          </button>
-          <span class="news-status" id="news-status"></span>
-        </div>
+        <h2>News</h2>
+        <p class="surface-sub">M&amp;A rumors, watchlist headlines, and recent earnings notes.</p>
+        <span class="news-status" id="news-status"></span>
       </div>
 
       <div class="news-feed" id="news-feed">
-        <div class="news-loading">Loading news...</div>
+        <section class="news-section">
+          <h3 class="news-section-title">M&amp;A Rumors</h3>
+          <div class="news-list" id="news-ma-list">
+            <div class="news-loading">Loading…</div>
+          </div>
+        </section>
+
+        <section class="news-section">
+          <h3 class="news-section-title">Watchlist Headlines</h3>
+          <div class="news-list" id="news-headlines-list">
+            <div class="news-loading">Loading…</div>
+          </div>
+        </section>
+
+        <section class="news-section">
+          <h3 class="news-section-title">Recent Earnings Notes</h3>
+          <div class="news-list news-notes-grid" id="news-notes-list">
+            <div class="news-loading">Loading…</div>
+          </div>
+        </section>
       </div>
     </section>
 
@@ -645,7 +636,7 @@
   <script src="macro.js?v=20260514d"></script>
   <script src="alerts.js?v=20260514a"></script>
   <script src="pplx-api.js?v=20260512c"></script>
-  <script src="news.js?v=20260603a"></script>
+  <script src="news.js?v=20260609a"></script>
   <script src="api-settings.js?v=20260512c"></script>
   <script src="compare-ai.js?v=20260609a"></script>
   <script src="compare.js?v=20260609b"></script>
