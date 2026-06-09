@@ -91,6 +91,13 @@ def sanity_check(context: dict) -> tuple[bool, list[str]]:
     if not context:
         return False, ["context is empty or None"]
 
+    # Defensive: caller (or cache) may have handed us a string/list. Surface
+    # a clear issue instead of crashing with AttributeError so the per-ticker
+    # error is contained to that ticker and the daily refresh pipeline keeps
+    # going.
+    if not isinstance(context, dict):
+        return False, [f"context has unexpected type {type(context).__name__}, expected dict"]
+
     snapshot_type = context.get("snapshot_type", "pre")
     required = _REQUIRED_POST if snapshot_type == "post" else _REQUIRED_PRE
 

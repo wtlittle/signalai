@@ -236,6 +236,21 @@ def _check_cache(
         age = _dt.datetime.now(_dt.timezone.utc) - ts.astimezone(_dt.timezone.utc)
         if age <= _dt.timedelta(hours=_CACHE_TTL_HOURS):
             ctx = row.get("context")
+            # Supabase returns JSONB columns parsed as dict, but some legacy
+            # rows were stored as JSON-encoded strings (double-encoded). If we
+            # get a string back, parse it; if parsing fails or the result is
+            # not a dict, treat as a cache miss instead of crashing
+            # sanity_check downstream.
+            if isinstance(ctx, str):
+                try:
+                    import json as _json
+                    ctx = _json.loads(ctx)
+                except Exception:
+                    print(f"  [CACHE MISS] {ticker}/{note_type} cached value was a non-JSON string")
+                    return None
+            if not isinstance(ctx, dict):
+                print(f"  [CACHE MISS] {ticker}/{note_type} cached value was not a dict (got {type(ctx).__name__})")
+                return None
             if ctx:
                 print(f"  [CACHE HIT] {ticker}/{note_type} from {gen_at}")
                 return ctx

@@ -8,9 +8,23 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-// Load shared regime factor matrix + idea engine (both isomorphic UMD modules)
-const RegimeFactors = require('./regime_factors.js');
-const IdeaEngine = require('./idea_engine.js');
+// regime_factors.js + idea_engine.js are isomorphic UMD modules that assign
+// to `module.exports` inside an IIFE. Since package.json sets
+// "type": "module", a plain createRequire('./foo.js') loads them as ESM and
+// the export is empty. Read the source and evaluate it in a CJS-shaped
+// sandbox so the UMD's `module.exports = api` line works the same way the
+// browser <script> tag works. No file rename required.
+function _loadUmd(relPath) {
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const src = fs.readFileSync(path.join(here, relPath), 'utf8');
+  const shim = { exports: {} };
+  // `window` is undefined in the sandbox so the IIFE skips the browser
+  // branch and only assigns to module.exports.
+  new Function('module', 'exports', 'window', src)(shim, shim.exports, undefined);
+  return shim.exports;
+}
+const RegimeFactors = _loadUmd('./regime_factors.js');
+const IdeaEngine = _loadUmd('./idea_engine.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim() || 'https://wcyirdvvuetzodiedzss.supabase.co';

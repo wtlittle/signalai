@@ -51,6 +51,7 @@ env:
 # `git push` returns 403 for github-actions[bot].
 permissions:
   contents: write
+  issues: write  # needed by the auto-debug failure step to open issues
 
 jobs:
   refresh:
@@ -119,6 +120,81 @@ jobs:
           python -m automation.jobs.pre_earnings_notes
           python -m automation.jobs.post_earnings_notes
 
+      - name: Capture failure log + open auto-debug issue
+        # Runs only when an earlier step in this job failed. Posts a GitHub
+        # issue labelled "auto-debug" so the Perplexity Computer side can
+        # detect failed runs without polling Actions API. The issue body
+        # has the run URL, the failed job step, and the last 200 lines of
+        # the runner log (downloaded via the Actions API using the job's
+        # GITHUB_TOKEN). Closes itself the next time the same workflow
+        # succeeds (handled by the success-side close step below).
+        if: ${{ failure() }}
+        env:
+          GH_TOKEN: ${{ secrets.SIGNALAI_GH_PAT || secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref_name }}
+          WORKFLOW: ${{ github.workflow }}
+        run: |
+          set +e
+          mkdir -p /tmp/autodbg
+          # Grab the runner's log archive for this run. The zip contains one
+          # .txt file per job step. We only need the tail to keep the issue
+          # body under GitHub's 65KB limit.
+          curl -sSL -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -o /tmp/autodbg/logs.zip \
+            "https://api.github.com/repos/${REPO}/actions/runs/${RUN_ID}/logs" || true
+          TAIL_FILE=/tmp/autodbg/tail.txt
+          if [ -s /tmp/autodbg/logs.zip ]; then
+            cd /tmp/autodbg && unzip -q logs.zip -d unpacked || true
+            # Concatenate every step log, tail to last 250 lines.
+            find unpacked -name '*.txt' -print0 | xargs -0 cat 2>/dev/null | tail -n 250 > "$TAIL_FILE"
+          fi
+          [ -s "$TAIL_FILE" ] || echo "(log fetch failed — see run page)" > "$TAIL_FILE"
+          # Compose issue body.
+          {
+            echo "## Daily refresh failed"
+            echo ""
+            echo "- **Workflow:** ${WORKFLOW}"
+            echo "- **Run:** https://github.com/${REPO}/actions/runs/${RUN_ID}"
+            echo "- **Branch:** ${REF}"
+            echo "- **Mode:** ${REFRESH_MODE:-unknown}"
+            echo "- **When:** $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo ""
+            echo "### Log tail (last 250 lines, all steps)"
+            echo '```'
+            cat "$TAIL_FILE"
+            echo '```'
+          } > /tmp/autodbg/body.md
+          TITLE="[auto-debug] daily refresh failed — $(date -u +%Y-%m-%d) (run ${RUN_ID})"
+          # If an open auto-debug issue from today already exists, append a
+          # comment instead of opening a duplicate.
+          TODAY=$(date -u +%Y-%m-%d)
+          EXISTING=$(curl -sSL -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${REPO}/issues?labels=auto-debug&state=open&per_page=100" \
+            | python3 -c "import sys,json; ds=json.load(sys.stdin); print(next((i['number'] for i in ds if '${TODAY}' in i.get('title','')), ''))" 2>/dev/null)
+          if [ -n "$EXISTING" ]; then
+            echo "Appending to existing issue #$EXISTING"
+            python3 -c "import json,sys; print(json.dumps({'body': open('/tmp/autodbg/body.md').read()}))" \
+              | curl -sSL -X POST -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                -H "Content-Type: application/json" \
+                -d @- \
+                "https://api.github.com/repos/${REPO}/issues/${EXISTING}/comments" > /dev/null
+          else
+            echo "Opening new auto-debug issue"
+            python3 -c "import json,sys; print(json.dumps({'title': '${TITLE}', 'body': open('/tmp/autodbg/body.md').read(), 'labels': ['auto-debug', 'daily-refresh']}))" \
+              | curl -sSL -X POST -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                -H "Content-Type: application/json" \
+                -d @- \
+                "https://api.github.com/repos/${REPO}/issues" > /dev/null
+          fi
+          # Always exit 0 so this step doesn't itself fail the workflow.
+          exit 0
+
       - name: Upload generated notes as artifact
         # Always upload — even when the push step below is blocked by branch
         # protection — so the produced notes don't get thrown away with the
@@ -139,6 +215,38 @@ jobs:
             data-snapshot.json
           retention-days: 7
           if-no-files-found: warn
+
+      - name: Close stale auto-debug issues on success
+        # When the workflow finishes without a failure, close any open
+        # auto-debug issues. Keeps the issue list tidy so a single "open"
+        # issue == "current daily refresh is broken".
+        if: ${{ success() }}
+        env:
+          GH_TOKEN: ${{ secrets.SIGNALAI_GH_PAT || secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set +e
+          OPEN=$(curl -sSL -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${REPO}/issues?labels=auto-debug&state=open&per_page=100" \
+            | python3 -c "import sys,json; print(' '.join(str(i['number']) for i in json.load(sys.stdin)))" 2>/dev/null)
+          for N in $OPEN; do
+            echo "Closing #$N"
+            python3 -c "import json; print(json.dumps({'state':'closed','state_reason':'completed'}))" \
+              | curl -sSL -X PATCH -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                -H "Content-Type: application/json" \
+                -d @- \
+                "https://api.github.com/repos/${REPO}/issues/${N}" > /dev/null
+            python3 -c "import json; print(json.dumps({'body':'Auto-closed by successful run https://github.com/${REPO}/actions/runs/${RUN_ID}.'}))" \
+              | curl -sSL -X POST -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                -H "Content-Type: application/json" \
+                -d @- \
+                "https://api.github.com/repos/${REPO}/issues/${N}/comments" > /dev/null
+          done
+          exit 0
 
       - name: Commit generated notes and data
         run: |
