@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""Headless institutional drilldown generator.
+"""One-step institutional drilldown generator.
 
-Mirrors the browser flow in drilldown-surface.js: build a [SIGNAL_DATA_BLOCK]
-from live market data, inject it into the canonical drilldown_prompt.md, call
-Perplexity sonar-deep-research for a single self-contained HTML primer, then
-persist via automation.jobs.save_drilldown (markdown + index.json manifest).
-
-Quote and valuation fields come from Finnhub. Any field the data block marks
-MISSING is sourced by the model from web search, exactly as the prompt directs.
+Server-side mirror of the client flow in drilldown-surface.js: build the
+[SIGNAL_DATA_BLOCK] from data-snapshot.json, splice it into the canonical
+drilldown_prompt.md template, call Perplexity (sonar-deep-research) via the
+single shared client, extract the returned HTML, and save it through
+save_drilldown.save_drilldown() so the on-disk markdown + notes/drilldown/index.json
+manifest stay the source of truth the dashboard hydrates from.
 
 Usage:
     python3 -m automation.jobs.generate_drilldown --tickers NET NVDA RBRK
@@ -18,291 +17,321 @@ import json
 import os
 import re
 import sys
-import time
-import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+SNAPSHOT_PATH = ROOT / 'data-snapshot.json'
 PROMPT_PATH = ROOT / 'drilldown_prompt.md'
-HTML_OUT_DIR = ROOT / 'drilldown_data'
 
-sys.path.insert(0, str(ROOT))
-from automation.jobs.save_drilldown import save_drilldown  # noqa: E402
-
-PPLX_URL = 'https://api.perplexity.ai/chat/completions'
-PPLX_MODEL = os.environ.get('PERPLEXITY_MODEL_DRILLDOWN', 'sonar-deep-research')
-FINNHUB_BASE = 'https://finnhub.io/api/v1'
-
-SYSTEM_PROMPT = (
-    "You are Signal Stack AI's institutional stock drilldown engine. Return "
-    "only a complete standalone HTML document inside one ```html fenced block. "
-    "No prose outside the block."
-)
-
-
-def _http_get_json(url, timeout=30):
-    req = urllib.request.Request(url, headers={'User-Agent': 'signalai-drilldown/1.0'})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode('utf-8'))
+from automation.perplexity.client import call_perplexity
+from automation.jobs.save_drilldown import save_drilldown
 
 
 def _fmt(v, decimals=None):
     if v is None:
         return 'MISSING'
     try:
-        f = float(v)
+        fv = float(v)
     except (TypeError, ValueError):
         return str(v)
-    if f != f:  # NaN
+    if fv != fv:  # NaN
         return 'MISSING'
-    return f'{f:.{decimals}f}' if decimals is not None else str(v)
+    return f'{fv:.{decimals}f}' if decimals is not None else str(v)
 
 
 def _fmt_pct(v):
-    return 'MISSING' if v is None else f'{float(v):.1f}%'
-
-
-def _fmt_b_from_millions(v):
-    return 'MISSING' if v is None else f'${float(v) / 1e3:.2f}B'
-
-
-def fetch_finnhub(ticker, api_key):
-    """Pull quote, fundamental metrics, and profile from Finnhub."""
-    data = {}
+    """Format a fraction (0.335) as a percent. Use for fraction-valued fields."""
+    if v is None:
+        return 'MISSING'
     try:
-        data['quote'] = _http_get_json(f'{FINNHUB_BASE}/quote?symbol={ticker}&token={api_key}')
-    except Exception as exc:
-        data['quote'] = {}
-        print(f'  [WARN] {ticker}: quote fetch failed: {exc}')
-    try:
-        data['metric'] = _http_get_json(
-            f'{FINNHUB_BASE}/stock/metric?symbol={ticker}&metric=all&token={api_key}'
-        ).get('metric', {})
-    except Exception as exc:
-        data['metric'] = {}
-        print(f'  [WARN] {ticker}: metric fetch failed: {exc}')
-    try:
-        data['profile'] = _http_get_json(
-            f'{FINNHUB_BASE}/stock/profile2?symbol={ticker}&token={api_key}'
-        )
-    except Exception as exc:
-        data['profile'] = {}
-        print(f'  [WARN] {ticker}: profile fetch failed: {exc}')
-    return data
+        return f'{float(v) * 100:.1f}%'
+    except (TypeError, ValueError):
+        return 'MISSING'
 
 
-def build_signal_data_block(ticker, fh):
-    """Assemble the [SIGNAL_DATA_BLOCK] from Finnhub data.
+def _fmt_pct_raw(v):
+    """Format an already-percent value (33.5 -> 33.5%).
 
-    Field names and MISSING semantics match drilldown-surface.js so the model
-    treats present numbers as ground truth and sources MISSING ones via search.
+    data-snapshot.json stores revenueGrowth, margins, growth estimates, and
+    fcfMargin in whole-percent units, unlike the fraction-valued fields the
+    client receives post-normalization. Append '%' without rescaling.
     """
-    quote = fh.get('quote', {}) or {}
-    m = fh.get('metric', {}) or {}
-    prof = fh.get('profile', {}) or {}
+    if v is None:
+        return 'MISSING'
+    try:
+        return f'{float(v):.1f}%'
+    except (TypeError, ValueError):
+        return 'MISSING'
 
-    price = quote.get('c')
+
+def _fmt_b(v):
+    if v is None:
+        return 'MISSING'
+    try:
+        return f'${float(v) / 1e9:.2f}B'
+    except (TypeError, ValueError):
+        return 'MISSING'
+
+
+def _load_snapshot():
+    return json.loads(SNAPSHOT_PATH.read_text(encoding='utf-8'))
+
+
+def build_signal_data_block(ticker, snap):
+    """Replicate drilldown-surface.js _buildSignalDataBlock from snapshot data."""
+    q = (snap.get('quotes') or {}).get(ticker) or {}
+    est = (snap.get('estimates') or {}).get(ticker) or {}
+    asum = (snap.get('analyst_summary') or {}).get(ticker) or {}
+    hist = (asum.get('earningsHistory') or [])[-8:]
+    comps_row = (snap.get('cross_sector_comps') or {}).get(ticker) or {}
+    mi = (snap.get('market_intel') or {}).get(ticker) if isinstance(snap.get('market_intel'), dict) else None
+
+    if not q:
+        return ('[SIGNAL_DATA_BLOCK]\n(No pre-fetched data available '
+                '— collect all fields from search tools.)\n')
+
     lines = [
         '[SIGNAL_DATA_BLOCK]',
         'Generated: ' + _dt.datetime.now(_dt.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'),
         '',
         '## QUOTE',
-        f'Ticker: {ticker}',
-        f'Company: {prof.get("name") or "MISSING"}',
-        f'Exchange: {prof.get("exchange") or "MISSING"}',
-        f'Price: {_fmt(price, 2)}',
-        f'MarketCap: {_fmt_b_from_millions(m.get("marketCapitalization") or prof.get("marketCapitalization"))}',
-        f'EnterpriseValue: {_fmt_b_from_millions(m.get("enterpriseValue"))}',
-        f'Sector: {prof.get("finnhubIndustry") or "MISSING"}',
-        f'Industry: {prof.get("finnhubIndustry") or "MISSING"}',
-        f'52wHigh: {_fmt(m.get("52WeekHigh"), 2)}',
-        f'52wLow: {_fmt(m.get("52WeekLow"), 2)}',
-        f'Beta: {_fmt(m.get("beta"), 2)}',
-        f'TrailingPE: {_fmt(m.get("peTTM"), 1)}',
-        f'EVRevenue: {_fmt(m.get("currentEv/salesTTM") or m.get("psTTM"), 2)}',
-        f'EVEBITDA: {_fmt(m.get("currentEv/ebitdaTTM"), 2)}',
-        f'PS_TTM: {_fmt(m.get("psTTM"), 2)}',
-        f'RevenueGrowthTTMYoY: {_fmt_pct(m.get("revenueGrowthTTMYoy"))}',
-        f'GrossMarginTTM: {_fmt_pct(m.get("grossMarginTTM"))}',
-        f'OperatingMarginTTM: {_fmt_pct(m.get("operatingMarginTTM"))}',
-        f'NetMarginTTM: {_fmt_pct(m.get("netProfitMarginTTM"))}',
-        f'EV_FCF_TTM: {_fmt(m.get("currentEv/freeCashFlowTTM"), 1)}',
-        f'RevenuePerShareTTM: {_fmt(m.get("revenuePerShareTTM"), 2)}',
-        f'SharesOutstanding(M): {_fmt(prof.get("shareOutstanding"), 2)}',
-        f'52wPriceReturn: {_fmt_pct(m.get("52WeekPriceReturnDaily"))}',
+        'Ticker: ' + ticker,
+        'Price: ' + _fmt(q.get('price'), 2),
+        'MarketCap: ' + _fmt_b(q.get('marketCap')),
+        'EnterpriseValue: ' + _fmt_b(q.get('enterpriseValue')),
+        'Sector: ' + (q.get('sector') or 'MISSING'),
+        'Industry: ' + (q.get('industry') or 'MISSING'),
+        '52wHigh: ' + _fmt(q.get('fiftyTwoWeekHigh'), 2),
+        '52wLow: ' + _fmt(q.get('fiftyTwoWeekLow'), 2),
+        'Beta: ' + _fmt(q.get('beta'), 2),
+        'ForwardPE: ' + _fmt(q.get('forwardPE'), 1),
+        'TrailingPE: ' + _fmt(q.get('trailingPE'), 1),
+        'EVRevenue: ' + _fmt(q.get('enterpriseToRevenue'), 2),
+        'EVEBITDA: ' + _fmt(q.get('enterpriseToEbitda'), 2),
+        'RevenueGrowth: ' + _fmt_pct_raw(q.get('revenueGrowth')),
+        'GrossMargin: ' + _fmt_pct_raw(q.get('grossMargins') if q.get('grossMargins') is not None else est.get('grossMargins')),
+        'OperatingMargin: ' + _fmt_pct_raw(q.get('operatingMargins')),
+        'FCF: ' + _fmt_b(q.get('freeCashflow')),
+        'TotalRevenue: ' + _fmt_b(q.get('totalRevenue')),
+        'ConsensusTarget: ' + _fmt(q.get('targetMeanPrice') or asum.get('targetMeanPrice'), 2),
+        'TargetHigh: ' + _fmt(q.get('targetHighPrice') or asum.get('targetHighPrice'), 2),
+        'TargetLow: ' + _fmt(q.get('targetLowPrice') or asum.get('targetLowPrice'), 2),
+        'ConsensusRating: ' + (q.get('recommendationKey') or asum.get('recommendationKey') or 'MISSING'),
+        'AnalystCount: ' + _fmt(q.get('numberOfAnalystOpinions') or asum.get('numberOfAnalystOpinions')),
         '',
         '## ESTIMATES',
-        '(Forward estimates, analyst targets, and consensus rating not in feed '
-        '— source the latest from sell-side / company filings via search.)',
+        'NQ_RevEst: ' + _fmt_b(est.get('nextQRevEst')),
+        'NQ_RevGrowth: ' + _fmt_pct_raw(est.get('nextQRevGrowth')),
+        'NQ_EpsEst: ' + _fmt(est.get('nextQEpsEst'), 2),
+        'NQ_EpsGrowth: ' + _fmt_pct_raw(est.get('nextQEpsGrowth')),
+        'FY1_RevEst: ' + _fmt_b(est.get('fy1RevEst')),
+        'FY1_RevGrowth: ' + _fmt_pct_raw(est.get('fy1RevGrowth')),
+        'FY1_EpsEst: ' + _fmt(est.get('fy1EpsEst'), 2),
+        'FY2_RevEst: ' + _fmt_b(est.get('fy2RevEst')),
+        'FY2_RevGrowth: ' + _fmt_pct_raw(est.get('fy2RevGrowth')),
+        'FY2_EpsEst: ' + _fmt(est.get('fy2EpsEst'), 2),
+        'GuideRevHigh: ' + _fmt_b(est.get('guideRevHigh')),
+        'GuideRevLow: ' + _fmt_b(est.get('guideRevLow')),
+        'EPSTrend_Now: ' + _fmt(est.get('epsTrendCurrent'), 2),
+        'EPSTrend_30d: ' + _fmt(est.get('epsTrend30d'), 2),
+        'EPSTrend_90d: ' + _fmt(est.get('epsTrend90d'), 2),
+        'RevisionsUp_30d: ' + _fmt(est.get('revisionsUp30d')),
+        'RevisionsDown_30d: ' + _fmt(est.get('revisionsDown30d')),
+        'FCFMargin: ' + _fmt_pct_raw(est.get('fcfMargin')),
+        'RevenueLTM: ' + _fmt_b(est.get('revenueLtm')),
         '',
         '## EARNINGS HISTORY (last 8 quarters)',
-        '(Not cached — source revenue/EPS beat-miss, 1-day move, and guidance '
-        'tone from earnings releases and transcripts via search.)',
-        '',
-        '## CROSS-SECTOR COMPS',
-        '(Not cached — select the most relevant public peers and source their '
-        'EV/Revenue, forward P/E, gross margin, FCF margin, and revenue growth '
-        'via search.)',
-        '',
-        '## MARKET INTEL',
-        '(MISSING — source TAM, category growth rate, and structural drivers '
-        'from Gartner / IDC / company filings via search.)',
-        '',
-        '[/SIGNAL_DATA_BLOCK]',
     ]
+
+    if hist:
+        lines.append('Quarter | Rev Beat% | EPS Beat% | 1d Move | GuidanceTone')
+        for h in hist:
+            rev = h.get('revBeatPct')
+            eps = h.get('epsBeatPct')
+            mv = h.get('oneDayReturn')
+            lines.append(
+                (h.get('period') or '?') + ' | ' +
+                (f'{rev:.1f}%' if rev is not None else 'MISSING') + ' | ' +
+                (f'{eps:.1f}%' if eps is not None else 'MISSING') + ' | ' +
+                (f'{mv * 100:.1f}%' if mv is not None else 'MISSING') + ' | ' +
+                (h.get('guidanceTone') or 'MISSING')
+            )
+    else:
+        lines.append('(No earnings history cached — source from search tools)')
+
+    lines += ['', '## CROSS-SECTOR COMPS']
+    peers = comps_row.get('comps') or []
+    if peers:
+        lines.append('Ticker | EVRev | PEFwd | OpMargin | FCFMargin | RevGrowth')
+        for c in peers:
+            lines.append(
+                (c.get('ticker') or '?') + ' | ' +
+                _fmt(c.get('enterpriseToRevenue'), 2) + 'x | ' +
+                _fmt(c.get('forwardPE'), 1) + 'x | ' +
+                _fmt_pct_raw(c.get('operatingMargins')) + ' | ' +
+                _fmt_pct_raw(c.get('fcfMargin')) + ' | ' +
+                _fmt_pct_raw(c.get('revenueGrowth'))
+            )
+    else:
+        lines.append('(No comps cached — source from search tools)')
+
+    lines += ['', '## MARKET INTEL']
+    if mi:
+        lines.append('TAM: ' + (mi.get('tam_label') or 'MISSING'))
+        lines.append('TAMSource: ' + (mi.get('tam_source') or 'MISSING'))
+        lines.append('CategoryGrowthRate: ' + (mi.get('growth_rate_label') or 'MISSING'))
+        lines.append('HarvestedAt: ' + (mi.get('harvested_at') or 'MISSING'))
+        lines.append('StructuralDrivers: ' + (mi.get('structural_drivers') or 'MISSING'))
+    else:
+        lines.append('(MISSING — model must source TAM and category growth from search tools)')
+
+    lines += ['', '[/SIGNAL_DATA_BLOCK]']
     return '\n'.join(lines)
 
 
-def build_full_prompt(ticker, data_block):
-    prompt_text = PROMPT_PATH.read_text(encoding='utf-8')
-    body = prompt_text.replace('[SIGNAL_DATA_BLOCK]', data_block)
+def _extract_html(content):
+    """Pull the HTML document out of the model response.
+
+    The canonical prompt asks for a single fenced ```html block. Be lenient:
+    accept a fenced block, or fall back to the first <!DOCTYPE/<html ... </html>.
+    """
+    if not isinstance(content, str):
+        # call_perplexity returns parsed JSON; deep-research HTML usually lands
+        # under {"raw": "..."} because it is not JSON.
+        if isinstance(content, dict):
+            content = content.get('raw') or content.get('html') or json.dumps(content)
+        else:
+            content = str(content)
+
+    # sonar-deep-research prepends an internal <think>...</think> chain-of-thought
+    # before the document. Strip it so it never leaks into the saved note.
+    content = re.sub(r'<think>.*?</think>\s*', '', content, flags=re.DOTALL | re.IGNORECASE)
+
+    m = re.search(r'```html\s*(.*?)```', content, flags=re.DOTALL | re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+    m = re.search(r'```\s*(<!DOCTYPE.*?|<html.*?)```', content, flags=re.DOTALL | re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+    m = re.search(r'(<!DOCTYPE html.*?</html>)', content, flags=re.DOTALL | re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+    m = re.search(r'(<html[\s\S]*?</html>)', content, flags=re.DOTALL | re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+    return content.strip()
+
+
+def generate_one(ticker, snap, prompt_template, company_name=None):
+    ticker = ticker.strip().upper()
+    data_block = build_signal_data_block(ticker, snap)
+    prompt_body = prompt_template.replace('[SIGNAL_DATA_BLOCK]', data_block)
     header = (
-        f'Generate the complete institutional drilldown for {ticker}. '
-        'Use the prompt below verbatim. The [SIGNAL_DATA_BLOCK] has been '
-        'pre-filled from live market data; treat its numbers as ground truth '
-        'and source only the fields marked MISSING. Return ONE complete '
-        'standalone HTML document inside a single ```html fenced block.\n\n'
+        f'Run the canonical Signal Stack institutional drilldown engine on {ticker}. '
+        'Use the prompt below verbatim. The [SIGNAL_DATA_BLOCK] has been pre-filled '
+        'with live data — treat it as ground truth. Output ONE complete '
+        'self-contained HTML document covering all 14 sections inside a single '
+        'fenced ```html block, and nothing else.\n\n'
     )
-    return header + body
+    full_prompt = header + prompt_body
 
+    system = (
+        'You are Signal Stack AI\'s institutional Drilldown engine. Output a single '
+        'self-contained HTML document inside one fenced ```html block. No prose outside '
+        'the block. No <script> tags.'
+    )
 
-def extract_html_block(content):
-    if not content:
-        return ''
-    # Reasoning models (sonar-deep-research) wrap chain-of-thought in
-    # <think>...</think> before the answer. Strip it first, mirroring
-    # automation/perplexity/client.py, or it leaks into the saved HTML.
-    content = re.sub(r'<think>.*?</think>\s*', '', content, flags=re.DOTALL).strip()
-    match = re.search(r'```(?:html)?\s*\n([\s\S]*?)\n```', content, flags=re.I)
-    if match:
-        content = match.group(1).strip()
-    # Defensive: if any preamble survives, start at the first HTML root tag.
-    doc = re.search(r'<!DOCTYPE html|<html\b', content, flags=re.I)
-    if doc:
-        content = content[doc.start():].strip()
-    return content
-
-
-MAX_TOKENS = int(os.environ.get('DRILLDOWN_MAX_TOKENS', '20000'))
-
-
-def call_perplexity(prompt, api_key, effort='medium', timeout=900):
-    body = json.dumps({
-        'model': PPLX_MODEL,
-        'messages': [
-            {'role': 'system', 'content': SYSTEM_PROMPT},
-            {'role': 'user', 'content': prompt},
-        ],
-        'max_tokens': MAX_TOKENS,
-        'temperature': 0.1,
-        'reasoning_effort': effort,
-    }).encode('utf-8')
-    req = urllib.request.Request(
-        PPLX_URL,
-        data=body,
-        headers={
-            'Authorization': f'Bearer {api_key}',
-            'Content-Type': 'application/json',
+    # A complete 14-section institutional primer (~3,500-6,000 words of HTML)
+    # plus the model's reasoning tokens needs ample completion headroom; 16k
+    # truncated NET/NVDA mid-document. Default high, allow env override.
+    max_tokens = int(os.environ.get('DRILLDOWN_MAX_TOKENS', '32000'))
+    print(f'\n=== {ticker}: calling Perplexity deep research (max_tokens={max_tokens}) ===')
+    result = call_perplexity(
+        ticker=ticker,
+        task='drilldown',
+        prompt=full_prompt,
+        system=system,
+        force=True,
+        max_tokens=max_tokens,
+        temperature=0.2,
+        extra_meta={
+            'model': 'sonar-deep-research',
+            # 'low' keeps reasoning-token spend bounded so the completion budget
+            # is spent on the document. 'medium' burned ~196k reasoning tokens and
+            # truncated the HTML before </html>.
+            'reasoning_effort': os.environ.get('DRILLDOWN_REASONING_EFFORT', 'low'),
         },
-        method='POST',
     )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode('utf-8'))
 
+    # Surface queue / skip / error states instead of fabricating output.
+    if isinstance(result, dict):
+        if result.get('queued'):
+            raise RuntimeError(
+                f'{ticker}: call was QUEUED rather than executed. The Perplexity client '
+                'routed to the Computer queue (USE_PPLX_API not enabled / no key). '
+                'Aborting so we do not save a placeholder.'
+            )
+        if result.get('skipped'):
+            raise RuntimeError(f'{ticker}: Perplexity call skipped: {result.get("reason")}')
+        if result.get('dry_run'):
+            raise RuntimeError(f'{ticker}: DRY_RUN set; no content generated.')
 
-def generate_one(ticker, pplx_key, finnhub_key, date_str):
-    print(f'\n=== {ticker} ===')
-    fh = fetch_finnhub(ticker, finnhub_key)
-    price = (fh.get('quote') or {}).get('c')
-    data_block = build_signal_data_block(ticker, fh)
-    full_prompt = build_full_prompt(ticker, data_block)
-
-    print(f'  [API CALL] {ticker} -> Perplexity {PPLX_MODEL} (this can take 2-5 min)...')
-    t0 = time.time()
-    resp = call_perplexity(full_prompt, pplx_key)
-    elapsed = time.time() - t0
-
-    choices = resp.get('choices') or []
-    if not choices:
-        raise RuntimeError(f'{ticker}: Perplexity returned no choices: {json.dumps(resp)[:400]}')
-    content = choices[0]['message']['content']
-    usage = resp.get('usage', {})
-    finish = choices[0].get('finish_reason')
-    print(f'  [DONE] {ticker} in {elapsed:.0f}s; '
-          f"completion_tokens={usage.get('completion_tokens')} "
-          f"queries={usage.get('num_search_queries')} finish={finish}")
-
-    html = extract_html_block(content)
-    if not html or len(html) < 2000:
+    html = _extract_html(result)
+    if not html or len(html) < 1000 or '<' not in html:
         raise RuntimeError(
-            f'{ticker}: extracted HTML too short ({len(html)} chars). '
-            f'First 300 chars of raw content: {content[:300]!r}'
+            f'{ticker}: model returned no usable HTML (len={len(html) if html else 0}). '
+            f'First 300 chars: {str(result)[:300]!r}'
+        )
+    if '</html>' not in html.lower():
+        raise RuntimeError(
+            f'{ticker}: HTML appears truncated (no closing </html>; len={len(html)}). '
+            'Likely hit the completion-token cap. Raise DRILLDOWN_MAX_TOKENS and retry; '
+            'not saving a partial note.'
         )
 
-    # The model occasionally hits max_tokens before emitting closing tags.
-    # The iframe viewer tolerates this, but close them so the saved document
-    # is well-formed. Warn so truncation is visible rather than silent.
-    if finish == 'length' or '</html>' not in html.lower():
-        print(f'  [WARN] {ticker}: response truncated (finish_reason={finish}); '
-              'closing open tags.')
-        if '</body>' not in html.lower():
-            html += '\n</body>'
-        if '</html>' not in html.lower():
-            html += '\n</html>'
-
-    company = (fh.get('profile') or {}).get('name') or ticker
+    q = (snap.get('quotes') or {}).get(ticker) or {}
+    price = q.get('price')
+    company = company_name or q.get('longName') or ticker
     title = f'{company} ({ticker}) — Institutional Drilldown'
-
-    HTML_OUT_DIR.mkdir(parents=True, exist_ok=True)
-    html_file = HTML_OUT_DIR / f'{ticker}_drilldown_{date_str}.html'
-    html_file.write_text(html, encoding='utf-8')
-    html_rel = str(html_file.relative_to(ROOT))
 
     md_path, entry = save_drilldown(
         ticker=ticker,
         html=html,
-        part='full',
-        date_str=date_str,
+        part='p1',
         trigger='Deep Research',
         title=title,
-        html_path=html_rel,
+        html_path=None,
         price_at_gen=price,
     )
-    print(f'  [SAVED] {md_path.relative_to(ROOT)} '
-          f"({entry['word_count']} words, {entry['size_bytes']} bytes)")
-    return entry
+    print(f'  Saved {md_path.relative_to(ROOT)} ({entry["size_bytes"]} bytes, '
+          f'{entry["word_count"]} words)')
+    return md_path, entry
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description='Generate institutional drilldowns headlessly.')
+    parser = argparse.ArgumentParser(description='Generate institutional drilldowns.')
     parser.add_argument('--tickers', nargs='+', required=True)
-    parser.add_argument('--date', default=None, help='YYYY-MM-DD (default: today UTC)')
     args = parser.parse_args(argv)
 
-    pplx_key = (os.environ.get('PERPLEXITY_API_KEY') or os.environ.get('PPLX_API_KEY') or '').strip()
-    finnhub_key = (os.environ.get('FINNHUB_API_KEY') or '').strip()
-    if not pplx_key:
-        parser.error('PERPLEXITY_API_KEY not set')
-    if not finnhub_key:
-        parser.error('FINNHUB_API_KEY not set')
-
-    date_str = args.date or _dt.datetime.now(_dt.timezone.utc).strftime('%Y-%m-%d')
+    snap = _load_snapshot()
+    prompt_template = PROMPT_PATH.read_text(encoding='utf-8')
 
     results = []
     errors = []
-    for ticker in args.tickers:
-        ticker = ticker.strip().upper()
+    for t in args.tickers:
         try:
-            results.append(generate_one(ticker, pplx_key, finnhub_key, date_str))
+            md_path, entry = generate_one(t, snap, prompt_template)
+            results.append(entry)
         except Exception as exc:
-            print(f'  [ERROR] {ticker}: {exc}')
-            errors.append((ticker, str(exc)))
+            print(f'  [ERROR] {t}: {exc}', file=sys.stderr)
+            errors.append((t, str(exc)))
 
     print('\n=== SUMMARY ===')
     for e in results:
-        print(f"  OK  {e['ticker']}: {e['markdown_path']} ({e['word_count']} words)")
+        print(f'  OK   {e["ticker"]}: {e["markdown_path"]} '
+              f'({e["word_count"]} words)')
     for t, msg in errors:
-        print(f'  ERR {t}: {msg}')
+        print(f'  FAIL {t}: {msg}')
 
     return 1 if errors else 0
 
