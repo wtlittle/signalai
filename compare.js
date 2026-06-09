@@ -1647,6 +1647,8 @@
     html += '</div>';
 
     // 1b. Beat-rate strip (positive next-day reactions / total). Filled async below.
+    html += '<div class="cmp-section-head"><h3>Earnings reaction hit-rate</h3>'
+      + '<span class="cmp-subtle">Positive next-day reactions as a fraction of total tracked prints. Green &ge;67%, yellow 40&ndash;66%, red &lt;40%.</span></div>';
     html += '<div class="cmp-beat-strip" id="cmp-beat-strip">';
     tickers.forEach(t => {
       html += `<div class="cmp-beat-cell" data-ticker="${t}">
