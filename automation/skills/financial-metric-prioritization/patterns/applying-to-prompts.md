@@ -42,13 +42,17 @@ drilldown renderer expects.
 
 **After (missing data honest):**
 ```html
-<td>Gross Retention</td><td class="num">MISSING</td>
+<td>Gross Retention</td><td class="num">—</td>
 <td>Annual historical not disclosed; only Q1'26 (97%) from transcript</td>
 ```
 
 ## Ordering instruction
 
-For the financial-model table, instruct the model to lead with **revenue and
+For an **ARR-led** name (the cohort in `SKILL.md` §2a — RBRK, NET, CRWD, ZS,
+DDOG, MDB, SNOW, etc.), instruct the model to lead the financial-model table
+and commentary with **ARR, net new ARR, NRR, RPO, cRPO**, treating revenue as
+the secondary GAAP anchor. For every other name, lead with **revenue and
 growth**, then **gross margin (NG)**, **operating income (GAAP)**, **FCF / FCF
-margin**, then **EPS (GAAP and NG)** — matching the SaaS priority in `SKILL.md`
-§2, not net-income-first.
+margin**, then **EPS (GAAP and NG)** — matching the archetype priority in
+`SKILL.md` §2, not net-income-first. Either way, anchor the guidance commentary
+on the company's own headline metric.

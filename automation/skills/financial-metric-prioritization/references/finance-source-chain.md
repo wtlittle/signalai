@@ -30,6 +30,29 @@ authoritative value for a field wins.
 - **CachedFallback** — runs last. Re-emits still-fresh on-disk fields so a
   transient miss across the live sources does not re-quarantine a mature ticker.
 
+## ARR / recurring-revenue metrics are off the quantitative chain
+
+For the ARR-led cohort (see `SKILL.md` §2a — RBRK, NET, CRWD, ZS, DDOG, MDB,
+SNOW, etc.), the headline metrics — **ARR, net new ARR, NRR, RPO, cRPO,
+gross retention** — are generally NOT carried by the quantitative connectors.
+Finnhub and yfinance expose GAAP revenue/EPS/margins but **do not carry ARR**.
+PerplexityFinance may surface some of these from the structured financials, but
+coverage is partial and lags the release.
+
+Source chain for ARR-family metrics (highest authority first):
+
+```
+Perplexity (sonar) against company IR  →  earnings release (8-K / press)  →  10-Q MD&A
+```
+
+ARR and net new ARR are typically disclosed only in the **earnings release**
+and the **10-Q MD&A** narrative, not in the structured financial statements.
+NRR / RPO / cRPO likewise live in the release and MD&A (RPO is a balance-sheet
+disclosure in the 10-Q). When the data block leaves these null, source them via
+Perplexity sonar pointed at the company's IR / earnings release rather than
+expecting Finnhub or yfinance to fill them — and mark any genuinely undisclosed
+figure with an em-dash `—`.
+
 ## Provenance markers
 
 Every accepted field carries a `<field>_source` marker recording which connector

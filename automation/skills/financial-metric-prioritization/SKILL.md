@@ -26,9 +26,47 @@ the *most authoritative* source. This skill encodes the house rules.
   the SBC dilution cost (shares × SBC/share), since dilution is a real cost to
   equity holders.
 
-## 2. Metric priority for SaaS / software
+## 2. Metric priority by company archetype
 
-When space is scarce, prioritize top-down in this order:
+There is no single "revenue first" default. Anchor every growth and guidance
+discussion on the metric the company itself leads with in its earnings
+release. Classify the name, then prioritize top-down for that archetype.
+
+### 2a. ARR-led SaaS — lead with ARR, not GAAP revenue
+
+A large cohort of subscription names reports **ARR (Annual Recurring
+Revenue) as the headline growth metric** and treats GAAP revenue as a
+lagging, secondary line. For these, ARR (current ARR + net new ARR + NRR)
+is the primary growth metric, revenue is secondary, and **RPO / cRPO is the
+leading indicator** of forward growth.
+
+The ARR-led cohort (anchor commentary on ARR, not revenue):
+
+> RBRK, NET, CRWD, ZS, OKTA, DDOG, MDB, SNOW, ESTC, S, NTNX, BILL, GTLB,
+> FROG, CFLT, DT, PD, BOX, ASAN, MNDY, SMAR, ZUO, AI, PATH, U, RNG, FIVN,
+> TWLO, FSLY, NCNO, BSY, AVPT, DOMO
+
+Priority order for an ARR-led name:
+
+1. **ARR** (current ARR + net new ARR) — the headline growth line.
+2. **NRR / net dollar retention** — names expansion quality.
+3. **RPO / cRPO** — the forward-booking leading indicator.
+4. **Gross retention** — churn floor.
+5. **Revenue / gross margin** — the GAAP anchor, now secondary.
+6. **FCF margin / Rule of 40** — profitability + balance of growth and margin.
+
+### 2b. Other archetypes
+
+| Archetype | Lead metrics |
+|---|---|
+| **ARR-led SaaS** (cohort above) | ARR, net new ARR, NRR, RPO, cRPO, gross retention → then revenue / gross margin / FCF / Rule of 40 |
+| **Usage-based** (DDOG, MDB, NET Workers, SNOW) | consumption revenue growth + DBNR, NRR |
+| **Hardware / semis** (NVDA, AMD, AVGO) | revenue by segment, GM%, inventory days, book-to-bill |
+| **Legacy enterprise** (ORCL, CRM, NOW) | cloud revenue mix, billings, RPO, cRPO |
+| **Hyperscalers** (MSFT, GOOGL, AMZN) | segment revenue, segment op margin, capex |
+| **Payments** (V, MA, FI) | TPV, take rate, transactions |
+
+### 2c. Fallback order (no clear headline metric / space is scarce)
 
 1. **Revenue** (and its growth rate) — the single most price-sensitive line.
 2. **Gross profit / gross margin** — names the unit economics; flag GAAP vs NG.
@@ -69,5 +107,6 @@ its *data providers* (a separate concern from filing tier), and
 ## 5. Provenance is mandatory
 
 Every metric traces to **source name + URL or filing reference + retrieval date**.
-See `patterns/provenance.md`. Mark missing data explicitly as `MISSING` rather
-than guessing or omitting silently.
+See `patterns/provenance.md`. Mark genuinely undisclosed data explicitly with an
+em-dash `—` (never the literal word "MISSING" in a rendered note, and never a
+guess or a silent omission); explain the gap in prose or the data-quality notes.
