@@ -662,10 +662,10 @@
     return series;
   }
 
-  // Build an inline SVG sparkline; green if last >= prior, gray otherwise.
+  // Build an inline SVG sparkline (60px tall per spec); green if last >= prior, gray otherwise.
   function sparklineSvg(values) {
     if (!Array.isArray(values) || values.length < 2) return '';
-    const w = 120, h = 36, pad = 3;
+    const w = 120, h = 60, pad = 4;
     const min = Math.min.apply(null, values);
     const max = Math.max.apply(null, values);
     const span = (max - min) || 1;
