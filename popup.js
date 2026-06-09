@@ -468,13 +468,17 @@ async function renderPopupContent(ticker, data, summary, chart, estimatesData) {
     });
   }
 
-  // "+ Compare" button — add this ticker to the compare set
+  // "+ Compare" button — add this ticker to the compare set.
+  // Activates compare mode automatically if not already on, then toggles
+  // the ticker. Subscribes to signalcompare:selection-changed so the label
+  // stays in sync when the tray or another popup modifies the compare set.
   const addCompareBtn = document.getElementById('popup-add-compare');
   if (addCompareBtn) {
     const SC = window.SignalCompare;
     const syncCompareLabel = () => {
       const inSet = !!(SC && SC.isSelected && SC.isSelected(ticker));
-      addCompareBtn.textContent = inSet ? '✓ In compare' : '+ Compare';
+      addCompareBtn.textContent = inSet ? '\u2713 In compare' : '+ Compare';
+      addCompareBtn.setAttribute('title', inSet ? 'Remove from compare set' : 'Add to compare');
       addCompareBtn.classList.toggle('popup-add-compare-on', inSet);
     };
     if (SC) syncCompareLabel();
@@ -484,6 +488,9 @@ async function renderPopupContent(ticker, data, summary, chart, estimatesData) {
       window.SignalCompare.toggleTicker(ticker);
       syncCompareLabel();
     });
+    // Keep label in sync if compare set changes externally (tray, keyboard shortcut).
+    const onSelectionChanged = () => { syncCompareLabel(); };
+    document.addEventListener('signalcompare:selection-changed', onSelectionChanged);
   }
 }
 

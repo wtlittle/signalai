@@ -2019,11 +2019,14 @@
       if (event.target && event.target.matches && event.target.matches('input, textarea, select, [contenteditable="true"]')) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
       if (event.key === 'Escape') {
-        if (state.popupOpen) closePopup();
-        else if (state.mode) toggleMode();
+        if (state.popupOpen) { closePopup(); return; }
+        if (state.mode) { toggleMode(); return; }
         return;
       }
-      if (event.key === 'c' || event.key === 'C') {
+      // 'C' key toggles compare mode only when the compare popup is not open,
+      // so that keyboard navigation inside the popup doesn't accidentally exit
+      // compare mode.
+      if ((event.key === 'c' || event.key === 'C') && !state.popupOpen) {
         toggleMode();
       }
     });
