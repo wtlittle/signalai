@@ -9367,3 +9367,23 @@ mark.search-highlight {
   font-style: italic;
   opacity: 0.75;
 }
+
+/* ===== Weekly Briefing: Upcoming Catalysts ===== */
+.wb-catalysts-list { display: flex; flex-direction: column; gap: 10px; }
+.wb-catalyst-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border, #1e2433); border-radius: 6px; padding: 12px; }
+.wb-catalyst-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+.wb-catalyst-date { font-size: 0.8rem; color: var(--text-muted, #6b7280); font-family: var(--font-mono, monospace); }
+.wb-catalyst-ticker { font-size: 0.85rem; font-weight: 600; color: var(--accent, #6366f1); }
+.wb-catalyst-type { font-size: 0.75rem; background: rgba(99,102,241,0.12); color: #a5b4fc; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.wb-catalyst-importance { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; letter-spacing: 0.05em; }
+.wb-catalyst-high { background: rgba(239,68,68,0.15); color: #f87171; }
+.wb-catalyst-medium { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.wb-catalyst-low { background: rgba(107,114,128,0.15); color: #9ca3af; }
+.wb-catalyst-event { font-size: 0.85rem; color: var(--text, #e5e7eb); font-weight: 500; margin-bottom: 4px; }
+.wb-catalyst-context { font-size: 0.8rem; color: var(--text-muted, #6b7280); line-height: 1.5; }
+
+/* ===== Weekly Briefing: Sector Summary ===== */
+.wb-sector-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.wb-sector-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border, #1e2433); border-radius: 6px; padding: 12px; }
+.wb-sector-name { font-size: 0.8rem; font-weight: 700; color: var(--accent, #6366f1); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.wb-sector-detail { font-size: 0.8rem; color: var(--text-muted, #9ca3af); line-height: 1.55; }

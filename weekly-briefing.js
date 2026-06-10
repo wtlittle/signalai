@@ -225,17 +225,51 @@ function jumpToWeek(weekEnding) {
   }
 }
 
+function _updateNavButtonState() {
+  // Reflect whether prev/next arrows are navigable given the current week and
+  // the sorted archive index. Disables buttons at the boundaries.
+  const input = document.querySelector('.wb-week-input');
+  const prev = document.querySelector('.wb-week-prev');
+  const next = document.querySelector('.wb-week-next');
+  if (!input) return;
+  const cur = input.value || weeklyBriefingData?.week_ending;
+  if (!cur) return;
+  const idx = (weeklyBriefingArchiveIndex || []).slice()
+    .sort((a, b) => a.week_ending.localeCompare(b.week_ending));
+  if (prev) {
+    const hasPrev = idx.some(a => a.week_ending < cur);
+    prev.disabled = !hasPrev;
+    prev.title = hasPrev ? 'Previous week' : 'Earliest archived week';
+  }
+  if (next) {
+    const hasNext = idx.some(a => a.week_ending > cur);
+    next.disabled = !hasNext;
+    next.title = hasNext ? 'Next week' : 'Latest week';
+  }
+}
+
 function wireWeekPicker() {
   const prev = document.querySelector('.wb-week-prev');
   const next = document.querySelector('.wb-week-next');
   const input = document.querySelector('.wb-week-input');
   if (prev) prev.addEventListener('click', () => {
-    // Step to the previous *archived* week, not simply -7 days. Prevents
+    // Step to the previous *archived* week in the sorted index. Prevents
     // "ghost week" dead-ends when briefings are not published every Friday.
     const cur = input?.value || weeklyBriefingData?.week_ending;
     if (!cur) return;
+    // The archive index is already sorted ascending at this point, but sort
+    // again defensively so the filter is always reliable.
     const idx = (weeklyBriefingArchiveIndex || []).slice()
       .sort((a, b) => a.week_ending.localeCompare(b.week_ending));
+    // First try: find the entry immediately before cur in the sorted index.
+    const i = idx.findIndex(a => a.week_ending === cur);
+    if (i > 0) {
+      jumpToWeek(idx[i - 1].week_ending);
+      return;
+    }
+    // Fallback: current week not found in index (possible if navigating to a
+    // week that was archived before the index was built). Find the nearest
+    // archived week strictly less than cur.
     const earlier = idx.filter(a => a.week_ending < cur).pop();
     if (earlier) jumpToWeek(earlier.week_ending);
   });
@@ -244,6 +278,13 @@ function wireWeekPicker() {
     if (!cur) return;
     const idx = (weeklyBriefingArchiveIndex || []).slice()
       .sort((a, b) => a.week_ending.localeCompare(b.week_ending));
+    // First try: find the entry immediately after cur in the sorted index.
+    const i = idx.findIndex(a => a.week_ending === cur);
+    if (i >= 0 && i < idx.length - 1) {
+      jumpToWeek(idx[i + 1].week_ending);
+      return;
+    }
+    // Fallback: current week not found in index.
     const later = idx.find(a => a.week_ending > cur);
     if (later) jumpToWeek(later.week_ending);
   });
@@ -251,6 +292,8 @@ function wireWeekPicker() {
     const picked = weekEndingFriday(e.target.value);
     jumpToWeek(picked);
   });
+  // Update button disabled state based on current position in the index.
+  _updateNavButtonState();
 }
 
 // ─── Primer summary helpers ───────────────────────────────────
@@ -488,7 +531,9 @@ function renderWeeklyBriefing() {
   }
   weeklyBriefingArchiveIndex = Array.from(merged.values())
     .sort((a, b) => a.week_ending.localeCompare(b.week_ending));
-  const earliest = weeklyBriefingArchiveIndex[0]?.week_ending || weekEnd;
+  // Hardcoded fallback to oldest known archived week so the date picker's
+  // min attribute is never set to the CURRENT week (which would block going back).
+  const earliest = (weeklyBriefingArchiveIndex.length > 0 ? weeklyBriefingArchiveIndex[0].week_ending : null) || '2025-11-14';
   const today = new Date().toISOString().slice(0, 10);
 
   const indexBadge = (label, val) => {
@@ -743,6 +788,67 @@ function renderWeeklyBriefing() {
     }
 
     html += `</div>`;
+  }
+
+  // --- Upcoming Catalysts ---
+  const catalysts = d.upcoming_catalysts || [];
+  if (catalysts.length > 0) {
+    html += `<div class="wb-section">
+      <h3 class="wb-section-title">
+        <span class="wb-icon">&#8987;</span> Upcoming Catalysts
+        <span class="wb-subtitle">${catalysts.length} events in the next 2-3 weeks</span>
+      </h3>
+      <div class="wb-catalysts-list">`;
+    catalysts.forEach(c => {
+      if (!c) return;
+      const date = c.date || c.event_date || '\u2014';
+      const ticker = c.ticker || '';
+      const eventType = c.event_type || c.type || '';
+      const event = c.event || c.title || c.description || '';
+      const importance = c.importance || c.priority || '';
+      const context = c.context || c.detail || '';
+      const impCls = importance === 'High' ? 'wb-catalyst-high'
+                   : importance === 'Medium' ? 'wb-catalyst-medium'
+                   : 'wb-catalyst-low';
+      html += `
+        <div class="wb-catalyst-item">
+          <div class="wb-catalyst-header">
+            <span class="wb-catalyst-date">${_wbEsc(date)}</span>
+            <span class="wb-catalyst-ticker">${_wbEsc(ticker)}</span>
+            <span class="wb-catalyst-type">${_wbEsc(eventType)}</span>
+            ${importance ? `<span class="wb-catalyst-importance ${impCls}">${_wbEsc(importance)}</span>` : ''}
+          </div>
+          <div class="wb-catalyst-event">${_wbEsc(event)}</div>
+          ${context ? `<div class="wb-catalyst-context">${_wbEsc(context)}</div>` : ''}
+        </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // --- Sector Summary ---
+  const sectorSummary = d.sector_summary;
+  const hasSectorSummary = sectorSummary &&
+    (typeof sectorSummary === 'object') &&
+    Object.keys(sectorSummary).length > 0;
+  if (hasSectorSummary) {
+    html += `<div class="wb-section">
+      <h3 class="wb-section-title">
+        <span class="wb-icon">&#9632;</span> Sector Summary
+      </h3>
+      <div class="wb-sector-grid">`;
+    const sectorEntries = Array.isArray(sectorSummary)
+      ? sectorSummary.map(s => [s.sector || s.name || s.title || Object.keys(s)[0] || '', s.summary || s.detail || s.description || Object.values(s)[0] || ''])
+      : Object.entries(sectorSummary);
+    sectorEntries.forEach(([sector, text]) => {
+      if (!sector && !text) return;
+      const displayText = (typeof text === 'string') ? text : (text && (text.summary || text.detail || JSON.stringify(text))) || '';
+      html += `
+        <div class="wb-sector-item">
+          <div class="wb-sector-name">${_wbEsc(sector)}</div>
+          <div class="wb-sector-detail">${_wbEsc(displayText)}</div>
+        </div>`;
+    });
+    html += `</div></div>`;
   }
 
   // --- Archive link ---

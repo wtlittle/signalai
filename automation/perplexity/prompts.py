@@ -928,23 +928,27 @@ Return ONLY this JSON. No prose.
 def build_weekly_value_prompt() -> str:
     """Weekly briefing — top 5 value stocks near 52-week lows.
 
-    Buy-side value-screen note. The dashboard renders an 18-field card per pick,
+    Buy-side value-screen note. The dashboard renders a 19-field card per pick,
     so EVERY key below is required for every pick. Do not collapse to a thin
     thesis/catalyst/risk shape -- that breaks the card.
     """
     return """OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Do NOT write a research report, framework, headings, or any prose outside the JSON. Any text that is not part of the JSON array will be discarded and the response treated as a failure. Your response must BEGIN with the character [ and END with the character ].
 
+HALLUCINATION GUARD: If you cannot source a metric from real public data within the last 7 days, return null. Do not hallucinate analyst targets, FCF figures, or price data. Every number must come from a verifiable public source (Yahoo Finance, SEC filing, Bloomberg, FactSet, or equivalent).
+
 You are a buy-side value-equity analyst. Screen the full US stock market and select the 5 best value stocks currently trading near their 52-week lows that still have strong, defensible fundamentals (positive or improving free cash flow, manageable leverage, a credible re-rating path).
 
-Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 18 keys below, with these EXACT key names. Do NOT rename, omit, or add keys. Do NOT substitute a thin {thesis, catalyst, risk, pb_ratio, dividend_yield} shape -- that schema is WRONG and will be rejected.
+Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 19 keys below, with these EXACT key names. Do NOT rename, omit, or add keys. Do NOT substitute a thin {thesis, catalyst, risk, pb_ratio, dividend_yield} shape -- that schema is WRONG and will be rejected.
 
 [
   {
     "ticker": "<symbol>",
     "name": "<full company name>",
+    "sector": "<GICS sector, e.g. Technology / Financials / Healthcare / Energy / Industrials / Consumer Discretionary / Consumer Staples / Utilities / Materials / Real Estate / Communication Services>",
+    "current_price": 0.0,
     "price": 0.0,
-    "52_week_high": 0.0,
-    "52_week_low": 0.0,
+    "fifty_two_week_high": 0.0,
+    "fifty_two_week_low": 0.0,
     "pct_off_high": "-X.X%",
     "market_cap": "<e.g. 12.4B>",
     "pe_ratio": 0.0,
@@ -957,15 +961,17 @@ Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain 
     "analyst_consensus": "Strong Buy/Buy/Hold/Sell",
     "why_undervalued": "<3-5 full sentences: the specific valuation gap vs history/peers and WHY the market is mispricing it>",
     "bull_case": "<3-5 full sentences: the concrete catalysts and fundamental drivers that re-rate the stock higher>",
+    "key_risks": "<3-5 full sentences: the dominant bear thesis -- the specific risks or structural issues that could drive the stock further down. Must be DISTINCT from why_undervalued.>",
     "why_could_go_lower": "<3-5 full sentences: the dominant bear thesis -- the specific risk or structural issue that could drive the stock further down. Must be DISTINCT from why_undervalued; this is what could make the discount deserved or wider>"
   }
 ]
 
 Field rules:
-- "price", "52_week_high", "52_week_low", "pe_ratio", "ev_ebitda", "debt_equity", "analyst_target" are NUMBERS (no quotes, no currency symbols). Use null only if genuinely unavailable.
+- "current_price" and "price" must be set to the SAME numeric value (both are required for backward compatibility). Same for "fifty_two_week_high"/"fifty_two_week_low" which are also required as the canonical names.
+- "current_price", "price", "fifty_two_week_high", "fifty_two_week_low", "pe_ratio", "ev_ebitda", "debt_equity", "analyst_target" are NUMBERS (no quotes, no currency symbols). Use null only if genuinely unavailable.
 - "pct_off_high", "revenue_growth", "fcf_yield" are percent STRINGS like "-23.4%" / "12.5%".
 - "market_cap" and "fcf_ttm" are magnitude STRINGS like "12.4B".
-- "why_undervalued", "bull_case", "why_could_go_lower" must each be 3-5 complete sentences of genuine buy-side reasoning -- never one-liners, never empty.
+- "why_undervalued", "bull_case", "key_risks", "why_could_go_lower" must each be 3-5 complete sentences of genuine buy-side reasoning -- never one-liners, never empty. "key_risks" and "why_could_go_lower" may be identical text.
 - NEVER fabricate a number; use null when you cannot verify it. Citations in brackets are allowed inside the prose string fields.
 
 CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array parseable by Python json.loads() without preprocessing. No markdown, no prose, no section headers, no code fences. Do NOT wrap in ```json or ``` markers. The first character must be [ and the last character must be ]. Emit all 5 picks; never truncate a pick mid-object."""
@@ -974,57 +980,65 @@ CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON ar
 def build_weekly_momentum_prompt() -> str:
     """Weekly briefing — top 5 momentum stocks.
 
-    The dashboard renders a 9-field card per pick, so EVERY key below is
+    The dashboard renders a 12-field card per pick, so EVERY key below is
     required for every pick.
     """
     return """OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Do NOT write a research report, framework, headings, or any prose outside the JSON. Any text that is not part of the JSON array will be discarded and the response treated as a failure. Your response must BEGIN with the character [ and END with the character ].
 
+HALLUCINATION GUARD: If you cannot source a metric from real public data within the last 7 days, return null. Do not hallucinate price performance, analyst targets, or FCF figures. Every number must come from a verifiable public source (Yahoo Finance, SEC filing, Bloomberg, FactSet, or equivalent).
+
 You are a buy-side momentum analyst. Screen the full US stock market and select the 5 strongest momentum stocks -- names with the best recent trailing performance that is backed by a genuine fundamental catalyst (not a low-float squeeze).
 
-Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 9 keys below, with these EXACT key names. Do NOT rename, omit, or add keys.
+Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 12 keys below, with these EXACT key names. Do NOT rename, omit, or add keys.
 
 [
   {
     "ticker": "<symbol>",
     "name": "<full company name>",
+    "sector": "<GICS sector, e.g. Technology / Financials / Healthcare / Energy / Industrials / Consumer Discretionary / Consumer Staples / Utilities / Materials / Real Estate / Communication Services>",
+    "current_price": 0.0,
     "price": 0.0,
-    "one_week_perf": "X.X%",
-    "one_month_perf": "X.X%",
-    "three_month_perf": "X.X%",
-    "revenue_growth": "X.X%",
+    "one_week_perf": "+X.X%",
+    "one_month_perf": "+X.X%",
+    "three_month_perf": "+X.X%",
+    "revenue_growth": "+X.X%",
     "catalyst": "<2-3 full sentences on the specific fundamental catalyst driving the move>",
-    "risk_reward": "<2-3 full sentences on the risk/reward setup from the current price>"
+    "risk_reward": "<2-3 full sentences on the risk/reward setup from the current price>",
+    "key_risks": "<2-3 full sentences: the main risks that could reverse the momentum or make the current valuation untenable>"
   }
 ]
 
 Field rules:
-- "price" is a NUMBER (no quotes, no currency symbol).
+- "current_price" and "price" must be set to the SAME numeric value (both required for backward compatibility).
+- "current_price", "price" are NUMBERS (no quotes, no currency symbol). Use null only if genuinely unavailable.
 - "one_week_perf", "one_month_perf", "three_month_perf", "revenue_growth" are percent STRINGS like "+8.3%" / "-2.1%".
-- "catalyst" and "risk_reward" must each be 2-3 complete sentences -- never one-liners, never empty.
+- "catalyst", "risk_reward", "key_risks" must each be 2-3 complete sentences -- never one-liners, never empty.
 - NEVER fabricate a number; use a best-available figure or null. Citations in brackets are allowed inside the prose string fields.
 
 CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array parseable by Python json.loads() without preprocessing. No markdown, no prose, no section headers, no code fences. Do NOT wrap in ```json or ``` markers. The first character must be [ and the last character must be ]. Emit all 5 picks; never truncate a pick mid-object."""
 
 
 def build_weekly_trends_prompt(watchlist_tickers: list[str]) -> str:
-    """Weekly briefing — market trends, risks, watchlist movers, and a full
-    markdown research narrative.
+    """Weekly briefing — market trends, risks, watchlist movers, upcoming catalysts,
+    sector summary, and a full markdown research narrative.
 
     The dashboard renders the narrative as a multi-section research report, so
     it must be a long markdown document (## headers + inline citations), NOT a
-    2-3 sentence blurb. trends and risks are lists of OBJECTS, not strings.
+    2-3 sentence blurb. trends/risks/watchlist are lists of OBJECTS, not strings.
+    Target output size: 80KB+ JSON (comparable to the 5/22 briefing at 85KB).
     """
-    tickers_str = ", ".join(watchlist_tickers[:50])
+    # Use all tickers for watchlist coverage (target 30-60 movers)
+    tickers_str = ", ".join(watchlist_tickers)
+    tickers_count = len(watchlist_tickers)
     return f"""OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Every character of your response that is not part of the single JSON object will be discarded and the response treated as a failure. Your response must BEGIN with the character {{ and END with the character }}.
 
-You are a senior market strategist writing a buy-side weekly market briefing. Produce a deep, well-sourced summary of this week's US equity market covering:
-1. Weekly index returns for the major US indices — closing levels and % moves over multiple windows
-2. 3-5 key market trends/themes (each with the tickers most exposed)
-3. 3-5 risks to watch next week (each with the specific market impact)
-4. Material updates for these watchlist tickers (only earnings, analyst changes, or >5% weekly move): {tickers_str}
-5. A full markdown research narrative (see requirements below)
+HALLUCINATION GUARD: If you cannot source a metric from real public data within the last 7 days, return null. Do not hallucinate analyst targets, FCF figures, sector breadth statistics, or price data. Every number must come from a verifiable public source.
 
-RETURN STRICTLY THIS JSON SHAPE. Return ONLY a single JSON object with EXACTLY these keys, EXACT key names, ALL KEYS REQUIRED, NO EXTRA KEYS, NO TRAILING COMMAS:
+You are a senior market strategist writing a buy-side weekly market briefing. Produce a deep, comprehensive, well-sourced summary of this week's US equity market covering ALL of the sections described below. This briefing should be rich and detailed -- the output JSON should be substantial (target at minimum 80KB of JSON data).
+
+Watchlist tickers ({tickers_count} total): {tickers_str}
+
+RETURN STRICTLY THIS JSON SHAPE. Return ONLY a single JSON object with EXACTLY these keys, EXACT key names, ALL KEYS REQUIRED, NO TRAILING COMMAS:
 
 {{
   "index_returns": {{
@@ -1034,34 +1048,85 @@ RETURN STRICTLY THIS JSON SHAPE. Return ONLY a single JSON object with EXACTLY t
     "russell2000": {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
     "vix":         {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}}
   }},
+  "market_summary": "<3-5 paragraph multi-sentence narrative string covering macro backdrop, index performance, sector rotation, key earnings prints, and the look-ahead setup for next week. Must be at least 2000 characters. This is a STRING field, not an object.>",
+  "key_trends": [
+    {{"rank": 1, "title": "<short trend title>", "detail": "<3-5 sentences on the trend with specific tickers, numbers, and context>", "theme": "<short theme title>", "summary": "<2-4 sentences on the theme>", "tickers": ["TICK1", "TICK2"]}}
+  ],
   "trends": [
     {{"theme": "<short theme title>", "summary": "<2-4 sentences on the theme>", "tickers": ["TICK1", "TICK2"]}}
   ],
   "risks": [
-    {{"risk": "<short risk title>", "impact": "<2-4 sentences on the specific market impact and what to watch>"}}
+    {{"rank": 1, "title": "<short risk title>", "detail": "<2-4 sentences on the specific market impact and what to watch>", "risk": "<short risk title>", "impact": "<2-4 sentences on the specific market impact and what to watch>"}}
+  ],
+  "watchlist_updates": [
+    {{"ticker": "...", "weekly_change_pct": 0.0, "thirty_day_change_pct": 0.0, "headline": "<1-2 sentence summary of what happened>", "summary": "<1-2 sentence detail>", "tags": []}}
   ],
   "watchlist_movers": [
     {{"ticker": "...", "weekly_move": "+X.X%", "thirty_day_move": "+X.X%", "catalyst": "<what happened>", "detail": "<1-2 sentence detail>"}}
   ],
-  "narrative": "<FULL MARKDOWN RESEARCH REPORT — see requirements>"
+  "upcoming_catalysts": [
+    {{"ticker": "<ticker or MACRO>", "date": "YYYY-MM-DD", "event_type": "<earnings|conference|macro|IPO|FDA|other>", "event": "<brief event description>", "importance": "<High|Medium|Low>", "context": "<2-4 sentences on why this matters and what to watch>"}}
+  ],
+  "sector_summary": {{
+    "Technology": "<2-4 sentences: leaders, laggards, weekly %, breadth/regime note>",
+    "Financials": "<2-4 sentences>",
+    "Healthcare": "<2-4 sentences>",
+    "Energy": "<2-4 sentences>",
+    "Industrials": "<2-4 sentences>",
+    "Consumer Discretionary": "<2-4 sentences>",
+    "Consumer Staples": "<2-4 sentences>",
+    "Utilities": "<2-4 sentences>",
+    "Materials": "<2-4 sentences>",
+    "Real Estate": "<2-4 sentences>",
+    "Communication Services": "<2-4 sentences>"
+  }},
+  "narrative": "<FULL MARKDOWN RESEARCH REPORT — see requirements below>"
 }}
 
-index_returns RULES (this field is the most common source of malformed output — follow exactly):
+DETAILED SECTION REQUIREMENTS:
+
+index_returns RULES:
 - index_returns is a FLAT JSON OBJECT of five named index objects (sp500, nasdaq, dow, russell2000, vix). It is NEVER a markdown table, NEVER a string, NEVER an array, NEVER a code block.
 - Each index object has EXACTLY five NUMERIC fields: "close" is the index closing LEVEL (number, e.g. 5432.1); "weekly_pct", "one_month_pct", "three_month_pct", "ytd_pct" are signed percent NUMBERS (e.g. 1.8 for +1.8%, -2.4 for -2.4%) — NO quotes, NO "%" sign, NO "+" sign, NO commas inside the number.
-- Do NOT render index data as a table with | pipes or tab characters. Do NOT put tab characters anywhere in the response.
+- Do NOT render index data as a table. Do NOT put tab characters anywhere in the response.
 - Use null for any single value you cannot verify; never fabricate a number.
 
-NARRATIVE REQUIREMENTS (this is the most important field):
-- It must be a substantial markdown research report of AT LEAST 4000 characters (target 6000-9000).
-- It must open with a single "# " title line, then use multiple "## " section headers (e.g. ## Market Recap, ## Sector Leadership, ## Macro & Rates, ## What To Watch Next Week).
-- Write in flowing buy-side analyst prose with concrete numbers (index levels, % moves, yields, notable single-stock moves) and inline bracketed citations like [3] tied to your sources.
-- The narrative is a SINGLE Markdown string value. It MAY contain "## " headers. It MUST NOT contain literal tab characters — if you need alignment, use spaces. Escape every newline as \\n inside the string.
-- Do NOT collapse the narrative into one paragraph or a 2-3 sentence summary — a short narrative will be rejected.
+key_trends / trends RULES:
+- Provide 5-7 trend objects. Each MUST have BOTH the old-schema keys (rank, title, detail) AND new-schema keys (theme, summary, tickers). "rank" is an integer 1-7, "title" and "theme" may be identical, "detail" and "summary" may be identical.
+- NEVER return plain strings in these arrays.
 
-trends / risks RULES:
-- "trends" is an ARRAY OF OBJECTS, each with EXACTLY keys "theme" (string), "summary" (string), "tickers" (array of ticker strings). Provide 3-5 objects. NEVER return plain strings.
-- "risks" is an ARRAY OF OBJECTS, each with EXACTLY keys "risk" (string) and "impact" (string). Provide 3-5 objects. NEVER return plain strings.
+risks RULES:
+- Provide 4-6 risk objects. Each MUST have BOTH old-schema keys (rank, title, detail) AND new-schema keys (risk, impact). "rank" is an integer 1-6, "title" and "risk" may be identical, "detail" and "impact" may be identical.
+
+watchlist_updates RULES (CRITICAL — this is the most important volume section):
+- Scan ALL {tickers_count} watchlist tickers for material moves this week.
+- Include EVERY ticker with: any earnings report, any analyst rating change, any >5% weekly move, any major news event.
+- Target 30-60 entries spanning as much of the watchlist as possible.
+- Each entry must have: ticker (string), weekly_change_pct (number, signed float e.g. 2.3 for +2.3%), thirty_day_change_pct (number), headline (string, 1-2 sentences), summary (string), tags (array of strings like ["earnings", "analyst_action", "major_mover"]).
+- Use null for any price change you cannot verify; do not fabricate performance numbers.
+
+watchlist_movers RULES:
+- Also populate watchlist_movers as an alias for watchlist_updates, in a slightly different shape: each entry has ticker, weekly_move (string like "+3.2%"), thirty_day_move (string), catalyst (string), detail (string).
+- Include the same tickers as watchlist_updates (30-60 entries).
+
+upcoming_catalysts RULES:
+- Provide 8-15 upcoming catalyst entries for the next 2-3 weeks.
+- Cover earnings dates, Fed meetings, macro data prints (CPI, PCE, jobs), investor days, product launches.
+- Use "MACRO" as the ticker for non-company events (Fed, CPI, PCE, jobs, etc.).
+- Each entry MUST have: ticker, date (YYYY-MM-DD), event_type, event (brief description), importance (High/Medium/Low), context (2-4 sentences on why this matters).
+- Use null for date if you cannot verify the exact date; do not fabricate specific dates.
+
+sector_summary RULES:
+- Cover all 11 GICS sectors listed above. For each sector write 2-4 sentences covering: which stocks led/lagged, weekly % performance for the sector ETF (XLK/XLF/XLV/XLE/XLI/XLY/XLP/XLU/XLB/XLRE/XLC), breadth/regime note.
+- sector_summary is a JSON OBJECT with sector name keys and string values (not an array).
+- If you cannot find the sector ETF weekly %, leave out the number rather than fabricating it.
+
+NARRATIVE REQUIREMENTS (most important field for depth):
+- Must be a substantial markdown research report of AT LEAST 15000 characters (target 25000-35000).
+- Must open with a single "# " title line, then use multiple "## " section headers: ## Market Overview, ## Sector Leadership & Rotation, ## Top Movers & Earnings Recap, ## Macro & Rates Environment, ## Watchlist Deep Dives (cover 15+ individual names), ## Upcoming Catalysts, ## What To Watch Next Week.
+- Write in flowing buy-side analyst prose with concrete numbers (index levels, % moves, yields, notable single-stock moves) and inline bracketed citations like [3] tied to your sources.
+- The narrative MUST NOT be collapsed into a 2-3 sentence summary -- a short narrative will be rejected.
+- The narrative is a SINGLE Markdown string value. Escape every newline as \\n inside the JSON string. MUST NOT contain literal tab characters.
 
 RETURN ONLY VALID JSON. NO MARKDOWN FENCES. NO TABS. NO COMMENTARY OUTSIDE JSON.
 CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object parseable by Python json.loads() without preprocessing. Do NOT wrap the whole response in ```json or ``` markers. NO trailing commas. The first character of your response must be {{ and the last character must be }}."""

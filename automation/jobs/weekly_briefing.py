@@ -62,6 +62,8 @@ _TRENDS_RESPONSE_FORMAT = {
                     for idx in ("sp500", "nasdaq", "dow", "russell2000", "vix")
                 },
             },
+            "market_summary": {"type": ["string", "null"]},
+            "key_trends": {"type": "array"},
             "trends": {
                 "type": "array",
                 "items": {
@@ -85,7 +87,10 @@ _TRENDS_RESPONSE_FORMAT = {
                     "required": ["risk", "impact"],
                 },
             },
+            "watchlist_updates": {"type": "array"},
             "watchlist_movers": {"type": "array"},
+            "upcoming_catalysts": {"type": "array"},
+            "sector_summary": {"type": "object"},
             "narrative": {"type": "string"},
         },
         "required": ["index_returns", "trends", "risks", "narrative"],
@@ -178,7 +183,7 @@ def _fetch_value():
     return call_perplexity(
         "MARKET", "weekly_value",
         build_weekly_value_prompt(),
-        system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 18 value-pick keys. No markdown. No prose. No code fences. No explanation. Only JSON.",
+        system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 19 value-pick keys including sector, current_price, price, fifty_two_week_high, fifty_two_week_low, key_risks, and why_could_go_lower. No markdown. No prose. No code fences. No explanation. Only JSON.",
         max_tokens=8000,
     )
 
@@ -189,7 +194,7 @@ def _fetch_momentum():
     return call_perplexity(
         "MARKET", "weekly_momentum",
         build_weekly_momentum_prompt(),
-        system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 9 momentum-pick keys. No markdown. No prose. No code fences. No explanation. Only JSON.",
+        system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 12 momentum-pick keys. No markdown. No prose. No code fences. No explanation. Only JSON.",
         max_tokens=6000,
     )
 
@@ -200,11 +205,10 @@ def _fetch_trends(tickers: list[str]):
     return call_perplexity(
         "MARKET", "weekly_trends",
         build_weekly_trends_prompt(tickers),
-        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. The 'narrative' field must contain a full markdown research report (4000+ chars, ## headers, citations) as an escaped JSON string. trends and risks are arrays of objects. index_returns is a flat object of numeric fields, never a table. No markdown outside the JSON. No tabs. No prose. No code fences. Only JSON.",
-        # sonar-deep-research routinely produces a 25-28K-char narrative; at the
-        # previous 9000-token ceiling ~1 in 3 responses truncated mid-narrative,
-        # yielding an unterminated-string parse failure. 14000 gives headroom.
-        max_tokens=14000,
+        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. The 'narrative' field must contain a full markdown research report (15000+ chars, ## headers, citations) as an escaped JSON string. key_trends, trends, risks are arrays of objects with both old and new schema keys. watchlist_updates and watchlist_movers are arrays covering 30-60 tickers. upcoming_catalysts is an array of 8-15 entries. sector_summary is an object with 11 sector keys. index_returns is a flat object of numeric fields, never a table. No markdown outside the JSON. No tabs. No prose. No code fences. Only JSON.",
+        # sonar-deep-research produces 25-35K narrative + 30-60 watchlist entries; we need
+        # significant token headroom. 20000 gives headroom for the full rich output.
+        max_tokens=20000,
         extra_meta={"response_format": _TRENDS_RESPONSE_FORMAT},
     )
 
@@ -378,8 +382,73 @@ def _backfill_momentum_returns(momentum_picks: list) -> None:
         )
 
 
+def _normalize_value_pick(v: dict) -> dict:
+    """Ensure value pick has both old-schema and new-schema field names.
+
+    Old schema (5/03-5/22): current_price, fifty_two_week_high, fifty_two_week_low, key_risks, sector
+    New schema (5/31+): price, 52_week_high, 52_week_low, why_could_go_lower
+    We write BOTH so the renderer handles either schema without breaking.
+    """
+    out = dict(v)
+    # price aliases
+    cp = out.get("current_price") or out.get("price")
+    out["current_price"] = cp
+    out["price"] = cp
+    # 52-week aliases
+    hi = out.get("fifty_two_week_high") or out.get("52_week_high")
+    lo = out.get("fifty_two_week_low") or out.get("52_week_low")
+    out["fifty_two_week_high"] = hi
+    out["fifty_two_week_low"] = lo
+    out["52_week_high"] = hi
+    out["52_week_low"] = lo
+    # key_risks / why_could_go_lower aliases
+    kr = out.get("key_risks") or out.get("why_could_go_lower")
+    out["key_risks"] = kr
+    out["why_could_go_lower"] = kr
+    return out
+
+
+def _normalize_trends_entry(t: dict) -> dict:
+    """Ensure trend entry has both old-schema (rank, title, detail) and new-schema (theme, summary, tickers)."""
+    out = dict(t)
+    # title / theme aliases
+    title = out.get("title") or out.get("theme") or out.get("name") or ""
+    out["title"] = title
+    out["theme"] = title
+    # detail / summary aliases
+    detail = out.get("detail") or out.get("summary") or out.get("description") or ""
+    out["detail"] = detail
+    out["summary"] = detail
+    # ensure rank exists
+    if "rank" not in out:
+        out["rank"] = None
+    # ensure tickers exists
+    if "tickers" not in out:
+        out["tickers"] = []
+    return out
+
+
+def _normalize_risk_entry(r: dict) -> dict:
+    """Ensure risk entry has both old-schema (rank, title, detail) and new-schema (risk, impact)."""
+    out = dict(r)
+    title = out.get("title") or out.get("risk") or out.get("name") or ""
+    out["title"] = title
+    out["risk"] = title
+    detail = out.get("detail") or out.get("impact") or out.get("description") or ""
+    out["detail"] = detail
+    out["impact"] = detail
+    if "rank" not in out:
+        out["rank"] = None
+    return out
+
+
 def compile_briefing(value, momentum, trends) -> dict:
-    """Merge 3 API responses into the weekly_briefing.json schema."""
+    """Merge 3 API responses into the weekly_briefing.json schema.
+
+    Outputs the full rich schema with BOTH old and new field name aliases so that
+    both the current renderer and any backward-looking archive code continue to work.
+    Target size: 80KB+ (comparable to 5/22 at 85KB).
+    """
     value_picks = _extract_list(value)
     momentum_picks = _extract_list(momentum)
     trends_data = _extract_dict(trends)
@@ -391,6 +460,10 @@ def compile_briefing(value, momentum, trends) -> dict:
     if not trends_data:
         print("  [WARNING] trends_data is EMPTY — narrative, index_returns, trends, and risks will be absent. Check the raw cache for the weekly_trends response.")
 
+    # Normalize picks to carry both old and new field names
+    value_picks = [_normalize_value_pick(v) for v in value_picks]
+    momentum_picks = [_normalize_value_pick(m) for m in momentum_picks]
+
     # Resolve revenue growth for any pick where deep-research left it missing or
     # zero, so cards never render "Rev Growth: N/A" (shared by value + momentum).
     _backfill_revenue_growth(value_picks)
@@ -400,15 +473,71 @@ def compile_briefing(value, momentum, trends) -> dict:
     # so cards never render "1W/1M/3M: N/A".
     _backfill_momentum_returns(momentum_picks)
 
+    # Pull trends and risks, normalizing to dual-schema objects
+    raw_trends = trends_data.get("trends", []) or trends_data.get("key_trends", [])
+    raw_key_trends = trends_data.get("key_trends", []) or raw_trends
+    normalized_trends = [_normalize_trends_entry(t) for t in raw_trends if isinstance(t, dict)]
+    normalized_key_trends = [_normalize_trends_entry(t) for t in raw_key_trends if isinstance(t, dict)]
+    # If key_trends came back empty but trends has data, copy it over
+    if not normalized_key_trends and normalized_trends:
+        normalized_key_trends = normalized_trends
+
+    raw_risks = trends_data.get("risks", [])
+    normalized_risks = [_normalize_risk_entry(r) for r in raw_risks if isinstance(r, dict)]
+
+    # Watchlist: prefer the new watchlist_updates field (richer), fall back to watchlist_movers
+    watchlist_updates = trends_data.get("watchlist_updates", []) or []
+    watchlist_movers = trends_data.get("watchlist_movers", []) or []
+    # If only movers came back, synthesize watchlist_updates from them
+    if watchlist_updates and not watchlist_movers:
+        watchlist_movers = [
+            {
+                "ticker": u.get("ticker"),
+                "weekly_move": ("+" if (u.get("weekly_change_pct") or 0) >= 0 else "") + str(u.get("weekly_change_pct", "0")) + "%",
+                "thirty_day_move": ("+" if (u.get("thirty_day_change_pct") or 0) >= 0 else "") + str(u.get("thirty_day_change_pct", "0")) + "%",
+                "catalyst": u.get("headline", ""),
+                "detail": u.get("summary", ""),
+            }
+            for u in watchlist_updates if isinstance(u, dict)
+        ]
+    elif watchlist_movers and not watchlist_updates:
+        watchlist_updates = [
+            {
+                "ticker": m.get("ticker"),
+                "weekly_change_pct": None,
+                "thirty_day_change_pct": None,
+                "headline": m.get("catalyst") or m.get("detail", ""),
+                "summary": m.get("detail", ""),
+                "tags": [],
+            }
+            for m in watchlist_movers if isinstance(m, dict)
+        ]
+
+    print(f"  Trends: {len(normalized_key_trends)}, Risks: {len(normalized_risks)}, "
+          f"Watchlist updates: {len(watchlist_updates)}, Watchlist movers: {len(watchlist_movers)}")
+
     return {
         "generated": datetime.now(tz=__import__("datetime").timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "week_ending": TODAY.isoformat(),
+        # Market summary: prefer string form; old schema had it as a dict with .narrative
+        "market_summary": trends_data.get("market_summary", ""),
+        # Value / momentum picks
         "value_picks": value_picks,
         "momentum_picks": momentum_picks,
+        # Index returns
         "index_returns": trends_data.get("index_returns", {}),
-        "trends": trends_data.get("trends", []),
-        "risks": trends_data.get("risks", []),
-        "watchlist_movers": trends_data.get("watchlist_movers", []),
+        # Trends — both old-schema (key_trends) and new-schema (trends) names
+        "key_trends": normalized_key_trends,
+        "trends": normalized_trends,
+        # Risks — normalized to carry both old and new field names
+        "risks": normalized_risks,
+        # Watchlist — both old (watchlist_updates) and new (watchlist_movers) names
+        "watchlist_updates": watchlist_updates,
+        "watchlist_movers": watchlist_movers,
+        # New rich fields
+        "upcoming_catalysts": trends_data.get("upcoming_catalysts", []),
+        "sector_summary": trends_data.get("sector_summary", {}),
+        # Deep narrative
         "narrative": trends_data.get("narrative", ""),
     }
 
