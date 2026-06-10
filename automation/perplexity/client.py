@@ -61,6 +61,142 @@ _last_call_time = 0.0
 MIN_CALL_INTERVAL = 0.6  # seconds between calls
 
 
+def _escape_control_chars_in_strings(text: str) -> str:
+    """Escape raw control characters that appear INSIDE JSON string literals.
+
+    sonar-deep-research sometimes renders a markdown table inside a JSON string
+    value (e.g. the ``index_returns`` field), emitting literal tab characters and
+    bare newlines. Those are illegal inside a JSON string per RFC 8259 and make
+    ``json.loads`` fail. We walk the text tracking whether we are inside a string
+    (respecting backslash escapes) and replace literal TAB/CR/LF with their JSON
+    escapes only when inside a string — structure-level whitespace is untouched.
+    """
+    out = []
+    in_string = False
+    escaped = False
+    for ch in text:
+        if in_string:
+            if escaped:
+                out.append(ch)
+                escaped = False
+                continue
+            if ch == "\\":
+                out.append(ch)
+                escaped = True
+                continue
+            if ch == '"':
+                out.append(ch)
+                in_string = False
+                continue
+            if ch == "\t":
+                out.append("\\t")
+                continue
+            if ch == "\n":
+                out.append("\\n")
+                continue
+            if ch == "\r":
+                out.append("\\r")
+                continue
+            out.append(ch)
+        else:
+            if ch == '"':
+                in_string = True
+            out.append(ch)
+    return "".join(out)
+
+
+def _close_truncated_json(text: str) -> str | None:
+    """Best-effort close of a TRUNCATED JSON object.
+
+    Assumes ``text`` has already had control chars inside strings escaped. Walks
+    the text tracking string state and an open-container stack ({ and [). If the
+    text ends mid-string or with unbalanced containers (the signature of a
+    response cut off at the token ceiling), it terminates the open string and
+    appends the matching closers in reverse order so the leading, fully-formed
+    fields can still be parsed. Returns None if there is no opening ``{``.
+    """
+    start = text.find("{")
+    if start == -1:
+        return None
+    stack = []
+    in_string = False
+    escaped = False
+    # Index just past the last structurally "safe" point — a completed value or
+    # the start of the object. We rewind to here if we end mid-string so we drop
+    # the dangling key/partial token rather than emitting an empty broken pair.
+    for ch in text[start:]:
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch in "{[":
+            stack.append(ch)
+        elif ch in "}]":
+            if stack:
+                stack.pop()
+
+    body = text[start:]
+    # If we ended inside a string, close it.
+    if in_string:
+        body = body + '"'
+    # Drop a trailing comma or dangling colon/key fragment that would be invalid
+    # once we slap closers on (e.g. ``...,"narrative":"...truncated"`` is fine,
+    # but ``...,"narrat`` would have been closed to ``...,"narrat"`` above — that
+    # is still a dangling key with no value, so strip a trailing ,"<key>" pair).
+    body = body.rstrip()
+    body = _re_module().sub(r',\s*"[^"]*"\s*:?\s*$', "", body)
+    body = body.rstrip().rstrip(",")
+    # Append closers for whatever remains open, innermost first.
+    for opener in reversed(stack):
+        body += "}" if opener == "{" else "]"
+    return body
+
+
+def _re_module():
+    import re
+    return re
+
+
+def _largest_json_object(text: str) -> str | None:
+    """Return the largest balanced ``{...}`` substring in ``text``, or None.
+
+    Scans from the first ``{`` and tracks brace depth (ignoring braces inside
+    string literals) to find a fully balanced object. Useful when the model
+    prepends a prose preamble or appends trailing commentary around the JSON.
+    """
+    start = text.find("{")
+    if start == -1:
+        return None
+    depth = 0
+    in_string = False
+    escaped = False
+    for i in range(start, len(text)):
+        ch = text[i]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start : i + 1]
+    return None
+
+
 def _use_api_fallback() -> bool:
     """Return True if the operator has opted into direct API calls.
 
@@ -385,12 +521,32 @@ def call_perplexity(
         cleaned = _re.sub(r",\s*([}\]])", r"\1", text)
         parsed = _try_parse(cleaned)
     if parsed is None:
-        # Repair attempt 2: extract the first {...} JSON object substring.
-        # Reasoning models sometimes emit trailing commentary after the JSON.
-        match = _re.search(r"\{.*\}", text, flags=_re.DOTALL)
-        if match:
-            candidate = _re.sub(r",\s*([}\]])", r"\1", match.group(0))
+        # Repair attempt 2: escape raw control characters (literal tabs / CR / LF)
+        # that appear inside JSON string values. Reasoning models sometimes render
+        # a markdown table inside a string field, emitting thousands of literal
+        # tab characters, which are illegal inside a JSON string and break parse.
+        repaired = _escape_control_chars_in_strings(text)
+        repaired = _re.sub(r",\s*([}\]])", r"\1", repaired)
+        parsed = _try_parse(repaired)
+    if parsed is None:
+        # Repair attempt 3: greedily extract the largest balanced {...} object
+        # substring and re-run the cheap repairs on it. Reasoning models sometimes
+        # emit commentary before/after the JSON, or a leading prose preamble.
+        candidate = _largest_json_object(text)
+        if candidate is not None:
+            candidate = _escape_control_chars_in_strings(candidate)
+            candidate = _re.sub(r",\s*([}\]])", r"\1", candidate)
             parsed = _try_parse(candidate)
+    if parsed is None:
+        # Repair attempt 4: close a TRUNCATED object. sonar-deep-research can hit
+        # the token ceiling mid-narrative, leaving an unterminated string and
+        # unbalanced braces/brackets. Close the open string and balance the stack
+        # so the structurally-complete leading fields (index_returns / trends /
+        # risks) are still recovered even when the trailing narrative is clipped.
+        salvaged = _close_truncated_json(_escape_control_chars_in_strings(text))
+        if salvaged is not None:
+            salvaged = _re.sub(r",\s*([}\]])", r"\1", salvaged)
+            parsed = _try_parse(salvaged)
     if parsed is None:
         print(f"  [PARSE FAIL] {ticker}/{task} \u2014 returning raw payload "
               f"({len(raw_content)} chars); first 200: {raw_content[:200]!r}")
