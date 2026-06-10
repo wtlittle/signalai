@@ -1,7 +1,6 @@
 ---
 name: financial-metric-prioritization
-description: Canonical metric priority and source-of-truth hierarchy for buy-side equity research artifacts. Decides which financial figure to cite, in which flavor (GAAP vs non-GAAP, NTM vs LTM), and from which source when several disagree.
-when_to_use: Drafting or reviewing any artifact that cites financial metrics for a public company — drilldowns, briefings, valuation memos, earnings notes, comp tables. Use it to pick the right metric, label it correctly, and trace it to an authoritative source.
+description: "Canonical metric priority and source-of-truth hierarchy for buy-side equity research artifacts. Use when drafting or reviewing drilldowns, briefings, valuation memos, earnings notes, or comp tables that cite financial metrics for a public company. Decides which financial figure to cite, in which flavor (GAAP vs non-GAAP, NTM vs LTM), and from which source when several disagree."
 ---
 
 # Financial Metric Prioritization
