@@ -36,6 +36,14 @@ sections you must produce. They are NOT literal output. NEVER echo the
    `<section class="section">…</section>` with an `id="section-N"` anchor is
    expected.
 
+   The page/report TITLE at the very top is NOT exempt: there must be ZERO
+   `<h1>`/`<h2>`/`<h3>` tags ANYWHERE in the document, including the report
+   header. The company name renders inside the report-header block as
+   `<span class="company-name">Company Inc.</span>` with a
+   `<span class="ticker-badge">TICKER</span>` — exactly as the exemplar
+   shows — NOT as `<h1>Company (TICKER) — Institutional Drilldown</h1>`. An
+   automated validator REJECTS any note containing a heading tag.
+
 2. FINANCIAL CELLS — every numeric financial value in a table cell MUST be a
    right-aligned cell carrying a claim citation:
 
