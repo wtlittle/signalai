@@ -9,20 +9,20 @@ render_earnings_annotated_chart(ticker, earnings_events, sector=None) -> str
 
 Design
 ------
-- 800x340 viewBox, responsive width (width="100%" preserveAspectRatio).
+- 1100x420 viewBox, responsive width (width="100%" preserveAspectRatio).
 - 4 price series, all rebased to 100 at the start of the 2-year window
   so they compare on a % return basis ("Indexed, start=100").
-    1. Ticker      — slate-100  (#f1f5f9)  2 px  (thickest / brightest)
-    2. Sector ETF  — amber-400  (#fbbf24)  1.5 px
-    3. QQQ         — sky-400    (#38bdf8)  1.5 px
-    4. SPY         — violet-400 (#a78bfa)  1.5 px
-- Small legend panel in top-right corner (colour swatch + label).
+    1. Ticker      — slate-100  (#f1f5f9)  2.5 px  (thickest / brightest)
+    2. Sector ETF  — amber-400  (#fbbf24)  1.8 px
+    3. QQQ         — sky-400    (#38bdf8)  1.8 px
+    4. SPY         — violet-400 (#a78bfa)  1.8 px
+- Legend panel in top-right corner (colour swatch + label), 120px wide, 14px font.
 - Vertical earnings marker at each date on the ticker line:
     green (#22c55e) when reaction_pct >= 0, red (#ef4444) otherwise.
-    Label: "MM/DD: +X.X%" rotated above the chart area.
-- 5 horizontal gridlines, linear Y-axis, label "Indexed (start=100)".
-- Monthly X-axis tick labels rotated 30° for fit.
-- Title: "<TICKER> 2-year performance vs. <SECTOR_ETF> / QQQ / SPY".
+    Label: "MM/DD: +X.X%" rotated above the chart area, 12px font in a pill.
+- 5 horizontal gridlines, linear Y-axis, label "Indexed (start=100)" at 12px.
+- Monthly X-axis tick labels rotated 30° for fit, 13px font.
+- Title: "<TICKER> 2-year performance vs. <SECTOR_ETF> / QQQ / SPY" at 16px.
 - Placeholder HTML returned when ticker price data <30 points or fails.
 
 Sector → ETF mapping (GICS-aligned, SPDR Select Sector ETFs)
@@ -132,14 +132,14 @@ _COL_TITLE  = "#e2e8f0"    # slate-200
 _COL_LEGEND_BG = "#1e293b" # slate-800, semi-transparent
 
 # ---------------------------------------------------------------------------
-# Layout  (SVG user units, viewBox 800 x 340)
+# Layout  (SVG user units, viewBox 1100 x 420)
 # ---------------------------------------------------------------------------
-_VB_W = 800
-_VB_H = 340
-_PAD_LEFT   = 64   # Y-axis labels
-_PAD_RIGHT  = 20
-_PAD_TOP    = 38   # title + legend
-_PAD_BOTTOM = 50   # X-axis labels
+_VB_W = 1100
+_VB_H = 420
+_PAD_LEFT   = 72   # Y-axis labels
+_PAD_RIGHT  = 24
+_PAD_TOP    = 44   # title + legend
+_PAD_BOTTOM = 58   # X-axis labels
 _PLOT_W = _VB_W - _PAD_LEFT - _PAD_RIGHT
 _PLOT_H = _VB_H - _PAD_TOP  - _PAD_BOTTOM
 
@@ -496,13 +496,14 @@ def render_earnings_annotated_chart(
       f'xmlns="http://www.w3.org/2000/svg" '
       f'viewBox="0 0 {_VB_W} {_VB_H}" '
       f'width="100%" '
+      f'height="auto" '
       f'preserveAspectRatio="xMidYMid meet" '
-      f'style="display:block;max-width:{_VB_W}px;background:transparent;" '
+      f'style="display:block;max-width:100%;height:auto;background:transparent;" '
       f'aria-label="{_esc(title_text)}">')
 
     # Title
-    a(f'  <text x="{_PAD_LEFT}" y="24" '
-      f'font-family="ui-monospace,monospace" font-size="11" font-weight="600" '
+    a(f'  <text x="{_PAD_LEFT}" y="28" '
+      f'font-family="ui-monospace,monospace" font-size="16" font-weight="600" '
       f'fill="{_COL_TITLE}">{_esc(title_text)}</text>')
 
     # Gridlines + Y labels
@@ -510,15 +511,15 @@ def render_earnings_annotated_chart(
         yv = py(tick)
         a(f'  <line x1="{ax_x1}" y1="{yv:.1f}" x2="{ax_x2}" y2="{yv:.1f}" '
           f'stroke="{_COL_GRID}" stroke-width="0.5" stroke-dasharray="3,4"/>')
-        a(f'  <text x="{ax_x1 - 4}" y="{yv + 3.5:.1f}" '
-          f'text-anchor="end" font-family="ui-monospace,monospace" font-size="9" '
+        a(f'  <text x="{ax_x1 - 5}" y="{yv + 4.5:.1f}" '
+          f'text-anchor="end" font-family="ui-monospace,monospace" font-size="13" '
           f'fill="{_COL_LABEL}">{tick:.1f}</text>')
 
     # Y-axis label ("Indexed (start=100)")
     mid_y = ax_y1 + _PLOT_H / 2
-    a(f'  <text transform="rotate(-90,12,{mid_y:.1f})" '
-      f'x="12" y="{mid_y:.1f}" '
-      f'text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" '
+    a(f'  <text transform="rotate(-90,14,{mid_y:.1f})" '
+      f'x="14" y="{mid_y:.1f}" '
+      f'text-anchor="middle" font-family="ui-monospace,monospace" font-size="12" '
       f'fill="{_COL_LABEL}">Indexed (start=100)</text>')
 
     # Axes
@@ -529,20 +530,20 @@ def render_earnings_annotated_chart(
 
     # X-axis tick labels
     for xv, lbl in x_ticks:
-        ybase = ax_y2 + 12
+        ybase = ax_y2 + 16
         a(f'  <text transform="rotate(-30,{xv:.1f},{ybase})" '
           f'x="{xv:.1f}" y="{ybase}" '
-          f'text-anchor="end" font-family="ui-monospace,monospace" font-size="8" '
+          f'text-anchor="end" font-family="ui-monospace,monospace" font-size="13" '
           f'fill="{_COL_LABEL}">{_esc(lbl)}</text>')
 
     # Overlay lines (draw behind ticker)
     if sec_rebased:
-        a(_polyline(sec_vals, _COL_SECTOR, 1.5, "overlay-sector"))
-    a(_polyline(qqq_vals, _COL_QQQ, 1.5, "overlay-qqq"))
-    a(_polyline(spy_vals, _COL_SPY, 1.5, "overlay-spy"))
+        a(_polyline(sec_vals, _COL_SECTOR, 1.8, "overlay-sector"))
+    a(_polyline(qqq_vals, _COL_QQQ, 1.8, "overlay-qqq"))
+    a(_polyline(spy_vals, _COL_SPY, 1.8, "overlay-spy"))
 
     # Ticker line (front, thickest)
-    a(_polyline(tk_vals, _COL_TICKER, 2.0, "line-ticker"))
+    a(_polyline(tk_vals, _COL_TICKER, 2.5, "line-ticker"))
 
     # Earnings marker vertical lines + dots + labels
     for mk in markers:
@@ -550,31 +551,38 @@ def render_earnings_annotated_chart(
         col = mk["color"]
         a(f'  <line x1="{xv:.1f}" y1="{ax_y1}" x2="{xv:.1f}" y2="{ax_y2}" '
           f'stroke="{col}" stroke-width="1" stroke-dasharray="4,3" opacity="0.85"/>')
-        a(f'  <circle cx="{xv:.1f}" cy="{mk["y"]:.1f}" r="3" '
+        a(f'  <circle cx="{xv:.1f}" cy="{mk["y"]:.1f}" r="5" '
           f'fill="{col}" opacity="0.9"/>')
-        label_y = ax_y1 - 4
+        # Pill background + label for date annotation
+        label_y = ax_y1 - 6
+        pill_w = 62
+        pill_h = 18
+        a(f'  <rect transform="rotate(-65,{xv:.1f},{label_y})" '
+          f'x="{xv:.1f}" y="{label_y - pill_h + 4:.1f}" '
+          f'width="{pill_w}" height="{pill_h}" rx="4" '
+          f'fill="{col}" fill-opacity="0.18"/>')
         a(f'  <text transform="rotate(-65,{xv:.1f},{label_y})" '
           f'x="{xv:.1f}" y="{label_y}" '
-          f'text-anchor="start" font-family="ui-monospace,monospace" font-size="8" '
+          f'text-anchor="start" font-family="ui-monospace,monospace" font-size="12" '
           f'font-weight="600" fill="{col}">{_esc(mk["label"])}</text>')
 
     # Legend panel (top-right)
     lgd_x = ax_x2 - 4
-    lgd_y = ax_y1 + 6
-    row_h = 14
-    lgd_w = 64
-    lgd_h = len(legend_entries) * row_h + 8
+    lgd_y = ax_y1 + 8
+    row_h = 17
+    lgd_w = 120
+    lgd_h = len(legend_entries) * row_h + 10
     a(f'  <rect x="{lgd_x - lgd_w}" y="{lgd_y - 2}" '
       f'width="{lgd_w}" height="{lgd_h}" rx="3" '
       f'fill="{_COL_LEGEND_BG}" fill-opacity="0.75"/>')
     for li, (lbl, col) in enumerate(legend_entries):
         ry = lgd_y + li * row_h + row_h / 2 + 1
-        sw_x = lgd_x - lgd_w + 6
-        txt_x = sw_x + 14
-        a(f'  <line x1="{sw_x}" y1="{ry:.1f}" x2="{sw_x + 10}" y2="{ry:.1f}" '
+        sw_x = lgd_x - lgd_w + 8
+        txt_x = sw_x + 16
+        a(f'  <line x1="{sw_x}" y1="{ry:.1f}" x2="{sw_x + 12}" y2="{ry:.1f}" '
           f'stroke="{col}" stroke-width="2.5" stroke-linecap="round"/>')
-        a(f'  <text x="{txt_x}" y="{ry + 3.5:.1f}" '
-          f'font-family="ui-monospace,monospace" font-size="9" font-weight="600" '
+        a(f'  <text x="{txt_x}" y="{ry + 4.5:.1f}" '
+          f'font-family="ui-monospace,monospace" font-size="14" font-weight="600" '
           f'fill="{col}">{_esc(lbl)}</text>')
 
     a('</svg>')

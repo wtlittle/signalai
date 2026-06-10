@@ -65,15 +65,124 @@ def _trunc(s: str) -> str:
     return s
 
 
+def derive_post_earnings_reaction_headline(per: dict) -> str | None:
+    """Compose a stock-reaction-led headline from post_earnings_review block.
+
+    Reads ``stock_reaction.pct`` (signed float, e.g. -19.4) and
+    ``stock_reaction.driver`` (1-sentence explanation string) from the block.
+    If either field is missing or null, returns None so the caller can fall back
+    to the v1 what_happened_headline.
+
+    Conjunction logic:
+      - "despite" when reaction sign disagrees with print quality
+        (negative reaction + beat, or positive reaction + miss).
+      - "on" when sign agrees (positive + beat, negative + miss).
+    Beat/miss is inferred from the ``what_happened_headline`` text: the word
+    "beat" (case-insensitive) indicates a beat; "miss" indicates a miss.
+    When the print quality cannot be determined, default to "on".
+
+    Format: "Stock {+X.X%|−X.X%} {despite|on} {print descriptor}; {driver}"
+
+    Returns a string ≤ 180 chars (citations stripped) or None.
+    Never returns the literal string "MISSING" or "n/a".
+
+    Examples:
+    >>> per = {'stock_reaction': {'pct': -19.4, 'driver': 'Q2 guide cautious on memory test demand'},
+    ...        'what_happened_headline': 'Teradyne posts record Q1 with strong beats.'}
+    >>> derive_post_earnings_reaction_headline(per)
+    'Stock -19.4% despite Q1 beat; Q2 guide cautious on memory test demand'
+
+    >>> per = {'stock_reaction': {'pct': 5.0, 'driver': 'data center reaccelerates above $20B'},
+    ...        'what_happened_headline': 'NVDA beats and raises.'}
+    >>> derive_post_earnings_reaction_headline(per)
+    'Stock +5.0% on Q1 beat + raise; data center reaccelerates above $20B'
+
+    >>> # Missing driver -> fall back
+    >>> derive_post_earnings_reaction_headline({'stock_reaction': {'pct': -5.0}})
+
+    >>> # Missing pct -> fall back
+    >>> derive_post_earnings_reaction_headline({'stock_reaction': {'driver': 'something'}})
+
+    """
+    sr = per.get("stock_reaction") or {}
+    pct = sr.get("pct")
+    driver = (sr.get("driver") or "").strip()
+
+    # Graceful degradation: require both fields
+    if pct is None or not driver:
+        return None
+
+    # Format the reaction sign
+    # Use Unicode minus for negative to match the example style
+    if pct >= 0:
+        pct_str = f"+{pct:.1f}%"
+    else:
+        pct_str = f"{pct:.1f}%"  # float already carries the minus sign
+
+    # Infer print quality from what_happened_headline
+    wh = (per.get("what_happened_headline") or "").lower()
+    is_beat = "beat" in wh
+    is_miss = "miss" in wh
+
+    # Conjunction: "despite" when sign disagrees with quality
+    if pct < 0 and is_beat and not is_miss:
+        conjunction = "despite"
+    elif pct > 0 and is_miss and not is_beat:
+        conjunction = "despite"
+    else:
+        conjunction = "on"
+
+    # Short print descriptor — derive from what_happened_headline if usable,
+    # otherwise use a minimal fallback
+    wh_orig = (per.get("what_happened_headline") or "").strip()
+    wh_lower = wh_orig.lower()
+    is_generic = (
+        not wh_orig
+        or wh_lower.startswith("quarter reported")
+        or wh_lower.startswith("insufficient data")
+        or wh_lower.startswith("unable to")
+    )
+    if is_generic or not wh_orig:
+        # Minimal fallback descriptor
+        if is_beat:
+            descriptor = "earnings beat"
+        elif is_miss:
+            descriptor = "earnings miss"
+        else:
+            descriptor = "earnings print"
+    else:
+        # Shorten to at most 60 chars so the combined headline stays readable
+        short = _strip_citations(wh_orig)
+        if len(short) > 60:
+            # Try to cut at a sentence or clause boundary
+            for stop in (". ", "; ", ", "):
+                idx = short.find(stop)
+                if 0 < idx <= 60:
+                    short = short[:idx]
+                    break
+            else:
+                short = short[:57] + "..."
+        descriptor = short.rstrip(".,;")
+
+    # Strip citations from driver before composing
+    driver_clean = _strip_citations(driver)
+
+    result = f"Stock {pct_str} {conjunction} {descriptor}; {driver_clean}"
+    return _trunc(result)
+
+
 def derive_card_headline(entry_type: str, ticker_data: dict) -> str | None:
     """Derive a one-line card headline for a news-tab earnings card.
 
     POST-EARNINGS precedence:
-      1. ``post_earnings_review.what_happened_headline`` — if non-generic
+      1. ``post_earnings_review.stock_reaction.pct`` +
+         ``post_earnings_review.stock_reaction.driver`` — reaction-led format
+         via ``derive_post_earnings_reaction_headline()``.
+      2. ``post_earnings_review.what_happened_headline`` — if non-generic
          (i.e. does not start with "Quarter reported" or "Insufficient data")
-      2. ``post_earnings_review.takeaways_headline`` — if non-empty
-      3. Compose "Stock {+/-}{pct}% post-earnings" from stock_reaction_pct
-      4. None — card renders without headline line
+      3. ``post_earnings_review.takeaways_headline`` — if non-empty
+      4. Compose "Stock {+/-}{pct}% post-earnings" from stock_reaction_pct
+      5. None — card renders without headline line
 
     PRE-EARNINGS precedence:
       1. ``signal_scorecard[0].note`` — first watching-signal note (key debate)
@@ -82,7 +191,15 @@ def derive_card_headline(entry_type: str, ticker_data: dict) -> str | None:
     Returns a string ≤ 180 chars (citations stripped) or None.
     Never returns the literal string "MISSING".
 
-    Examples (post-earnings, non-generic what_happened_headline):
+    Examples (post-earnings, reaction-led when stock_reaction block present):
+    >>> td = {'post_earnings_review': {
+    ...     'stock_reaction': {'pct': -19.4, 'driver': 'guide cautious on memory'},
+    ...     'what_happened_headline': 'Strong Q1 beat on revenue.',
+    ...     'takeaways_headline': '', 'stock_reaction_pct': -19.4}}
+    >>> derive_card_headline('post', td)
+    'Stock -19.4% despite Strong Q1 beat on revenue; guide cautious on memory'
+
+    Examples (post-earnings, falls back to what_happened when no stock_reaction block):
     >>> td = {'post_earnings_review': {'what_happened_headline': 'Beat; stock +12%.',
     ...                                 'takeaways_headline': '', 'stock_reaction_pct': 12.0}}
     >>> derive_card_headline('post', td)
@@ -108,6 +225,11 @@ def derive_card_headline(entry_type: str, ticker_data: dict) -> str | None:
         pct = per.get("stock_reaction_pct")
         wh = per.get("what_happened_headline") or ""
         th = per.get("takeaways_headline") or ""
+
+        # Attempt reaction-led headline first (new v2 format)
+        reaction_headline = derive_post_earnings_reaction_headline(per)
+        if reaction_headline:
+            return reaction_headline
 
         # Determine if what_happened_headline is generic/unusable
         wh_lower = wh.strip().lower()
