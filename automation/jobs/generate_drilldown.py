@@ -21,6 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SNAPSHOT_PATH = ROOT / 'data-snapshot.json'
+INTEL_PATH = ROOT / 'earnings_intel.json'
 PROMPT_PATH = ROOT / 'drilldown_prompt.md'
 
 from automation.perplexity.client import call_perplexity
@@ -466,6 +467,83 @@ def _find_section_body_content(html: str, search_start: int
     return content_start, body_close, section_close
 
 
+def _load_intel_record(ticker: str) -> dict:
+    """Return the earnings_intel.json record for `ticker` (empty dict if absent)."""
+    try:
+        data = json.loads(INTEL_PATH.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return {}
+    return (data.get('tickers') or {}).get(ticker) or {}
+
+
+def _resolve_event_date(row: dict, period_end: str, lag_days: int | None,
+                        ticker: str) -> str:
+    """Resolve a history row to the actual earnings *event* (print) date.
+
+    Fallback chain (per task spec):
+      1. row['event_date']      — explicit actual print date if present
+      2. row['earnings_date']   — alternate actual-date field
+      3. period_end + measured reporting lag — the actual print typically lands
+         ~lag_days after the fiscal-period-end; this reconstructs a realistic
+         print date when no explicit field exists.
+      4. period_end (raw) with a warning — last resort; markers would otherwise
+         sit on a quarter-end (06-30/09-30/12-31/03-31) instead of the print.
+    """
+    explicit = (row.get('event_date') or row.get('earnings_date') or '')
+    if explicit:
+        return str(explicit)[:10]
+
+    if lag_days is not None and period_end:
+        try:
+            pe = _dt.date.fromisoformat(period_end)
+            return (pe + _dt.timedelta(days=lag_days)).isoformat()
+        except ValueError:
+            pass
+
+    print(f'  [WARN] {ticker}: no event_date/earnings_date for period_end '
+          f'{period_end!r}; marker falls back to fiscal-period-end')
+    return period_end
+
+
+def _earnings_events(ticker: str, hist: list[dict], intel: dict) -> list[dict]:
+    """Build chart marker events with actual print dates, newest-aligned.
+
+    The snapshot's earningsHistory rows key off `quarter` (= fiscal-period-end),
+    which is NOT the print date. We measure the reporting lag from the most
+    recent quarter (intel last_earnings_date - newest period_end) and project it
+    across the older quarters so each marker lands on the real print date.
+    """
+    period_ends = [(h.get('quarter') or h.get('period_end') or '')[:10]
+                   for h in hist]
+    newest_pe = max((p for p in period_ends if p), default='')
+
+    lag_days: int | None = None
+    actual_recent = (intel.get('last_earnings_date')
+                     or (intel.get('post_earnings_review') or {}).get('earnings_date')
+                     or '')
+    if actual_recent and newest_pe:
+        try:
+            lag_days = (_dt.date.fromisoformat(str(actual_recent)[:10])
+                        - _dt.date.fromisoformat(newest_pe)).days
+        except ValueError:
+            lag_days = None
+
+    events: list[dict] = []
+    for h in hist:
+        period_end = (h.get('quarter') or h.get('period_end') or '')[:10]
+        if not period_end:
+            continue
+        # Most recent quarter: prefer the known actual date directly.
+        if period_end == newest_pe and actual_recent:
+            ev_date = str(actual_recent)[:10]
+        else:
+            ev_date = _resolve_event_date(h, period_end, lag_days, ticker)
+        sp = h.get('surprisePercent')
+        reaction = round(float(sp) * 100, 2) if sp is not None else None
+        events.append({'date': ev_date, 'reaction_pct': reaction})
+    return events
+
+
 def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
     """Post-process the LLM-generated HTML to insert a deterministic SVG
     annotated price chart into the Earnings Setup section.
@@ -484,13 +562,8 @@ def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
     # ---- Build chart SVG ---------------------------------------------------
     asum = (snap.get('analyst_summary') or {}).get(ticker, {})
     hist = asum.get('earningsHistory') or []
-    events: list[dict] = []
-    for h in hist:
-        q_date = (h.get('quarter') or '')[:10]
-        sp = h.get('surprisePercent')
-        reaction = round(float(sp) * 100, 2) if sp is not None else None
-        if q_date:
-            events.append({'date': q_date, 'reaction_pct': reaction})
+    intel = _load_intel_record(ticker)
+    events = _earnings_events(ticker, hist, intel)
 
     sector = (snap.get('quotes') or {}).get(ticker, {}).get('sector')
 
