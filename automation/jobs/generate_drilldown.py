@@ -414,28 +414,80 @@ def _call_model(ticker, full_prompt, system):
     return html
 
 
+def _find_section_body_content(html: str, search_start: int
+                               ) -> tuple[int, int, int]:
+    """Locate the section-body open tag and the end of the section.
+
+    Searches from *search_start* forward for the pattern::
+
+        <div … class="section-body" …>
+          … content …
+        </div>   ← closing div for the section-body
+    </section>
+
+    Returns (content_start, section_body_close, section_close) as absolute
+    positions in *html*, or (-1, -1, -1) if the section-body cannot be found.
+
+    *content_start* is the index of the first character of section-body content
+    (immediately after the opening ``>`` of the ``<div class="section-body">`` tag).
+    *section_body_close* is the start of ``</div>`` that closes section-body.
+    *section_close* is the start of ``</section>`` that closes the section.
+    """
+    body_re = re.compile(r'<div[^>]*class=["\']section-body["\'][^>]*>', re.IGNORECASE)
+    bm = body_re.search(html, search_start)
+    if not bm:
+        return -1, -1, -1
+
+    content_start = bm.end()
+
+    # Find the </div> that closes the section-body by tracking div depth.
+    pos = content_start
+    depth = 1
+    div_open  = re.compile(r'<div[\s>]', re.IGNORECASE)
+    div_close = re.compile(r'</div>', re.IGNORECASE)
+    section_close_re = re.compile(r'</section>', re.IGNORECASE)
+    body_close = -1
+    while pos < len(html) and depth > 0:
+        o = div_open.search(html, pos)
+        c = div_close.search(html, pos)
+        if c is None:
+            break
+        if o and o.start() < c.start():
+            depth += 1
+            pos = o.start() + 1
+        else:
+            depth -= 1
+            if depth == 0:
+                body_close = c.start()
+            pos = c.start() + 1
+
+    sc = section_close_re.search(html, bm.start())
+    section_close = sc.start() if sc else len(html)
+    return content_start, body_close, section_close
+
+
 def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
-    """Post-process the LLM-generated HTML to replace the earnings-surprise
-    table inside the Earnings Setup section with a deterministic SVG chart.
+    """Post-process the LLM-generated HTML to insert a deterministic SVG
+    annotated price chart into the Earnings Setup section.
 
     Strategy:
-    1. Locate the Earnings Setup section-body.
-    2. Find and remove the first <table>…</table> inside it (the old
-       quarter-by-quarter surprise table).
-    3. Insert the SVG chart immediately before what remains of the
-       section-body content (before the first <p> or at the top of the body).
-    4. Update the section-title to "2-Year Price & Earnings Reactions".
+    1. Locate the section with an Earnings Setup / 2-Year Price title.
+    2. Find the section-body boundaries precisely (handles LLM SVG placeholders,
+       tables, and varied structure robustly).
+    3. Remove any <table> or <svg class="earnings-chart"> already in the
+       section-body (LLM placeholders).
+    4. Prepend the deterministic SVG chart at the start of section-body content.
+    5. Rename the section-title to "2-Year Price &amp; Earnings Reactions".
 
-    Returns the modified HTML (or the original if the section cannot be found).
+    Returns the modified HTML, or the original if the section cannot be found.
     """
-    # Build earnings events from analyst_summary.earningsHistory
+    # ---- Build chart SVG ---------------------------------------------------
     asum = (snap.get('analyst_summary') or {}).get(ticker, {})
     hist = asum.get('earningsHistory') or []
     events: list[dict] = []
     for h in hist:
         q_date = (h.get('quarter') or '')[:10]
         sp = h.get('surprisePercent')
-        # analyst_summary stores surprisePercent as a fraction (0.155 = 15.5%)
         reaction = round(float(sp) * 100, 2) if sp is not None else None
         if q_date:
             events.append({'date': q_date, 'reaction_pct': reaction})
@@ -451,68 +503,74 @@ def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
                      'Chart data unavailable \u2014 see Earnings Intel popup '
                      'for per-print detail</p>')
 
-    # ---- Locate the Earnings Setup section ---------------------------------
+    # ---- Find the section title -------------------------------------------
     section_title_re = re.compile(
-        r'(class="section-title"[^>]*>\s*)([^<]*earnings\s+setup[^<]*|'
-        r'[^<]*revision\s+debate[^<]*|'
-        r'[^<]*2-year\s+price[^<]*|'
-        r'[^<]*earnings\s+reactions[^<]*)(\s*</)',
+        r'class="section-title"[^>]*>\s*(?:[^<]*'
+        r'(?:earnings\s+setup|revision\s+debate|2-year\s+price|earnings\s+reactions)'
+        r'[^<]*)\s*</',
         re.IGNORECASE,
     )
     title_m = section_title_re.search(html)
     if not title_m:
-        print(f'  [WARN] {ticker}: could not locate Earnings Setup section-title for chart injection')
+        print(f'  [WARN] {ticker}: could not locate Earnings Setup section-title')
         return html
 
-    # Remember the position after the title for later use, then rename.
-    title_end_pos = title_m.end()
-    # Rename section title to the new heading
-    html = (
-        html[:title_m.start(2)]
-        + '2-Year Price &amp; Earnings Reactions'
-        + html[title_m.end(2):]
-    )
-    # Offset for position recalculation after substitution
-    new_title_end = title_m.start(2) + len('2-Year Price &amp; Earnings Reactions') + len(title_m.group(3))
+    search_start = title_m.end()
 
-    # ---- Find the section-body that follows this section-title -------------
-    after_title = new_title_end
-    body_open_re = re.compile(r'class="section-body"', re.IGNORECASE)
-    bm = body_open_re.search(html, after_title)
-    if not bm:
+    # ---- Precisely locate section-body content range ----------------------
+    content_start, body_close, section_close = _find_section_body_content(
+        html, search_start
+    )
+    if content_start == -1:
         print(f'  [WARN] {ticker}: section-body not found after Earnings Setup title')
         return html
 
-    body_start = bm.end()  # position right after class="section-body"
-    # Find the matching > for the section-body opening tag
-    gt = html.find('>', body_start - 1)
-    if gt == -1:
-        return html
-    content_start = gt + 1  # actual content begins here
+    # section_close is the </section> — cap body_close defensively
+    if body_close == -1 or body_close > section_close:
+        body_close = section_close
 
-    # ---- Find the first <table>…</table> in the section-body ---------------
-    # Look for it within the next 4000 chars (far enough to cover any table)
-    search_window = html[content_start:content_start + 6000]
-    table_re = re.compile(r'<table[^>]*>.*?</table>', re.DOTALL | re.IGNORECASE)
-    tm = table_re.search(search_window)
-    if tm:
-        # Remove the table from the HTML
-        abs_start = content_start + tm.start()
-        abs_end   = content_start + tm.end()
-        html = html[:abs_start] + html[abs_end:]
-        insert_pos = abs_start
-    else:
-        # No table found — insert chart at the start of section-body content
-        insert_pos = content_start
+    # ---- Extract current section-body content ----------------------------
+    body_content = html[content_start:body_close]
 
-    # ---- Insert the SVG chart ---------------------------------------------
+    # Remove any <table>...</table> blocks (old surprise tables)
+    body_content = re.sub(
+        r'<table[^>]*>.*?</table>', '', body_content,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+    # Remove any existing <svg class="earnings-chart"> blocks (LLM placeholders)
+    body_content = re.sub(
+        r'<svg[^>]*class=["\']earnings-chart["\'][^>]*>.*?</svg>', '',
+        body_content,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+    # Tidy up extra blank lines left by removals
+    body_content = re.sub(r'\n{3,}', '\n\n', body_content)
+
+    # ---- Build new section-body content ----------------------------------
     chart_block = (
         '\n<div class="earnings-chart-wrap" '
         'style="margin:0 0 16px 0;overflow:hidden;">\n'
         + chart_svg
         + '\n</div>\n'
     )
-    html = html[:insert_pos] + chart_block + html[insert_pos:]
+    new_body_content = chart_block + body_content
+
+    # ---- Splice into HTML ------------------------------------------------
+    html = html[:content_start] + new_body_content + html[body_close:]
+
+    # ---- Rename section title --------------------------------------------
+    # Re-find after content splice (positions before title_m.start() are unchanged)
+    title_m2 = section_title_re.search(html)
+    if title_m2:
+        html = (
+            html[:title_m2.start()]
+            + re.sub(
+                r'>\s*[^<]+\s*</', '>2-Year Price &amp; Earnings Reactions</',
+                html[title_m2.start():title_m2.end()], count=1,
+                flags=re.IGNORECASE,
+            )
+            + html[title_m2.end():]
+        )
     return html
 
 
