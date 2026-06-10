@@ -299,6 +299,8 @@
         date: n.date || n.earnings_date || '',
         type: 'post',
         path: n.note_file || n.note_path || n.file || '',
+        headline: n.headline || null,
+        reactionPct: (typeof n.reaction_pct === 'number') ? n.reaction_pct : null,
       });
     });
     (Array.isArray(idx.active_pre_earnings) ? idx.active_pre_earnings : []).forEach((n) => {
@@ -308,6 +310,8 @@
         date: n.date || n.earnings_date || '',
         type: 'pre',
         path: n.file || n.note_file || n.note_path || '',
+        headline: n.headline || null,
+        reactionPct: null,
       });
     });
 
@@ -330,13 +334,31 @@
     const typeLabel = item.type === 'pre' ? 'PRE-EARNINGS' : 'POST-EARNINGS';
     const typeCls = item.type === 'pre' ? 'news-note-type-pre' : 'news-note-type-post';
     const sub = item.company ? `<span class="news-note-company">${escapeHtml(item.company)}</span>` : '';
-    return `<article class="news-card news-note-card" data-ticker="${escapeHtml(item.ticker)}" data-date="${escapeHtml(item.date)}" data-type="${escapeHtml(item.type)}" role="button" tabindex="0">
+
+    // Determine if this is a significant post-earnings move (|pct| >= 5)
+    const pct = item.reactionPct;
+    const isSignificant = item.type === 'post' && pct !== null && Math.abs(pct) >= 5;
+    const sigAttr = isSignificant ? ' data-significant="true"' : '';
+
+    // Build headline line if available
+    let headlineLine = '';
+    if (item.headline) {
+      let hlCls = 'news-note-headline';
+      if (isSignificant) {
+        hlCls += pct > 0 ? ' news-note-headline--up' : ' news-note-headline--down';
+      }
+      headlineLine = `<div class="${hlCls}">${escapeHtml(item.headline)}</div>`;
+    }
+
+    return `<article class="news-card news-note-card" data-ticker="${escapeHtml(item.ticker)}" data-date="${escapeHtml(item.date)}" data-type="${escapeHtml(item.type)}"${sigAttr} role="button" tabindex="0">
       <div class="news-card-top">
         <span class="news-chip">${escapeHtml(item.ticker)}</span>
         <span class="news-note-type ${typeCls}">${typeLabel}</span>
         <span class="news-card-time">${escapeHtml(fmtDate(item.date))}</span>
       </div>
-      <div class="news-note-line">${sub}<span class="news-note-open">Earnings Intel &rarr;</span></div>
+      ${sub ? `<div class="news-note-name">${sub}</div>` : ''}
+      ${headlineLine}
+      <div class="news-note-footer"><span class="news-note-open">Earnings Intel &rarr;</span></div>
     </article>`;
   }
 
