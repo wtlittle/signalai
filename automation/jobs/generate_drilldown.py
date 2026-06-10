@@ -28,6 +28,7 @@ from automation.jobs.save_drilldown import save_drilldown
 from automation.jobs.drilldown_validator import validate
 from automation.sources.annual_history import fetch_5yr_history
 from automation.shared.supabase_client import fetch_rows
+from automation.jobs.drilldown_chart import render_earnings_annotated_chart
 
 # Supabase table holding per-ticker TAM / competitor intel harvested by
 # automation/jobs/market_intel_refresh.py (90-day TTL). Distinct from the
@@ -413,6 +414,108 @@ def _call_model(ticker, full_prompt, system):
     return html
 
 
+def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
+    """Post-process the LLM-generated HTML to replace the earnings-surprise
+    table inside the Earnings Setup section with a deterministic SVG chart.
+
+    Strategy:
+    1. Locate the Earnings Setup section-body.
+    2. Find and remove the first <table>…</table> inside it (the old
+       quarter-by-quarter surprise table).
+    3. Insert the SVG chart immediately before what remains of the
+       section-body content (before the first <p> or at the top of the body).
+    4. Update the section-title to "2-Year Price & Earnings Reactions".
+
+    Returns the modified HTML (or the original if the section cannot be found).
+    """
+    # Build earnings events from analyst_summary.earningsHistory
+    asum = (snap.get('analyst_summary') or {}).get(ticker, {})
+    hist = asum.get('earningsHistory') or []
+    events: list[dict] = []
+    for h in hist:
+        q_date = (h.get('quarter') or '')[:10]
+        sp = h.get('surprisePercent')
+        # analyst_summary stores surprisePercent as a fraction (0.155 = 15.5%)
+        reaction = round(float(sp) * 100, 2) if sp is not None else None
+        if q_date:
+            events.append({'date': q_date, 'reaction_pct': reaction})
+
+    sector = (snap.get('quotes') or {}).get(ticker, {}).get('sector')
+
+    try:
+        chart_svg = render_earnings_annotated_chart(ticker, events, sector=sector)
+    except Exception as exc:
+        print(f'  [WARN] {ticker}: chart render failed: {exc}')
+        chart_svg = ('<p class="chart-placeholder" style="font-size:12px;'
+                     'color:#94a3b8;padding:12px 0;margin:0;">'
+                     'Chart data unavailable \u2014 see Earnings Intel popup '
+                     'for per-print detail</p>')
+
+    # ---- Locate the Earnings Setup section ---------------------------------
+    section_title_re = re.compile(
+        r'(class="section-title"[^>]*>\s*)([^<]*earnings\s+setup[^<]*|'
+        r'[^<]*revision\s+debate[^<]*|'
+        r'[^<]*2-year\s+price[^<]*|'
+        r'[^<]*earnings\s+reactions[^<]*)(\s*</)',
+        re.IGNORECASE,
+    )
+    title_m = section_title_re.search(html)
+    if not title_m:
+        print(f'  [WARN] {ticker}: could not locate Earnings Setup section-title for chart injection')
+        return html
+
+    # Remember the position after the title for later use, then rename.
+    title_end_pos = title_m.end()
+    # Rename section title to the new heading
+    html = (
+        html[:title_m.start(2)]
+        + '2-Year Price &amp; Earnings Reactions'
+        + html[title_m.end(2):]
+    )
+    # Offset for position recalculation after substitution
+    new_title_end = title_m.start(2) + len('2-Year Price &amp; Earnings Reactions') + len(title_m.group(3))
+
+    # ---- Find the section-body that follows this section-title -------------
+    after_title = new_title_end
+    body_open_re = re.compile(r'class="section-body"', re.IGNORECASE)
+    bm = body_open_re.search(html, after_title)
+    if not bm:
+        print(f'  [WARN] {ticker}: section-body not found after Earnings Setup title')
+        return html
+
+    body_start = bm.end()  # position right after class="section-body"
+    # Find the matching > for the section-body opening tag
+    gt = html.find('>', body_start - 1)
+    if gt == -1:
+        return html
+    content_start = gt + 1  # actual content begins here
+
+    # ---- Find the first <table>…</table> in the section-body ---------------
+    # Look for it within the next 4000 chars (far enough to cover any table)
+    search_window = html[content_start:content_start + 6000]
+    table_re = re.compile(r'<table[^>]*>.*?</table>', re.DOTALL | re.IGNORECASE)
+    tm = table_re.search(search_window)
+    if tm:
+        # Remove the table from the HTML
+        abs_start = content_start + tm.start()
+        abs_end   = content_start + tm.end()
+        html = html[:abs_start] + html[abs_end:]
+        insert_pos = abs_start
+    else:
+        # No table found — insert chart at the start of section-body content
+        insert_pos = content_start
+
+    # ---- Insert the SVG chart ---------------------------------------------
+    chart_block = (
+        '\n<div class="earnings-chart-wrap" '
+        'style="margin:0 0 16px 0;overflow:hidden;">\n'
+        + chart_svg
+        + '\n</div>\n'
+    )
+    html = html[:insert_pos] + chart_block + html[insert_pos:]
+    return html
+
+
 def _save_failed(ticker, html, failures):
     """Persist a note that failed validation for inspection (never published)."""
     failed_dir = ROOT / 'notes' / 'drilldown' / '_failed'
@@ -506,6 +609,15 @@ def generate_one(ticker, snap, prompt_template, company_name=None):
                 f'{ticker}: drilldown failed validation after one retry: {failures}. '
                 f'Quarantined at {failed_path.relative_to(ROOT)}; not published.'
             )
+
+    # Post-process: replace the LLM earnings-surprise table with a
+    # deterministic SVG annotated price chart.  This runs after validation
+    # (so the validator still sees the old section-title for section-presence
+    # checks), and before save so the published note carries the chart.
+    try:
+        html = _inject_earnings_chart(html, ticker, snap)
+    except Exception as exc:
+        print(f'  [WARN] {ticker}: chart injection failed, keeping original HTML: {exc}')
 
     q = (snap.get('quotes') or {}).get(ticker) or {}
     price = q.get('price')

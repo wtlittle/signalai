@@ -491,18 +491,20 @@ aim for thesis density, not coverage).
 - 150-word analysis: who is gaining share, who is losing, and why.
   Platform consolidation question: consolidator or target?
 
-── EARNINGS SETUP AND REVISION DEBATE ──
-- Table: last 6–8 quarters showing Revenue beat/miss %, EPS beat/miss %,
-  1-day stock move, guidance tone (raised/in-line/cut)
-  — pull from analyst_summary.earningsHistory in the data block
-- Annualized beat rate on revenue and EPS
-- Identify the behavioral pattern: does this stock react to results,
-  guidance, or margin?
-- Estimate revision trend: are revisions trending positive or negative
-  in the past 30 / 90 days? (use epsTrend / revisionsUp/Down fields)
+── 2-YEAR PRICE & EARNINGS REACTIONS ──
+NOTE: The quarter-by-quarter earnings-surprise table has been replaced by a
+deterministic SVG chart (injected post-generation by the pipeline). You do NOT
+need to render a table of beat/miss % or 1-day stock moves here — the chart
+already shows the 2-year price vs. sector ETF / QQQ / SPY with annotated
+earnings markers sourced directly from analyst_summary.earningsHistory.
+
+Your job for this section is to write the analytical narrative only:
+- Annualized beat rate on revenue and EPS (from earningsHistory in the data block)
+- The behavioral pattern: does this stock react to results, guidance, or margin?
+- Estimate revision trend (use epsTrend / revisionsUp/Down from the data block)
 - Flag any quarter where guidance was the driver of a major move
-- One paragraph: what does buyside positioning into the next print
-  likely look like (long crowd vs. short crowd)?
+- One paragraph: likely buyside positioning into the next print (long crowd vs.
+  short crowd? what is the consensus overhang?)
 
 ── MANAGEMENT, CAPITAL ALLOCATION, AND EXECUTION ──
 - For CEO and CFO (minimum): prior roles, domain expertise, tenure, key

@@ -119,7 +119,8 @@ REQUIRED_SECTIONS = [
     ('SENSITIVITY', ['sensitivity']),
     ('INDUSTRY / COMPETITIVE', ['industry structure', 'competitive positioning',
                                 'competitive landscape', 'market position']),
-    ('EARNINGS SETUP', ['earnings setup', 'revision debate']),
+    ('EARNINGS SETUP', ['earnings setup', 'revision debate',
+                        '2-year price', 'earnings reactions']),
     ('MANAGEMENT / CAPITAL ALLOCATION', ['management', 'capital allocation']),
     ('RISKS', ['risk']),
     ('DILIGENCE QUESTIONS', ['diligence question', 'primary diligence']),
@@ -407,6 +408,24 @@ def validate(text, ticker=None):
         if n:
             failures.append(
                 f'(j) banned phrase {phrase!r} appears {n}x — must be 0'
+            )
+
+    # (k) Earnings chart: SVG with class="earnings-chart" must be present.
+    #     This is injected post-generation by _inject_earnings_chart(); a
+    #     missing SVG indicates the injection step failed or the section title
+    #     could not be matched.  The check is soft (warning, not blocking) when
+    #     the section itself is missing (already flagged in (b)), but hard when
+    #     the section is present.
+    if not re.search(r'class=["\']earnings-chart["\']', body, re.IGNORECASE):
+        # Only flag if the section was found (otherwise (b) already covers it)
+        if any(
+            any(kw in body.lower() for kw in kws)
+            for lbl, kws in REQUIRED_SECTIONS
+            if lbl == 'EARNINGS SETUP'
+        ):
+            failures.append(
+                '(k) earnings chart SVG (class="earnings-chart") not found in '
+                'the Earnings Setup section — chart injection may have failed'
             )
 
     return (not failures), failures
