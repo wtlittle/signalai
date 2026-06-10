@@ -1015,20 +1015,24 @@ def build_weekly_trends_prompt(watchlist_tickers: list[str]) -> str:
     2-3 sentence blurb. trends and risks are lists of OBJECTS, not strings.
     """
     tickers_str = ", ".join(watchlist_tickers[:50])
-    return f"""You are a senior market strategist writing a buy-side weekly market briefing. Produce a deep, well-sourced summary of this week's US equity market covering:
-1. Weekly index returns (S&P 500, Nasdaq, Russell 2000) — closing values and % change
+    return f"""OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Every character of your response that is not part of the single JSON object will be discarded and the response treated as a failure. Your response must BEGIN with the character {{ and END with the character }}.
+
+You are a senior market strategist writing a buy-side weekly market briefing. Produce a deep, well-sourced summary of this week's US equity market covering:
+1. Weekly index returns for the major US indices — closing levels and % moves over multiple windows
 2. 3-5 key market trends/themes (each with the tickers most exposed)
 3. 3-5 risks to watch next week (each with the specific market impact)
 4. Material updates for these watchlist tickers (only earnings, analyst changes, or >5% weekly move): {tickers_str}
 5. A full markdown research narrative (see requirements below)
 
-Return ONLY a single valid JSON object with EXACTLY these keys:
+RETURN STRICTLY THIS JSON SHAPE. Return ONLY a single JSON object with EXACTLY these keys, EXACT key names, ALL KEYS REQUIRED, NO EXTRA KEYS, NO TRAILING COMMAS:
 
 {{
   "index_returns": {{
-    "sp500": {{"close": 0.0, "weekly_return": "X.X%", "ytd_return": "X.X%"}},
-    "nasdaq": {{"close": 0.0, "weekly_return": "X.X%", "ytd_return": "X.X%"}},
-    "russell2000": {{"close": 0.0, "weekly_return": "X.X%", "ytd_return": "X.X%"}}
+    "sp500":       {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
+    "nasdaq":      {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
+    "dow":         {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
+    "russell2000": {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
+    "vix":         {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}}
   }},
   "trends": [
     {{"theme": "<short theme title>", "summary": "<2-4 sentences on the theme>", "tickers": ["TICK1", "TICK2"]}}
@@ -1042,18 +1046,25 @@ Return ONLY a single valid JSON object with EXACTLY these keys:
   "narrative": "<FULL MARKDOWN RESEARCH REPORT — see requirements>"
 }}
 
+index_returns RULES (this field is the most common source of malformed output — follow exactly):
+- index_returns is a FLAT JSON OBJECT of five named index objects (sp500, nasdaq, dow, russell2000, vix). It is NEVER a markdown table, NEVER a string, NEVER an array, NEVER a code block.
+- Each index object has EXACTLY five NUMERIC fields: "close" is the index closing LEVEL (number, e.g. 5432.1); "weekly_pct", "one_month_pct", "three_month_pct", "ytd_pct" are signed percent NUMBERS (e.g. 1.8 for +1.8%, -2.4 for -2.4%) — NO quotes, NO "%" sign, NO "+" sign, NO commas inside the number.
+- Do NOT render index data as a table with | pipes or tab characters. Do NOT put tab characters anywhere in the response.
+- Use null for any single value you cannot verify; never fabricate a number.
+
 NARRATIVE REQUIREMENTS (this is the most important field):
 - It must be a substantial markdown research report of AT LEAST 4000 characters (target 6000-9000).
 - It must open with a single "# " title line, then use multiple "## " section headers (e.g. ## Market Recap, ## Sector Leadership, ## Macro & Rates, ## What To Watch Next Week).
 - Write in flowing buy-side analyst prose with concrete numbers (index levels, % moves, yields, notable single-stock moves) and inline bracketed citations like [3] tied to your sources.
+- The narrative is a SINGLE Markdown string value. It MAY contain "## " headers. It MUST NOT contain literal tab characters — if you need alignment, use spaces. Escape every newline as \\n inside the string.
 - Do NOT collapse the narrative into one paragraph or a 2-3 sentence summary — a short narrative will be rejected.
-- "trends" and "risks" are arrays of OBJECTS using the exact keys shown (theme/summary/tickers and risk/impact). Do NOT return plain strings.
 
-Field rules:
-- index_returns "close" values are NUMBERS; "weekly_return"/"ytd_return" are percent STRINGS like "+1.8%".
-- NEVER fabricate a number; use null when you cannot verify it. Provide all five sections.
+trends / risks RULES:
+- "trends" is an ARRAY OF OBJECTS, each with EXACTLY keys "theme" (string), "summary" (string), "tickers" (array of ticker strings). Provide 3-5 objects. NEVER return plain strings.
+- "risks" is an ARRAY OF OBJECTS, each with EXACTLY keys "risk" (string) and "impact" (string). Provide 3-5 objects. NEVER return plain strings.
 
-CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object parseable by Python json.loads() without preprocessing. The narrative markdown lives INSIDE the JSON string value for "narrative" (escape newlines as \\n). Do NOT wrap the whole response in ```json or ``` markers. The first character of your response must be {{ and the last character must be }}."""
+RETURN ONLY VALID JSON. NO MARKDOWN FENCES. NO TABS. NO COMMENTARY OUTSIDE JSON.
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object parseable by Python json.loads() without preprocessing. Do NOT wrap the whole response in ```json or ``` markers. NO trailing commas. The first character of your response must be {{ and the last character must be }}."""
 
 
 def _temporal_header(week_ending) -> str:

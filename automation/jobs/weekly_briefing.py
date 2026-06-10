@@ -46,7 +46,22 @@ _TRENDS_RESPONSE_FORMAT = {
     "json_schema": {"schema": {
         "type": "object",
         "properties": {
-            "index_returns": {"type": "object"},
+            "index_returns": {
+                "type": "object",
+                "properties": {
+                    idx: {
+                        "type": "object",
+                        "properties": {
+                            "close": {"type": ["number", "null"]},
+                            "weekly_pct": {"type": ["number", "null"]},
+                            "one_month_pct": {"type": ["number", "null"]},
+                            "three_month_pct": {"type": ["number", "null"]},
+                            "ytd_pct": {"type": ["number", "null"]},
+                        },
+                    }
+                    for idx in ("sp500", "nasdaq", "dow", "russell2000", "vix")
+                },
+            },
             "trends": {
                 "type": "array",
                 "items": {
@@ -185,8 +200,11 @@ def _fetch_trends(tickers: list[str]):
     return call_perplexity(
         "MARKET", "weekly_trends",
         build_weekly_trends_prompt(tickers),
-        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. The 'narrative' field must contain a full markdown research report (4000+ chars, ## headers, citations) as an escaped JSON string. trends and risks are arrays of objects. No markdown outside the JSON. No prose. No code fences. Only JSON.",
-        max_tokens=9000,
+        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. The 'narrative' field must contain a full markdown research report (4000+ chars, ## headers, citations) as an escaped JSON string. trends and risks are arrays of objects. index_returns is a flat object of numeric fields, never a table. No markdown outside the JSON. No tabs. No prose. No code fences. Only JSON.",
+        # sonar-deep-research routinely produces a 25-28K-char narrative; at the
+        # previous 9000-token ceiling ~1 in 3 responses truncated mid-narrative,
+        # yielding an unterminated-string parse failure. 14000 gives headroom.
+        max_tokens=14000,
         extra_meta={"response_format": _TRENDS_RESPONSE_FORMAT},
     )
 
