@@ -468,9 +468,30 @@ def generate_one(ticker, snap, prompt_template, company_name=None):
     ok, failures = validate(html, ticker=ticker)
     if not ok:
         print(f'  [validator] {ticker} v1 FAILED: {failures}', file=sys.stderr)
+        # When the only/primary failure is a word-count overshoot, the model
+        # reliably under-trims (e.g. 7000 -> 6758) unless given a concrete,
+        # below-ceiling target. Compute one and demand it explicitly.
+        wc_directive = ''
+        for f in failures:
+            m = re.search(r'word count (\d+) outside \[\d+, (\d+)\]', f)
+            if m:
+                current, ceiling = int(m.group(1)), int(m.group(2))
+                if current > ceiling:
+                    target = ceiling - 500
+                    cut = current - target
+                    wc_directive = (
+                        f'\nLENGTH IS THE PRIMARY FAILURE: the previous draft ran '
+                        f'{current} words, over the {ceiling}-word hard ceiling. '
+                        f'You MUST cut at least {cut} words and land at or below '
+                        f'{target} words. Tighten prose, drop redundant sentences, '
+                        f'and merge repetitive commentary — do NOT delete any of '
+                        f'the 14 sections, the payoff table, or the "What makes us '
+                        f'right/wrong" bullets. Preserve all section structure.'
+                    )
         retry_prefix = (
             'PREVIOUS ATTEMPT FAILED these automated checks:\n  - '
             + '\n  - '.join(failures)
+            + wc_directive
             + '\nFix every one and resubmit. Do NOT output the literal string '
             '"MISSING" — use an em-dash "—" or search the web to fill the gap. '
             'Every section header MUST be <div class="section-title">…</div> '
