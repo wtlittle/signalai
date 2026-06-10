@@ -235,8 +235,13 @@ H. DATED CATALYSTS — the CATALYSTS section is a NUMBERED list, each item
    carrying an explicit quarter / month / event date (e.g. "Q3 FY26 print
    (early Aug 2026)", "GTC keynote (Mar 2027)"). No undated catalysts.
 
-I. ASYMMETRIC PAYOFF — the RECOMMENDATION section MUST end with a markdown
-   table of the exact shape:
+I. ASYMMETRIC PAYOFF — there is no standalone "Recommendation" section in
+   the 14-section structure, so the recommendation lives at the END of the
+   "Investment Overview — Bull / Base / Bear" section (section 6). After the
+   three-column Bull/Base/Bear layout and its probability-weighting
+   paragraph, you MUST append a "Recommendation — Asymmetric Payoff"
+   subsection (use `<div class="subsection-title">`) containing a table of
+   the exact shape:
 
    | Scenario | Probability | NTM target | Return |
    |----------|-------------|------------|--------|
@@ -244,9 +249,11 @@ I. ASYMMETRIC PAYOFF — the RECOMMENDATION section MUST end with a markdown
    | Base     | …%          | $…         | +…%    |
    | Bear     | …%          | $…         | -…%    |
 
-   (probabilities sum to 100%), followed by **What makes us right**
-   (1-3 bullets naming the signals that confirm the thesis) and **What
-   makes us wrong** (1-3 bullets naming the signals that break it).
+   (probabilities sum to 100%), followed by the literal bold headings
+   **What makes us right** (1-3 bullets naming the signals that confirm the
+   thesis) and **What makes us wrong** (1-3 bullets naming the signals that
+   break it). Both heading strings are MANDATORY and must appear verbatim —
+   a note missing either one fails validation.
 
 J. BANNED PHRASES — these are banned OUTRIGHT (zero occurrences):
    "It is worth noting that", "Importantly,", "Notably,". Also avoid
@@ -254,9 +261,12 @@ J. BANNED PHRASES — these are banned OUTRIGHT (zero occurrences):
    the bare phrase "the company" may appear AT MOST 3 times in the whole
    document.
 
-K. WORD COUNT — ceiling is 6,500 words (down from 8,000). Cut background
-   facts that don't advance the thesis. Aim for thesis density, not
-   coverage.
+K. WORD COUNT — HARD ceiling is 6,500 words (down from 8,000); target
+   5,000-6,000 to leave margin. This is enforced by an automated validator
+   that REJECTS any note over 6,500 words. Cut background facts that don't
+   advance the thesis — company history, generic market-education prose,
+   and restating table values in prose are the first things to cut. Aim for
+   thesis density, not coverage.
 
 L. SELF-CHECK — before you output the INVESTMENT OVERVIEW, read your first
    sentence back. If it could appear UNCHANGED in the company's 10-K
