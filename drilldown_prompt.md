@@ -180,6 +180,12 @@ A. STRICT THESIS OPENER — the FIRST SENTENCE of the INVESTMENT OVERVIEW
      transition, expansion, compression, ramp.
    It frames the debate as a directional bet with a number and a clock,
    not a description of what the company does.
+   STRUCTURE: the bold thesis MUST be the first sentence INSIDE the opening
+   `<p>` of the Investment Overview body — write
+   `<p><strong>…thesis…</strong> …rest of the paragraph…</p>`, exactly like
+   the FROG exemplar below. Do NOT place the `<strong>` thesis as a bare
+   element before/outside the `<p>`; the validator only inspects the first
+   `<p>` and will reject an opener that sits outside it.
 
 B. THREE FEW-SHOT EXEMPLARS — match this density, structure, and
    conviction. These are the gold standard for the thesis opener:
