@@ -143,6 +143,8 @@ const SUBSECTOR_MAP = {
   // Weekly Briefing Picks (Week 10: 2026-05-15)
   'OMC': 'Digital Advertising', 'CNH': 'Industrials', 'PVH': 'Retail',
   'LITE': 'Semiconductors', 'TSEM': 'Semiconductors',
+  // User Addition (2026-06-10) -- POET Technologies: silicon photonics / optical engines
+  'POET': 'Semiconductors',
   // Weekly Briefing Picks (Week 11: 2026-05-22)
   'PFE': 'Pharma', 'EMN': 'Specialty Chemicals', 'CTVA': 'Agriculture',
   'ROST': 'Retail', 'SITM': 'Semiconductors',
@@ -296,6 +298,8 @@ const COMMON_NAMES = {
   'CSU.TO': 'Constellation Software',
   // User Addition (2026-06-08)
   'FROG': 'JFrog',
+  // User Addition (2026-06-10)
+  'POET': 'POET Technologies',
 };
 
 function cleanCompanyName(name) {
@@ -366,6 +370,8 @@ const COMPANY_HQ = {
   'FICO': 'Bozeman, MT', 'PSTG': 'Santa Clara, CA', 'AKAM': 'Cambridge, MA',
   'WIX': 'Tel Aviv, Israel', 'GDDY': 'Tempe, AZ',
   'GLBE': 'Petah Tikva, Israel',
+  // User Addition (2026-06-10)
+  'POET': 'Toronto, Canada',
 };
 
 // --- Initial tickers ---
@@ -454,6 +460,8 @@ const DEFAULT_TICKERS = [
   'ROST','SITM',                      // Momentum picks (off-price retail beat / MEMS timing into AI racks) -- ARM, MRVL, WDAY already in watchlist
   // --- User Addition (2026-06-08) ---
   'FROG',                             // JFrog - DevOps / software supply chain platform (binary mgmt, DevSecOps)
+  // --- User Addition (2026-06-10) ---
+  'POET',                             // POET Technologies -- silicon photonics / optical engines (Optical Interposer platform, AI/cloud datacenter 400G/800G/1.6T transceivers)
 ];
 
 // --- Default private companies ---
