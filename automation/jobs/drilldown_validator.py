@@ -13,10 +13,20 @@ Checks (all must pass):
      first section is now titled "Investment Overview" (renamed from
      "Header / Metadata"); "header"/"metadata" stay accepted as aliases.
   c. >= 20 `claim:` link occurrences.
-  d. Word count between 3000 and 8000 (text only, tags/style stripped).
+  d. Word count between 3500 and 6500 (text only, tags/style stripped).
   e. Every section header uses class="section-title" (and no <h2>/<h3> headers).
   f. ARR-led tickers (ARR_LED_TICKERS) surface >= 3 ARR-family metrics
      (ARR / Net new ARR / NRR / RPO / cRPO). Skipped when no ticker is passed.
+  g. STRICT THESIS OPENER (VOICE CONTRACT §A): the first sentence of the
+     Investment Overview body is bold-wrapped, <= 250 chars, contains a digit,
+     a horizon keyword, and a directional claim, and matches none of the
+     forbidden encyclopedic/consultantese opener patterns.
+  h. Asymmetric payoff: the recommendation region carries a Bull/Base/Bear
+     payoff table (else "missing_asymmetric_payoff").
+  i. Right/wrong: the recommendation region has both "What makes us right" and
+     "What makes us wrong" (else "missing_right_wrong").
+  j. Banned phrases ("It is worth noting that", "Importantly,", "Notably,")
+     appear zero times.
 
 CLI:
     python -m automation.jobs.drilldown_validator <file.md>
@@ -28,8 +38,44 @@ import sys
 from pathlib import Path
 
 MIN_CLAIMS = 20
-MIN_WORDS = 3000
-MAX_WORDS = 8000
+MIN_WORDS = 3500
+MAX_WORDS = 6500
+
+# Strict thesis-opener constraints (VOICE CONTRACT §A). The first sentence of
+# the Investment Overview body must be a directional thesis, not a 10-K-style
+# description.
+MAX_OPENER_CHARS = 250
+
+# Horizon keyword: the opener must put a clock on the thesis.
+HORIZON_RE = re.compile(
+    r'\b(next (12|18|24) months|12mo|1-3yr|by FY?\d{2}|through FY?\d{2}|'
+    r'into 20\d{2}|by 20\d{2}|over the next (one|two|three) years?|FY\d{2})\b',
+    re.IGNORECASE,
+)
+
+# Directional claim: the opener must state a direction, not just a fact.
+DIRECTION_RE = re.compile(
+    r'\b(re-?rating|breakout|de-?rate|transition|expansion|compression|ramp)\b',
+    re.IGNORECASE,
+)
+
+# Forbidden opener shapes (encyclopedic / consultantese tells). Matched against
+# the de-marked-up first sentence, case-insensitive.
+FORBIDDEN_OPENER_RES = [
+    (re.compile(r'\bis an? [a-z\-]+ company\b', re.IGNORECASE),
+     'definitional "is a/an [sector] company that…"'),
+    (re.compile(r'is positioned at the intersection', re.IGNORECASE),
+     'vague "positioned at the intersection of…"'),
+    (re.compile(r'Corporation is the (leading|dominant)', re.IGNORECASE),
+     'descriptive "Corporation is the leading/dominant…"'),
+    (re.compile(r'operates in the .{0,40} market', re.IGNORECASE),
+     '10-K boilerplate "operates in the [X] market…"'),
+    (re.compile(r'investment debate centers on', re.IGNORECASE),
+     'neutral "the investment debate centers on whether…"'),
+]
+
+# Phrases banned outright across the whole document (zero occurrences allowed).
+BANNED_PHRASES = ['It is worth noting that', 'Importantly,', 'Notably,']
 
 # ARR-led SaaS cohort: companies that report ARR (not GAAP revenue) as their
 # headline growth metric. For these, the rendered note must anchor commentary on
@@ -137,6 +183,86 @@ def _section_labels(html):
     return cleaned
 
 
+def _strip_tags(html):
+    text = re.sub(r'<[^>]+>', ' ', html)
+    return re.sub(r'\s+', ' ', text).strip()
+
+
+def _investment_overview_opener(body):
+    """Return (raw_first_unit, first_sentence_text) for the Investment Overview.
+
+    Locates the Investment Overview section, grabs its first markdown paragraph
+    or first ``<p>`` block, and isolates the first sentence. ``raw_first_unit``
+    retains the markup (so we can check for bold/strong wrapping); the second
+    element is the de-marked-up sentence text used for length / keyword checks.
+    Returns (None, None) if the section or a leading paragraph can't be found.
+    """
+    # Find the Investment Overview section. Prefer the HTML section-body; the
+    # first section-title named "Investment Overview" (not the Bull/Base/Bear
+    # variant) anchors it.
+    m = re.search(
+        r'class="section-title"[^>]*>\s*Investment Overview\s*<',
+        body, flags=re.IGNORECASE,
+    )
+    region = None
+    if m:
+        # Take everything from this title to the next section-title (or 4000
+        # chars, whichever comes first) as the section region.
+        start = m.end()
+        nxt = re.search(r'class="section-title"', body[start:], flags=re.IGNORECASE)
+        region = body[start:start + (nxt.start() if nxt else 4000)]
+    if region is None:
+        # Markdown fallback: a "## Investment Overview" heading.
+        m = re.search(r'#+\s*Investment Overview\s*\n', body, flags=re.IGNORECASE)
+        if m:
+            start = m.end()
+            nxt = re.search(r'\n#+\s', body[start:])
+            region = body[start:start + (nxt.start() if nxt else 4000)]
+    if region is None:
+        return None, None
+
+    # First paragraph: prefer a <p>…</p> block; else first non-empty md line.
+    pm = re.search(r'<p[^>]*>(.*?)</p>', region, flags=re.DOTALL | re.IGNORECASE)
+    if pm:
+        para = pm.group(1)
+    else:
+        para = ''
+        for line in region.splitlines():
+            if _strip_tags(line):
+                para = line
+                break
+    if not para.strip():
+        return None, None
+
+    # First sentence = up to the first sentence-ending period/!?. We split on
+    # the de-marked-up text but keep the raw leading unit for the bold check by
+    # taking the raw paragraph up to the same boundary.
+    plain_para = _strip_tags(para)
+    sm = re.search(r'^(.*?[.!?])(\s|$)', plain_para, flags=re.DOTALL)
+    first_sentence = sm.group(1).strip() if sm else plain_para.strip()
+    return para, first_sentence
+
+
+def _recommendation_region(body):
+    """Return the text region most likely to hold the recommendation/payoff.
+
+    The gold layout folds the recommendation into the Bull/Base/Bear and
+    Valuation sections rather than a standalone "Recommendation" header, so we
+    union any explicit Recommendation section with the Bull/Base/Bear section.
+    Falls back to the whole document if neither anchor is found.
+    """
+    titles = list(re.finditer(r'class="section-title"[^>]*>(.*?)</', body,
+                              flags=re.DOTALL | re.IGNORECASE))
+    chunks = []
+    for i, tm in enumerate(titles):
+        label = _strip_tags(tm.group(1)).lower()
+        if 'recommend' in label or 'bull' in label or 'base / bear' in label:
+            start = tm.end()
+            end = titles[i + 1].start() if i + 1 < len(titles) else len(body)
+            chunks.append(body[start:end])
+    return '\n'.join(chunks) if chunks else body
+
+
 def validate(text, ticker=None):
     """Run all checks. Return (ok: bool, failures: list[str]).
 
@@ -217,6 +343,70 @@ def validate(text, ticker=None):
                 f'{len(present)}/{len(ARR_REQUIRED_TERMS)} ARR metrics present '
                 f'({present or "none"}) — need >= {MIN_ARR_TERMS} of '
                 'ARR / Net new ARR / NRR / RPO / cRPO'
+            )
+
+    # (g) Strict thesis opener (VOICE CONTRACT §A).
+    raw_unit, opener = _investment_overview_opener(body)
+    if opener is None:
+        failures.append(
+            '(g) could not locate the Investment Overview opening paragraph'
+        )
+    else:
+        # Bold/strong wrapping: the raw first unit must contain a **…** or
+        # <strong>…</strong> span covering the opener text.
+        bold_md = re.search(r'\*\*.+?\*\*', raw_unit, flags=re.DOTALL)
+        bold_html = re.search(r'<strong>.+?</strong>', raw_unit,
+                              flags=re.DOTALL | re.IGNORECASE)
+        if not (bold_md or bold_html):
+            failures.append(
+                '(g) thesis opener is not wrapped in **…** or <strong>…</strong>'
+            )
+        if len(opener) > MAX_OPENER_CHARS:
+            failures.append(
+                f'(g) thesis opener is {len(opener)} chars — must be '
+                f'<= {MAX_OPENER_CHARS}'
+            )
+        if not re.search(r'\d', opener):
+            failures.append('(g) thesis opener contains no digit')
+        if not HORIZON_RE.search(opener):
+            failures.append(
+                '(g) thesis opener has no horizon keyword (e.g. "next 18 '
+                'months", "FY27", "into 2027")'
+            )
+        if not DIRECTION_RE.search(opener):
+            failures.append(
+                '(g) thesis opener has no directional claim (re-rating, '
+                'breakout, derate, transition, expansion, compression, ramp)'
+            )
+        for rx, desc in FORBIDDEN_OPENER_RES:
+            if rx.search(opener):
+                failures.append(
+                    f'(g) thesis opener matches forbidden pattern: {desc}'
+                )
+
+    # (h) Asymmetric payoff table in the recommendation region.
+    rec = _recommendation_region(body)
+    rec_low = rec.lower()
+    if not ('bull' in rec_low and 'base' in rec_low and 'bear' in rec_low):
+        failures.append(
+            'missing_asymmetric_payoff: recommendation lacks a Bull/Base/Bear '
+            'payoff table'
+        )
+
+    # (i) What makes us right / wrong.
+    if not ('what makes us right' in rec_low
+            and 'what makes us wrong' in rec_low):
+        failures.append(
+            'missing_right_wrong: recommendation lacks "What makes us right" '
+            'and/or "What makes us wrong"'
+        )
+
+    # (j) Banned phrases anywhere in the document.
+    for phrase in BANNED_PHRASES:
+        n = len(re.findall(re.escape(phrase), body))
+        if n:
+            failures.append(
+                f'(j) banned phrase {phrase!r} appears {n}x — must be 0'
             )
 
     return (not failures), failures
