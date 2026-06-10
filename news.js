@@ -73,6 +73,17 @@
     else if (typeof global.openPopup === 'function') global.openPopup(ticker);
   }
 
+  // Open the enhanced ticker popup with the Earnings Intel tab pre-selected.
+  // Falls back to a plain ticker open if the popup is unavailable.
+  function openEarningsIntel(ticker) {
+    if (!ticker) return;
+    if (typeof global.openPopup === 'function') {
+      global.openPopup(ticker, { initialTab: 'earnings-intel' });
+    } else {
+      openTicker(ticker);
+    }
+  }
+
   function setStatus(text) {
     const s = $status();
     if (s) s.textContent = text;
@@ -325,7 +336,7 @@
         <span class="news-note-type ${typeCls}">${typeLabel}</span>
         <span class="news-card-time">${escapeHtml(fmtDate(item.date))}</span>
       </div>
-      <div class="news-note-line">${sub}<span class="news-note-open">Open note &rarr;</span></div>
+      <div class="news-note-line">${sub}<span class="news-note-open">Earnings Intel &rarr;</span></div>
     </article>`;
   }
 
@@ -340,13 +351,7 @@
     el.querySelectorAll('.news-note-card').forEach((card) => {
       const open = () => {
         const t = card.getAttribute('data-ticker');
-        const d = card.getAttribute('data-date');
-        const ty = card.getAttribute('data-type');
-        if (typeof global.openEarningsNote === 'function') {
-          global.openEarningsNote(t, d, ty);
-        } else {
-          openTicker(t);
-        }
+        openEarningsIntel(t);
       };
       card.addEventListener('click', open);
       card.addEventListener('keydown', (ev) => {
