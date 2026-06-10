@@ -1,102 +1,101 @@
 {
-  "generated_at": "2026-06-04T20:03:06.189448+00:00",
+  "generated_at": "2026-06-10T11:36:57.623135+00:00",
   "tickers": {
     "AMZN": {
       "symbol": "AMZN",
-      "last_attempt_at": "2026-06-04T19:08:45.221696+00:00",
-      "last_success_at": "2026-06-04T19:08:45.220915+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.784652+00:00",
+      "last_success_at": "2026-06-10T11:36:50.784085+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 14
+      "duration_ms": 18
     },
     "ACN": {
       "symbol": "ACN",
-      "last_attempt_at": "2026-06-04T19:08:57.325532+00:00",
-      "last_success_at": "2026-06-04T19:08:57.324865+00:00",
+      "last_attempt_at": "2026-06-10T11:36:55.094337+00:00",
+      "last_success_at": "2026-06-10T11:36:55.094037+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 2430,
+      "duration_ms": 2243,
       "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
     },
     "AVGO": {
       "symbol": "AVGO",
-      "last_attempt_at": "2026-06-04T19:08:48.477158+00:00",
-      "last_success_at": "2026-06-04T19:08:48.469247+00:00",
-      "last_source": "perplexity_finance",
+      "last_attempt_at": "2026-06-10T11:36:50.860035+00:00",
+      "last_success_at": "2026-06-10T11:36:50.859250+00:00",
+      "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 3052,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
+      "duration_ms": 92
     },
     "NVDA": {
       "symbol": "NVDA",
-      "last_attempt_at": "2026-06-04T19:08:45.271835+00:00",
-      "last_success_at": "2026-06-04T19:08:45.271186+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.846748+00:00",
+      "last_success_at": "2026-06-10T11:36:50.846445+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 64
+      "duration_ms": 79
     },
     "MSFT": {
       "symbol": "MSFT",
-      "last_attempt_at": "2026-06-04T19:08:45.259830+00:00",
-      "last_success_at": "2026-06-04T19:08:45.259197+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.833744+00:00",
+      "last_success_at": "2026-06-10T11:36:50.833155+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 52
+      "duration_ms": 66
     },
     "META": {
       "symbol": "META",
-      "last_attempt_at": "2026-06-04T19:08:45.247535+00:00",
-      "last_success_at": "2026-06-04T19:08:45.247220+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.820619+00:00",
+      "last_success_at": "2026-06-10T11:36:50.820278+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 40
+      "duration_ms": 53
     },
     "AMD": {
       "symbol": "AMD",
-      "last_attempt_at": "2026-06-04T19:08:45.307042+00:00",
-      "last_success_at": "2026-06-04T19:08:45.306764+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.872997+00:00",
+      "last_success_at": "2026-06-10T11:36:50.872354+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 99
+      "duration_ms": 105
     },
     "CDNS": {
       "symbol": "CDNS",
-      "last_attempt_at": "2026-06-04T19:08:45.374180+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.035018+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 81
+      "duration_ms": 140
     },
     "GOOG": {
       "symbol": "GOOG",
-      "last_attempt_at": "2026-06-04T19:19:03.397653+00:00",
-      "last_success_at": "2026-06-04T19:19:03.397292+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.799904+00:00",
+      "last_success_at": "2026-06-10T11:36:50.799169+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 919
+      "duration_ms": 32
     },
     "TSM": {
       "symbol": "TSM",
-      "last_attempt_at": "2026-06-04T19:08:45.318883+00:00",
-      "last_success_at": "2026-06-04T19:08:45.318608+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.885527+00:00",
+      "last_success_at": "2026-06-10T11:36:50.885154+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 111
+      "duration_ms": 118
     },
     "ARM": {
       "symbol": "ARM",
-      "last_attempt_at": "2026-06-04T19:08:45.342190+00:00",
-      "last_success_at": "2026-06-04T19:08:45.331766+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.897394+00:00",
+      "last_success_at": "2026-06-10T11:36:50.896698+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
@@ -104,299 +103,297 @@
     },
     "MRVL": {
       "symbol": "MRVL",
-      "last_attempt_at": "2026-06-04T19:08:45.397238+00:00",
-      "last_success_at": "2026-06-04T19:08:45.353383+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.909203+00:00",
+      "last_success_at": "2026-06-10T11:36:50.908601+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 106
+      "duration_ms": 89
     },
     "PANW": {
       "symbol": "PANW",
-      "last_attempt_at": "2026-06-04T19:08:45.401236+00:00",
-      "last_success_at": "2026-06-04T19:08:45.398997+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.021633+00:00",
+      "last_success_at": "2026-06-10T11:36:51.011762+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 90
+      "duration_ms": 139
     },
     "S": {
       "symbol": "S",
-      "last_attempt_at": "2026-06-04T19:08:45.433732+00:00",
-      "last_success_at": "2026-06-04T19:08:45.432811+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.081975+00:00",
+      "last_success_at": "2026-06-10T11:36:51.046197+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 57
+      "duration_ms": 137
     },
     "SNPS": {
       "symbol": "SNPS",
-      "last_attempt_at": "2026-06-04T19:08:45.399366+00:00",
-      "last_success_at": "2026-06-04T19:08:45.363468+00:00",
+      "last_attempt_at": "2026-06-10T11:36:50.987517+00:00",
+      "last_success_at": "2026-06-10T11:36:50.976293+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 103
+      "duration_ms": 142
     },
     "FTNT": {
       "symbol": "FTNT",
-      "last_attempt_at": "2026-06-04T19:08:45.422294+00:00",
-      "last_success_at": "2026-06-04T19:08:45.421951+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.068432+00:00",
+      "last_success_at": "2026-06-10T11:36:51.034595+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 78
+      "duration_ms": 137
     },
     "ZS": {
       "symbol": "ZS",
-      "last_attempt_at": "2026-06-04T19:08:45.408155+00:00",
-      "last_success_at": "2026-06-04T19:08:45.402623+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.046713+00:00",
+      "last_success_at": "2026-06-10T11:36:51.023784+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 82
+      "duration_ms": 149
     },
     "NOW": {
       "symbol": "NOW",
-      "last_attempt_at": "2026-06-04T19:08:45.505718+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.163670+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 59
+      "duration_ms": 60
     },
     "CRWD": {
       "symbol": "CRWD",
-      "last_attempt_at": "2026-06-04T19:08:48.735505+00:00",
-      "last_success_at": "2026-06-04T19:08:48.735194+00:00",
-      "last_source": "perplexity_finance",
+      "last_attempt_at": "2026-06-10T11:36:51.009127+00:00",
+      "last_success_at": "2026-06-10T11:36:50.999608+00:00",
+      "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 3140,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
+      "duration_ms": 139
     },
     "OKTA": {
       "symbol": "OKTA",
-      "last_attempt_at": "2026-06-04T19:08:45.456688+00:00",
-      "last_success_at": "2026-06-04T19:08:45.456408+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.083654+00:00",
+      "last_success_at": "2026-06-10T11:36:51.058167+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 57
+      "duration_ms": 81
     },
     "VRNS": {
       "symbol": "VRNS",
-      "last_attempt_at": "2026-06-04T19:08:45.470727+00:00",
-      "last_success_at": "2026-06-04T19:08:45.470445+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.119945+00:00",
+      "last_success_at": "2026-06-10T11:36:51.081708+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 67
+      "duration_ms": 70
     },
     "RBRK": {
       "symbol": "RBRK",
-      "last_attempt_at": "2026-06-04T19:08:48.522130+00:00",
-      "last_success_at": "2026-06-04T19:08:48.495280+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2859,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
-    },
-    "TENB": {
-      "symbol": "TENB",
-      "last_attempt_at": "2026-06-04T19:08:45.482811+00:00",
-      "last_success_at": "2026-06-04T19:08:45.482546+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 72
-    },
-    "CRM": {
-      "symbol": "CRM",
-      "last_attempt_at": "2026-06-04T19:08:45.527282+00:00",
-      "last_success_at": "2026-06-04T19:08:45.526965+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 93
-    },
-    "WDAY": {
-      "symbol": "WDAY",
-      "last_attempt_at": "2026-06-04T19:08:45.530209+00:00",
-      "last_success_at": "2026-06-04T19:08:45.529952+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.096707+00:00",
+      "last_success_at": "2026-06-10T11:36:51.070667+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 71
     },
-    "INTU": {
-      "symbol": "INTU",
-      "last_attempt_at": "2026-06-04T19:08:45.531978+00:00",
-      "last_success_at": "2026-06-04T19:08:45.531723+00:00",
+    "TENB": {
+      "symbol": "TENB",
+      "last_attempt_at": "2026-06-10T11:36:51.133354+00:00",
+      "last_success_at": "2026-06-10T11:36:51.108874+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 59
+      "duration_ms": 84
     },
-    "ADBE": {
-      "symbol": "ADBE",
-      "last_attempt_at": "2026-06-04T19:08:48.615910+00:00",
-      "last_success_at": "2026-06-04T19:08:48.561574+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2863,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
-    },
-    "HUBS": {
-      "symbol": "HUBS",
-      "last_attempt_at": "2026-06-04T19:08:45.565182+00:00",
-      "last_success_at": "2026-06-04T19:08:45.564896+00:00",
+    "CRM": {
+      "symbol": "CRM",
+      "last_attempt_at": "2026-06-10T11:36:51.149125+00:00",
+      "last_success_at": "2026-06-10T11:36:51.109681+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 57
+      "duration_ms": 63
     },
-    "MNDY": {
-      "symbol": "MNDY",
-      "last_attempt_at": "2026-06-04T19:08:45.598505+00:00",
-      "last_success_at": "2026-06-04T19:08:45.598179+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 66
-    },
-    "TEAM": {
-      "symbol": "TEAM",
-      "last_attempt_at": "2026-06-04T19:08:45.576998+00:00",
-      "last_success_at": "2026-06-04T19:08:45.576731+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 47
-    },
-    "CFLT": {
-      "symbol": "CFLT",
-      "last_attempt_at": "2026-06-04T19:08:45.661481+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 34
-    },
-    "ASAN": {
-      "symbol": "ASAN",
-      "last_attempt_at": "2026-06-04T19:08:45.600387+00:00",
-      "last_success_at": "2026-06-04T19:08:45.600062+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 66
-    },
-    "SNOW": {
-      "symbol": "SNOW",
-      "last_attempt_at": "2026-06-04T19:08:45.602086+00:00",
-      "last_success_at": "2026-06-04T19:08:45.601833+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 35
-    },
-    "DDOG": {
-      "symbol": "DDOG",
-      "last_attempt_at": "2026-06-04T19:08:45.626638+00:00",
-      "last_success_at": "2026-06-04T19:08:45.626310+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 26
-    },
-    "MDB": {
-      "symbol": "MDB",
-      "last_attempt_at": "2026-06-04T19:08:45.615004+00:00",
-      "last_success_at": "2026-06-04T19:08:45.614732+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 36
-    },
-    "PLTR": {
-      "symbol": "PLTR",
-      "last_attempt_at": "2026-06-04T19:08:45.663101+00:00",
-      "last_success_at": "2026-06-04T19:08:45.651001+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 49
-    },
-    "ESTC": {
-      "symbol": "ESTC",
-      "last_attempt_at": "2026-06-04T19:08:45.664724+00:00",
-      "last_success_at": "2026-06-04T19:08:45.661183+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 57
-    },
-    "DT": {
-      "symbol": "DT",
-      "last_attempt_at": "2026-06-04T19:08:45.678508+00:00",
-      "last_success_at": "2026-06-04T19:08:45.678189+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 50
-    },
-    "NET": {
-      "symbol": "NET",
-      "last_attempt_at": "2026-06-04T19:08:45.701892+00:00",
-      "last_success_at": "2026-06-04T19:08:45.701570+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 38
-    },
-    "DOCN": {
-      "symbol": "DOCN",
-      "last_attempt_at": "2026-06-04T19:08:45.718093+00:00",
-      "last_success_at": "2026-06-04T19:08:45.717824+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 51
-    },
-    "FSLY": {
-      "symbol": "FSLY",
-      "last_attempt_at": "2026-06-04T19:08:45.741758+00:00",
-      "last_success_at": "2026-06-04T19:08:45.741465+00:00",
+    "WDAY": {
+      "symbol": "WDAY",
+      "last_attempt_at": "2026-06-10T11:36:51.186515+00:00",
+      "last_success_at": "2026-06-10T11:36:51.132924+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 61
     },
-    "GTLB": {
-      "symbol": "GTLB",
-      "last_attempt_at": "2026-06-04T19:08:45.779277+00:00",
-      "last_success_at": "2026-06-04T19:08:45.778968+00:00",
+    "INTU": {
+      "symbol": "INTU",
+      "last_attempt_at": "2026-06-10T11:36:51.188331+00:00",
+      "last_success_at": "2026-06-10T11:36:51.151671+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 73
+      "duration_ms": 68
+    },
+    "ADBE": {
+      "symbol": "ADBE",
+      "last_attempt_at": "2026-06-10T11:36:53.503266+00:00",
+      "last_success_at": "2026-06-10T11:36:53.501514+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 2306,
+      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
+    },
+    "HUBS": {
+      "symbol": "HUBS",
+      "last_attempt_at": "2026-06-10T11:36:51.189858+00:00",
+      "last_success_at": "2026-06-10T11:36:51.189593+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 80
+    },
+    "MNDY": {
+      "symbol": "MNDY",
+      "last_attempt_at": "2026-06-10T11:36:51.239439+00:00",
+      "last_success_at": "2026-06-10T11:36:51.239141+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 90
+    },
+    "TEAM": {
+      "symbol": "TEAM",
+      "last_attempt_at": "2026-06-10T11:36:51.237701+00:00",
+      "last_success_at": "2026-06-10T11:36:51.237370+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 115
+    },
+    "CFLT": {
+      "symbol": "CFLT",
+      "last_attempt_at": "2026-06-10T11:36:51.320137+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 79
+    },
+    "ASAN": {
+      "symbol": "ASAN",
+      "last_attempt_at": "2026-06-10T11:36:51.241018+00:00",
+      "last_success_at": "2026-06-10T11:36:51.240759+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 88
+    },
+    "SNOW": {
+      "symbol": "SNOW",
+      "last_attempt_at": "2026-06-10T11:36:51.266527+00:00",
+      "last_success_at": "2026-06-10T11:36:51.266176+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 89
+    },
+    "DDOG": {
+      "symbol": "DDOG",
+      "last_attempt_at": "2026-06-10T11:36:51.293442+00:00",
+      "last_success_at": "2026-06-10T11:36:51.293085+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 103
+    },
+    "MDB": {
+      "symbol": "MDB",
+      "last_attempt_at": "2026-06-10T11:36:51.268302+00:00",
+      "last_success_at": "2026-06-10T11:36:51.267998+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 80
+    },
+    "PLTR": {
+      "symbol": "PLTR",
+      "last_attempt_at": "2026-06-10T11:36:51.295088+00:00",
+      "last_success_at": "2026-06-10T11:36:51.294834+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 103
+    },
+    "ESTC": {
+      "symbol": "ESTC",
+      "last_attempt_at": "2026-06-10T11:36:51.354482+00:00",
+      "last_success_at": "2026-06-10T11:36:51.321310+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 82
+    },
+    "DT": {
+      "symbol": "DT",
+      "last_attempt_at": "2026-06-10T11:36:51.332443+00:00",
+      "last_success_at": "2026-06-10T11:36:51.321362+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 79
+    },
+    "NET": {
+      "symbol": "NET",
+      "last_attempt_at": "2026-06-10T11:36:51.356109+00:00",
+      "last_success_at": "2026-06-10T11:36:51.332181+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 64
+    },
+    "DOCN": {
+      "symbol": "DOCN",
+      "last_attempt_at": "2026-06-10T11:36:51.389499+00:00",
+      "last_success_at": "2026-06-10T11:36:51.367115+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 72
+    },
+    "FSLY": {
+      "symbol": "FSLY",
+      "last_attempt_at": "2026-06-10T11:36:51.401598+00:00",
+      "last_success_at": "2026-06-10T11:36:51.367238+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 70
+    },
+    "GTLB": {
+      "symbol": "GTLB",
+      "last_attempt_at": "2026-06-10T11:36:51.422868+00:00",
+      "last_success_at": "2026-06-10T11:36:51.388121+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 57
     },
     "ANET": {
       "symbol": "ANET",
-      "last_attempt_at": "2026-06-04T19:08:45.716112+00:00",
-      "last_success_at": "2026-06-04T19:08:45.715802+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.367766+00:00",
+      "last_success_at": "2026-06-10T11:36:51.366066+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 51
+      "duration_ms": 96
     },
     "XYZ": {
       "symbol": "XYZ",
-      "last_attempt_at": "2026-06-04T19:08:45.826958+00:00",
-      "last_success_at": "2026-06-04T19:08:45.826576+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.482554+00:00",
+      "last_success_at": "2026-06-10T11:36:51.445067+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
@@ -404,1098 +401,1095 @@
     },
     "FOUR": {
       "symbol": "FOUR",
-      "last_attempt_at": "2026-06-04T19:08:45.830591+00:00",
-      "last_success_at": "2026-06-04T19:08:45.828767+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.470568+00:00",
+      "last_success_at": "2026-06-10T11:36:51.433910+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 47
+      "duration_ms": 54
     },
     "COIN": {
       "symbol": "COIN",
-      "last_attempt_at": "2026-06-04T19:08:45.783034+00:00",
-      "last_success_at": "2026-06-04T19:08:45.782717+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.447131+00:00",
+      "last_success_at": "2026-06-10T11:36:51.400933+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 63
+      "duration_ms": 45
     },
     "PATH": {
       "symbol": "PATH",
-      "last_attempt_at": "2026-06-04T19:08:45.781239+00:00",
-      "last_success_at": "2026-06-04T19:08:45.780969+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.445534+00:00",
+      "last_success_at": "2026-06-10T11:36:51.399965+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 63
+      "duration_ms": 46
     },
     "AFRM": {
       "symbol": "AFRM",
-      "last_attempt_at": "2026-06-04T19:08:45.829038+00:00",
-      "last_success_at": "2026-06-04T19:08:45.828584+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.505804+00:00",
+      "last_success_at": "2026-06-10T11:36:51.445126+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 44
+      "duration_ms": 32
     },
     "ELV": {
       "symbol": "ELV",
-      "last_attempt_at": "2026-06-04T19:08:45.922686+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.556420+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 36
+      "duration_ms": 25
     },
     "TMO": {
       "symbol": "TMO",
-      "last_attempt_at": "2026-06-04T19:08:45.944203+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.568121+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 26
+      "duration_ms": 34
     },
     "SHOP": {
       "symbol": "SHOP",
-      "last_attempt_at": "2026-06-04T19:08:45.833528+00:00",
-      "last_success_at": "2026-06-04T19:08:45.833250+00:00",
+      "last_attempt_at": "2026-06-10T11:36:51.507782+00:00",
+      "last_success_at": "2026-06-10T11:36:51.469798+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 24
+    },
+    "TTD": {
+      "symbol": "TTD",
+      "last_attempt_at": "2026-06-10T11:36:51.530522+00:00",
+      "last_success_at": "2026-06-10T11:36:51.481951+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 23
+    },
+    "BILL": {
+      "symbol": "BILL",
+      "last_attempt_at": "2026-06-10T11:36:51.458786+00:00",
+      "last_success_at": "2026-06-10T11:36:51.433728+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 66
+    },
+    "SE": {
+      "symbol": "SE",
+      "last_attempt_at": "2026-06-10T11:36:51.509660+00:00",
+      "last_success_at": "2026-06-10T11:36:51.469977+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 23
+    },
+    "AI": {
+      "symbol": "AI",
+      "last_attempt_at": "2026-06-10T11:36:56.058985+00:00",
+      "last_success_at": "2026-06-04T19:08:48.698469+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [
+        "history_8q (5/8 quarters)"
+      ],
+      "quarantined": true,
+      "duration_ms": 4575
+    },
+    "PINS": {
+      "symbol": "PINS",
+      "last_attempt_at": "2026-06-10T11:36:51.533076+00:00",
+      "last_success_at": "2026-06-10T11:36:51.503994+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 33
+    },
+    "NKE": {
+      "symbol": "NKE",
+      "last_attempt_at": "2026-06-10T11:36:51.638853+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 46
+    },
+    "ACGL": {
+      "symbol": "ACGL",
+      "last_attempt_at": "2026-06-10T11:36:51.579890+00:00",
+      "last_success_at": "2026-06-10T11:36:51.579587+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 68
+    },
+    "CMCSA": {
+      "symbol": "CMCSA",
+      "last_attempt_at": "2026-06-10T11:36:51.674800+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 46
+    },
+    "IOT": {
+      "symbol": "IOT",
+      "last_attempt_at": "2026-06-10T11:36:51.554701+00:00",
+      "last_success_at": "2026-06-10T11:36:51.532062+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 37
+    },
+    "MKC": {
+      "symbol": "MKC",
+      "last_attempt_at": "2026-06-10T11:36:51.700447+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 33
+    },
+    "MU": {
+      "symbol": "MU",
+      "last_attempt_at": "2026-06-10T11:36:51.712039+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 24
+    },
+    "LPLA": {
+      "symbol": "LPLA",
+      "last_attempt_at": "2026-06-10T11:36:51.591576+00:00",
+      "last_success_at": "2026-06-10T11:36:51.591311+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 59
+    },
+    "SNDK": {
+      "symbol": "SNDK",
+      "last_attempt_at": "2026-06-10T11:36:51.602800+00:00",
+      "last_success_at": "2026-06-10T11:36:51.602499+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 68
+    },
+    "CIEN": {
+      "symbol": "CIEN",
+      "last_attempt_at": "2026-06-10T11:36:51.604524+00:00",
+      "last_success_at": "2026-06-10T11:36:51.604198+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 48
+    },
+    "WDC": {
+      "symbol": "WDC",
+      "last_attempt_at": "2026-06-10T11:36:51.651142+00:00",
+      "last_success_at": "2026-06-10T11:36:51.627291+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 69
+    },
+    "CF": {
+      "symbol": "CF",
+      "last_attempt_at": "2026-06-10T11:36:51.663258+00:00",
+      "last_success_at": "2026-06-10T11:36:51.637438+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 68
+    },
+    "UNH": {
+      "symbol": "UNH",
+      "last_attempt_at": "2026-06-10T11:36:51.685642+00:00",
+      "last_success_at": "2026-06-10T11:36:51.650796+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 57
+    },
+    "UL": {
+      "symbol": "UL",
+      "last_attempt_at": "2026-06-10T11:36:51.827667+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 27
+    },
+    "HD": {
+      "symbol": "HD",
+      "last_attempt_at": "2026-06-10T11:36:51.688282+00:00",
+      "last_success_at": "2026-06-10T11:36:51.673342+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 67
+    },
+    "SOC": {
+      "symbol": "SOC",
+      "last_attempt_at": "2026-06-10T11:36:51.733758+00:00",
+      "last_success_at": "2026-06-10T11:36:51.710429+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 35
+    },
+    "GEV": {
+      "symbol": "GEV",
+      "last_attempt_at": "2026-06-10T11:36:51.871815+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 11
+    },
+    "HIMS": {
+      "symbol": "HIMS",
+      "last_attempt_at": "2026-06-10T11:36:51.745819+00:00",
+      "last_success_at": "2026-06-10T11:36:51.722937+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 37
+    },
+    "NVO": {
+      "symbol": "NVO",
+      "last_attempt_at": "2026-06-10T11:36:51.803279+00:00",
+      "last_success_at": "2026-06-10T11:36:51.760333+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 48
+    },
+    "FIX": {
+      "symbol": "FIX",
+      "last_attempt_at": "2026-06-10T11:36:51.887778+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 33
+    },
+    "GCT": {
+      "symbol": "GCT",
+      "last_attempt_at": "2026-06-10T11:36:51.760831+00:00",
+      "last_success_at": "2026-06-10T11:36:51.723454+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 35
     },
-    "TTD": {
-      "symbol": "TTD",
-      "last_attempt_at": "2026-06-04T19:08:45.868303+00:00",
-      "last_success_at": "2026-06-04T19:08:45.856228+00:00",
+    "VRT": {
+      "symbol": "VRT",
+      "last_attempt_at": "2026-06-10T11:36:51.912384+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 24
+    },
+    "BWXT": {
+      "symbol": "BWXT",
+      "last_attempt_at": "2026-06-10T11:36:51.789998+00:00",
+      "last_success_at": "2026-06-10T11:36:51.760142+00:00",
       "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 60
+    },
+    "KHC": {
+      "symbol": "KHC",
+      "last_attempt_at": "2026-06-10T11:36:51.815371+00:00",
+      "last_success_at": "2026-06-10T11:36:51.771642+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 48
+    },
+    "MDLZ": {
+      "symbol": "MDLZ",
+      "last_attempt_at": "2026-06-10T11:36:51.829401+00:00",
+      "last_success_at": "2026-06-10T11:36:51.789692+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 29
+    },
+    "STZ": {
+      "symbol": "STZ",
+      "last_attempt_at": "2026-06-10T11:36:51.847025+00:00",
+      "last_success_at": "2026-06-10T11:36:51.802421+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 29
+    },
+    "STX": {
+      "symbol": "STX",
+      "last_attempt_at": "2026-06-10T11:36:51.876392+00:00",
+      "last_success_at": "2026-06-10T11:36:51.826905+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 12
+    },
+    "TER": {
+      "symbol": "TER",
+      "last_attempt_at": "2026-06-10T11:36:51.909277+00:00",
+      "last_success_at": "2026-06-10T11:36:51.846789+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 19
+    },
+    "VRTX": {
+      "symbol": "VRTX",
+      "last_attempt_at": "2026-06-10T11:36:51.945197+00:00",
+      "last_success_at": "2026-06-10T11:36:51.911457+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 35
+    },
+    "GLW": {
+      "symbol": "GLW",
+      "last_attempt_at": "2026-06-10T11:36:51.874461+00:00",
+      "last_success_at": "2026-06-10T11:36:51.874126+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 43
+    },
+    "INTC": {
+      "symbol": "INTC",
+      "last_attempt_at": "2026-06-10T11:36:51.957819+00:00",
+      "last_success_at": "2026-06-10T11:36:51.923458+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 35
+    },
+    "NTNX": {
+      "symbol": "NTNX",
+      "last_attempt_at": "2026-06-10T11:36:51.933518+00:00",
+      "last_success_at": "2026-06-10T11:36:51.899229+00:00",
+      "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 25
     },
-    "BILL": {
-      "symbol": "BILL",
-      "last_attempt_at": "2026-06-04T19:08:45.796495+00:00",
-      "last_success_at": "2026-06-04T19:08:45.796169+00:00",
+    "IBM": {
+      "symbol": "IBM",
+      "last_attempt_at": "2026-06-10T11:36:51.969509+00:00",
+      "last_success_at": "2026-06-10T11:36:51.935548+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 35
+    },
+    "BRZE": {
+      "symbol": "BRZE",
+      "last_attempt_at": "2026-06-10T11:36:52.017883+00:00",
+      "last_success_at": "2026-06-10T11:36:51.947196+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 35
+    },
+    "KVYO": {
+      "symbol": "KVYO",
+      "last_attempt_at": "2026-06-10T11:36:52.004398+00:00",
+      "last_success_at": "2026-06-10T11:36:51.968085+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 44
+    },
+    "AMPL": {
+      "symbol": "AMPL",
+      "last_attempt_at": "2026-06-10T11:36:52.016259+00:00",
+      "last_success_at": "2026-06-10T11:36:51.969121+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 33
+    },
+    "SEMR": {
+      "symbol": "SEMR",
+      "last_attempt_at": "2026-06-10T11:36:52.054946+00:00",
+      "last_success_at": "2026-06-10T11:36:52.015396+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 22
+    },
+    "ZETA": {
+      "symbol": "ZETA",
+      "last_attempt_at": "2026-06-10T11:36:51.981765+00:00",
+      "last_success_at": "2026-06-10T11:36:51.981442+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 33
+    },
+    "CXM": {
+      "symbol": "CXM",
+      "last_attempt_at": "2026-06-10T11:36:52.050203+00:00",
+      "last_success_at": "2026-06-10T11:36:52.015331+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 33
+    },
+    "RAMP": {
+      "symbol": "RAMP",
+      "last_attempt_at": "2026-06-10T11:36:52.048517+00:00",
+      "last_success_at": "2026-06-10T11:36:51.992890+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 33
+    },
+    "ORCL": {
+      "symbol": "ORCL",
+      "last_attempt_at": "2026-06-10T11:36:54.318277+00:00",
+      "last_success_at": "2026-06-10T11:36:54.317938+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 2244,
+      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
+    },
+    "VEEV": {
+      "symbol": "VEEV",
+      "last_attempt_at": "2026-06-10T11:36:52.083174+00:00",
+      "last_success_at": "2026-06-10T11:36:52.069796+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 52
     },
-    "SE": {
-      "symbol": "SE",
-      "last_attempt_at": "2026-06-04T19:08:45.845053+00:00",
-      "last_success_at": "2026-06-04T19:08:45.844406+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 15
-    },
-    "AI": {
-      "symbol": "AI",
-      "last_attempt_at": "2026-06-04T19:08:48.709198+00:00",
-      "last_success_at": "2026-06-04T19:08:48.698469+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2562,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
-    },
-    "PINS": {
-      "symbol": "PINS",
-      "last_attempt_at": "2026-06-04T19:08:45.870080+00:00",
-      "last_success_at": "2026-06-04T19:08:45.868001+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 34
-    },
-    "NKE": {
-      "symbol": "NKE",
-      "last_attempt_at": "2026-06-04T19:08:48.760595+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 253
-    },
-    "ACGL": {
-      "symbol": "ACGL",
-      "last_attempt_at": "2026-06-04T19:08:45.963393+00:00",
-      "last_success_at": "2026-06-04T19:08:45.963059+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 38
-    },
-    "CMCSA": {
-      "symbol": "CMCSA",
-      "last_attempt_at": "2026-06-04T19:08:48.783780+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 153
-    },
-    "IOT": {
-      "symbol": "IOT",
-      "last_attempt_at": "2026-06-04T19:08:48.358225+00:00",
-      "last_success_at": "2026-06-04T19:08:48.331068+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2199,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
-    },
-    "MKC": {
-      "symbol": "MKC",
-      "last_attempt_at": "2026-06-04T19:08:48.878458+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 128
-    },
-    "MU": {
-      "symbol": "MU",
-      "last_attempt_at": "2026-06-04T19:08:48.880175+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 120
-    },
-    "LPLA": {
-      "symbol": "LPLA",
-      "last_attempt_at": "2026-06-04T19:08:45.988898+00:00",
-      "last_success_at": "2026-06-04T19:08:45.988612+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 42
-    },
-    "SNDK": {
-      "symbol": "SNDK",
-      "last_attempt_at": "2026-06-04T20:03:04.472140+00:00",
-      "last_success_at": "2026-06-04T20:03:04.471749+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 702
-    },
-    "CIEN": {
-      "symbol": "CIEN",
-      "last_attempt_at": "2026-06-04T19:08:48.844177+00:00",
-      "last_success_at": "2026-06-04T19:08:48.843890+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2707,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
-    },
-    "WDC": {
-      "symbol": "WDC",
-      "last_attempt_at": "2026-06-04T19:08:48.629538+00:00",
-      "last_success_at": "2026-06-04T19:08:48.628760+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 263
-    },
-    "CF": {
-      "symbol": "CF",
-      "last_attempt_at": "2026-06-04T19:08:48.748573+00:00",
-      "last_success_at": "2026-06-04T19:08:48.748217+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 267
-    },
-    "UNH": {
-      "symbol": "UNH",
-      "last_attempt_at": "2026-06-04T19:08:48.815159+00:00",
-      "last_success_at": "2026-06-04T19:08:48.783335+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 251
-    },
-    "UL": {
-      "symbol": "UL",
-      "last_attempt_at": "2026-06-04T19:08:48.972794+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 81
-    },
-    "HD": {
-      "symbol": "HD",
-      "last_attempt_at": "2026-06-04T19:08:48.839762+00:00",
-      "last_success_at": "2026-06-04T19:08:48.795639+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 133
-    },
-    "SOC": {
-      "symbol": "SOC",
-      "last_attempt_at": "2026-06-04T20:03:06.189440+00:00",
-      "last_success_at": "2026-06-04T20:03:06.189090+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 1652
-    },
-    "GEV": {
-      "symbol": "GEV",
-      "last_attempt_at": "2026-06-04T19:08:49.004800+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 75
-    },
-    "HIMS": {
-      "symbol": "HIMS",
-      "last_attempt_at": "2026-06-04T19:08:48.914687+00:00",
-      "last_success_at": "2026-06-04T19:08:48.914366+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 141
-    },
-    "NVO": {
-      "symbol": "NVO",
-      "last_attempt_at": "2026-06-04T19:08:48.942177+00:00",
-      "last_success_at": "2026-06-04T19:08:48.941810+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 98
-    },
-    "FIX": {
-      "symbol": "FIX",
-      "last_attempt_at": "2026-06-04T19:08:49.039570+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 66
-    },
-    "GCT": {
-      "symbol": "GCT",
-      "last_attempt_at": "2026-06-04T19:08:48.916556+00:00",
-      "last_success_at": "2026-06-04T19:08:48.916210+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 120
-    },
-    "VRT": {
-      "symbol": "VRT",
-      "last_attempt_at": "2026-06-04T19:08:49.064655+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 57
-    },
-    "BWXT": {
-      "symbol": "BWXT",
-      "last_attempt_at": "2026-06-04T19:08:48.939130+00:00",
-      "last_success_at": "2026-06-04T19:08:48.919143+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 81
-    },
-    "KHC": {
-      "symbol": "KHC",
-      "last_attempt_at": "2026-06-04T19:08:48.961804+00:00",
-      "last_success_at": "2026-06-04T19:08:48.959601+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 103
-    },
-    "MDLZ": {
-      "symbol": "MDLZ",
-      "last_attempt_at": "2026-06-04T19:08:49.006890+00:00",
-      "last_success_at": "2026-06-04T19:08:48.993797+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 112
-    },
-    "STZ": {
-      "symbol": "STZ",
-      "last_attempt_at": "2026-06-04T19:08:49.018630+00:00",
-      "last_success_at": "2026-06-04T19:08:49.018045+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 101
-    },
-    "STX": {
-      "symbol": "STX",
-      "last_attempt_at": "2026-06-04T19:08:49.022252+00:00",
-      "last_success_at": "2026-06-04T19:08:49.021941+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 81
-    },
-    "TER": {
-      "symbol": "TER",
-      "last_attempt_at": "2026-06-04T19:08:49.036553+00:00",
-      "last_success_at": "2026-06-04T19:08:49.036186+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 76
-    },
-    "VRTX": {
-      "symbol": "VRTX",
-      "last_attempt_at": "2026-06-04T19:08:49.137726+00:00",
-      "last_success_at": "2026-06-04T19:08:49.097035+00:00",
+    "DOCU": {
+      "symbol": "DOCU",
+      "last_attempt_at": "2026-06-10T11:36:52.086691+00:00",
+      "last_success_at": "2026-06-10T11:36:52.084689+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 76
+      "duration_ms": 65
     },
-    "GLW": {
-      "symbol": "GLW",
-      "last_attempt_at": "2026-06-04T19:08:49.098643+00:00",
-      "last_success_at": "2026-06-04T19:08:49.064190+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 90
-    },
-    "INTC": {
-      "symbol": "INTC",
-      "last_attempt_at": "2026-06-04T19:08:49.160791+00:00",
-      "last_success_at": "2026-06-04T19:08:49.110567+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 86
-    },
-    "NTNX": {
-      "symbol": "NTNX",
-      "last_attempt_at": "2026-06-04T19:08:49.164859+00:00",
-      "last_success_at": "2026-06-04T19:08:49.076657+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 58
-    },
-    "IBM": {
-      "symbol": "IBM",
-      "last_attempt_at": "2026-06-04T19:08:49.125246+00:00",
-      "last_success_at": "2026-06-04T19:08:49.112366+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 74
-    },
-    "BRZE": {
-      "symbol": "BRZE",
-      "last_attempt_at": "2026-06-04T19:08:49.180018+00:00",
-      "last_success_at": "2026-06-04T19:08:49.127102+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 86
-    },
-    "KVYO": {
-      "symbol": "KVYO",
-      "last_attempt_at": "2026-06-04T19:08:49.193807+00:00",
-      "last_success_at": "2026-06-04T19:08:49.149600+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 63
-    },
-    "AMPL": {
-      "symbol": "AMPL",
-      "last_attempt_at": "2026-06-04T19:08:49.206678+00:00",
-      "last_success_at": "2026-06-04T19:08:49.162444+00:00",
+    "ZM": {
+      "symbol": "ZM",
+      "last_attempt_at": "2026-06-10T11:36:52.101933+00:00",
+      "last_success_at": "2026-06-10T11:36:52.100583+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 50
     },
-    "SEMR": {
-      "symbol": "SEMR",
-      "last_attempt_at": "2026-06-04T19:08:50.432562+00:00",
-      "last_success_at": "2026-06-04T19:08:50.432138+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 1196
-    },
-    "ZETA": {
-      "symbol": "ZETA",
-      "last_attempt_at": "2026-06-04T19:08:49.208552+00:00",
-      "last_success_at": "2026-06-04T19:08:49.164198+00:00",
+    "FRSH": {
+      "symbol": "FRSH",
+      "last_attempt_at": "2026-06-10T11:36:52.138619+00:00",
+      "last_success_at": "2026-06-10T11:36:52.137951+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 37
+      "duration_ms": 65
     },
-    "CXM": {
-      "symbol": "CXM",
-      "last_attempt_at": "2026-06-04T19:08:52.082731+00:00",
-      "last_success_at": "2026-06-04T19:08:52.077147+00:00",
+    "TTAN": {
+      "symbol": "TTAN",
+      "last_attempt_at": "2026-06-10T11:36:56.324546+00:00",
+      "last_success_at": "2026-06-04T19:08:52.159212+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [
+        "history_8q (null)"
+      ],
+      "quarantined": true,
+      "duration_ms": 4270
+    },
+    "BL": {
+      "symbol": "BL",
+      "last_attempt_at": "2026-06-10T11:36:52.159029+00:00",
+      "last_success_at": "2026-06-10T11:36:52.138141+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 2612,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
+      "duration_ms": 53
     },
-    "RAMP": {
-      "symbol": "RAMP",
-      "last_attempt_at": "2026-06-04T19:08:49.211782+00:00",
-      "last_success_at": "2026-06-04T19:08:49.179206+00:00",
+    "TWLO": {
+      "symbol": "TWLO",
+      "last_attempt_at": "2026-06-10T11:36:52.161044+00:00",
+      "last_success_at": "2026-06-10T11:36:52.160691+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 59
+    },
+    "RNG": {
+      "symbol": "RNG",
+      "last_attempt_at": "2026-06-10T11:36:52.180664+00:00",
+      "last_success_at": "2026-06-10T11:36:52.180302+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 75
+    },
+    "APP": {
+      "symbol": "APP",
+      "last_attempt_at": "2026-06-10T11:36:52.186650+00:00",
+      "last_success_at": "2026-06-10T11:36:52.186237+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 44
+    },
+    "ROP": {
+      "symbol": "ROP",
+      "last_attempt_at": "2026-06-10T11:36:52.342311+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 40
+    },
+    "CHKP": {
+      "symbol": "CHKP",
+      "last_attempt_at": "2026-06-10T11:36:52.214036+00:00",
+      "last_success_at": "2026-06-10T11:36:52.213688+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 53
+    },
+    "TRMB": {
+      "symbol": "TRMB",
+      "last_attempt_at": "2026-06-10T11:36:52.304818+00:00",
+      "last_success_at": "2026-06-10T11:36:52.304541+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 41
+    },
+    "QLYS": {
+      "symbol": "QLYS",
+      "last_attempt_at": "2026-06-10T11:36:52.232624+00:00",
+      "last_success_at": "2026-06-10T11:36:52.232309+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 69
+    },
+    "PTC": {
+      "symbol": "PTC",
+      "last_attempt_at": "2026-06-10T11:36:52.280065+00:00",
+      "last_success_at": "2026-06-10T11:36:52.279730+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 64
+    },
+    "BSY": {
+      "symbol": "BSY",
+      "last_attempt_at": "2026-06-10T11:36:52.302933+00:00",
+      "last_success_at": "2026-06-10T11:36:52.302637+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 66
+    },
+    "MANH": {
+      "symbol": "MANH",
+      "last_attempt_at": "2026-06-10T11:36:52.394360+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 21
+    },
+    "ADSK": {
+      "symbol": "ADSK",
+      "last_attempt_at": "2026-06-10T11:36:52.264854+00:00",
+      "last_success_at": "2026-06-10T11:36:52.264572+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 63
+    },
+    "RPD": {
+      "symbol": "RPD",
+      "last_attempt_at": "2026-06-10T11:36:52.261137+00:00",
+      "last_success_at": "2026-06-10T11:36:52.260807+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 78
+    },
+    "PCOR": {
+      "symbol": "PCOR",
+      "last_attempt_at": "2026-06-10T11:36:52.354131+00:00",
+      "last_success_at": "2026-06-10T11:36:52.328543+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 36
+    },
+    "TYL": {
+      "symbol": "TYL",
+      "last_attempt_at": "2026-06-10T11:36:52.356175+00:00",
+      "last_success_at": "2026-06-10T11:36:52.330712+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 26
+    },
+    "PSTG": {
+      "symbol": "PSTG",
+      "last_attempt_at": "2026-06-10T11:36:52.428054+00:00",
+      "last_success_at": "2026-06-10T11:36:52.427510+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 70
+    },
+    "KDP": {
+      "symbol": "KDP",
+      "last_attempt_at": "2026-06-10T11:36:52.515181+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 26
+    },
+    "GWRE": {
+      "symbol": "GWRE",
+      "last_attempt_at": "2026-06-10T11:36:57.620376+00:00",
+      "last_success_at": "2026-06-04T19:08:54.545240+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [
+        "history_8q (5/8 quarters)"
+      ],
+      "quarantined": true,
+      "duration_ms": 5290
+    },
+    "GIS": {
+      "symbol": "GIS",
+      "last_attempt_at": "2026-06-10T11:36:52.539980+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 11
+    },
+    "GLBE": {
+      "symbol": "GLBE",
+      "last_attempt_at": "2026-06-10T11:36:52.490581+00:00",
+      "last_success_at": "2026-06-10T11:36:52.489908+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 41
+    },
+    "WIX": {
+      "symbol": "WIX",
+      "last_attempt_at": "2026-06-10T11:36:52.473857+00:00",
+      "last_success_at": "2026-06-10T11:36:52.462410+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 52
+    },
+    "FICO": {
+      "symbol": "FICO",
+      "last_attempt_at": "2026-06-10T11:36:52.396404+00:00",
+      "last_success_at": "2026-06-10T11:36:52.394000+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 38
+    },
+    "GDDY": {
+      "symbol": "GDDY",
+      "last_attempt_at": "2026-06-10T11:36:52.476066+00:00",
+      "last_success_at": "2026-06-10T11:36:52.475678+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 46
+    },
+    "AKAM": {
+      "symbol": "AKAM",
+      "last_attempt_at": "2026-06-10T11:36:52.446932+00:00",
+      "last_success_at": "2026-06-10T11:36:52.446631+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 50
+    },
+    "NOC": {
+      "symbol": "NOC",
+      "last_attempt_at": "2026-06-10T11:36:52.616653+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 11
+    },
+    "ABT": {
+      "symbol": "ABT",
+      "last_attempt_at": "2026-06-10T11:36:52.516903+00:00",
+      "last_success_at": "2026-06-10T11:36:52.514765+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 39
     },
-    "ORCL": {
-      "symbol": "ORCL",
-      "last_attempt_at": "2026-06-04T19:08:52.329709+00:00",
-      "last_success_at": "2026-06-04T19:08:52.329353+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2979,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
-    },
-    "VEEV": {
-      "symbol": "VEEV",
-      "last_attempt_at": "2026-06-04T19:08:52.285904+00:00",
-      "last_success_at": "2026-06-04T19:08:52.285604+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2952,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
-    },
-    "DOCU": {
-      "symbol": "DOCU",
-      "last_attempt_at": "2026-06-04T19:08:52.204968+00:00",
-      "last_success_at": "2026-06-04T19:08:52.204625+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2878,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
-    },
-    "ZM": {
-      "symbol": "ZM",
-      "last_attempt_at": "2026-06-04T19:08:49.305043+00:00",
-      "last_success_at": "2026-06-04T19:08:49.304735+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 93
-    },
-    "FRSH": {
-      "symbol": "FRSH",
-      "last_attempt_at": "2026-06-04T19:08:49.334276+00:00",
-      "last_success_at": "2026-06-04T19:08:49.333992+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 27
-    },
-    "TTAN": {
-      "symbol": "TTAN",
-      "last_attempt_at": "2026-06-04T19:08:52.159653+00:00",
-      "last_success_at": "2026-06-04T19:08:52.159212+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2728,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
-    },
-    "BL": {
-      "symbol": "BL",
-      "last_attempt_at": "2026-06-04T19:08:50.456085+00:00",
-      "last_success_at": "2026-06-04T19:08:50.454452+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 13
-    },
-    "TWLO": {
-      "symbol": "TWLO",
-      "last_attempt_at": "2026-06-04T19:08:50.471833+00:00",
-      "last_success_at": "2026-06-04T19:08:50.471540+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 12
-    },
-    "RNG": {
-      "symbol": "RNG",
-      "last_attempt_at": "2026-06-04T19:08:50.484587+00:00",
-      "last_success_at": "2026-06-04T19:08:50.483827+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 10
-    },
-    "APP": {
-      "symbol": "APP",
-      "last_attempt_at": "2026-06-04T19:08:50.497935+00:00",
-      "last_success_at": "2026-06-04T19:08:50.497660+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 11
-    },
-    "ROP": {
-      "symbol": "ROP",
-      "last_attempt_at": "2026-06-04T19:08:52.383790+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 78
-    },
-    "CHKP": {
-      "symbol": "CHKP",
-      "last_attempt_at": "2026-06-04T19:08:51.451687+00:00",
-      "last_success_at": "2026-06-04T19:08:51.451341+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 809
-    },
-    "TRMB": {
-      "symbol": "TRMB",
-      "last_attempt_at": "2026-06-04T19:08:52.381928+00:00",
-      "last_success_at": "2026-06-04T19:08:52.381582+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 147
-    },
-    "QLYS": {
-      "symbol": "QLYS",
-      "last_attempt_at": "2026-06-04T19:08:52.662928+00:00",
-      "last_success_at": "2026-06-04T19:08:52.662624+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 1050
-    },
-    "PTC": {
-      "symbol": "PTC",
-      "last_attempt_at": "2026-06-04T19:08:53.020789+00:00",
-      "last_success_at": "2026-06-04T19:08:53.020479+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 872
-    },
-    "BSY": {
-      "symbol": "BSY",
-      "last_attempt_at": "2026-06-04T19:08:53.505634+00:00",
-      "last_success_at": "2026-06-04T19:08:53.505337+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 1179
-    },
-    "MANH": {
-      "symbol": "MANH",
-      "last_attempt_at": "2026-06-04T19:08:52.738159+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 72
-    },
-    "ADSK": {
-      "symbol": "ADSK",
-      "last_attempt_at": "2026-06-04T19:08:52.735002+00:00",
-      "last_success_at": "2026-06-04T19:08:52.734681+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 974
-    },
-    "RPD": {
-      "symbol": "RPD",
-      "last_attempt_at": "2026-06-04T19:08:51.582606+00:00",
-      "last_success_at": "2026-06-04T19:08:51.582280+00:00",
+    "ZTS": {
+      "symbol": "ZTS",
+      "last_attempt_at": "2026-06-10T11:36:52.528559+00:00",
+      "last_success_at": "2026-06-10T11:36:52.514924+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 22
     },
-    "PCOR": {
-      "symbol": "PCOR",
-      "last_attempt_at": "2026-06-04T19:08:53.296129+00:00",
-      "last_success_at": "2026-06-04T19:08:53.295512+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 881
-    },
-    "TYL": {
-      "symbol": "TYL",
-      "last_attempt_at": "2026-06-04T19:08:53.334262+00:00",
-      "last_success_at": "2026-06-04T19:08:53.333665+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 875
-    },
-    "PSTG": {
-      "symbol": "PSTG",
-      "last_attempt_at": "2026-06-04T19:19:15.617000+00:00",
-      "last_success_at": "2026-06-04T19:19:15.616700+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 847
-    },
-    "KDP": {
-      "symbol": "KDP",
-      "last_attempt_at": "2026-06-04T19:08:53.567457+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 44
-    },
-    "GWRE": {
-      "symbol": "GWRE",
-      "last_attempt_at": "2026-06-04T19:08:54.545661+00:00",
-      "last_success_at": "2026-06-04T19:08:54.545240+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2101,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name,next_earnings_date"
-    },
-    "GIS": {
-      "symbol": "GIS",
-      "last_attempt_at": "2026-06-04T19:08:53.581982+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 12
-    },
-    "GLBE": {
-      "symbol": "GLBE",
-      "last_attempt_at": "2026-06-04T19:08:54.278134+00:00",
-      "last_success_at": "2026-06-04T19:08:54.277627+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 787
-    },
-    "WIX": {
-      "symbol": "WIX",
-      "last_attempt_at": "2026-06-04T19:08:54.037309+00:00",
-      "last_success_at": "2026-06-04T19:08:54.036970+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 674
-    },
-    "FICO": {
-      "symbol": "FICO",
-      "last_attempt_at": "2026-06-04T19:08:53.426649+00:00",
-      "last_success_at": "2026-06-04T19:08:53.426335+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 579
-    },
-    "GDDY": {
-      "symbol": "GDDY",
-      "last_attempt_at": "2026-06-04T19:08:53.438850+00:00",
-      "last_success_at": "2026-06-04T19:08:53.438557+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 90
-    },
-    "AKAM": {
-      "symbol": "AKAM",
-      "last_attempt_at": "2026-06-04T19:08:53.978011+00:00",
-      "last_success_at": "2026-06-04T19:08:53.977588+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 905
-    },
-    "NOC": {
-      "symbol": "NOC",
-      "last_attempt_at": "2026-06-04T19:08:53.680690+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 14
-    },
-    "ABT": {
-      "symbol": "ABT",
-      "last_attempt_at": "2026-06-04T19:08:53.525532+00:00",
-      "last_success_at": "2026-06-04T19:08:53.525157+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 84
-    },
-    "ZTS": {
-      "symbol": "ZTS",
-      "last_attempt_at": "2026-06-04T19:08:53.583785+00:00",
-      "last_success_at": "2026-06-04T19:08:53.581622+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 42
-    },
     "FANG": {
       "symbol": "FANG",
-      "last_attempt_at": "2026-06-04T19:08:53.641580+00:00",
-      "last_success_at": "2026-06-04T19:08:53.641243+00:00",
+      "last_attempt_at": "2026-06-10T11:36:52.574577+00:00",
+      "last_success_at": "2026-06-10T11:36:52.562343+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 28
+      "duration_ms": 11
     },
     "KMB": {
       "symbol": "KMB",
-      "last_attempt_at": "2026-06-04T19:08:53.611475+00:00",
-      "last_success_at": "2026-06-04T19:08:53.611073+00:00",
+      "last_attempt_at": "2026-06-10T11:36:52.551508+00:00",
+      "last_success_at": "2026-06-10T11:36:52.539362+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 27
+      "duration_ms": 11
     },
     "VLO": {
       "symbol": "VLO",
-      "last_attempt_at": "2026-06-04T19:08:53.614609+00:00",
-      "last_success_at": "2026-06-04T19:08:53.614344+00:00",
+      "last_attempt_at": "2026-06-10T11:36:52.562847+00:00",
+      "last_success_at": "2026-06-10T11:36:52.550858+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 29
+      "duration_ms": 11
     },
     "AEM": {
       "symbol": "AEM",
-      "last_attempt_at": "2026-06-04T19:08:54.708491+00:00",
-      "last_success_at": "2026-06-04T19:08:54.707879+00:00",
+      "last_attempt_at": "2026-06-10T11:36:52.598833+00:00",
+      "last_success_at": "2026-06-10T11:36:52.585710+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 887
+      "duration_ms": 11
     },
     "BKR": {
       "symbol": "BKR",
-      "last_attempt_at": "2026-06-04T19:08:53.656747+00:00",
-      "last_success_at": "2026-06-04T19:08:53.656463+00:00",
+      "last_attempt_at": "2026-06-10T11:36:52.586259+00:00",
+      "last_success_at": "2026-06-10T11:36:52.573797+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 40
+      "duration_ms": 11
     },
     "GS": {
       "symbol": "GS",
-      "last_attempt_at": "2026-06-04T19:08:54.459643+00:00",
-      "last_success_at": "2026-06-04T19:08:54.459341+00:00",
+      "last_attempt_at": "2026-06-10T11:36:52.644063+00:00",
+      "last_success_at": "2026-06-10T11:36:52.643563+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 698
+      "duration_ms": 45
     },
     "UAL": {
       "symbol": "UAL",
-      "last_attempt_at": "2026-06-04T19:08:54.501832+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 26
-    },
-    "WFC": {
-      "symbol": "WFC",
-      "last_attempt_at": "2026-06-04T19:08:54.072779+00:00",
-      "last_success_at": "2026-06-04T19:08:54.072457+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 21
-    },
-    "OXY": {
-      "symbol": "OXY",
-      "last_attempt_at": "2026-06-04T19:08:54.735671+00:00",
-      "last_success_at": "2026-06-04T19:08:54.724878+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 166
-    },
-    "FCX": {
-      "symbol": "FCX",
-      "last_attempt_at": "2026-06-04T19:08:54.739690+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 152
-    },
-    "NUE": {
-      "symbol": "NUE",
-      "last_attempt_at": "2026-06-04T19:08:54.788016+00:00",
-      "last_success_at": null,
-      "last_source": null,
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 26
-    },
-    "JPM": {
-      "symbol": "JPM",
-      "last_attempt_at": "2026-06-04T19:08:55.117396+00:00",
-      "last_success_at": "2026-06-04T19:08:55.116836+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 938
-    },
-    "NFLX": {
-      "symbol": "NFLX",
-      "last_attempt_at": "2026-06-04T19:08:54.120454+00:00",
-      "last_success_at": "2026-06-04T19:08:54.120081+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 12
-    },
-    "MS": {
-      "symbol": "MS",
-      "last_attempt_at": "2026-06-04T19:08:54.090598+00:00",
-      "last_success_at": "2026-06-04T19:08:54.090246+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 14
-    },
-    "BAC": {
-      "symbol": "BAC",
-      "last_attempt_at": "2026-06-04T19:08:54.106486+00:00",
-      "last_success_at": "2026-06-04T19:08:54.106120+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 14
-    },
-    "SYF": {
-      "symbol": "SYF",
-      "last_attempt_at": "2026-06-04T19:08:55.223385+00:00",
-      "last_success_at": "2026-06-04T19:08:55.212645+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 675
-    },
-    "PAYX": {
-      "symbol": "PAYX",
-      "last_attempt_at": "2026-06-04T19:08:54.916659+00:00",
+      "last_attempt_at": "2026-06-10T11:36:52.750577+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 51
     },
-    "COF": {
-      "symbol": "COF",
-      "last_attempt_at": "2026-06-04T19:08:55.258015+00:00",
-      "last_success_at": "2026-06-04T19:08:55.257638+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 854
-    },
-    "DVN": {
-      "symbol": "DVN",
-      "last_attempt_at": "2026-06-04T19:08:54.559678+00:00",
-      "last_success_at": "2026-06-04T19:08:54.559399+00:00",
+    "WFC": {
+      "symbol": "WFC",
+      "last_attempt_at": "2026-06-10T11:36:52.660497+00:00",
+      "last_success_at": "2026-06-10T11:36:52.645860+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 56
+      "duration_ms": 17
     },
-    "CRC": {
-      "symbol": "CRC",
-      "last_attempt_at": "2026-06-04T19:08:54.795324+00:00",
-      "last_success_at": "2026-06-04T19:08:54.792263+00:00",
+    "OXY": {
+      "symbol": "OXY",
+      "last_attempt_at": "2026-06-10T11:36:52.774500+00:00",
+      "last_success_at": "2026-06-10T11:36:52.773871+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 53
+      "duration_ms": 23
     },
-    "DHR": {
-      "symbol": "DHR",
-      "last_attempt_at": "2026-06-04T19:08:54.913030+00:00",
-      "last_success_at": "2026-06-04T19:08:54.912648+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 92
-    },
-    "ADP": {
-      "symbol": "ADP",
-      "last_attempt_at": "2026-06-04T19:08:54.817564+00:00",
-      "last_success_at": "2026-06-04T19:08:54.792519+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 39
-    },
-    "CAT": {
-      "symbol": "CAT",
-      "last_attempt_at": "2026-06-04T19:08:54.976880+00:00",
-      "last_success_at": "2026-06-04T19:08:54.976578+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 62
-    },
-    "ZBH": {
-      "symbol": "ZBH",
-      "last_attempt_at": "2026-06-04T19:08:54.872782+00:00",
-      "last_success_at": "2026-06-04T19:08:54.872454+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 55
-    },
-    "ALAB": {
-      "symbol": "ALAB",
-      "last_attempt_at": "2026-06-04T19:08:55.893370+00:00",
-      "last_success_at": "2026-06-04T19:08:55.893024+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 976
-    },
-    "GPN": {
-      "symbol": "GPN",
-      "last_attempt_at": "2026-06-04T19:08:55.292993+00:00",
-      "last_success_at": "2026-06-04T19:08:55.282736+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 163
-    },
-    "IQV": {
-      "symbol": "IQV",
-      "last_attempt_at": "2026-06-04T19:08:55.307866+00:00",
-      "last_success_at": "2026-06-04T19:08:55.295470+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 154
-    },
-    "GNRC": {
-      "symbol": "GNRC",
-      "last_attempt_at": "2026-06-04T19:08:55.139607+00:00",
-      "last_success_at": "2026-06-04T19:08:55.139166+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 207
-    },
-    "NEM": {
-      "symbol": "NEM",
-      "last_attempt_at": "2026-06-04T19:08:55.270390+00:00",
-      "last_success_at": "2026-06-04T19:08:55.269951+00:00",
-      "last_source": "finnhub",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 291
-    },
-    "KALU": {
-      "symbol": "KALU",
-      "last_attempt_at": "2026-06-04T19:08:55.386467+00:00",
+    "FCX": {
+      "symbol": "FCX",
+      "last_attempt_at": "2026-06-10T11:36:52.786099+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 25
+      "duration_ms": 22
     },
-    "VMI": {
-      "symbol": "VMI",
-      "last_attempt_at": "2026-06-04T19:08:55.399152+00:00",
+    "NUE": {
+      "symbol": "NUE",
+      "last_attempt_at": "2026-06-10T11:36:52.798439+00:00",
       "last_success_at": null,
       "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 23
+    },
+    "JPM": {
+      "symbol": "JPM",
+      "last_attempt_at": "2026-06-10T11:36:52.648065+00:00",
+      "last_success_at": "2026-06-10T11:36:52.645369+00:00",
+      "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
       "duration_ms": 35
     },
-    "CTSH": {
-      "symbol": "CTSH",
-      "last_attempt_at": "2026-06-04T19:08:55.344551+00:00",
-      "last_success_at": "2026-06-04T19:08:55.319435+00:00",
+    "NFLX": {
+      "symbol": "NFLX",
+      "last_attempt_at": "2026-06-10T11:36:52.697067+00:00",
+      "last_success_at": "2026-06-10T11:36:52.686150+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 49
+      "duration_ms": 14
+    },
+    "MS": {
+      "symbol": "MS",
+      "last_attempt_at": "2026-06-10T11:36:52.671887+00:00",
+      "last_success_at": "2026-06-10T11:36:52.671436+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 23
+    },
+    "BAC": {
+      "symbol": "BAC",
+      "last_attempt_at": "2026-06-10T11:36:52.674654+00:00",
+      "last_success_at": "2026-06-10T11:36:52.674362+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 25
+    },
+    "SYF": {
+      "symbol": "SYF",
+      "last_attempt_at": "2026-06-10T11:36:52.711870+00:00",
+      "last_success_at": "2026-06-10T11:36:52.711310+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 14
+    },
+    "PAYX": {
+      "symbol": "PAYX",
+      "last_attempt_at": "2026-06-10T11:36:52.888271+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 13
+    },
+    "COF": {
+      "symbol": "COF",
+      "last_attempt_at": "2026-06-10T11:36:52.699949+00:00",
+      "last_success_at": "2026-06-10T11:36:52.699574+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 25
+    },
+    "DVN": {
+      "symbol": "DVN",
+      "last_attempt_at": "2026-06-10T11:36:52.762686+00:00",
+      "last_success_at": "2026-06-10T11:36:52.762124+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 50
+    },
+    "CRC": {
+      "symbol": "CRC",
+      "last_attempt_at": "2026-06-10T11:36:52.827240+00:00",
+      "last_success_at": "2026-06-10T11:36:52.822689+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 36
+    },
+    "DHR": {
+      "symbol": "DHR",
+      "last_attempt_at": "2026-06-10T11:36:52.890005+00:00",
+      "last_success_at": "2026-06-10T11:36:52.879022+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 25
+    },
+    "ADP": {
+      "symbol": "ADP",
+      "last_attempt_at": "2026-06-10T11:36:52.852124+00:00",
+      "last_success_at": "2026-06-10T11:36:52.838221+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 41
+    },
+    "CAT": {
+      "symbol": "CAT",
+      "last_attempt_at": "2026-06-10T11:36:52.955373+00:00",
+      "last_success_at": "2026-06-10T11:36:52.955028+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 30
+    },
+    "ZBH": {
+      "symbol": "ZBH",
+      "last_attempt_at": "2026-06-10T11:36:52.864144+00:00",
+      "last_success_at": "2026-06-10T11:36:52.863742+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 23
+    },
+    "ALAB": {
+      "symbol": "ALAB",
+      "last_attempt_at": "2026-06-10T11:36:52.923425+00:00",
+      "last_success_at": "2026-06-10T11:36:52.923024+00:00",
+      "last_source": "perplexity_finance",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 33
+    },
+    "GPN": {
+      "symbol": "GPN",
+      "last_attempt_at": "2026-06-10T11:36:52.993321+00:00",
+      "last_success_at": "2026-06-10T11:36:52.992950+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 22
+    },
+    "IQV": {
+      "symbol": "IQV",
+      "last_attempt_at": "2026-06-10T11:36:52.994860+00:00",
+      "last_success_at": "2026-06-10T11:36:52.994609+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 13
+    },
+    "GNRC": {
+      "symbol": "GNRC",
+      "last_attempt_at": "2026-06-10T11:36:52.968960+00:00",
+      "last_success_at": "2026-06-10T11:36:52.968664+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 24
+    },
+    "NEM": {
+      "symbol": "NEM",
+      "last_attempt_at": "2026-06-10T11:36:52.980079+00:00",
+      "last_success_at": "2026-06-10T11:36:52.979713+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 22
+    },
+    "KALU": {
+      "symbol": "KALU",
+      "last_attempt_at": "2026-06-10T11:36:53.065781+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 10
+    },
+    "VMI": {
+      "symbol": "VMI",
+      "last_attempt_at": "2026-06-10T11:36:53.090947+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 11
+    },
+    "CTSH": {
+      "symbol": "CTSH",
+      "last_attempt_at": "2026-06-10T11:36:53.025796+00:00",
+      "last_success_at": "2026-06-10T11:36:53.025457+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 15
     },
     "FIVE": {
       "symbol": "FIVE",
-      "last_attempt_at": "2026-06-04T19:08:57.396150+00:00",
-      "last_success_at": "2026-06-04T19:08:57.395816+00:00",
-      "last_source": "perplexity_finance",
+      "last_attempt_at": "2026-06-10T11:36:52.942992+00:00",
+      "last_success_at": "2026-06-10T11:36:52.932946+00:00",
+      "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 2416,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
+      "duration_ms": 41
     },
     "CSU.TO": {
       "symbol": "CSU.TO",
-      "last_attempt_at": "2026-06-04T19:19:12.783708+00:00",
-      "last_success_at": "2026-06-04T19:19:12.783269+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.130018+00:00",
+      "last_success_at": "2026-06-10T11:36:53.127155+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 774
+      "duration_ms": 25
     },
     "GEHC": {
       "symbol": "GEHC",
-      "last_attempt_at": "2026-06-04T19:08:55.321529+00:00",
-      "last_success_at": "2026-06-04T19:08:55.307445+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.011367+00:00",
+      "last_success_at": "2026-06-10T11:36:53.010564+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 65
+      "duration_ms": 16
     },
     "MOS": {
       "symbol": "MOS",
-      "last_attempt_at": "2026-06-04T19:08:55.358999+00:00",
-      "last_success_at": "2026-06-04T19:08:55.321196+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.052235+00:00",
+      "last_success_at": "2026-06-10T11:36:53.050589+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 38
+      "duration_ms": 37
     },
     "AVT": {
       "symbol": "AVT",
-      "last_attempt_at": "2026-06-04T19:08:55.425629+00:00",
-      "last_success_at": "2026-06-04T19:08:55.387675+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.127713+00:00",
+      "last_success_at": "2026-06-10T11:36:53.126953+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
@@ -1503,158 +1497,156 @@
     },
     "OMC": {
       "symbol": "OMC",
-      "last_attempt_at": "2026-06-04T19:08:55.496619+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.268214+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 36
+      "duration_ms": 11
     },
     "ONTO": {
       "symbol": "ONTO",
-      "last_attempt_at": "2026-06-04T19:08:55.423835+00:00",
-      "last_success_at": "2026-06-04T19:08:55.384688+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.099735+00:00",
+      "last_success_at": "2026-06-10T11:36:53.090263+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 37
+      "duration_ms": 13
     },
     "CNH": {
       "symbol": "CNH",
-      "last_attempt_at": "2026-06-04T19:08:55.516611+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.304763+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 50
+      "duration_ms": 25
     },
     "CRDO": {
       "symbol": "CRDO",
-      "last_attempt_at": "2026-06-04T19:08:55.373506+00:00",
-      "last_success_at": "2026-06-04T19:08:55.334454+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.064169+00:00",
+      "last_success_at": "2026-06-10T11:36:53.051952+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 28
+      "duration_ms": 13
     },
     "CLX": {
       "symbol": "CLX",
-      "last_attempt_at": "2026-06-04T19:08:55.441526+00:00",
-      "last_success_at": "2026-06-04T19:08:55.423582+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.153550+00:00",
+      "last_success_at": "2026-06-10T11:36:53.143689+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 35
+      "duration_ms": 13
     },
     "PFE": {
       "symbol": "PFE",
-      "last_attempt_at": "2026-06-04T19:08:55.568804+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.366543+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 18
+      "duration_ms": 11
     },
     "EMN": {
       "symbol": "EMN",
-      "last_attempt_at": "2026-06-04T19:08:55.604777+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.380287+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 34
+      "duration_ms": 22
     },
     "CTVA": {
       "symbol": "CTVA",
-      "last_attempt_at": "2026-06-04T19:08:55.652679+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.402536+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 46
+      "duration_ms": 24
     },
     "MHK": {
       "symbol": "MHK",
-      "last_attempt_at": "2026-06-04T19:08:55.443323+00:00",
-      "last_success_at": "2026-06-04T19:08:55.437530+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.166414+00:00",
+      "last_success_at": "2026-06-10T11:36:53.155596+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 36
+      "duration_ms": 13
     },
     "SITM": {
       "symbol": "SITM",
-      "last_attempt_at": "2026-06-04T19:08:55.739063+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.515506+00:00",
       "last_success_at": null,
       "last_source": null,
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 28
+      "duration_ms": 96
     },
     "TSEM": {
       "symbol": "TSEM",
-      "last_attempt_at": "2026-06-04T19:08:56.340939+00:00",
-      "last_success_at": "2026-06-04T19:08:56.340631+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.354417+00:00",
+      "last_success_at": "2026-06-10T11:36:53.353725+00:00",
       "last_source": "perplexity_finance",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 771
+      "duration_ms": 11
     },
     "LKQ": {
       "symbol": "LKQ",
-      "last_attempt_at": "2026-06-04T19:08:55.453160+00:00",
-      "last_success_at": "2026-06-04T19:08:55.452842+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.180056+00:00",
+      "last_success_at": "2026-06-10T11:36:53.166111+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 27
+      "duration_ms": 10
     },
     "IONQ": {
       "symbol": "IONQ",
-      "last_attempt_at": "2026-06-04T19:08:55.479158+00:00",
-      "last_success_at": "2026-06-04T19:08:55.478845+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.300593+00:00",
+      "last_success_at": "2026-06-10T11:36:53.269284+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 35
+      "duration_ms": 77
     },
     "LITE": {
       "symbol": "LITE",
-      "last_attempt_at": "2026-06-04T19:08:55.548774+00:00",
-      "last_success_at": "2026-06-04T19:08:55.548449+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.342843+00:00",
+      "last_success_at": "2026-06-10T11:36:53.342142+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 50
+      "duration_ms": 12
     },
     "PVH": {
       "symbol": "PVH",
-      "last_attempt_at": "2026-06-04T19:08:58.025954+00:00",
-      "last_success_at": "2026-06-04T19:08:58.025654+00:00",
-      "last_source": "perplexity_finance",
-      "missing_fields": [],
-      "quarantined": false,
-      "duration_ms": 2496,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
-    },
-    "ROST": {
-      "symbol": "ROST",
-      "last_attempt_at": "2026-06-04T19:08:55.706456+00:00",
-      "last_success_at": "2026-06-04T19:08:55.706122+00:00",
+      "last_attempt_at": "2026-06-10T11:36:53.330494+00:00",
+      "last_success_at": "2026-06-10T11:36:53.330215+00:00",
       "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 37
+      "duration_ms": 25
+    },
+    "ROST": {
+      "symbol": "ROST",
+      "last_attempt_at": "2026-06-10T11:36:53.443629+00:00",
+      "last_success_at": "2026-06-10T11:36:53.435249+00:00",
+      "last_source": "finnhub",
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 53
     },
     "MDT": {
       "symbol": "MDT",
-      "last_attempt_at": "2026-06-04T19:08:57.491627+00:00",
-      "last_success_at": "2026-06-04T19:08:57.491223+00:00",
-      "last_source": "perplexity_finance",
+      "last_attempt_at": "2026-06-10T11:36:53.245745+00:00",
+      "last_success_at": "2026-06-10T11:36:53.179009+00:00",
+      "last_source": "finnhub",
       "missing_fields": [],
       "quarantined": false,
-      "duration_ms": 2002,
-      "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
+      "duration_ms": 11
     },
     "AAPL": {
       "symbol": "AAPL",
@@ -1665,19 +1657,28 @@
       "quarantined": false,
       "duration_ms": 2294,
       "cached_fallback_reason": "perplexity_finance,finnhub,yfinance all returned null for company_name"
+    },
+    "FROG": {
+      "symbol": "FROG",
+      "last_attempt_at": "2026-06-10T11:36:53.517050+00:00",
+      "last_success_at": null,
+      "last_source": null,
+      "missing_fields": [],
+      "quarantined": false,
+      "duration_ms": 55
     }
   },
   "run": {
-    "run_id": "72baff154ada",
-    "started_at": "2026-06-04T19:08:45.205595+00:00",
-    "finished_at": "2026-06-04T19:08:58.028375+00:00",
+    "run_id": "02c6fbc9c0cd",
+    "started_at": "2026-06-10T11:36:50.765644+00:00",
+    "finished_at": "2026-06-10T11:36:57.622684+00:00",
     "total": 183,
-    "succeeded": 36,
-    "quarantined": 5,
-    "skipped": 142,
-    "wall_time_ms": 12822,
+    "succeeded": 3,
+    "quarantined": 3,
+    "skipped": 177,
+    "wall_time_ms": 6857,
     "sources_used": {
-      "perplexity_finance": 41,
+      "perplexity_finance": 6,
       "finnhub": 0,
       "yfinance": 0,
       "perplexity": 0,

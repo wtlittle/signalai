@@ -1,5 +1,112 @@
 {
-  "generated_at": "2026-06-04T20:03:06.188797+00:00",
-  "count": 0,
-  "tickers": {}
+  "generated_at": "2026-06-10T11:36:57.619649+00:00",
+  "count": 3,
+  "tickers": {
+    "AI": {
+      "symbol": "AI",
+      "quarantined_at": "2026-06-10T11:36:56.058400+00:00",
+      "last_success_at": "2026-06-04T19:08:48.698469+00:00",
+      "sources_tried": [
+        {
+          "name": "yfinance",
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
+        },
+        {
+          "name": "perplexity",
+          "error_or_missing_fields": "no_response"
+        },
+        {
+          "name": "cached",
+          "error_or_missing_fields": [
+            "history_8q",
+            "fy_guide_revenue",
+            "fy_guide_eps",
+            "fy_guide_bullets",
+            "consensus_eps_next_q",
+            "consensus_rev_next_q",
+            "consensus_estimates",
+            "name",
+            "sector",
+            "subsector"
+          ]
+        }
+      ],
+      "missing_fields": [
+        "history_8q (5/8 quarters)"
+      ],
+      "updated_at": "2026-06-10T11:36:56.058411+00:00"
+    },
+    "TTAN": {
+      "symbol": "TTAN",
+      "quarantined_at": "2026-06-10T11:36:56.323766+00:00",
+      "last_success_at": "2026-06-04T19:08:52.159212+00:00",
+      "sources_tried": [
+        {
+          "name": "perplexity_finance",
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
+        },
+        {
+          "name": "finnhub",
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
+        },
+        {
+          "name": "yfinance",
+          "error_or_missing_fields": [
+            "history_8q"
+          ]
+        },
+        {
+          "name": "cached",
+          "error_or_missing_fields": [
+            "history_8q",
+            "fy_guide_revenue",
+            "fy_guide_eps",
+            "fy_guide_bullets",
+            "consensus_eps_next_q",
+            "consensus_rev_next_q",
+            "consensus_estimates",
+            "name",
+            "sector",
+            "subsector"
+          ]
+        }
+      ],
+      "missing_fields": [
+        "history_8q (null)"
+      ],
+      "updated_at": "2026-06-10T11:36:56.323773+00:00"
+    },
+    "GWRE": {
+      "symbol": "GWRE",
+      "quarantined_at": "2026-06-10T11:36:57.619636+00:00",
+      "last_success_at": "2026-06-04T19:08:54.545240+00:00",
+      "sources_tried": [
+        {
+          "name": "cached",
+          "error_or_missing_fields": [
+            "history_8q",
+            "fy_guide_revenue",
+            "fy_guide_eps",
+            "fy_guide_bullets",
+            "consensus_eps_next_q",
+            "consensus_rev_next_q",
+            "consensus_estimates",
+            "name",
+            "sector",
+            "subsector"
+          ]
+        }
+      ],
+      "missing_fields": [
+        "history_8q (5/8 quarters)"
+      ],
+      "updated_at": "2026-06-10T11:36:57.619645+00:00"
+    }
+  }
 }
