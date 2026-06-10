@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>News Tab Headlines Preview — SignalAI</title>
+<style>
+* { box-sizing: border-box; }
+body { background: #0f172a; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif; padding: 24px; max-width: 900px; margin: 0 auto; }
+h2 { color: #94a3b8; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 12px; }
+h1 { color: #e2e8f0; font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+.subtitle { color: #64748b; font-size: 12px; margin-bottom: 24px; }
+.notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+
+/* Card styles from styles.css */
+.news-card { border: 1px solid #1e293b; border-radius: 6px; padding: 10px 12px; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.news-card:hover { border-color: #334155; background: rgba(255,255,255,0.03); }
+.news-card-top { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.news-chip { background: rgba(59,130,246,0.15); color: #93c5fd; font-family: monospace; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 3px; letter-spacing: 0.3px; }
+.news-note-type { font-family: monospace; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 3px; }
+.news-note-type-post { color: #93c5fd; background: rgba(59,130,246,0.16); }
+.news-note-type-pre { color: #c4b5fd; background: rgba(139,92,246,0.16); }
+.news-card-time { color: #475569; font-size: 11px; margin-left: auto; white-space: nowrap; }
+.news-note-name { font-size: 12px; margin-bottom: 4px; }
+.news-note-company { color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.news-note-headline { font-size: 11.5px; color: #94a3b8; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 6px; }
+.news-note-headline--up { color: #34d399; font-weight: 600; }
+.news-note-headline--down { color: #fb7185; font-weight: 600; }
+.news-note-footer { display: flex; justify-content: flex-end; margin-top: 4px; }
+.news-note-open { color: #3b82f6; font-size: 11px; white-space: nowrap; }
+
+.label { display: inline-block; background: rgba(255,255,255,0.07); color: #94a3b8; font-size: 10px; padding: 2px 8px; border-radius: 3px; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<h1>Recent Earnings Notes</h1>
+<p class="subtitle">Card layout with new earnings-context headlines — News tab preview</p>
+
+<h2>Recent Earnings Notes</h2>
+<div class="notes-grid">
+
+  <!-- POST-EARNINGS: significant positive (+11.1%) — emerald bold -->
+  <article class="news-card" data-significant="true">
+    <div class="news-card-top">
+      <span class="news-chip">STX</span>
+      <span class="news-note-type news-note-type-post">POST-EARNINGS</span>
+      <span class="news-card-time">Apr 28, 2026</span>
+    </div>
+    <div class="news-note-name"><span class="news-note-company">Seagate Technology</span></div>
+    <div class="news-note-headline news-note-headline--up">Seagate crushes Q3 on AI storage tailwind with record margins; raises Q4 guidance above Street.</div>
+    <div class="news-note-footer"><span class="news-note-open">Earnings Intel →</span></div>
+  </article>
+
+  <!-- POST-EARNINGS: significant negative (-19.4%) — rose bold -->
+  <article class="news-card" data-significant="true">
+    <div class="news-card-top">
+      <span class="news-chip">TER</span>
+      <span class="news-note-type news-note-type-post">POST-EARNINGS</span>
+      <span class="news-card-time">Apr 28, 2026</span>
+    </div>
+    <div class="news-note-name"><span class="news-note-company">Teradyne</span></div>
+    <div class="news-note-headline news-note-headline--down">Teradyne posts record Q1 2026 with strong beats on revenue and earnings, driven by robust AI-related semiconductor test demand, but stock fell -19.4% on cautious forward guidance.</div>
+    <div class="news-note-footer"><span class="news-note-open">Earnings Intel →</span></div>
+  </article>
+
+  <!-- POST-EARNINGS: neutral (pct=-4.5%, sub-threshold) — slate default -->
+  <article class="news-card">
+    <div class="news-card-top">
+      <span class="news-chip">ACGL</span>
+      <span class="news-note-type news-note-type-post">POST-EARNINGS</span>
+      <span class="news-card-time">Apr 28, 2026</span>
+    </div>
+    <div class="news-note-name"><span class="news-note-company">Arch Capital</span></div>
+    <div class="news-note-headline">ACGL delivered modest Q1 earnings beat with $2.50 EPS, but revenue missed consensus, suggesting growth headwinds despite stable underwriting margins.</div>
+    <div class="news-note-footer"><span class="news-note-open">Earnings Intel →</span></div>
+  </article>
+
+  <!-- PRE-EARNINGS: key debate — slate default (neutral) -->
+  <article class="news-card">
+    <div class="news-card-top">
+      <span class="news-chip">ORCL</span>
+      <span class="news-note-type news-note-type-pre">PRE-EARNINGS</span>
+      <span class="news-card-time">Jun 10, 2026</span>
+    </div>
+    <div class="news-note-name"><span class="news-note-company">Oracle</span></div>
+    <div class="news-note-headline">Can Oracle sustain 40%+ cloud revenue growth as AI/OCI capacity ramps, or does growth normalize sharply as comparisons toughen?</div>
+    <div class="news-note-footer"><span class="news-note-open">Earnings Intel →</span></div>
+  </article>
+
+  <!-- PRE-EARNINGS: key debate ADBE -->
+  <article class="news-card">
+    <div class="news-card-top">
+      <span class="news-chip">ADBE</span>
+      <span class="news-note-type news-note-type-pre">PRE-EARNINGS</span>
+      <span class="news-card-time">Jun 11, 2026</span>
+    </div>
+    <div class="news-note-name"><span class="news-note-company">Adobe</span></div>
+    <div class="news-note-headline">Can Adobe sustain double‑digit ARR and revenue growth as AI-first ARR scales, or does growth normalize toward high single digits post-2026?</div>
+    <div class="news-note-footer"><span class="news-note-open">Earnings Intel →</span></div>
+  </article>
+
+  <!-- POST-EARNINGS: no headline (ACN pre with no intel data) -->
+  <article class="news-card">
+    <div class="news-card-top">
+      <span class="news-chip">ACN</span>
+      <span class="news-note-type news-note-type-pre">PRE-EARNINGS</span>
+      <span class="news-card-time">Jun 18, 2026</span>
+    </div>
+    <div class="news-note-name"><span class="news-note-company">Accenture</span></div>
+    <!-- No headline line — renders without context, fallback graceful -->
+    <div class="news-note-footer"><span class="news-note-open">Earnings Intel →</span></div>
+  </article>
+
+  <!-- POST-EARNINGS: FSLY significant negative (-38.2%) -->
+  <article class="news-card" data-significant="true">
+    <div class="news-card-top">
+      <span class="news-chip">FSLY</span>
+      <span class="news-note-type news-note-type-post">POST-EARNINGS</span>
+      <span class="news-card-time">May 6, 2026</span>
+    </div>
+    <div class="news-note-name"><span class="news-note-company">Fastly</span></div>
+    <div class="news-note-headline news-note-headline--down">Fastly beats revenue and adjusted EPS expectations with record 65.1% gross margin, but shares tumble after hours</div>
+    <div class="news-note-footer"><span class="news-note-open">Earnings Intel →</span></div>
+  </article>
+
+  <!-- POST-EARNINGS: NVDA neutral (+1%) -->
+  <article class="news-card">
+    <div class="news-card-top">
+      <span class="news-chip">NVDA</span>
+      <span class="news-note-type news-note-type-post">POST-EARNINGS</span>
+      <span class="news-card-time">May 28, 2026</span>
+    </div>
+    <div class="news-note-name"><span class="news-note-company">NVIDIA</span></div>
+    <div class="news-note-headline">NVIDIA delivered another blockbuster quarter, with Q1 FY27 revenue up 85% year over year and Q2 guidance well above Street expectations, but the stock reaction was muted as investors had...</div>
+    <div class="news-note-footer"><span class="news-note-open">Earnings Intel →</span></div>
+  </article>
+
+</div>
+</body>
+</html>
