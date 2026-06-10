@@ -135,7 +135,7 @@ function synthesizeTldr(d) {
   // index_returns may be top-level (new schema) or nested under market_summary (old schema).
   const ir = d.index_returns || ms.index_returns || {};
   const sp = ir.sp500_weekly || ir['S&P 500'] || ms.sp500_weekly
-    || (ir.sp500 && ir.sp500.weekly_pct !== undefined
+    || (ir.sp500 && ir.sp500.weekly_pct != null
        ? (ir.sp500.weekly_pct >= 0 ? '+' : '') + ir.sp500.weekly_pct.toFixed(2) + '%'
        : '');
   const spPct = parseFloat((sp || '').replace('%', '').replace('+', ''));
@@ -496,17 +496,17 @@ function renderWeeklyBriefing() {
   // Pull index returns from either the nested index_returns block or the flat top-level keys.
   // New schema uses human-readable keys like "S&P 500"; old schema used camelCase.
   const sp500Raw = ms.sp500_weekly || ir.sp500_weekly || ir['S&P 500']
-    || (ir.sp500 ? (ir.sp500.weekly_pct !== undefined ? (ir.sp500.weekly_pct >= 0 ? '+' : '') + ir.sp500.weekly_pct.toFixed(2) + '%' : null) : null);
+    || (ir.sp500 ? (ir.sp500.weekly_pct != null ? (ir.sp500.weekly_pct >= 0 ? '+' : '') + ir.sp500.weekly_pct.toFixed(2) + '%' : null) : null);
   const sp500 = sp500Raw;
 
   const nasdaqRaw = ms.nasdaq_weekly || ir.nasdaq_weekly || ir['NASDAQ Composite'] || ir['Nasdaq'] || ir['NASDAQ']
-    || (ir.nasdaq_composite ? (ir.nasdaq_composite.weekly_pct !== undefined ? (ir.nasdaq_composite.weekly_pct >= 0 ? '+' : '') + ir.nasdaq_composite.weekly_pct.toFixed(2) + '%' : null) : null)
-    || (ir.nasdaq ? (ir.nasdaq.weekly_pct !== undefined ? (ir.nasdaq.weekly_pct >= 0 ? '+' : '') + ir.nasdaq.weekly_pct.toFixed(2) + '%' : null) : null);
+    || (ir.nasdaq_composite ? (ir.nasdaq_composite.weekly_pct != null ? (ir.nasdaq_composite.weekly_pct >= 0 ? '+' : '') + ir.nasdaq_composite.weekly_pct.toFixed(2) + '%' : null) : null)
+    || (ir.nasdaq ? (ir.nasdaq.weekly_pct != null ? (ir.nasdaq.weekly_pct >= 0 ? '+' : '') + ir.nasdaq.weekly_pct.toFixed(2) + '%' : null) : null);
   const nasdaq = nasdaqRaw;
 
   const russellRaw = ms.russell_weekly || ir.russell_weekly || ir['Russell 2000'] || ir['Dow Jones']
-    || (ir.russell_2000 ? (ir.russell_2000.weekly_pct !== undefined ? (ir.russell_2000.weekly_pct >= 0 ? '+' : '') + ir.russell_2000.weekly_pct.toFixed(2) + '%' : null) : null)
-    || (ir.russell ? (ir.russell.weekly_pct !== undefined ? (ir.russell.weekly_pct >= 0 ? '+' : '') + ir.russell.weekly_pct.toFixed(2) + '%' : null) : null);
+    || (ir.russell_2000 ? (ir.russell_2000.weekly_pct != null ? (ir.russell_2000.weekly_pct >= 0 ? '+' : '') + ir.russell_2000.weekly_pct.toFixed(2) + '%' : null) : null)
+    || (ir.russell ? (ir.russell.weekly_pct != null ? (ir.russell.weekly_pct >= 0 ? '+' : '') + ir.russell.weekly_pct.toFixed(2) + '%' : null) : null);
   const russell = russellRaw;
 
   // Build archive set for picker. The current live payload carries the full
