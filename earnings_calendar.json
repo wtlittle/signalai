@@ -1028,11 +1028,13 @@
       "earnings_date": "2026-06-10",
       "ticker": "ORCL",
       "timing": "AMC",
-      "revenue_actual": 17190000000,
-      "eps_actual": 1.79,
-      "revenue_beat_miss": "beat (+1.6%)",
-      "eps_beat_miss": "beat (+3.1%)",
-      "post_earnings_review": {}
+      "revenue_actual": "$17.2B",
+      "eps_actual": "$1.79",
+      "post_earnings_review": {
+        "stock_reaction_pct": -11.1,
+        "stock_reaction_basis_date": "2026-06-10",
+        "stock_reaction_calc_method": "postmarket_d"
+      }
     }
   ],
   "pre_earnings": [
@@ -1059,7 +1061,15 @@
       "earnings_date": "2026-06-24",
       "ticker": "MU",
       "timing": "AMC"
+    },
+    {
+      "company": "Paychex",
+      "date": "2026-06-24",
+      "days_until": 14,
+      "earnings_date": "2026-06-24",
+      "ticker": "PAYX",
+      "timing": "BMO"
     }
   ],
-  "updated": "2026-06-10T13:04:42+00:00"
+  "updated": "2026-06-10T23:26:27+00:00"
 }
