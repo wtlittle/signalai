@@ -129,9 +129,12 @@ function synthesizeTldr(d) {
   // Otherwise derive from trends + risks + top picks
   const bullets = [];
   const chips = [];
-  const ms = d.market_summary || {};
-  const ir = ms.index_returns || {};
-  const sp = ir.sp500_weekly || ms.sp500_weekly
+  // Handle market_summary as either object (old schema) or string (new schema).
+  const ms = (d.market_summary && typeof d.market_summary === 'object') ? d.market_summary : {};
+  const msNarrative = (typeof d.market_summary === 'string') ? d.market_summary : (ms.narrative || '');
+  // index_returns may be top-level (new schema) or nested under market_summary (old schema).
+  const ir = d.index_returns || ms.index_returns || {};
+  const sp = ir.sp500_weekly || ir['S&P 500'] || ms.sp500_weekly
     || (ir.sp500 && ir.sp500.weekly_pct !== undefined
        ? (ir.sp500.weekly_pct >= 0 ? '+' : '') + ir.sp500.weekly_pct.toFixed(2) + '%'
        : '');
@@ -143,12 +146,12 @@ function synthesizeTldr(d) {
   }
   const trends = (d.trends || d.key_trends || []).slice(0, 2);
   trends.forEach(t => {
-    const title = t.title || t.name || '';
+    const title = t.title || t.name || t.theme || '';
     if (title) bullets.push(title.length > 110 ? title.slice(0, 107) + '…' : title);
   });
   const risks = (d.risks || []).slice(0, 1);
   risks.forEach(r => {
-    const title = r.title || r.name || '';
+    const title = r.title || r.name || r.risk || '';
     if (title) bullets.push('Risk: ' + (title.length > 100 ? title.slice(0, 97) + '…' : title));
   });
   if ((d.value_picks || []).length && bullets.length < 5) {
@@ -441,20 +444,24 @@ function renderWeeklyBriefing() {
 
   // --- Header ---
   const weekEnd = d.week_ending || '';
-  const ms = d.market_summary || {};
-  const ir = ms.index_returns || {};
+  // Handle market_summary as either object (old schema) or string (new schema).
+  const ms = (d.market_summary && typeof d.market_summary === 'object') ? d.market_summary : {};
+  const msNarrative = (typeof d.market_summary === 'string') ? d.market_summary : (ms.narrative || '');
+  // index_returns may be top-level (new schema) or nested under market_summary (old schema).
+  const ir = d.index_returns || ms.index_returns || {};
 
-  // Pull index returns from either the nested index_returns block or the flat top-level keys
-  const sp500Raw = ms.sp500_weekly || ir.sp500_weekly
+  // Pull index returns from either the nested index_returns block or the flat top-level keys.
+  // New schema uses human-readable keys like "S&P 500"; old schema used camelCase.
+  const sp500Raw = ms.sp500_weekly || ir.sp500_weekly || ir['S&P 500']
     || (ir.sp500 ? (ir.sp500.weekly_pct !== undefined ? (ir.sp500.weekly_pct >= 0 ? '+' : '') + ir.sp500.weekly_pct.toFixed(2) + '%' : null) : null);
   const sp500 = sp500Raw;
 
-  const nasdaqRaw = ms.nasdaq_weekly || ir.nasdaq_weekly
+  const nasdaqRaw = ms.nasdaq_weekly || ir.nasdaq_weekly || ir['NASDAQ Composite'] || ir['Nasdaq'] || ir['NASDAQ']
     || (ir.nasdaq_composite ? (ir.nasdaq_composite.weekly_pct !== undefined ? (ir.nasdaq_composite.weekly_pct >= 0 ? '+' : '') + ir.nasdaq_composite.weekly_pct.toFixed(2) + '%' : null) : null)
     || (ir.nasdaq ? (ir.nasdaq.weekly_pct !== undefined ? (ir.nasdaq.weekly_pct >= 0 ? '+' : '') + ir.nasdaq.weekly_pct.toFixed(2) + '%' : null) : null);
   const nasdaq = nasdaqRaw;
 
-  const russellRaw = ms.russell_weekly || ir.russell_weekly
+  const russellRaw = ms.russell_weekly || ir.russell_weekly || ir['Russell 2000'] || ir['Dow Jones']
     || (ir.russell_2000 ? (ir.russell_2000.weekly_pct !== undefined ? (ir.russell_2000.weekly_pct >= 0 ? '+' : '') + ir.russell_2000.weekly_pct.toFixed(2) + '%' : null) : null)
     || (ir.russell ? (ir.russell.weekly_pct !== undefined ? (ir.russell.weekly_pct >= 0 ? '+' : '') + ir.russell.weekly_pct.toFixed(2) + '%' : null) : null);
   const russell = russellRaw;
@@ -533,7 +540,7 @@ function renderWeeklyBriefing() {
     `;
   }
 
-  html += `<div class="wb-narrative">${ms.narrative || ''}</div>`;
+  html += `<div class="wb-narrative">${msNarrative}</div>`;
 
   // --- Trends ---
   html += `<div class="wb-section">
@@ -544,8 +551,8 @@ function renderWeeklyBriefing() {
   (d.trends || d.key_trends || []).forEach(t => {
     html += `
       <div class="wb-list-item">
-        <div class="wb-list-title">${t.title || t.name || ''}</div>
-        <div class="wb-list-detail">${t.detail || t.description || ''}</div>
+        <div class="wb-list-title">${t.title || t.name || t.theme || ''}</div>
+        <div class="wb-list-detail">${t.detail || t.description || t.summary || ''}</div>
       </div>`;
   });
   html += `</div></div>`;
@@ -559,8 +566,8 @@ function renderWeeklyBriefing() {
   (d.risks || []).forEach(r => {
     html += `
       <div class="wb-list-item wb-risk-item">
-        <div class="wb-list-title">${r.title || r.name || ''}</div>
-        <div class="wb-list-detail">${r.detail || r.description || ''}</div>
+        <div class="wb-list-title">${r.title || r.name || r.risk || ''}</div>
+        <div class="wb-list-detail">${r.detail || r.description || r.impact || ''}</div>
       </div>`;
   });
   html += `</div></div>`;
@@ -1261,19 +1268,21 @@ async function exportBriefingPDF() {
     }
 
     // ── MACRO OVERVIEW ──
-    const ms = d.market_summary || {};
+    // Handle market_summary as either object (old schema) or string (new schema).
+    const ms = (d.market_summary && typeof d.market_summary === 'object') ? d.market_summary : {};
+    const msNarrative = (typeof d.market_summary === 'string') ? d.market_summary : (ms.narrative || '');
+    const ir = d.index_returns || ms.index_returns || {};
     drawSectionHeader('Macro Overview', ACCENT_GREEN);
-    const ir = ms.index_returns || {};
-    const sp = ms.sp500_weekly || ir.sp500_weekly || '—';
-    const nq = ms.nasdaq_weekly || ir.nasdaq_weekly || '—';
-    const ru = ms.russell_weekly || ir.russell_weekly || '—';
+    const sp = ms.sp500_weekly || ir.sp500_weekly || ir['S&P 500'] || '—';
+    const nq = ms.nasdaq_weekly || ir.nasdaq_weekly || ir['NASDAQ Composite'] || ir['Nasdaq'] || '—';
+    const ru = ms.russell_weekly || ir.russell_weekly || ir['Russell 2000'] || ir['Dow Jones'] || '—';
     writeLabelValue('S&P 500', sp);
     writeLabelValue('Nasdaq', nq);
     writeLabelValue('Russell 2000', ru);
     if (ms.macro_regime) writeLabelValue('Regime', `${ms.macro_regime}${ms.regime_description ? ' — ' + ms.regime_description : ''}`);
     y += 4;
-    if (ms.narrative) {
-      writeParagraph(ms.narrative, 10.5, 'normal', TEXT_PRIMARY);
+    if (msNarrative) {
+      writeParagraph(msNarrative, 10.5, 'normal', TEXT_PRIMARY);
       y += 6;
     }
 
@@ -1281,8 +1290,8 @@ async function exportBriefingPDF() {
     if ((Array.isArray(d.trends) && d.trends.length) || (Array.isArray(d.key_trends) && d.key_trends.length)) {
       drawSectionHeader('Key Trends', ACCENT_GREEN);
       (d.trends || d.key_trends || []).forEach(t => {
-        const title = t.title || t.name || '';
-        const detail = t.detail || t.description || '';
+        const title = t.title || t.name || t.theme || '';
+        const detail = t.detail || t.description || t.summary || '';
         if (title) { writeParagraph(title, 11, 'bold'); }
         if (detail) { writeParagraph(detail, 10.5); y += 2; }
       });
@@ -1292,8 +1301,8 @@ async function exportBriefingPDF() {
     if (Array.isArray(d.risks) && d.risks.length) {
       drawSectionHeader('Risks to Watch', RED);
       d.risks.forEach(r => {
-        const title = r.title || r.name || '';
-        const detail = r.detail || r.description || '';
+        const title = r.title || r.name || r.risk || '';
+        const detail = r.detail || r.description || r.impact || '';
         if (title) { writeParagraph(title, 11, 'bold'); }
         if (detail) { writeParagraph(detail, 10.5); y += 2; }
       });
