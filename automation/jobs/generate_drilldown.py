@@ -215,15 +215,32 @@ def build_signal_data_block(ticker, snap, history_5y=None, market_intel=None):
     ]
 
     if hist:
-        lines.append('Quarter | Rev Beat% | EPS Beat% | 1d Move | GuidanceTone')
+        lines.append('Quarter | EPS Actual | EPS Est | EPS Beat% | Rev Beat% | 1d Move | GuidanceTone')
         for h in hist:
             rev = h.get('revBeatPct')
+            # EPS beat: prefer an explicit beat%, else the snapshot's
+            # surprisePercent, else compute from actual vs estimate. Finnhub
+            # rows carry epsActual/epsEstimate/surprisePercent (not epsBeatPct),
+            # so without this fallback the latest print rendered as MISSING and
+            # the model never saw the concrete actual-vs-estimate beat.
             eps = h.get('epsBeatPct')
+            act = h.get('epsActual')
+            est_eps = h.get('epsEstimate')
+            if eps is None and act is not None and est_eps not in (None, 0):
+                try:
+                    eps = (act - est_eps) / abs(est_eps) * 100.0
+                except (TypeError, ZeroDivisionError):
+                    eps = None
+            if eps is None and h.get('surprisePercent') is not None:
+                # Finnhub surprisePercent is a fraction (0.0752 == 7.52%).
+                eps = h['surprisePercent'] * 100.0
             mv = h.get('oneDayReturn')
             lines.append(
                 (h.get('period') or '?') + ' | ' +
-                (f'{rev:.1f}%' if rev is not None else 'MISSING') + ' | ' +
+                (f'{act:.2f}' if act is not None else 'MISSING') + ' | ' +
+                (f'{est_eps:.2f}' if est_eps is not None else 'MISSING') + ' | ' +
                 (f'{eps:.1f}%' if eps is not None else 'MISSING') + ' | ' +
+                (f'{rev:.1f}%' if rev is not None else 'MISSING') + ' | ' +
                 (f'{mv * 100:.1f}%' if mv is not None else 'MISSING') + ' | ' +
                 (h.get('guidanceTone') or 'MISSING')
             )
@@ -901,6 +918,12 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description='Generate institutional drilldowns.')
     parser.add_argument('--tickers', nargs='+', help='one or more tickers')
     parser.add_argument('--ticker', help='single ticker (alias for --tickers)')
+    parser.add_argument(
+        '--legacy', action='store_true',
+        help='use the v1 single-shot sonar-deep-research generator (truncation-'
+             'prone; default is the section-by-section v2 pipeline)',
+    )
+    parser.add_argument('--force', action='store_true', help='bypass research cache')
     args = parser.parse_args(argv)
 
     tickers = list(args.tickers or [])
@@ -908,6 +931,31 @@ def main(argv=None):
         tickers.append(args.ticker)
     if not tickers:
         parser.error('provide --ticker TICKER or --tickers T1 T2 ...')
+
+    # Default path: route through the section-by-section v2 generator, which
+    # makes truncation structurally impossible and gates every note through the
+    # validator + quality scorecard before publishing. --legacy keeps the v1
+    # single-shot generator available for comparison / fallback.
+    if not args.legacy:
+        from automation.jobs.drilldown_generator_v2 import generate_one_v2
+        snap = _load_snapshot()
+        results = []
+        any_fail = False
+        for t in tickers:
+            try:
+                r = generate_one_v2(t, snap, force=args.force)
+            except Exception as exc:
+                print(f'  [ERROR] {t}: {exc}', file=sys.stderr)
+                r = {'ticker': t, 'published': False, 'reasons': [str(exc)]}
+            results.append(r)
+            if not r.get('published'):
+                any_fail = True
+        print('\n=== SUMMARY (v2) ===')
+        for r in results:
+            status = 'OK  ' if r.get('published') else 'FAIL'
+            print(f'  {status} {r["ticker"]}: score={r.get("score")} '
+                  f'{r.get("md_path") or r.get("reasons")}')
+        return 1 if any_fail else 0
 
     snap = _load_snapshot()
     prompt_template = PROMPT_PATH.read_text(encoding='utf-8')
@@ -922,7 +970,7 @@ def main(argv=None):
             print(f'  [ERROR] {t}: {exc}', file=sys.stderr)
             errors.append((t, str(exc)))
 
-    print('\n=== SUMMARY ===')
+    print('\n=== SUMMARY (legacy v1) ===')
     for e in results:
         print(f'  OK   {e["ticker"]}: {e["markdown_path"]} '
               f'({e["word_count"]} words)')
