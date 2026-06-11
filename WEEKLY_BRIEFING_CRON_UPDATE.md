@@ -10,11 +10,22 @@ Schedule: 0 10 * * 0   (Sundays at 10:00 AM)
 
 Steps:
   1. python -m automation.jobs.weekly_briefing --output /home/user/workspace/watchlist-app/weekly_briefing.json
+  1b. python -m automation.jobs.audit_briefing_sections --input /home/user/workspace/watchlist-app/weekly_briefing.json
   2. node /home/user/workspace/watchlist-app/update_subsectors.mjs
   3. node /home/user/workspace/populate_supabase.mjs
   4. cd /home/user/workspace/watchlist-app && git add -A && git commit -m "weekly briefing $(date +%Y-%m-%d)" && git push
   5. (email delivery via gcal connector -- unchanged)
 ```
+
+## Section-quality audit (step 1b)
+
+`weekly_briefing.py` itself logs section counts and runs one targeted retry when
+`watchlist_updates` (< 20), `upcoming_catalysts` (< 6), or `sector_summary`
+(< 8) come back short. Step 1b re-reads the FINAL written `weekly_briefing.json`
+and appends an authoritative audit line per section to
+`/home/user/workspace/cron_tracking/4277e158/section_quality.log`, so Monday
+morning a single `tail`/`grep WARN` confirms whether the 6/07 empty-section
+regression stayed fixed. The schedule is unchanged.
 
 ## Environment variables required
 

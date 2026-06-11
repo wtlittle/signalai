@@ -28,8 +28,21 @@ from automation.perplexity.prompts import (
     build_weekly_momentum_prompt,
     build_weekly_trends_prompt,
 )
+from automation.jobs.weekly_briefing_context import build_context_blocks
 
 TODAY = date.today()
+
+# Section-quality tracking log (written by the post-LLM validator AND the cron
+# audit step). Lives outside the repo so the cron monitor can tail it Monday AM.
+SECTION_QUALITY_LOG = Path("/home/user/workspace/cron_tracking/4277e158/section_quality.log")
+
+# Minimum entry counts the validator enforces on the three regression-prone
+# sections. watchlist_updates min is clamped to available movers at runtime.
+_SECTION_MINIMUMS = {
+    "watchlist_updates": 20,
+    "upcoming_catalysts": 6,
+    "sector_summary": 8,
+}
 
 
 # --- Structured-output schema for the trends call (advisory for
@@ -199,13 +212,14 @@ def _fetch_momentum():
     )
 
 
-def _fetch_trends(tickers: list[str]):
+def _fetch_trends(tickers: list[str], context: dict | None = None, force: bool = False):
     """Deep-research call for market trends + watchlist movers."""
     print("  [3/3] Researching market trends and watchlist movers...")
     return call_perplexity(
         "MARKET", "weekly_trends",
-        build_weekly_trends_prompt(tickers),
-        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. The 'narrative' field must contain a full markdown research report (15000+ chars, ## headers, citations) as an escaped JSON string. key_trends, trends, risks are arrays of objects with both old and new schema keys. watchlist_updates and watchlist_movers are arrays covering 30-60 tickers. upcoming_catalysts is an array of 8-15 entries. sector_summary is an object with 11 sector keys. index_returns is a flat object of numeric fields, never a table. No markdown outside the JSON. No tabs. No prose. No code fences. Only JSON.",
+        build_weekly_trends_prompt(tickers, context=context),
+        force=force,
+        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. The 'narrative' field must contain a full markdown research report (15000+ chars, ## headers, citations) as an escaped JSON string. key_trends, trends, risks are arrays of objects with both old and new schema keys. watchlist_updates and watchlist_movers are arrays with one entry per material mover supplied in the prompt (minimum 20). upcoming_catalysts is an array of at least 6 entries. sector_summary is an object with EXACTLY the eight subsector keys supplied in the prompt. index_returns is a flat object of numeric fields, never a table. No markdown outside the JSON. No tabs. No prose. No code fences. Only JSON.",
         # sonar-deep-research produces 25-35K narrative + 30-60 watchlist entries; we need
         # significant token headroom. 20000 gives headroom for the full rich output.
         max_tokens=20000,
@@ -442,6 +456,56 @@ def _normalize_risk_entry(r: dict) -> dict:
     return out
 
 
+def _section_count(briefing: dict, section: str) -> int:
+    """Count entries in a briefing section (list len, or dict key count)."""
+    v = briefing.get(section)
+    if isinstance(v, list):
+        return len(v)
+    if isinstance(v, dict):
+        return len(v)
+    return 0
+
+
+def _log_section_quality(briefing: dict, context: dict | None, stage: str) -> dict:
+    """Append per-section counts vs. minimums to SECTION_QUALITY_LOG.
+
+    Returns a dict {section: {count, minimum, ok}} for the three tracked sections.
+    Never raises — quality logging must not break briefing generation.
+    """
+    mins = dict(_SECTION_MINIMUMS)
+    if context and context.get("min_watchlist"):
+        # Can't write more watchlist entries than we have movers for.
+        mins["watchlist_updates"] = context["min_watchlist"]
+
+    report = {}
+    for section, minimum in mins.items():
+        count = _section_count(briefing, section)
+        report[section] = {"count": count, "minimum": minimum, "ok": count >= minimum}
+
+    try:
+        SECTION_QUALITY_LOG.parent.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now(tz=__import__("datetime").timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        week = briefing.get("week_ending") or TODAY.isoformat()
+        with open(SECTION_QUALITY_LOG, "a") as fh:
+            for section, r in report.items():
+                level = "OK" if r["ok"] else "WARN"
+                fh.write(
+                    f"{ts} [{level}] week={week} stage={stage} "
+                    f"{section}={r['count']} (min {r['minimum']})\n"
+                )
+    except Exception as exc:
+        print(f"  [section-quality] log write failed: {exc}")
+
+    for section, r in report.items():
+        if not r["ok"]:
+            print(f"  [SECTION QUALITY WARN] {section}: {r['count']} < min {r['minimum']}")
+    return report
+
+
+def _failing_sections(report: dict) -> list[str]:
+    return [s for s, r in report.items() if not r["ok"]]
+
+
 def compile_briefing(value, momentum, trends) -> dict:
     """Merge 3 API responses into the weekly_briefing.json schema.
 
@@ -549,11 +613,19 @@ def run(output_path: Path | None = None) -> dict:
     print(f"Generating weekly briefing for week ending {TODAY.isoformat()}...")
     print(f"Output: {out}")
 
+    # Precompute concrete-data blocks (movers / earnings / subsectors) so the
+    # trends prompt can be grounded in real names — the fix for the 6/07 regression
+    # where watchlist_updates/upcoming_catalysts/sector_summary came back empty.
+    context = build_context_blocks(TODAY)
+    print(f"  Context: {len(context['movers'])} movers, "
+          f"{len(context['earnings'])} earnings, "
+          f"{sum(1 for b in context['buckets'].values() if b)} subsectors")
+
     # --- Run 3 deep-research calls in parallel ---
     with ThreadPoolExecutor(max_workers=3) as pool:
         future_value = pool.submit(_fetch_value)
         future_momentum = pool.submit(_fetch_momentum)
-        future_trends = pool.submit(_fetch_trends, tickers)
+        future_trends = pool.submit(_fetch_trends, tickers, context)
 
         value = future_value.result()
         momentum = future_momentum.result()
@@ -562,6 +634,26 @@ def run(output_path: Path | None = None) -> dict:
     # --- Compile ---
     print("\nCompiling weekly_briefing.json...")
     briefing = compile_briefing(value, momentum, trends)
+
+    # --- Post-LLM section-quality validation + one targeted retry ---
+    report = _log_section_quality(briefing, context, stage="initial")
+    failing = _failing_sections(report)
+    if failing:
+        print(f"  [RETRY] Sections below minimum: {failing}. Re-running trends call once...")
+        try:
+            retry_trends = _fetch_trends(tickers, context, force=True)
+            retry_briefing = compile_briefing(value, momentum, retry_trends)
+            retry_report = _log_section_quality(retry_briefing, context, stage="retry")
+            # Keep the retry only if it improved the failing sections in aggregate.
+            before = sum(report[s]["count"] for s in failing)
+            after = sum(retry_report[s]["count"] for s in failing)
+            if after > before:
+                print(f"  [RETRY] Improved failing sections {before} -> {after}; keeping retry.")
+                briefing = retry_briefing
+            else:
+                print(f"  [RETRY] No improvement ({before} -> {after}); keeping original.")
+        except Exception as exc:
+            print(f"  [RETRY] failed: {exc}; keeping original briefing.")
 
     write_json(out, briefing)
     print(f"  Saved to {out}")

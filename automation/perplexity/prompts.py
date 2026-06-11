@@ -1121,7 +1121,7 @@ Field rules:
 CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array parseable by Python json.loads() without preprocessing. No markdown, no prose, no section headers, no code fences. Do NOT wrap in ```json or ``` markers. The first character must be [ and the last character must be ]. Emit all 5 picks; never truncate a pick mid-object."""
 
 
-def build_weekly_trends_prompt(watchlist_tickers: list[str]) -> str:
+def build_weekly_trends_prompt(watchlist_tickers: list[str], context: dict | None = None) -> str:
     """Weekly briefing — market trends, risks, watchlist movers, upcoming catalysts,
     sector summary, and a full markdown research narrative.
 
@@ -1129,10 +1129,48 @@ def build_weekly_trends_prompt(watchlist_tickers: list[str]) -> str:
     it must be a long markdown document (## headers + inline citations), NOT a
     2-3 sentence blurb. trends/risks/watchlist are lists of OBJECTS, not strings.
     Target output size: 80KB+ JSON (comparable to the 5/22 briefing at 85KB).
+
+    ``context`` is the precomputed concrete-data dict from
+    weekly_briefing_context.build_context_blocks(). When supplied, the three
+    historically-empty sections (watchlist_updates / upcoming_catalysts /
+    sector_summary) are grounded in literal mover/earnings/subsector lists so the
+    model writes about real names instead of returning []. When absent (legacy
+    callers), the prompt falls back to the old "scan the watchlist yourself"
+    instructions.
     """
     # Use all tickers for watchlist coverage (target 30-60 movers)
     tickers_str = ", ".join(watchlist_tickers)
     tickers_count = len(watchlist_tickers)
+
+    # --- Concrete-data blocks (the fix for the 6/07 empty-section regression) ---
+    if context:
+        movers_block = context.get("movers_block", "")
+        earnings_block = context.get("earnings_block", "")
+        subsector_block = context.get("subsector_block", "")
+        min_watchlist = context.get("min_watchlist", 20)
+        min_catalysts = context.get("min_catalysts", 6)
+        min_sectors = context.get("min_sectors", 8)
+        subsector_order = context.get("subsector_order") or []
+        subsector_keys = ", ".join(f'"{s}"' for s in subsector_order)
+        context_section = f"""
+PRECOMPUTED DATA (authoritative — use these EXACT names; do NOT substitute your own ticker list):
+
+MATERIAL WATCHLIST MOVERS THIS WEEK (computed from our price snapshot; 1W/1M are real):
+{movers_block}
+
+UPCOMING WATCHLIST EARNINGS (next 14 days, from our calendar):
+{earnings_block}
+
+SUBSECTOR BUCKETS (each constituent's real 1-week move in parentheses):
+{subsector_block}
+"""
+    else:
+        movers_block = earnings_block = subsector_block = ""
+        min_watchlist, min_catalysts, min_sectors = 20, 6, 8
+        subsector_order = []
+        subsector_keys = ""
+        context_section = ""
+
     return f"""OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Every character of your response that is not part of the single JSON object will be discarded and the response treated as a failure. Your response must BEGIN with the character {{ and END with the character }}.
 
 HALLUCINATION GUARD: If you cannot source a metric from real public data within the last 7 days, return null. Do not hallucinate analyst targets, FCF figures, sector breadth statistics, or price data. Every number must come from a verifiable public source.
@@ -1140,6 +1178,7 @@ HALLUCINATION GUARD: If you cannot source a metric from real public data within 
 You are a senior market strategist writing a buy-side weekly market briefing. Produce a deep, comprehensive, well-sourced summary of this week's US equity market covering ALL of the sections described below. This briefing should be rich and detailed -- the output JSON should be substantial (target at minimum 80KB of JSON data).
 
 Watchlist tickers ({tickers_count} total): {tickers_str}
+{context_section}
 
 RETURN STRICTLY THIS JSON SHAPE. Return ONLY a single JSON object with EXACTLY these keys, EXACT key names, ALL KEYS REQUIRED, NO TRAILING COMMAS:
 
@@ -1171,17 +1210,14 @@ RETURN STRICTLY THIS JSON SHAPE. Return ONLY a single JSON object with EXACTLY t
     {{"ticker": "<ticker or MACRO>", "date": "YYYY-MM-DD", "event_type": "<earnings|conference|macro|IPO|FDA|other>", "event": "<brief event description>", "importance": "<High|Medium|Low>", "context": "<2-4 sentences on why this matters and what to watch>"}}
   ],
   "sector_summary": {{
-    "Technology": "<2-4 sentences: leaders, laggards, weekly %, breadth/regime note>",
-    "Financials": "<2-4 sentences>",
-    "Healthcare": "<2-4 sentences>",
-    "Energy": "<2-4 sentences>",
-    "Industrials": "<2-4 sentences>",
-    "Consumer Discretionary": "<2-4 sentences>",
-    "Consumer Staples": "<2-4 sentences>",
-    "Utilities": "<2-4 sentences>",
-    "Materials": "<2-4 sentences>",
-    "Real Estate": "<2-4 sentences>",
-    "Communication Services": "<2-4 sentences>"
+    "Software Infrastructure": "<4-6 sentences: week's price action, major company news, year-end positioning read; cite >= 2 tickers>",
+    "Application Software": "<4-6 sentences>",
+    "Cybersecurity": "<4-6 sentences>",
+    "Semiconductors": "<4-6 sentences>",
+    "AdTech/Digital Media": "<4-6 sentences>",
+    "Fintech": "<4-6 sentences>",
+    "Consumer": "<4-6 sentences>",
+    "Energy/Industrials": "<4-6 sentences>"
   }},
   "narrative": "<FULL MARKDOWN RESEARCH REPORT — see requirements below>"
 }}
@@ -1202,27 +1238,30 @@ risks RULES:
 - Provide 4-6 risk objects. Each MUST have BOTH old-schema keys (rank, title, detail) AND new-schema keys (risk, impact). "rank" is an integer 1-6, "title" and "risk" may be identical, "detail" and "impact" may be identical.
 
 watchlist_updates RULES (CRITICAL — this is the most important volume section):
-- Scan ALL {tickers_count} watchlist tickers for material moves this week.
-- Include EVERY ticker with: any earnings report, any analyst rating change, any >5% weekly move, any major news event.
-- Target 30-60 entries spanning as much of the watchlist as possible.
-- Each entry must have: ticker (string), weekly_change_pct (number, signed float e.g. 2.3 for +2.3%), thirty_day_change_pct (number), headline (string, 1-2 sentences), summary (string), tags (array of strings like ["earnings", "analyst_action", "major_mover"]).
-- Use null for any price change you cannot verify; do not fabricate performance numbers.
+- Write ONE entry for EACH ticker in the "MATERIAL WATCHLIST MOVERS THIS WEEK" list above. Do not skip any; do not invent tickers that are not on that list.
+- For each ticker, write a 3-5 sentence paragraph in the "headline" field (and copy it into "summary") covering: (a) WHAT moved it this week — the specific catalyst (earnings, guidance, analyst action, product/regulatory news, sector rotation); (b) WHY it matters for the thesis on that name; (c) the TAKEAWAY (add/trim/hold/watch). Research the real catalyst — do not just restate the percent.
+- weekly_change_pct and thirty_day_change_pct: copy the 1W and 1M numbers given for that ticker in the list above (signed floats, e.g. -29.9, +44.6). These are authoritative; do NOT recompute or override them.
+- tags: array of short strings like ["earnings", "analyst_action", "major_mover", "downgrade", "guidance"].
+- MINIMUM {min_watchlist} entries. A response with fewer than {min_watchlist} watchlist_updates entries is a FAILURE. There is no upper limit — cover every mover in the list.
 
 watchlist_movers RULES:
 - Also populate watchlist_movers as an alias for watchlist_updates, in a slightly different shape: each entry has ticker, weekly_move (string like "+3.2%"), thirty_day_move (string), catalyst (string), detail (string).
 - Include the same tickers as watchlist_updates (30-60 entries).
 
 upcoming_catalysts RULES:
-- Provide 8-15 upcoming catalyst entries for the next 2-3 weeks.
-- Cover earnings dates, Fed meetings, macro data prints (CPI, PCE, jobs), investor days, product launches.
-- Use "MACRO" as the ticker for non-company events (Fed, CPI, PCE, jobs, etc.).
-- Each entry MUST have: ticker, date (YYYY-MM-DD), event_type, event (brief description), importance (High/Medium/Low), context (2-4 sentences on why this matters).
-- Use null for date if you cannot verify the exact date; do not fabricate specific dates.
+- START with EVERY event in the "UPCOMING WATCHLIST EARNINGS" list above — write one entry per listed earnings event, using the exact ticker and date given.
+- THEN ADD macro/market catalysts for the next 14 days (FOMC decisions, CPI, PCE, jobs/NFP, retail sales, key auctions, major conferences/investor days, notable non-watchlist mega-cap prints) until you reach the minimum. Use "MACRO" as the ticker for non-company events.
+- For EACH event, write a 2-3 sentence "context" note covering: (a) the key DEBATE going into the event, (b) what the BUY-SIDE cares about, and (c) one specific KPI / data point to WATCH.
+- Each entry MUST have: ticker, date (YYYY-MM-DD), event_type (earnings|conference|macro|IPO|FDA|other), event (brief description), importance (High|Medium|Low), context (the 2-3 sentence note above).
+- MINIMUM {min_catalysts} entries. A response with fewer than {min_catalysts} upcoming_catalysts entries is a FAILURE.
+- Use a verifiable real date; do not fabricate a date you cannot source.
 
 sector_summary RULES:
-- Cover all 11 GICS sectors listed above. For each sector write 2-4 sentences covering: which stocks led/lagged, weekly % performance for the sector ETF (XLK/XLF/XLV/XLE/XLI/XLY/XLP/XLU/XLB/XLRE/XLC), breadth/regime note.
-- sector_summary is a JSON OBJECT with sector name keys and string values (not an array).
-- If you cannot find the sector ETF weekly %, leave out the number rather than fabricating it.
+- Cover EXACTLY these eight subsectors, using these EXACT key names: {subsector_keys}. Use the "SUBSECTOR BUCKETS" list above as the constituent universe for each — the tickers and their real 1-week moves are given there.
+- For EACH subsector write 4-6 sentences covering: (a) the week's PRICE ACTION (lean on the constituent moves listed above — which names led, which lagged, the dispersion); (b) any major COMPANY NEWS (earnings, guidance, M&A, analyst actions on those names); (c) what the move tells us about POSITIONING into year-end.
+- CITE AT LEAST 2 tickers per subsector, drawn from that subsector's bucket above.
+- sector_summary is a JSON OBJECT with the eight subsector-name keys and string values (NOT an array).
+- MINIMUM {min_sectors} subsector entries (all eight). A response with fewer than {min_sectors} sector_summary keys is a FAILURE.
 
 NARRATIVE REQUIREMENTS (most important field for depth):
 - Must be a substantial markdown research report of AT LEAST 15000 characters (target 25000-35000).
