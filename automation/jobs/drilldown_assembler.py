@@ -129,6 +129,18 @@ _STYLE = """  *, *::before, *::after { box-sizing: border-box; margin: 0; paddin
   .missing-flag strong { color: #92400e; }
   .unavailable { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 16px 18px; font-size: 12px; color: var(--text-muted); }
   a[href^="claim:"] { color: inherit; text-decoration: none; border-bottom: 1px dashed var(--teal); cursor: help; }
+  .citation-ref { font-size: 10px; vertical-align: super; color: var(--teal); text-decoration: none; font-weight: 600; }
+  .citation-ref:hover { text-decoration: underline; }
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
+  .sources h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 12px; }
+  .sources-list { padding-left: 0; list-style: none; counter-reset: source-counter; }
+  .sources-list li { counter-increment: source-counter; padding: 6px 0 6px 28px; position: relative; font-size: 12px; line-height: 1.5; border-bottom: 1px solid var(--border); }
+  .sources-list li:last-child { border-bottom: none; }
+  .sources-list li::before { content: counter(source-counter) "."; position: absolute; left: 0; color: var(--teal); font-weight: 700; }
+  .sources-list a { color: var(--teal); text-decoration: none; }
+  .sources-list a:hover { text-decoration: underline; }
+  .disclaimer { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; }
+  .disclaimer p { font-size: 11px; line-height: 1.7; color: #78350f; }
   @media print { body { background: white; font-size: 11px; } .container { padding: 10px; } .kpi-grid { grid-template-columns: repeat(3, 1fr); } .three-col, .two-col { grid-template-columns: 1fr; } a[href^="claim:"] { border-bottom: none; } .section { break-inside: avoid; } }
   @media (max-width: 720px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } .three-col { grid-template-columns: 1fr; } .two-col { grid-template-columns: 1fr; } .container { padding: 12px; } .company-name { font-size: 20px; } .current-price { font-size: 24px; } }"""
 
@@ -288,8 +300,7 @@ def _render_header(meta: dict, summary: dict, citer: _Citer) -> str:
         f'    <span class="brand">Signal Stack AI</span>\n'
         f'    <span class="brand-sep">|</span>\n'
         f'    <span class="meta-line">Institutional Drilldown &nbsp;&middot;&nbsp; '
-        f'Generated {_esc(date_str)} &nbsp;&middot;&nbsp; {_esc(sector)} '
-        f'&nbsp;&middot;&nbsp; For Institutional Use Only</span>\n'
+        f'Generated {_esc(date_str)} &nbsp;&middot;&nbsp; {_esc(sector)}</span>\n'
         f'  </div>\n'
         f'  <div class="company-line">\n'
         f'    <span class="company-name">{_esc(company)}</span>\n'
@@ -691,17 +702,78 @@ def _render_sources(meta: dict) -> str:
         'figure not verifiable from the data block is shown as an em-dash rather '
         'than estimated.</p>\n'
         f'  <p style="margin-top:10px;font-size:10px;color:#78716c;">Signal Stack AI '
-        f'&nbsp;&middot;&nbsp; Not investment advice &nbsp;&middot;&nbsp; For '
-        f'institutional use only &nbsp;&middot;&nbsp; Generated {_esc(date_str)} '
+        f'&nbsp;&middot;&nbsp; Not investment advice '
+        f'&nbsp;&middot;&nbsp; Generated {_esc(date_str)} '
         f'&nbsp;&middot;&nbsp; Section-by-section v2</p>\n'
+        '</section>\n\n'
+        '<section class="disclaimer">\n'
+        '  <p><em>This note is for informational purposes only and does not '
+        'constitute investment advice, an offer to buy or sell any security, or a '
+        'solicitation. It is not produced by a registered investment adviser. '
+        'Information may be incomplete or inaccurate. Do your own research and '
+        'consult a licensed professional before making any investment decision.</em></p>\n'
         '</section>'
     )
 
 
 # --------------------------------------------------------------------------- #
+# Citation processing (Change 2: [N] marker wrapping and orphan stripping)
+# --------------------------------------------------------------------------- #
+def _render_citation_sources(sources: list[dict]) -> str:
+    """Render a <section class="sources"> block from a deduplicated source list.
+
+    Each source dict must have at least a 'url' key. Optional keys:
+    'title', 'publisher', 'date' (YYYY-MM-DD).
+    """
+    if not sources:
+        return ""
+    items = []
+    for i, src in enumerate(sources, 1):
+        url = _esc(src.get("url", ""))
+        title = _esc(src.get("title") or src.get("url") or f"Source {i}")
+        pub = _esc(src.get("publisher", ""))
+        date = _esc(src.get("date", ""))
+        meta_parts = " — ".join(p for p in [pub, date] if p)
+        meta_html = f" — {meta_parts}" if meta_parts else ""
+        href = f' href="{url}"' if url else ""
+        items.append(
+            f'    <li id="ref-{i}"><a{href}>{title}</a>{meta_html}</li>'
+        )
+    ol = "\n".join(items)
+    return (
+        '<section class="sources">\n'
+        '  <h2>Sources</h2>\n'
+        f'  <ol class="sources-list">\n{ol}\n  </ol>\n'
+        '</section>'
+    )
+
+
+_INLINE_CITATION_RE = re.compile(r'\[(\d+)\]')
+
+
+def _process_inline_citations(html: str, sources: list[dict]) -> str:
+    """Wrap [N] markers in anchor tags when N has a matching source entry.
+
+    [N] markers without a matching source are stripped entirely (orphan stripper).
+    Sources are 1-indexed: [1] maps to sources[0], etc.
+    """
+    max_n = len(sources)
+
+    def _replace(m: re.Match) -> str:
+        n = int(m.group(1))
+        if 1 <= n <= max_n:
+            return f'<a href="#ref-{n}" class="citation-ref">[{n}]</a>'
+        # Orphan: no matching source -- strip silently.
+        return ""
+
+    return _INLINE_CITATION_RE.sub(_replace, html)
+
+
+# --------------------------------------------------------------------------- #
 # Top-level assembly
 # --------------------------------------------------------------------------- #
-def assemble_document(meta: dict, sections: dict) -> str:
+def assemble_document(meta: dict, sections: dict,
+                      sources: list[dict] | None = None) -> str:
     """Stitch validated section payloads into the full 14-section HTML document.
 
     ``meta`` carries header/identity fields: ticker, company, exchange, sector,
@@ -840,10 +912,46 @@ def assemble_document(meta: dict, sections: dict) -> str:
         parts.append(_section(13, "Primary Diligence Questions",
                               "    " + _unavailable(_reason("debate") or "")))
 
-    # 14: sources
+    # 14: sources (static data-quality notes section)
     parts.append(_render_sources(meta))
 
     body = "\n\n".join(parts)
+
+    # Dedupe sources by URL and apply inline-citation processing.
+    # The sources list (optional) comes from the caller (v2 generator can
+    # pass per-section Sonar citation URLs). Strip orphan [N] markers when
+    # no source list is available.
+    deduped_sources: list[dict] = []
+    if sources:
+        seen_urls: set[str] = set()
+        for src in sources:
+            url = src.get("url", "")
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                deduped_sources.append(src)
+            elif not url:
+                # No URL -- include once (dedupe by title)
+                t = src.get("title", "")
+                if t not in seen_urls:
+                    seen_urls.add(t)
+                    deduped_sources.append(src)
+
+    # Apply inline-citation processing: wrap matched [N], strip orphans.
+    body = _process_inline_citations(body, deduped_sources)
+
+    # Append sources section before the disclaimer (which comes from
+    # _render_sources / footer). Insert before </section>\n\n<section class="disclaimer">
+    sources_html = _render_citation_sources(deduped_sources)
+    if sources_html:
+        body = body.replace(
+            '</section>\n\n'
+            '<section class="disclaimer">',
+            '</section>\n\n'
+            + sources_html
+            + '\n\n'
+            '<section class="disclaimer">',
+            1,  # only the last occurrence (footer -> disclaimer boundary)
+        )
 
     return (
         "<!DOCTYPE html>\n"

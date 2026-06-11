@@ -99,13 +99,33 @@ def _fmt_pct_raw(v):
         return 'MISSING'
 
 
+def format_currency(value, *, allow_millions=True):
+    """Format a USD value with tier-appropriate units.
+    <$1B  -> "$XXXm" (no decimals)
+    $1-10B -> "$X.XXB" (two decimals)
+    >=$10B -> "$XX.XB" (one decimal)
+    None / missing -> "n/a"
+    """
+    if value is None:
+        return 'n/a'
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return 'n/a'
+    abs_v = abs(v)
+    if abs_v < 1_000_000_000 and allow_millions:
+        return f'${v/1_000_000:.0f}m'
+    if abs_v < 10_000_000_000:
+        return f'${v/1_000_000_000:.2f}B'
+    return f'${v/1_000_000_000:.1f}B'
+
+
 def _fmt_b(v):
+    """Format a USD value using tier-appropriate units; 'MISSING' when null."""
     if v is None:
         return 'MISSING'
-    try:
-        return f'${float(v) / 1e9:.2f}B'
-    except (TypeError, ValueError):
-        return 'MISSING'
+    result = format_currency(v)
+    return result if result != 'n/a' else 'MISSING'
 
 
 def _dash(v):
@@ -120,13 +140,11 @@ def _dash(v):
 
 
 def _dash_b(v):
-    """Format a USD value as $X.XXB, or em-dash when null."""
+    """Format a USD value using tier-appropriate units, or em-dash when null."""
     if v is None:
         return '—'
-    try:
-        return f'${float(v) / 1e9:.2f}B'
-    except (TypeError, ValueError):
-        return '—'
+    result = format_currency(v)
+    return result if result != 'n/a' else '—'
 
 
 def _dash_num(v, decimals=2):

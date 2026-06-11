@@ -24,8 +24,9 @@ Categories and weights (sum 100):
                                  rendered as a quarantined "unavailable" block.
 
 Calibration targets (see __main__ self-test):
-  * golden/FROG_drilldown_golden.html  -> 95+
-  * a healthy POET note                -> 80+
+  * golden/FROG_drilldown_golden.html  -> 91+ (was 96+; -5 legacy institutional phrase)
+  * a new assembled note (no compliance issues) -> 80+
+  * a healthy POET note (pre-fix)       -> 80+
   * a degraded note (no three-col BBB) -> < 80   (quarantine)
 
 ``score_drilldown`` accepts either an ``html`` string or a ``path``. Returns:
@@ -248,6 +249,93 @@ def _score_completeness(html: str) -> tuple[float, int, list[str]]:
 
 
 # --------------------------------------------------------------------------- #
+# Compliance penalty scorer (deducted from total after category scoring)
+# --------------------------------------------------------------------------- #
+#
+# These are POST-score deductions (not a weighted category) so the existing
+# 100-point category weights are unchanged. Penalties are bounded so the
+# final score never goes below 0.
+#
+#   -5  "For Institutional Use Only" phrase present
+#   -10  Disclaimer section missing (class="disclaimer" or disclaimer text)
+#   -5   Revenue/FCF/MCap formatted as $X.XXB when value is <$1B (wrong tier)
+#   -10  Orphan [N] citation marker present (no wrapping anchor with id=ref-N)
+
+_INSTITUTIONAL_PHRASE_RE = re.compile(
+    r'for\s+institutional\s+use\s+only', re.IGNORECASE)
+_DISCLAIMER_TEXT_RE = re.compile(
+    r'does not constitute investment advice', re.IGNORECASE)
+_DISCLAIMER_CLASS_RE = re.compile(
+    r'class=["\']disclaimer["\']', re.IGNORECASE)
+_WRONG_REVENUE_TIER_RE = re.compile(
+    # $X.XXB where X.XX represents a value that would be in millions
+    # i.e. $0.XXB (leading zero) -- indicates <$1B formatted as billions
+    r'\$0\.\d{2}B\b'
+)
+_ORPHAN_CITATION_RE = re.compile(
+    # [N] not immediately preceded by closing anchor </a> and not wrapped as
+    # <a ... class="citation-ref">[N]</a>. Simpler: find [N] not inside an
+    # anchor href="#ref-N" pattern.
+    r'(?<!citation-ref">)\[(\d+)\](?!<)'
+)
+
+
+def _score_compliance_penalties(html: str) -> tuple[int, list[str]]:
+    """Return (penalty_pts, notes_list). Penalties are subtracted from total."""
+    plain = re.sub(r'<[^>]+>', ' ', html)
+    penalty = 0
+    notes: list[str] = []
+
+    # -5: "For Institutional Use Only" phrase present.
+    if _INSTITUTIONAL_PHRASE_RE.search(plain):
+        penalty += 5
+        notes.append(
+            'compliance: -5 "For Institutional Use Only" phrase present'
+        )
+
+    # -10: Disclaimer section missing.
+    has_disclaimer = (
+        _DISCLAIMER_CLASS_RE.search(html)
+        or _DISCLAIMER_TEXT_RE.search(plain)
+    )
+    if not has_disclaimer:
+        penalty += 10
+        notes.append('compliance: -10 disclaimer section missing')
+
+    # -5: Revenue formatted as $0.XXB when value is sub-$1B (wrong tier --
+    # should be $XXXm). Detect by the leading-zero pattern.
+    if _WRONG_REVENUE_TIER_RE.search(plain):
+        penalty += 5
+        notes.append(
+            'compliance: -5 sub-$1B revenue formatted as $0.XXB (should be $XXXm)'
+        )
+
+    # -10: Orphan [N] citation marker present (no matching source anchor).
+    # A properly wrapped citation looks like: <a ... class="citation-ref">[N]</a>
+    # An orphan is any bare [N] remaining in the rendered text.
+    # After _process_inline_citations runs, bare [N] should be stripped;
+    # if any survive, penalise.
+    #
+    # Only applied to notes rendered by the new assembler (which has the
+    # disclaimer section). Notes rendered before the citation-processing
+    # change are not penalised for orphans they could not have avoided.
+    is_new_assembler = bool(
+        _DISCLAIMER_CLASS_RE.search(html)
+        and _DISCLAIMER_TEXT_RE.search(plain)
+    )
+    if is_new_assembler:
+        orphans = _ORPHAN_CITATION_RE.findall(plain)
+        if orphans:
+            penalty += 10
+            notes.append(
+                f'compliance: -10 orphan citation marker(s) in rendered text: '
+                f'{orphans[:5]}'
+            )
+
+    return penalty, notes
+
+
+# --------------------------------------------------------------------------- #
 # Public entry point
 # --------------------------------------------------------------------------- #
 def score_drilldown(path: str | None = None, *, html: str | None = None,
@@ -280,7 +368,18 @@ def score_drilldown(path: str | None = None, *, html: str | None = None,
         total += earned
         issues.extend(notes)
 
-    score = int(round(total))
+    # Apply compliance penalties (post-score deductions).
+    penalty, pen_notes = _score_compliance_penalties(html)
+    if penalty:
+        breakdown["compliance_penalties"] = {
+            "score": -penalty,
+            "max": 0,
+            "notes": pen_notes,
+        }
+        total -= penalty
+        issues.extend(pen_notes)
+
+    score = int(round(max(0.0, total)))
     return {
         "score": score,
         "breakdown": breakdown,
