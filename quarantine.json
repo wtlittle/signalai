@@ -138,5 +138,25 @@
       "attempts": 1,
       "ts": "2026-06-11T13:49:27.087325+00:00"
     }
+  ],
+  "drilldown_failures_v2": [
+    {
+      "ticker": "ORCL",
+      "reason": "bbb_section_quarantined",
+      "detail": "section 'bbb' returned no usable JSON (unparseable/raw)",
+      "at": "2026-06-11T14:37:49Z"
+    },
+    {
+      "ticker": "NVDA",
+      "reason": "bbb_section_quarantined",
+      "detail": "section 'bbb' returned no usable JSON (unparseable/raw)",
+      "at": "2026-06-11T14:49:35Z"
+    },
+    {
+      "ticker": "RBRK",
+      "reason": "bbb_section_quarantined",
+      "detail": "section 'bbb' returned no usable JSON (unparseable/raw)",
+      "at": "2026-06-11T14:59:41Z"
+    }
   ]
 }
