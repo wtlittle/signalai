@@ -22,6 +22,7 @@ Pure stdlib + the existing shared helpers. No network calls.
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
+from functools import lru_cache
 
 from automation.shared.paths import DATA_SNAPSHOT, EARNINGS_CALENDAR
 from automation.shared.io_helpers import read_json
@@ -248,7 +249,11 @@ def render_subsector_block(buckets: dict[str, list[dict]]) -> str:
 # on or before the target week-ending date. This keeps regenerated briefings
 # grounded in REAL price action for that week — never fabricated.
 
+@lru_cache(maxsize=1)
 def _load_history() -> dict:
+    # Cached: every caller reads the same daily snapshot, and no current caller
+    # spans a snapshot rewrite. Lets the archive backfill loop reuse one parse
+    # across all 31 weeks instead of reparsing the large close series each time.
     snap = read_json(DATA_SNAPSHOT)
     hist = snap.get("tickers") if isinstance(snap, dict) else None
     return hist if isinstance(hist, dict) else {}

@@ -5,15 +5,43 @@
   "index_returns": {
     "sp500": {
       "close": 7230.12,
-      "weekly_return": "0.91%"
+      "weekly_return": "0.91%",
+      "weekly_pct": 0.91,
+      "one_month_pct": 9.96,
+      "three_month_pct": 4.19,
+      "ytd_pct": 5.62,
+      "source_note": "Measured from data-snapshot close series"
     },
     "nasdaq": {
       "close": 25114.44,
-      "weekly_return": "1.12%"
+      "weekly_return": "1.12%",
+      "weekly_pct": 1.12,
+      "one_month_pct": 14.99,
+      "three_month_pct": 7.04,
+      "ytd_pct": 8.06,
+      "source_note": "Measured from data-snapshot close series"
     },
     "russell2000": {
       "close": 2812.82,
-      "weekly_return": "0.93%"
+      "weekly_return": "0.93%",
+      "weekly_pct": null,
+      "one_month_pct": null,
+      "three_month_pct": null,
+      "ytd_pct": null
+    },
+    "dow": {
+      "close": null,
+      "weekly_pct": null,
+      "one_month_pct": null,
+      "three_month_pct": null,
+      "ytd_pct": null
+    },
+    "vix": {
+      "close": null,
+      "weekly_pct": null,
+      "one_month_pct": null,
+      "three_month_pct": null,
+      "ytd_pct": null
     }
   },
   "value_picks": [
@@ -26,7 +54,7 @@
       "pe_ratio": 24.12,
       "fcf_yield": "~4.2%",
       "why_undervalued": "Shares were sitting at/near the 52-week low (~$175) on 2026-05-01 after a prolonged derating in high-quality life-science tools despite resilient cash generation.",
-      "bull_case": "If bioprocessing demand normalizes and management\u2019s cost actions sustain margins, DHR can re-rate toward historical multiples while compounding FCF."
+      "bull_case": "If bioprocessing demand normalizes and management’s cost actions sustain margins, DHR can re-rate toward historical multiples while compounding FCF."
     },
     {
       "ticker": "ACN",
@@ -36,7 +64,7 @@
       "market_cap": "~$115B",
       "pe_ratio": 14.73,
       "fcf_yield": "~6%",
-      "why_undervalued": "ACN was near the bottom of its 52-week range ($173.65\u2013$325.71) into 2026-05-01 as investors discounted slower discretionary IT spend, pushing valuation well below its long-run average.",
+      "why_undervalued": "ACN was near the bottom of its 52-week range ($173.65–$325.71) into 2026-05-01 as investors discounted slower discretionary IT spend, pushing valuation well below its long-run average.",
       "bull_case": "A re-acceleration in enterprise spend plus continued AI-led services demand could drive earnings stability and a multiple rebound."
     },
     {
@@ -59,7 +87,7 @@
       "pe_ratio": 18,
       "fcf_yield": "~5%",
       "why_undervalued": "NKE was close to its 52-week low ($42.62) and only ~7% up the range, reflecting concerns about demand and inventory normalization even as the brand remains durable.",
-      "bull_case": "As inventories clear and new product cycles hit, margins can recover and the market can re-price NIKE\u2019s long-term growth."
+      "bull_case": "As inventories clear and new product cycles hit, margins can recover and the market can re-price NIKE’s long-term growth."
     },
     {
       "ticker": "KHC",
@@ -69,7 +97,7 @@
       "market_cap": "~$27B",
       "pe_ratio": 11,
       "fcf_yield": "~9%",
-      "why_undervalued": "KHC traded near the low end of its 52-week range ($21.21\u2013$28.94), with a low multiple despite steady cash generation typical of staples.",
+      "why_undervalued": "KHC traded near the low end of its 52-week range ($21.21–$28.94), with a low multiple despite steady cash generation typical of staples.",
       "bull_case": "Modest pricing power, cost productivity, and capital returns can support a gradual rerating from depressed sentiment."
     }
   ],
@@ -121,12 +149,1273 @@
       "perf_1w": "+7%",
       "perf_1m": "+22%",
       "perf_3m": "+130%",
-      "catalyst": "Semicap equipment/component supplier appeared among top 3\u2011month gainers into 2026-05-01 as AI-driven capex optimism strengthened.",
+      "catalyst": "Semicap equipment/component supplier appeared among top 3‑month gainers into 2026-05-01 as AI-driven capex optimism strengthened.",
       "risk_reward": "Leverage to AI capex is powerful, but cyclical downswings in wafer-fab spending can hit earnings fast."
     }
   ],
   "trends": [],
   "risks": [],
-  "watchlist_updates": [],
-  "sources": "[Reuters](https://www.reuters.com/business/sp-500-dow-futures-inch-up-after-wall-streets-best-month-years-2026-05-01/), [TheStreet (May 1, 2026 market close)](https://www.thestreet.com/latest-news/stock-market-today-may-1-2026-updates), [TheStreet (Apr 24, 2026 close)](https://www.thestreet.com/latest-news/stock-market-today-apr-24-2026-updates), [FRED NASDAQCOM](https://fred.stlouisfed.org/series/NASDAQCOM), [Yahoo Finance](https://finance.yahoo.com/research-hub/screener/recent_52_week_lows/), [Yahoo Finance - DHR](https://finance.yahoo.com/quote/DHR), [StockAnalysis week gainers](https://stockanalysis.com/markets/gainers/week/), [StockAnalysis DHR price history](https://stockanalysis.com/stocks/dhr/history/), [PR Newswire Danaher Q1 2026 results](https://www.prnewswire.com/news-releases/danaher-reports-first-quarter-2026-results-302747922.html), [GuruFocus Danaher FCF yield](https://www.gurufocus.com/term/fcf-yield/DHR), [FinancialContent ACN historical price (May 1 2026 close)](https://markets.financialcontent.com/stocks/quote/historical?Symbol=321%3A10478724), [Morningstar ACN quote / 52-week range](https://www.morningstar.com/stocks/xnys/acn/quote), [GuruFocus ACN P/E](https://www.gurufocus.com/term/pettm/ACN), [Morningstar CMCSA quote](https://www.morningstar.com/stocks/xnas/cmcsa/quote), [Robinhood CMCSA key stats incl 52-week high/low and market cap](https://robinhood.com/stocks/CMCSA), [Google Finance CMCSA quote (P/E & market cap)](https://www.google.com/finance/beta/quote/CMCSA:NASDAQ), [ABG Analytics 52-week high/low table (NKE, KHC)](https://abg-analytics.com/52-week-high-low.shtml), [MarketBeat MaxLinear trading up May 1 2026](https://www.marketbeat.com/instant-alerts/maxlinear-nasdaqmxl-trading-up-85-heres-what-happened-2026-05-01/), [StockAnalysis month gainers list (MXL)](https://stockanalysis.com/markets/gainers/month/), [SEC filing summary via Stock Titan for Vita Coco Q1 2026](https://www.stocktitan.net/sec-filings/COCO/8-k-vita-coco-company-inc-reports-material-event-de544ebb5248.html), [Enova IR Q1 2026 results](https://ir.enova.com/2026-04-23-Enova-Reports-First-Quarter-2026-Results), [Zacks Best Momentum Stocks to Buy for May 1st](https://www.zacks.com/commentary/2912822/best-momentum-stocks-to-buy-for-may-1st), [Webull 3-month US stock gainers (ICHR)](https://www.webull.com/quote/us/gainers/3m)"
+  "watchlist_updates": [
+    {
+      "ticker": "POET",
+      "weekly_change_pct": -51.59,
+      "thirty_day_change_pct": 30.54,
+      "headline": "POET Technologies Inc. moved -51.6% on the week, +30.5% over 30 days.",
+      "summary": "POET Technologies Inc. moved -51.6% on the week, +30.5% over 30 days.",
+      "tags": [
+        "Semiconductors"
+      ]
+    },
+    {
+      "ticker": "TWLO",
+      "weekly_change_pct": 27.51,
+      "thirty_day_change_pct": 40.53,
+      "headline": "Twilio Inc. moved +27.5% on the week, +40.5% over 30 days.",
+      "summary": "Twilio Inc. moved +27.5% on the week, +40.5% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "TEAM",
+      "weekly_change_pct": 24.22,
+      "thirty_day_change_pct": 28.12,
+      "headline": "Atlassian Corporation moved +24.2% on the week, +28.1% over 30 days.",
+      "summary": "Atlassian Corporation moved +24.2% on the week, +28.1% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "STX",
+      "weekly_change_pct": 24.0,
+      "thirty_day_change_pct": 71.8,
+      "headline": "Seagate Technology Holdings plc moved +24.0% on the week, +71.8% over 30 days.",
+      "summary": "Seagate Technology Holdings plc moved +24.0% on the week, +71.8% over 30 days.",
+      "tags": [
+        "Data Storage"
+      ]
+    },
+    {
+      "ticker": "INTC",
+      "weekly_change_pct": 20.69,
+      "thirty_day_change_pct": 107.41,
+      "headline": "Intel Corporation moved +20.7% on the week, +107.4% over 30 days.",
+      "summary": "Intel Corporation moved +20.7% on the week, +107.4% over 30 days.",
+      "tags": [
+        "Semiconductors"
+      ]
+    },
+    {
+      "ticker": "SNDK",
+      "weekly_change_pct": 19.91,
+      "thirty_day_change_pct": 71.35,
+      "headline": "Sandisk Corporation moved +19.9% on the week, +71.3% over 30 days.",
+      "summary": "Sandisk Corporation moved +19.9% on the week, +71.3% over 30 days.",
+      "tags": [
+        "Data Storage"
+      ]
+    },
+    {
+      "ticker": "FSLY",
+      "weekly_change_pct": 18.14,
+      "thirty_day_change_pct": -13.26,
+      "headline": "Fastly, Inc. moved +18.1% on the week, -13.3% over 30 days.",
+      "summary": "Fastly, Inc. moved +18.1% on the week, -13.3% over 30 days.",
+      "tags": [
+        "Cloud Infrastructure"
+      ]
+    },
+    {
+      "ticker": "GNRC",
+      "weekly_change_pct": 17.39,
+      "thirty_day_change_pct": 30.29,
+      "headline": "Generac Holdings Inc. moved +17.4% on the week, +30.3% over 30 days.",
+      "summary": "Generac Holdings Inc. moved +17.4% on the week, +30.3% over 30 days.",
+      "tags": [
+        "Power & Utilities"
+      ]
+    },
+    {
+      "ticker": "TER",
+      "weekly_change_pct": -17.38,
+      "thirty_day_change_pct": 10.64,
+      "headline": "Teradyne, Inc. moved -17.4% on the week, +10.6% over 30 days.",
+      "summary": "Teradyne, Inc. moved -17.4% on the week, +10.6% over 30 days.",
+      "tags": [
+        "Semiconductors"
+      ]
+    },
+    {
+      "ticker": "CHKP",
+      "weekly_change_pct": -14.97,
+      "thirty_day_change_pct": -21.44,
+      "headline": "Check Point Software Technologies Ltd. moved -15.0% on the week, -21.4% over 30 days.",
+      "summary": "Check Point Software Technologies Ltd. moved -15.0% on the week, -21.4% over 30 days.",
+      "tags": [
+        "Cybersecurity"
+      ]
+    },
+    {
+      "ticker": "KVYO",
+      "weekly_change_pct": 14.14,
+      "thirty_day_change_pct": 14.2,
+      "headline": "Klaviyo, Inc. moved +14.1% on the week, +14.2% over 30 days.",
+      "summary": "Klaviyo, Inc. moved +14.1% on the week, +14.2% over 30 days.",
+      "tags": [
+        "Marketing Tech"
+      ]
+    },
+    {
+      "ticker": "ZM",
+      "weekly_change_pct": 12.4,
+      "thirty_day_change_pct": 28.18,
+      "headline": "Zoom Communications, Inc. moved +12.4% on the week, +28.2% over 30 days.",
+      "summary": "Zoom Communications, Inc. moved +12.4% on the week, +28.2% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "GOOG",
+      "weekly_change_pct": 11.95,
+      "thirty_day_change_pct": 29.95,
+      "headline": "Alphabet Inc. moved +11.9% on the week, +29.9% over 30 days.",
+      "summary": "Alphabet Inc. moved +11.9% on the week, +29.9% over 30 days.",
+      "tags": [
+        "Hyperscalers"
+      ]
+    },
+    {
+      "ticker": "GTLB",
+      "weekly_change_pct": 11.81,
+      "thirty_day_change_pct": 9.42,
+      "headline": "GitLab Inc. moved +11.8% on the week, +9.4% over 30 days.",
+      "summary": "GitLab Inc. moved +11.8% on the week, +9.4% over 30 days.",
+      "tags": [
+        "DevOps & Automation"
+      ]
+    },
+    {
+      "ticker": "CLX",
+      "weekly_change_pct": -11.72,
+      "thirty_day_change_pct": -16.43,
+      "headline": "The Clorox Company moved -11.7% on the week, -16.4% over 30 days.",
+      "summary": "The Clorox Company moved -11.7% on the week, -16.4% over 30 days.",
+      "tags": [
+        "Consumer Staples"
+      ]
+    },
+    {
+      "ticker": "GEHC",
+      "weekly_change_pct": -11.33,
+      "thirty_day_change_pct": -15.21,
+      "headline": "GE HealthCare Technologies Inc. moved -11.3% on the week, -15.2% over 30 days.",
+      "summary": "GE HealthCare Technologies Inc. moved -11.3% on the week, -15.2% over 30 days.",
+      "tags": [
+        "Medical Devices"
+      ]
+    },
+    {
+      "ticker": "BL",
+      "weekly_change_pct": 10.67,
+      "thirty_day_change_pct": -7.02,
+      "headline": "BlackLine, Inc. moved +10.7% on the week, -7.0% over 30 days.",
+      "summary": "BlackLine, Inc. moved +10.7% on the week, -7.0% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "AMPL",
+      "weekly_change_pct": 10.34,
+      "thirty_day_change_pct": 14.73,
+      "headline": "Amplitude, Inc. moved +10.3% on the week, +14.7% over 30 days.",
+      "summary": "Amplitude, Inc. moved +10.3% on the week, +14.7% over 30 days.",
+      "tags": [
+        "Data & Analytics"
+      ]
+    },
+    {
+      "ticker": "HIMS",
+      "weekly_change_pct": -10.31,
+      "thirty_day_change_pct": 38.16,
+      "headline": "Hims & Hers Health, Inc. moved -10.3% on the week, +38.2% over 30 days.",
+      "summary": "Hims & Hers Health, Inc. moved -10.3% on the week, +38.2% over 30 days.",
+      "tags": [
+        "Health Tech"
+      ]
+    },
+    {
+      "ticker": "FROG",
+      "weekly_change_pct": 10.25,
+      "thirty_day_change_pct": 2.95,
+      "headline": "JFrog Ltd. moved +10.2% on the week, +3.0% over 30 days.",
+      "summary": "JFrog Ltd. moved +10.2% on the week, +3.0% over 30 days.",
+      "tags": [
+        "DevOps & Automation"
+      ]
+    },
+    {
+      "ticker": "RNG",
+      "weekly_change_pct": 10.22,
+      "thirty_day_change_pct": 18.23,
+      "headline": "RingCentral, Inc. moved +10.2% on the week, +18.2% over 30 days.",
+      "summary": "RingCentral, Inc. moved +10.2% on the week, +18.2% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "ARM",
+      "weekly_change_pct": -10.06,
+      "thirty_day_change_pct": 36.18,
+      "headline": "Arm Holdings plc moved -10.1% on the week, +36.2% over 30 days.",
+      "summary": "Arm Holdings plc moved -10.1% on the week, +36.2% over 30 days.",
+      "tags": [
+        "Semiconductors"
+      ]
+    },
+    {
+      "ticker": "GLW",
+      "weekly_change_pct": -10.02,
+      "thirty_day_change_pct": 11.15,
+      "headline": "Corning Incorporated moved -10.0% on the week, +11.2% over 30 days.",
+      "summary": "Corning Incorporated moved -10.0% on the week, +11.2% over 30 days.",
+      "tags": [
+        "Specialty Materials"
+      ]
+    },
+    {
+      "ticker": "NEM",
+      "weekly_change_pct": -10.01,
+      "thirty_day_change_pct": -4.54,
+      "headline": "Newmont Corporation moved -10.0% on the week, -4.5% over 30 days.",
+      "summary": "Newmont Corporation moved -10.0% on the week, -4.5% over 30 days.",
+      "tags": [
+        "Materials"
+      ]
+    },
+    {
+      "ticker": "META",
+      "weekly_change_pct": -9.82,
+      "thirty_day_change_pct": 5.1,
+      "headline": "Meta Platforms, Inc. moved -9.8% on the week, +5.1% over 30 days.",
+      "summary": "Meta Platforms, Inc. moved -9.8% on the week, +5.1% over 30 days.",
+      "tags": [
+        "Hyperscalers"
+      ]
+    },
+    {
+      "ticker": "LKQ",
+      "weekly_change_pct": -9.78,
+      "thirty_day_change_pct": -2.73,
+      "headline": "LKQ Corporation moved -9.8% on the week, -2.7% over 30 days.",
+      "summary": "LKQ Corporation moved -9.8% on the week, -2.7% over 30 days.",
+      "tags": [
+        "Auto Parts"
+      ]
+    },
+    {
+      "ticker": "ASAN",
+      "weekly_change_pct": 9.39,
+      "thirty_day_change_pct": 10.43,
+      "headline": "Asana, Inc. moved +9.4% on the week, +10.4% over 30 days.",
+      "summary": "Asana, Inc. moved +9.4% on the week, +10.4% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "MU",
+      "weekly_change_pct": 9.16,
+      "thirty_day_change_pct": 47.4,
+      "headline": "Micron Technology, Inc. moved +9.2% on the week, +47.4% over 30 days.",
+      "summary": "Micron Technology, Inc. moved +9.2% on the week, +47.4% over 30 days.",
+      "tags": [
+        "Semiconductors"
+      ]
+    },
+    {
+      "ticker": "ZBH",
+      "weekly_change_pct": -9.16,
+      "thirty_day_change_pct": -8.93,
+      "headline": "Zimmer Biomet Holdings, Inc. moved -9.2% on the week, -8.9% over 30 days.",
+      "summary": "Zimmer Biomet Holdings, Inc. moved -9.2% on the week, -8.9% over 30 days.",
+      "tags": [
+        "Medical Devices"
+      ]
+    },
+    {
+      "ticker": "AKAM",
+      "weekly_change_pct": 9.05,
+      "thirty_day_change_pct": -10.26,
+      "headline": "Akamai Technologies, Inc. moved +9.1% on the week, -10.3% over 30 days.",
+      "summary": "Akamai Technologies, Inc. moved +9.1% on the week, -10.3% over 30 days.",
+      "tags": [
+        "Cloud Infrastructure"
+      ]
+    },
+    {
+      "ticker": "ADP",
+      "weekly_change_pct": 9.0,
+      "thirty_day_change_pct": 6.42,
+      "headline": "Automatic Data Processing, Inc. moved +9.0% on the week, +6.4% over 30 days.",
+      "summary": "Automatic Data Processing, Inc. moved +9.0% on the week, +6.4% over 30 days.",
+      "tags": [
+        "HCM & Payroll"
+      ]
+    },
+    {
+      "ticker": "TSEM",
+      "weekly_change_pct": 8.71,
+      "thirty_day_change_pct": 16.54,
+      "headline": "Tower Semiconductor Ltd. moved +8.7% on the week, +16.5% over 30 days.",
+      "summary": "Tower Semiconductor Ltd. moved +8.7% on the week, +16.5% over 30 days.",
+      "tags": [
+        "Semiconductors"
+      ]
+    },
+    {
+      "ticker": "DDOG",
+      "weekly_change_pct": 8.53,
+      "thirty_day_change_pct": 18.42,
+      "headline": "Datadog, Inc. moved +8.5% on the week, +18.4% over 30 days.",
+      "summary": "Datadog, Inc. moved +8.5% on the week, +18.4% over 30 days.",
+      "tags": [
+        "Data & Analytics"
+      ]
+    },
+    {
+      "ticker": "AEM",
+      "weekly_change_pct": -8.33,
+      "thirty_day_change_pct": -12.62,
+      "headline": "Agnico Eagle Mines Limited moved -8.3% on the week, -12.6% over 30 days.",
+      "summary": "Agnico Eagle Mines Limited moved -8.3% on the week, -12.6% over 30 days.",
+      "tags": [
+        "Materials"
+      ]
+    },
+    {
+      "ticker": "IONQ",
+      "weekly_change_pct": 8.22,
+      "thirty_day_change_pct": 66.25,
+      "headline": "IonQ, Inc. moved +8.2% on the week, +66.2% over 30 days.",
+      "summary": "IonQ, Inc. moved +8.2% on the week, +66.2% over 30 days.",
+      "tags": [
+        "Quantum Computing"
+      ]
+    },
+    {
+      "ticker": "FIX",
+      "weekly_change_pct": 8.16,
+      "thirty_day_change_pct": 30.7,
+      "headline": "Comfort Systems USA, Inc. moved +8.2% on the week, +30.7% over 30 days.",
+      "summary": "Comfort Systems USA, Inc. moved +8.2% on the week, +30.7% over 30 days.",
+      "tags": [
+        "Industrials"
+      ]
+    },
+    {
+      "ticker": "ELV",
+      "weekly_change_pct": 8.1,
+      "thirty_day_change_pct": 24.85,
+      "headline": "Elevance Health, Inc. moved +8.1% on the week, +24.9% over 30 days.",
+      "summary": "Elevance Health, Inc. moved +8.1% on the week, +24.9% over 30 days.",
+      "tags": [
+        "Healthcare Services"
+      ]
+    },
+    {
+      "ticker": "VRNS",
+      "weekly_change_pct": 8.03,
+      "thirty_day_change_pct": 21.9,
+      "headline": "Varonis Systems, Inc. moved +8.0% on the week, +21.9% over 30 days.",
+      "summary": "Varonis Systems, Inc. moved +8.0% on the week, +21.9% over 30 days.",
+      "tags": [
+        "Cybersecurity"
+      ]
+    },
+    {
+      "ticker": "DOCN",
+      "weekly_change_pct": 7.99,
+      "thirty_day_change_pct": 17.27,
+      "headline": "DigitalOcean Holdings, Inc. moved +8.0% on the week, +17.3% over 30 days.",
+      "summary": "DigitalOcean Holdings, Inc. moved +8.0% on the week, +17.3% over 30 days.",
+      "tags": [
+        "Cloud Infrastructure"
+      ]
+    },
+    {
+      "ticker": "LITE",
+      "weekly_change_pct": 7.75,
+      "thirty_day_change_pct": 24.23,
+      "headline": "Lumentum Holdings Inc. moved +7.8% on the week, +24.2% over 30 days.",
+      "summary": "Lumentum Holdings Inc. moved +7.8% on the week, +24.2% over 30 days.",
+      "tags": [
+        "Semiconductors"
+      ]
+    },
+    {
+      "ticker": "EMN",
+      "weekly_change_pct": 7.68,
+      "thirty_day_change_pct": 2.27,
+      "headline": "Eastman Chemical Company moved +7.7% on the week, +2.3% over 30 days.",
+      "summary": "Eastman Chemical Company moved +7.7% on the week, +2.3% over 30 days.",
+      "tags": [
+        "Specialty Chemicals"
+      ]
+    },
+    {
+      "ticker": "GEV",
+      "weekly_change_pct": -7.5,
+      "thirty_day_change_pct": 18.79,
+      "headline": "GE Vernova Inc. moved -7.5% on the week, +18.8% over 30 days.",
+      "summary": "GE Vernova Inc. moved -7.5% on the week, +18.8% over 30 days.",
+      "tags": [
+        "Power & Utilities"
+      ]
+    },
+    {
+      "ticker": "HUBS",
+      "weekly_change_pct": 7.42,
+      "thirty_day_change_pct": -1.19,
+      "headline": "HubSpot, Inc. moved +7.4% on the week, -1.2% over 30 days.",
+      "summary": "HubSpot, Inc. moved +7.4% on the week, -1.2% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "FCX",
+      "weekly_change_pct": -7.37,
+      "thirty_day_change_pct": -7.6,
+      "headline": "Freeport-McMoRan Inc. moved -7.4% on the week, -7.6% over 30 days.",
+      "summary": "Freeport-McMoRan Inc. moved -7.4% on the week, -7.6% over 30 days.",
+      "tags": [
+        "Copper & Mining"
+      ]
+    },
+    {
+      "ticker": "MNDY",
+      "weekly_change_pct": 7.3,
+      "thirty_day_change_pct": 6.81,
+      "headline": "monday.com Ltd. moved +7.3% on the week, +6.8% over 30 days.",
+      "summary": "monday.com Ltd. moved +7.3% on the week, +6.8% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "MHK",
+      "weekly_change_pct": -7.25,
+      "thirty_day_change_pct": 0.48,
+      "headline": "Mohawk Industries, Inc. moved -7.2% on the week, +0.5% over 30 days.",
+      "summary": "Mohawk Industries, Inc. moved -7.2% on the week, +0.5% over 30 days.",
+      "tags": [
+        "Building Products"
+      ]
+    },
+    {
+      "ticker": "CAT",
+      "weekly_change_pct": 7.09,
+      "thirty_day_change_pct": 21.82,
+      "headline": "Caterpillar Inc. moved +7.1% on the week, +21.8% over 30 days.",
+      "summary": "Caterpillar Inc. moved +7.1% on the week, +21.8% over 30 days.",
+      "tags": [
+        "Industrials"
+      ]
+    },
+    {
+      "ticker": "PCOR",
+      "weekly_change_pct": 7.08,
+      "thirty_day_change_pct": 3.45,
+      "headline": "Procore Technologies, Inc. moved +7.1% on the week, +3.5% over 30 days.",
+      "summary": "Procore Technologies, Inc. moved +7.1% on the week, +3.5% over 30 days.",
+      "tags": [
+        "Industrial Software"
+      ]
+    },
+    {
+      "ticker": "WDC",
+      "weekly_change_pct": 6.81,
+      "thirty_day_change_pct": 44.94,
+      "headline": "Western Digital Corporation moved +6.8% on the week, +44.9% over 30 days.",
+      "summary": "Western Digital Corporation moved +6.8% on the week, +44.9% over 30 days.",
+      "tags": [
+        "Data Storage"
+      ]
+    },
+    {
+      "ticker": "GPN",
+      "weekly_change_pct": 6.79,
+      "thirty_day_change_pct": 10.71,
+      "headline": "Global Payments Inc. moved +6.8% on the week, +10.7% over 30 days.",
+      "summary": "Global Payments Inc. moved +6.8% on the week, +10.7% over 30 days.",
+      "tags": [
+        "Payments"
+      ]
+    },
+    {
+      "ticker": "RPD",
+      "weekly_change_pct": 6.72,
+      "thirty_day_change_pct": 16.73,
+      "headline": "Rapid7, Inc. moved +6.7% on the week, +16.7% over 30 days.",
+      "summary": "Rapid7, Inc. moved +6.7% on the week, +16.7% over 30 days.",
+      "tags": [
+        "Cybersecurity"
+      ]
+    },
+    {
+      "ticker": "FANG",
+      "weekly_change_pct": 6.6,
+      "thirty_day_change_pct": 8.93,
+      "headline": "Diamondback Energy, Inc. moved +6.6% on the week, +8.9% over 30 days.",
+      "summary": "Diamondback Energy, Inc. moved +6.6% on the week, +8.9% over 30 days.",
+      "tags": [
+        "Energy"
+      ]
+    },
+    {
+      "ticker": "NVO",
+      "weekly_change_pct": 6.58,
+      "thirty_day_change_pct": 20.29,
+      "headline": "Novo Nordisk A/S moved +6.6% on the week, +20.3% over 30 days.",
+      "summary": "Novo Nordisk A/S moved +6.6% on the week, +20.3% over 30 days.",
+      "tags": [
+        "Pharmaceuticals"
+      ]
+    },
+    {
+      "ticker": "DT",
+      "weekly_change_pct": 6.57,
+      "thirty_day_change_pct": 2.28,
+      "headline": "Dynatrace, Inc. moved +6.6% on the week, +2.3% over 30 days.",
+      "summary": "Dynatrace, Inc. moved +6.6% on the week, +2.3% over 30 days.",
+      "tags": [
+        "Data & Analytics"
+      ]
+    },
+    {
+      "ticker": "MDLZ",
+      "weekly_change_pct": 6.53,
+      "thirty_day_change_pct": 7.53,
+      "headline": "Mondelez International, Inc. moved +6.5% on the week, +7.5% over 30 days.",
+      "summary": "Mondelez International, Inc. moved +6.5% on the week, +7.5% over 30 days.",
+      "tags": [
+        "Consumer Staples"
+      ]
+    },
+    {
+      "ticker": "WIX",
+      "weekly_change_pct": 6.52,
+      "thirty_day_change_pct": -10.94,
+      "headline": "Wix.com Ltd. moved +6.5% on the week, -10.9% over 30 days.",
+      "summary": "Wix.com Ltd. moved +6.5% on the week, -10.9% over 30 days.",
+      "tags": [
+        "Digital Commerce"
+      ]
+    },
+    {
+      "ticker": "VEEV",
+      "weekly_change_pct": 6.5,
+      "thirty_day_change_pct": -0.66,
+      "headline": "Veeva Systems Inc. moved +6.5% on the week, -0.7% over 30 days.",
+      "summary": "Veeva Systems Inc. moved +6.5% on the week, -0.7% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "ZETA",
+      "weekly_change_pct": 6.1,
+      "thirty_day_change_pct": 18.25,
+      "headline": "Zeta Global Holdings Corp. moved +6.1% on the week, +18.2% over 30 days.",
+      "summary": "Zeta Global Holdings Corp. moved +6.1% on the week, +18.2% over 30 days.",
+      "tags": [
+        "Marketing Tech"
+      ]
+    },
+    {
+      "ticker": "TENB",
+      "weekly_change_pct": 6.04,
+      "thirty_day_change_pct": 24.52,
+      "headline": "Tenable Holdings, Inc. moved +6.0% on the week, +24.5% over 30 days.",
+      "summary": "Tenable Holdings, Inc. moved +6.0% on the week, +24.5% over 30 days.",
+      "tags": [
+        "Cybersecurity"
+      ]
+    },
+    {
+      "ticker": "AI",
+      "weekly_change_pct": 6.02,
+      "thirty_day_change_pct": 8.15,
+      "headline": "C3.ai, Inc. moved +6.0% on the week, +8.2% over 30 days.",
+      "summary": "C3.ai, Inc. moved +6.0% on the week, +8.2% over 30 days.",
+      "tags": [
+        "Applied AI"
+      ]
+    },
+    {
+      "ticker": "WDAY",
+      "weekly_change_pct": 6.01,
+      "thirty_day_change_pct": -1.62,
+      "headline": "Workday, Inc. moved +6.0% on the week, -1.6% over 30 days.",
+      "summary": "Workday, Inc. moved +6.0% on the week, -1.6% over 30 days.",
+      "tags": [
+        "Enterprise Software"
+      ]
+    },
+    {
+      "ticker": "AFRM",
+      "weekly_change_pct": 5.99,
+      "thirty_day_change_pct": 48.31,
+      "headline": "Affirm Holdings, Inc. moved +6.0% on the week, +48.3% over 30 days.",
+      "summary": "Affirm Holdings, Inc. moved +6.0% on the week, +48.3% over 30 days.",
+      "tags": [
+        "Fintech"
+      ]
+    },
+    {
+      "ticker": "CRC",
+      "weekly_change_pct": 5.61,
+      "thirty_day_change_pct": 3.54,
+      "headline": "California Resources Corporation moved +5.6% on the week, +3.5% over 30 days.",
+      "summary": "California Resources Corporation moved +5.6% on the week, +3.5% over 30 days.",
+      "tags": [
+        "E&P Oil & Gas"
+      ]
+    },
+    {
+      "ticker": "NUE",
+      "weekly_change_pct": 5.48,
+      "thirty_day_change_pct": 30.12,
+      "headline": "Nucor Corporation moved +5.5% on the week, +30.1% over 30 days.",
+      "summary": "Nucor Corporation moved +5.5% on the week, +30.1% over 30 days.",
+      "tags": [
+        "Steel & Metals"
+      ]
+    },
+    {
+      "ticker": "DVN",
+      "weekly_change_pct": 5.47,
+      "thirty_day_change_pct": 4.05,
+      "headline": "Devon Energy Corporation moved +5.5% on the week, +4.0% over 30 days.",
+      "summary": "Devon Energy Corporation moved +5.5% on the week, +4.0% over 30 days.",
+      "tags": [
+        "E&P Oil & Gas"
+      ]
+    },
+    {
+      "ticker": "CRDO",
+      "weekly_change_pct": -5.47,
+      "thirty_day_change_pct": 92.22,
+      "headline": "Credo Technology Group Holding Ltd moved -5.5% on the week, +92.2% over 30 days.",
+      "summary": "Credo Technology Group Holding Ltd moved -5.5% on the week, +92.2% over 30 days.",
+      "tags": [
+        "Semiconductors"
+      ]
+    },
+    {
+      "ticker": "RBRK",
+      "weekly_change_pct": 5.34,
+      "thirty_day_change_pct": 13.34,
+      "headline": "Rubrik, Inc. moved +5.3% on the week, +13.3% over 30 days.",
+      "summary": "Rubrik, Inc. moved +5.3% on the week, +13.3% over 30 days.",
+      "tags": [
+        "Cybersecurity"
+      ]
+    },
+    {
+      "ticker": "BILL",
+      "weekly_change_pct": 5.06,
+      "thirty_day_change_pct": 1.64,
+      "headline": "BILL Holdings, Inc. moved +5.1% on the week, +1.6% over 30 days.",
+      "summary": "BILL Holdings, Inc. moved +5.1% on the week, +1.6% over 30 days.",
+      "tags": [
+        "Fintech"
+      ]
+    },
+    {
+      "ticker": "NET",
+      "weekly_change_pct": 5.04,
+      "thirty_day_change_pct": 5.88,
+      "headline": "Cloudflare, Inc. moved +5.0% on the week, +5.9% over 30 days.",
+      "summary": "Cloudflare, Inc. moved +5.0% on the week, +5.9% over 30 days.",
+      "tags": [
+        "Cloud Infrastructure"
+      ]
+    },
+    {
+      "ticker": "NTNX",
+      "weekly_change_pct": 5.03,
+      "thirty_day_change_pct": 11.99,
+      "headline": "Nutanix, Inc. moved +5.0% on the week, +12.0% over 30 days.",
+      "summary": "Nutanix, Inc. moved +5.0% on the week, +12.0% over 30 days.",
+      "tags": [
+        "Cloud Infrastructure"
+      ]
+    }
+  ],
+  "sources": "[Reuters](https://www.reuters.com/business/sp-500-dow-futures-inch-up-after-wall-streets-best-month-years-2026-05-01/), [TheStreet (May 1, 2026 market close)](https://www.thestreet.com/latest-news/stock-market-today-may-1-2026-updates), [TheStreet (Apr 24, 2026 close)](https://www.thestreet.com/latest-news/stock-market-today-apr-24-2026-updates), [FRED NASDAQCOM](https://fred.stlouisfed.org/series/NASDAQCOM), [Yahoo Finance](https://finance.yahoo.com/research-hub/screener/recent_52_week_lows/), [Yahoo Finance - DHR](https://finance.yahoo.com/quote/DHR), [StockAnalysis week gainers](https://stockanalysis.com/markets/gainers/week/), [StockAnalysis DHR price history](https://stockanalysis.com/stocks/dhr/history/), [PR Newswire Danaher Q1 2026 results](https://www.prnewswire.com/news-releases/danaher-reports-first-quarter-2026-results-302747922.html), [GuruFocus Danaher FCF yield](https://www.gurufocus.com/term/fcf-yield/DHR), [FinancialContent ACN historical price (May 1 2026 close)](https://markets.financialcontent.com/stocks/quote/historical?Symbol=321%3A10478724), [Morningstar ACN quote / 52-week range](https://www.morningstar.com/stocks/xnys/acn/quote), [GuruFocus ACN P/E](https://www.gurufocus.com/term/pettm/ACN), [Morningstar CMCSA quote](https://www.morningstar.com/stocks/xnas/cmcsa/quote), [Robinhood CMCSA key stats incl 52-week high/low and market cap](https://robinhood.com/stocks/CMCSA), [Google Finance CMCSA quote (P/E & market cap)](https://www.google.com/finance/beta/quote/CMCSA:NASDAQ), [ABG Analytics 52-week high/low table (NKE, KHC)](https://abg-analytics.com/52-week-high-low.shtml), [MarketBeat MaxLinear trading up May 1 2026](https://www.marketbeat.com/instant-alerts/maxlinear-nasdaqmxl-trading-up-85-heres-what-happened-2026-05-01/), [StockAnalysis month gainers list (MXL)](https://stockanalysis.com/markets/gainers/month/), [SEC filing summary via Stock Titan for Vita Coco Q1 2026](https://www.stocktitan.net/sec-filings/COCO/8-k-vita-coco-company-inc-reports-material-event-de544ebb5248.html), [Enova IR Q1 2026 results](https://ir.enova.com/2026-04-23-Enova-Reports-First-Quarter-2026-Results), [Zacks Best Momentum Stocks to Buy for May 1st](https://www.zacks.com/commentary/2912822/best-momentum-stocks-to-buy-for-may-1st), [Webull 3-month US stock gainers (ICHR)](https://www.webull.com/quote/us/gainers/3m)",
+  "watchlist_movers": [
+    {
+      "ticker": "POET",
+      "weekly_move": "-51.6%",
+      "thirty_day_move": "+30.5%",
+      "catalyst": "",
+      "detail": "POET Technologies Inc. moved -51.6% on the week, +30.5% over 30 days."
+    },
+    {
+      "ticker": "TWLO",
+      "weekly_move": "+27.5%",
+      "thirty_day_move": "+40.5%",
+      "catalyst": "",
+      "detail": "Twilio Inc. moved +27.5% on the week, +40.5% over 30 days."
+    },
+    {
+      "ticker": "TEAM",
+      "weekly_move": "+24.2%",
+      "thirty_day_move": "+28.1%",
+      "catalyst": "",
+      "detail": "Atlassian Corporation moved +24.2% on the week, +28.1% over 30 days."
+    },
+    {
+      "ticker": "STX",
+      "weekly_move": "+24.0%",
+      "thirty_day_move": "+71.8%",
+      "catalyst": "",
+      "detail": "Seagate Technology Holdings plc moved +24.0% on the week, +71.8% over 30 days."
+    },
+    {
+      "ticker": "INTC",
+      "weekly_move": "+20.7%",
+      "thirty_day_move": "+107.4%",
+      "catalyst": "",
+      "detail": "Intel Corporation moved +20.7% on the week, +107.4% over 30 days."
+    },
+    {
+      "ticker": "SNDK",
+      "weekly_move": "+19.9%",
+      "thirty_day_move": "+71.3%",
+      "catalyst": "",
+      "detail": "Sandisk Corporation moved +19.9% on the week, +71.3% over 30 days."
+    },
+    {
+      "ticker": "FSLY",
+      "weekly_move": "+18.1%",
+      "thirty_day_move": "-13.3%",
+      "catalyst": "",
+      "detail": "Fastly, Inc. moved +18.1% on the week, -13.3% over 30 days."
+    },
+    {
+      "ticker": "GNRC",
+      "weekly_move": "+17.4%",
+      "thirty_day_move": "+30.3%",
+      "catalyst": "",
+      "detail": "Generac Holdings Inc. moved +17.4% on the week, +30.3% over 30 days."
+    },
+    {
+      "ticker": "TER",
+      "weekly_move": "-17.4%",
+      "thirty_day_move": "+10.6%",
+      "catalyst": "",
+      "detail": "Teradyne, Inc. moved -17.4% on the week, +10.6% over 30 days."
+    },
+    {
+      "ticker": "CHKP",
+      "weekly_move": "-15.0%",
+      "thirty_day_move": "-21.4%",
+      "catalyst": "",
+      "detail": "Check Point Software Technologies Ltd. moved -15.0% on the week, -21.4% over 30 days."
+    },
+    {
+      "ticker": "KVYO",
+      "weekly_move": "+14.1%",
+      "thirty_day_move": "+14.2%",
+      "catalyst": "",
+      "detail": "Klaviyo, Inc. moved +14.1% on the week, +14.2% over 30 days."
+    },
+    {
+      "ticker": "ZM",
+      "weekly_move": "+12.4%",
+      "thirty_day_move": "+28.2%",
+      "catalyst": "",
+      "detail": "Zoom Communications, Inc. moved +12.4% on the week, +28.2% over 30 days."
+    },
+    {
+      "ticker": "GOOG",
+      "weekly_move": "+11.9%",
+      "thirty_day_move": "+29.9%",
+      "catalyst": "",
+      "detail": "Alphabet Inc. moved +11.9% on the week, +29.9% over 30 days."
+    },
+    {
+      "ticker": "GTLB",
+      "weekly_move": "+11.8%",
+      "thirty_day_move": "+9.4%",
+      "catalyst": "",
+      "detail": "GitLab Inc. moved +11.8% on the week, +9.4% over 30 days."
+    },
+    {
+      "ticker": "CLX",
+      "weekly_move": "-11.7%",
+      "thirty_day_move": "-16.4%",
+      "catalyst": "",
+      "detail": "The Clorox Company moved -11.7% on the week, -16.4% over 30 days."
+    },
+    {
+      "ticker": "GEHC",
+      "weekly_move": "-11.3%",
+      "thirty_day_move": "-15.2%",
+      "catalyst": "",
+      "detail": "GE HealthCare Technologies Inc. moved -11.3% on the week, -15.2% over 30 days."
+    },
+    {
+      "ticker": "BL",
+      "weekly_move": "+10.7%",
+      "thirty_day_move": "-7.0%",
+      "catalyst": "",
+      "detail": "BlackLine, Inc. moved +10.7% on the week, -7.0% over 30 days."
+    },
+    {
+      "ticker": "AMPL",
+      "weekly_move": "+10.3%",
+      "thirty_day_move": "+14.7%",
+      "catalyst": "",
+      "detail": "Amplitude, Inc. moved +10.3% on the week, +14.7% over 30 days."
+    },
+    {
+      "ticker": "HIMS",
+      "weekly_move": "-10.3%",
+      "thirty_day_move": "+38.2%",
+      "catalyst": "",
+      "detail": "Hims & Hers Health, Inc. moved -10.3% on the week, +38.2% over 30 days."
+    },
+    {
+      "ticker": "FROG",
+      "weekly_move": "+10.2%",
+      "thirty_day_move": "+3.0%",
+      "catalyst": "",
+      "detail": "JFrog Ltd. moved +10.2% on the week, +3.0% over 30 days."
+    },
+    {
+      "ticker": "RNG",
+      "weekly_move": "+10.2%",
+      "thirty_day_move": "+18.2%",
+      "catalyst": "",
+      "detail": "RingCentral, Inc. moved +10.2% on the week, +18.2% over 30 days."
+    },
+    {
+      "ticker": "ARM",
+      "weekly_move": "-10.1%",
+      "thirty_day_move": "+36.2%",
+      "catalyst": "",
+      "detail": "Arm Holdings plc moved -10.1% on the week, +36.2% over 30 days."
+    },
+    {
+      "ticker": "GLW",
+      "weekly_move": "-10.0%",
+      "thirty_day_move": "+11.2%",
+      "catalyst": "",
+      "detail": "Corning Incorporated moved -10.0% on the week, +11.2% over 30 days."
+    },
+    {
+      "ticker": "NEM",
+      "weekly_move": "-10.0%",
+      "thirty_day_move": "-4.5%",
+      "catalyst": "",
+      "detail": "Newmont Corporation moved -10.0% on the week, -4.5% over 30 days."
+    },
+    {
+      "ticker": "META",
+      "weekly_move": "-9.8%",
+      "thirty_day_move": "+5.1%",
+      "catalyst": "",
+      "detail": "Meta Platforms, Inc. moved -9.8% on the week, +5.1% over 30 days."
+    },
+    {
+      "ticker": "LKQ",
+      "weekly_move": "-9.8%",
+      "thirty_day_move": "-2.7%",
+      "catalyst": "",
+      "detail": "LKQ Corporation moved -9.8% on the week, -2.7% over 30 days."
+    },
+    {
+      "ticker": "ASAN",
+      "weekly_move": "+9.4%",
+      "thirty_day_move": "+10.4%",
+      "catalyst": "",
+      "detail": "Asana, Inc. moved +9.4% on the week, +10.4% over 30 days."
+    },
+    {
+      "ticker": "MU",
+      "weekly_move": "+9.2%",
+      "thirty_day_move": "+47.4%",
+      "catalyst": "",
+      "detail": "Micron Technology, Inc. moved +9.2% on the week, +47.4% over 30 days."
+    },
+    {
+      "ticker": "ZBH",
+      "weekly_move": "-9.2%",
+      "thirty_day_move": "-8.9%",
+      "catalyst": "",
+      "detail": "Zimmer Biomet Holdings, Inc. moved -9.2% on the week, -8.9% over 30 days."
+    },
+    {
+      "ticker": "AKAM",
+      "weekly_move": "+9.1%",
+      "thirty_day_move": "-10.3%",
+      "catalyst": "",
+      "detail": "Akamai Technologies, Inc. moved +9.1% on the week, -10.3% over 30 days."
+    },
+    {
+      "ticker": "ADP",
+      "weekly_move": "+9.0%",
+      "thirty_day_move": "+6.4%",
+      "catalyst": "",
+      "detail": "Automatic Data Processing, Inc. moved +9.0% on the week, +6.4% over 30 days."
+    },
+    {
+      "ticker": "TSEM",
+      "weekly_move": "+8.7%",
+      "thirty_day_move": "+16.5%",
+      "catalyst": "",
+      "detail": "Tower Semiconductor Ltd. moved +8.7% on the week, +16.5% over 30 days."
+    },
+    {
+      "ticker": "DDOG",
+      "weekly_move": "+8.5%",
+      "thirty_day_move": "+18.4%",
+      "catalyst": "",
+      "detail": "Datadog, Inc. moved +8.5% on the week, +18.4% over 30 days."
+    },
+    {
+      "ticker": "AEM",
+      "weekly_move": "-8.3%",
+      "thirty_day_move": "-12.6%",
+      "catalyst": "",
+      "detail": "Agnico Eagle Mines Limited moved -8.3% on the week, -12.6% over 30 days."
+    },
+    {
+      "ticker": "IONQ",
+      "weekly_move": "+8.2%",
+      "thirty_day_move": "+66.2%",
+      "catalyst": "",
+      "detail": "IonQ, Inc. moved +8.2% on the week, +66.2% over 30 days."
+    },
+    {
+      "ticker": "FIX",
+      "weekly_move": "+8.2%",
+      "thirty_day_move": "+30.7%",
+      "catalyst": "",
+      "detail": "Comfort Systems USA, Inc. moved +8.2% on the week, +30.7% over 30 days."
+    },
+    {
+      "ticker": "ELV",
+      "weekly_move": "+8.1%",
+      "thirty_day_move": "+24.9%",
+      "catalyst": "",
+      "detail": "Elevance Health, Inc. moved +8.1% on the week, +24.9% over 30 days."
+    },
+    {
+      "ticker": "VRNS",
+      "weekly_move": "+8.0%",
+      "thirty_day_move": "+21.9%",
+      "catalyst": "",
+      "detail": "Varonis Systems, Inc. moved +8.0% on the week, +21.9% over 30 days."
+    },
+    {
+      "ticker": "DOCN",
+      "weekly_move": "+8.0%",
+      "thirty_day_move": "+17.3%",
+      "catalyst": "",
+      "detail": "DigitalOcean Holdings, Inc. moved +8.0% on the week, +17.3% over 30 days."
+    },
+    {
+      "ticker": "LITE",
+      "weekly_move": "+7.8%",
+      "thirty_day_move": "+24.2%",
+      "catalyst": "",
+      "detail": "Lumentum Holdings Inc. moved +7.8% on the week, +24.2% over 30 days."
+    },
+    {
+      "ticker": "EMN",
+      "weekly_move": "+7.7%",
+      "thirty_day_move": "+2.3%",
+      "catalyst": "",
+      "detail": "Eastman Chemical Company moved +7.7% on the week, +2.3% over 30 days."
+    },
+    {
+      "ticker": "GEV",
+      "weekly_move": "-7.5%",
+      "thirty_day_move": "+18.8%",
+      "catalyst": "",
+      "detail": "GE Vernova Inc. moved -7.5% on the week, +18.8% over 30 days."
+    },
+    {
+      "ticker": "HUBS",
+      "weekly_move": "+7.4%",
+      "thirty_day_move": "-1.2%",
+      "catalyst": "",
+      "detail": "HubSpot, Inc. moved +7.4% on the week, -1.2% over 30 days."
+    },
+    {
+      "ticker": "FCX",
+      "weekly_move": "-7.4%",
+      "thirty_day_move": "-7.6%",
+      "catalyst": "",
+      "detail": "Freeport-McMoRan Inc. moved -7.4% on the week, -7.6% over 30 days."
+    },
+    {
+      "ticker": "MNDY",
+      "weekly_move": "+7.3%",
+      "thirty_day_move": "+6.8%",
+      "catalyst": "",
+      "detail": "monday.com Ltd. moved +7.3% on the week, +6.8% over 30 days."
+    },
+    {
+      "ticker": "MHK",
+      "weekly_move": "-7.2%",
+      "thirty_day_move": "+0.5%",
+      "catalyst": "",
+      "detail": "Mohawk Industries, Inc. moved -7.2% on the week, +0.5% over 30 days."
+    },
+    {
+      "ticker": "CAT",
+      "weekly_move": "+7.1%",
+      "thirty_day_move": "+21.8%",
+      "catalyst": "",
+      "detail": "Caterpillar Inc. moved +7.1% on the week, +21.8% over 30 days."
+    },
+    {
+      "ticker": "PCOR",
+      "weekly_move": "+7.1%",
+      "thirty_day_move": "+3.5%",
+      "catalyst": "",
+      "detail": "Procore Technologies, Inc. moved +7.1% on the week, +3.5% over 30 days."
+    },
+    {
+      "ticker": "WDC",
+      "weekly_move": "+6.8%",
+      "thirty_day_move": "+44.9%",
+      "catalyst": "",
+      "detail": "Western Digital Corporation moved +6.8% on the week, +44.9% over 30 days."
+    },
+    {
+      "ticker": "GPN",
+      "weekly_move": "+6.8%",
+      "thirty_day_move": "+10.7%",
+      "catalyst": "",
+      "detail": "Global Payments Inc. moved +6.8% on the week, +10.7% over 30 days."
+    },
+    {
+      "ticker": "RPD",
+      "weekly_move": "+6.7%",
+      "thirty_day_move": "+16.7%",
+      "catalyst": "",
+      "detail": "Rapid7, Inc. moved +6.7% on the week, +16.7% over 30 days."
+    },
+    {
+      "ticker": "FANG",
+      "weekly_move": "+6.6%",
+      "thirty_day_move": "+8.9%",
+      "catalyst": "",
+      "detail": "Diamondback Energy, Inc. moved +6.6% on the week, +8.9% over 30 days."
+    },
+    {
+      "ticker": "NVO",
+      "weekly_move": "+6.6%",
+      "thirty_day_move": "+20.3%",
+      "catalyst": "",
+      "detail": "Novo Nordisk A/S moved +6.6% on the week, +20.3% over 30 days."
+    },
+    {
+      "ticker": "DT",
+      "weekly_move": "+6.6%",
+      "thirty_day_move": "+2.3%",
+      "catalyst": "",
+      "detail": "Dynatrace, Inc. moved +6.6% on the week, +2.3% over 30 days."
+    },
+    {
+      "ticker": "MDLZ",
+      "weekly_move": "+6.5%",
+      "thirty_day_move": "+7.5%",
+      "catalyst": "",
+      "detail": "Mondelez International, Inc. moved +6.5% on the week, +7.5% over 30 days."
+    },
+    {
+      "ticker": "WIX",
+      "weekly_move": "+6.5%",
+      "thirty_day_move": "-10.9%",
+      "catalyst": "",
+      "detail": "Wix.com Ltd. moved +6.5% on the week, -10.9% over 30 days."
+    },
+    {
+      "ticker": "VEEV",
+      "weekly_move": "+6.5%",
+      "thirty_day_move": "-0.7%",
+      "catalyst": "",
+      "detail": "Veeva Systems Inc. moved +6.5% on the week, -0.7% over 30 days."
+    },
+    {
+      "ticker": "ZETA",
+      "weekly_move": "+6.1%",
+      "thirty_day_move": "+18.2%",
+      "catalyst": "",
+      "detail": "Zeta Global Holdings Corp. moved +6.1% on the week, +18.2% over 30 days."
+    },
+    {
+      "ticker": "TENB",
+      "weekly_move": "+6.0%",
+      "thirty_day_move": "+24.5%",
+      "catalyst": "",
+      "detail": "Tenable Holdings, Inc. moved +6.0% on the week, +24.5% over 30 days."
+    },
+    {
+      "ticker": "AI",
+      "weekly_move": "+6.0%",
+      "thirty_day_move": "+8.2%",
+      "catalyst": "",
+      "detail": "C3.ai, Inc. moved +6.0% on the week, +8.2% over 30 days."
+    },
+    {
+      "ticker": "WDAY",
+      "weekly_move": "+6.0%",
+      "thirty_day_move": "-1.6%",
+      "catalyst": "",
+      "detail": "Workday, Inc. moved +6.0% on the week, -1.6% over 30 days."
+    },
+    {
+      "ticker": "AFRM",
+      "weekly_move": "+6.0%",
+      "thirty_day_move": "+48.3%",
+      "catalyst": "",
+      "detail": "Affirm Holdings, Inc. moved +6.0% on the week, +48.3% over 30 days."
+    },
+    {
+      "ticker": "CRC",
+      "weekly_move": "+5.6%",
+      "thirty_day_move": "+3.5%",
+      "catalyst": "",
+      "detail": "California Resources Corporation moved +5.6% on the week, +3.5% over 30 days."
+    },
+    {
+      "ticker": "NUE",
+      "weekly_move": "+5.5%",
+      "thirty_day_move": "+30.1%",
+      "catalyst": "",
+      "detail": "Nucor Corporation moved +5.5% on the week, +30.1% over 30 days."
+    },
+    {
+      "ticker": "DVN",
+      "weekly_move": "+5.5%",
+      "thirty_day_move": "+4.0%",
+      "catalyst": "",
+      "detail": "Devon Energy Corporation moved +5.5% on the week, +4.0% over 30 days."
+    },
+    {
+      "ticker": "CRDO",
+      "weekly_move": "-5.5%",
+      "thirty_day_move": "+92.2%",
+      "catalyst": "",
+      "detail": "Credo Technology Group Holding Ltd moved -5.5% on the week, +92.2% over 30 days."
+    },
+    {
+      "ticker": "RBRK",
+      "weekly_move": "+5.3%",
+      "thirty_day_move": "+13.3%",
+      "catalyst": "",
+      "detail": "Rubrik, Inc. moved +5.3% on the week, +13.3% over 30 days."
+    },
+    {
+      "ticker": "BILL",
+      "weekly_move": "+5.1%",
+      "thirty_day_move": "+1.6%",
+      "catalyst": "",
+      "detail": "BILL Holdings, Inc. moved +5.1% on the week, +1.6% over 30 days."
+    },
+    {
+      "ticker": "NET",
+      "weekly_move": "+5.0%",
+      "thirty_day_move": "+5.9%",
+      "catalyst": "",
+      "detail": "Cloudflare, Inc. moved +5.0% on the week, +5.9% over 30 days."
+    },
+    {
+      "ticker": "NTNX",
+      "weekly_move": "+5.0%",
+      "thirty_day_move": "+12.0%",
+      "catalyst": "",
+      "detail": "Nutanix, Inc. moved +5.0% on the week, +12.0% over 30 days."
+    }
+  ],
+  "sector_summary": {
+    "software_infrastructure": "Software Infrastructure: 33 watchlist names tracked this week. Largest moves — FSLY +18.1%, GOOG +11.9%, GTLB +11.8%, AMPL +10.3%, FROG +10.2%, META -9.8%.",
+    "application_software": "Application Software: 28 watchlist names tracked this week. Largest moves — TWLO +27.5%, TEAM +24.2%, ZM +12.4%, BL +10.7%, HIMS -10.3%, RNG +10.2%.",
+    "cybersecurity": "Cybersecurity: 12 watchlist names tracked this week. Largest moves — CHKP -15.0%, VRNS +8.0%, RPD +6.7%, TENB +6.0%, RBRK +5.3%, QLYS +5.0%.",
+    "semiconductors": "Semiconductors: 23 watchlist names tracked this week. Largest moves — POET -51.6%, STX +24.0%, INTC +20.7%, SNDK +19.9%, TER -17.4%, ARM -10.1%.",
+    "adtech_digital_media": "AdTech/Digital Media: 12 watchlist names tracked this week. Largest moves — KVYO +14.1%, ZETA +6.1%, CXM +3.4%, RAMP +3.3%, APP +2.6%, OMC +1.6%.",
+    "fintech": "Fintech: 15 watchlist names tracked this week. Largest moves — GPN +6.8%, AFRM +6.0%, BILL +5.1%, COIN -4.3%, ACGL -2.5%, BAC +2.3%.",
+    "consumer": "Consumer: 20 watchlist names tracked this week. Largest moves — CLX -11.7%, MDLZ +6.5%, WIX +6.5%, HD -3.6%, GCT -3.5%, UL +2.8%.",
+    "energy_industrials": "Energy/Industrials: 28 watchlist names tracked this week. Largest moves — GNRC +17.4%, GLW -10.0%, NEM -10.0%, LKQ -9.8%, AEM -8.3%, FIX +8.2%."
+  },
+  "upcoming_catalysts": [
+    {
+      "ticker": "MACRO",
+      "date": "2026-05-01",
+      "event_type": "macro",
+      "event": "US nonfarm payrolls / jobs report",
+      "importance": "High",
+      "context": "Monthly labor-market print; shapes the rate-cut path and risk appetite across equities."
+    },
+    {
+      "ticker": "MACRO",
+      "date": "2026-05-12",
+      "event_type": "macro",
+      "event": "US CPI inflation report",
+      "importance": "High",
+      "context": "Headline and core CPI; the single most market-moving inflation read for Fed expectations."
+    },
+    {
+      "ticker": "MACRO",
+      "date": "2026-05-13",
+      "event_type": "macro",
+      "event": "US PPI producer prices",
+      "importance": "Medium",
+      "context": "Wholesale inflation gauge; confirms or contradicts the CPI signal a day prior."
+    },
+    {
+      "ticker": "MACRO",
+      "date": "2026-05-15",
+      "event_type": "macro",
+      "event": "Monthly options expiration (OPEX)",
+      "importance": "Medium",
+      "context": "Large notional roll/expiry; can amplify index volatility into the close."
+    },
+    {
+      "ticker": "MACRO",
+      "date": "2026-06-05",
+      "event_type": "macro",
+      "event": "US nonfarm payrolls / jobs report",
+      "importance": "High",
+      "context": "Monthly labor-market print; shapes the rate-cut path and risk appetite across equities."
+    },
+    {
+      "ticker": "MACRO",
+      "date": "2026-06-12",
+      "event_type": "macro",
+      "event": "US CPI inflation report",
+      "importance": "High",
+      "context": "Headline and core CPI; the single most market-moving inflation read for Fed expectations."
+    }
+  ],
+  "macro_regime": "Grinding Higher",
+  "tl_dr": [
+    "S&P 500 +0.9% — mixed tape with leadership rotation beneath the surface.",
+    "Value setup: DHR — -26% off its 52-week high — ~4.2% FCF yield.",
+    "Momentum leader: MXL +9.0% on the week.",
+    "Markets pushed to fresh highs as mega-cap tech earnings and upbeat guidance reinforced the AI/capex growth narrative, while easing oil prices reduced …",
+    "Investors also digested a Fed rate hold and a dense macro tape (including GDP/PCE/ISM) without derailing risk-on positioning into month-end."
+  ]
 }

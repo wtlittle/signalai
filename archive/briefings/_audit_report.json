@@ -1,0 +1,2921 @@
+{
+  "summary": {
+    "total_weeks": 31,
+    "perfect_15_15": 2,
+    "mean_score100": 84,
+    "weeks_needing_llm": [
+      "2025-11-14",
+      "2025-11-21",
+      "2025-11-28",
+      "2025-12-05",
+      "2025-12-12",
+      "2025-12-19",
+      "2025-12-26",
+      "2026-01-02",
+      "2026-01-09",
+      "2026-01-16",
+      "2026-01-23",
+      "2026-01-30",
+      "2026-02-06",
+      "2026-02-13",
+      "2026-02-20",
+      "2026-02-27",
+      "2026-03-06",
+      "2026-03-13",
+      "2026-03-20",
+      "2026-03-27",
+      "2026-04-03",
+      "2026-04-10",
+      "2026-04-17",
+      "2026-04-24",
+      "2026-05-01",
+      "2026-05-03",
+      "2026-05-09",
+      "2026-05-15",
+      "2026-05-22"
+    ],
+    "fail_tally_by_criterion": {
+      "02_tl_dr": 10,
+      "05_market_summary": 29,
+      "07_watchlist_updates": 5,
+      "10_narrative": 29
+    }
+  },
+  "weeks": [
+    {
+      "week_ending": "2025-11-14",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher' len=15",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": false,
+          "observed": "watchlist_updates=46",
+          "gap": "deterministic"
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=608 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2025-11-14.json",
+      "gaps": {
+        "deterministic": [
+          "07_watchlist_updates"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2025-11-21",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-Off Pullback' len=17",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=70",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=458 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2025-11-21.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2025-11-28",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-On Rally' len=13",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=4 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=72",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=224 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2025-11-28.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2025-12-05",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher' len=15",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=3 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=0 macro=False rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=64",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=3 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2025-12-05.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2025-12-12",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Choppy Consolidation' len=20",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": false,
+          "observed": "watchlist_updates=38",
+          "gap": "deterministic"
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=934 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2025-12-12.json",
+      "gaps": {
+        "deterministic": [
+          "07_watchlist_updates"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2025-12-19",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher' len=15",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": false,
+          "observed": "watchlist_updates=39",
+          "gap": "deterministic"
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=358 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2025-12-19.json",
+      "gaps": {
+        "deterministic": [
+          "07_watchlist_updates"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2025-12-26",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher' len=15",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": false,
+          "observed": "watchlist_updates=28",
+          "gap": "deterministic"
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=727 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2025-12-26.json",
+      "gaps": {
+        "deterministic": [
+          "07_watchlist_updates"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-01-02",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Choppy Consolidation' len=20",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=3 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=0 macro=False rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=50",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=0 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-01-02.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-01-09",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-On Rally' len=13",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=4 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=76",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=585 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-01-09.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-01-16",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Choppy Consolidation' len=20",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=86",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=509 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-01-16.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-01-23",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Choppy Consolidation' len=20",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=3 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=0 macro=False rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=50",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=11 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-01-23.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-01-30",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher' len=15",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=90",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=411 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-01-30.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-02-06",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Choppy Consolidation' len=20",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=4 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=False rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=110",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=142 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-02-06.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-02-13",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Choppy Consolidation' len=20",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=3 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=0 macro=False rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=82",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=0 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-02-13.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-02-20",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher' len=15",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=54",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=269 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-02-20.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-02-27",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Choppy Consolidation' len=20",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=60",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=545 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-02-27.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-03-06",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-Off Pullback' len=17",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=123",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=386 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-03-06.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-03-13",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-Off Pullback' len=17",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=3 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=0 macro=False rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=86",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=0 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-03-13.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-03-20",
+      "score": 11,
+      "max": 15,
+      "score100": 73,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-Off Pullback' len=17",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=3 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=0 macro=False rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": false,
+          "observed": "watchlist_updates=41",
+          "gap": "deterministic"
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=3 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-03-20.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr",
+          "07_watchlist_updates"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-03-27",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-Off Pullback' len=17",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=90",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=320 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-03-27.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-04-03",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-On Rally' len=13",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=82",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=429 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-04-03.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-04-10",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-On Rally' len=13",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=124",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=370 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-04-10.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-04-17",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-On Rally' len=13",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=125",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=383 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-04-17.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-04-24",
+      "score": 12,
+      "max": 15,
+      "score100": 80,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher' len=15",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": false,
+          "observed": "tl_dr=3 substantive bullets",
+          "gap": "deterministic"
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=0 macro=False rotation=False ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=77",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=0 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-04-24.json",
+      "gaps": {
+        "deterministic": [
+          "02_tl_dr"
+        ],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-05-01",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher' len=15",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=0",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=70",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=319 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=True refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-05-01.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-05-03",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher; AI Infrastructure Capex Supercycle' len=51",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=False ms_len=1681",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=70",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=9",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=0 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=False refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-05-03.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-05-09",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-On Rally; AI Memory Supercycle; Iran Deal Collapse and ' len=78",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=1716",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=12 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=82",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=12",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=0 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=False refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-05-09.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-05-15",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher; AI Capex Super-Cycle Accelerates Into Multi' len=89",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=2168",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=12 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=67",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=12",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=0 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=False refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-05-15.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-05-22",
+      "score": 13,
+      "max": 15,
+      "score100": 87,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher; AI Infrastructure Supercycle — Chips & Inte' len=69",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": false,
+          "observed": "paras=1 macro=True rotation=True ms_len=1066",
+          "gap": "needs-llm"
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=12 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=80",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=12",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": false,
+          "observed": "narrative=0 chars",
+          "gap": "needs-llm"
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=False refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-05-22.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [
+          "05_market_summary",
+          "10_narrative"
+        ],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-05-31",
+      "score": 15,
+      "max": 15,
+      "score100": 100,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Grinding Higher; AI infrastructure and data/analytics melt-u' len=61",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": true,
+          "observed": "paras=91 macro=True rotation=True ms_len=1190",
+          "gap": null
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=86",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": true,
+          "observed": "narrative=70337 chars",
+          "gap": null
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=False refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-05-31.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [],
+        "ui-only": []
+      }
+    },
+    {
+      "week_ending": "2026-06-07",
+      "score": 15,
+      "max": 15,
+      "score100": 100,
+      "criteria": {
+        "01_macro_regime": {
+          "pass": true,
+          "observed": "macro_regime='Risk-Off Pullback; AI / semiconductor unwind and rebound' len=56",
+          "gap": null
+        },
+        "02_tl_dr": {
+          "pass": true,
+          "observed": "tl_dr=5 substantive bullets",
+          "gap": null
+        },
+        "03_measured_indices": {
+          "pass": true,
+          "observed": "sp500_measured=True nasdaq_measured=True",
+          "gap": null
+        },
+        "04_secondary_indices_nullable": {
+          "pass": true,
+          "observed": "secondary indices nullable (em-dash)",
+          "gap": null
+        },
+        "05_market_summary": {
+          "pass": true,
+          "observed": "paras=64 macro=True rotation=True ms_len=864",
+          "gap": null
+        },
+        "06_sector_summary": {
+          "pass": true,
+          "observed": "sector_summary=8 entries",
+          "gap": null
+        },
+        "07_watchlist_updates": {
+          "pass": true,
+          "observed": "watchlist_updates=108",
+          "gap": null
+        },
+        "08_upcoming_catalysts": {
+          "pass": true,
+          "observed": "upcoming_catalysts=6",
+          "gap": null
+        },
+        "09_pick_context": {
+          "pass": true,
+          "observed": "10/10 picks carry context",
+          "gap": null
+        },
+        "10_narrative": {
+          "pass": true,
+          "observed": "narrative=56115 chars",
+          "gap": null
+        },
+        "11_no_institutional": {
+          "pass": true,
+          "observed": "institutional phrase absent",
+          "gap": null
+        },
+        "12_disclaimer_ui": {
+          "pass": true,
+          "observed": "disclaimer rendered by dashboard UI footer (not in JSON)",
+          "gap": null
+        },
+        "13_no_literal_sentinels": {
+          "pass": true,
+          "observed": "no literal MISSING/N/A",
+          "gap": null
+        },
+        "14_sources_if_cited": {
+          "pass": true,
+          "observed": "narrative_citations=0 sources_field=False refs_heading=False",
+          "gap": null
+        },
+        "15_no_fabrication": {
+          "pass": true,
+          "observed": "index pcts traceable to measured source",
+          "gap": null
+        }
+      },
+      "file": "weekly_briefing_2026-06-07.json",
+      "gaps": {
+        "deterministic": [],
+        "needs-llm": [],
+        "ui-only": []
+      }
+    }
+  ]
+}

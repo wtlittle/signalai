@@ -904,6 +904,46 @@ def _backfill_index_and_headline(briefing: dict, target_week: date) -> None:
             print("  macro_regime: insufficient signal -> null (em-dash)")
 
 
+def _movers_to_watchlist(movers: list) -> tuple[list, list]:
+    """Build (watchlist_updates, watchlist_movers) from a grounded mover list.
+
+    Every entry states only a measured 1W/1M move — no fabrication. Shared by the
+    live backfill (below) and the archive backfill so the two stay in lockstep.
+    """
+    updates = []
+    for m in movers:
+        w = _fmt_signed(m.get("change1w"))
+        if w is None:
+            continue
+        mo = _fmt_signed(m.get("change1m"))
+        name = m.get("name") or m.get("ticker")
+        bits = [f"{name} moved {w} on the week"]
+        if mo is not None:
+            bits.append(f"{mo} over 30 days")
+        headline = ", ".join(bits) + "."
+        updates.append({
+            "ticker": m.get("ticker"),
+            "weekly_change_pct": m.get("change1w"),
+            "thirty_day_change_pct": (
+                m.get("change1m") if isinstance(m.get("change1m"), (int, float)) else None
+            ),
+            "headline": headline,
+            "summary": headline,
+            "tags": [m.get("sector")] if m.get("sector") else [],
+        })
+    projection = [
+        {
+            "ticker": u["ticker"],
+            "weekly_move": _fmt_signed(u["weekly_change_pct"]) or "—",
+            "thirty_day_move": _fmt_signed(u["thirty_day_change_pct"]) or "—",
+            "catalyst": "",
+            "detail": u["headline"],
+        }
+        for u in updates
+    ]
+    return updates, projection
+
+
 def _backfill_volume_sections(briefing: dict, context: dict | None,
                               target_week: date | None = None) -> None:
     """Fill empty/thin volume sections from real local price + calendar data.
@@ -923,39 +963,10 @@ def _backfill_volume_sections(briefing: dict, context: dict | None,
 
     # 1. watchlist_updates — one factual entry per material mover.
     if len(briefing.get("watchlist_updates") or []) < (context.get("min_watchlist") or 0):
-        updates = []
-        for m in movers:
-            w = _fmt_signed(m.get("change1w"))
-            mo = _fmt_signed(m.get("change1m"))
-            if w is None:
-                continue
-            name = m.get("name") or m.get("ticker")
-            bits = [f"{name} moved {w} on the week"]
-            if mo is not None:
-                bits.append(f"{mo} over 30 days")
-            headline = ", ".join(bits) + "."
-            updates.append({
-                "ticker": m.get("ticker"),
-                "weekly_change_pct": m.get("change1w"),
-                "thirty_day_change_pct": (
-                    m.get("change1m") if isinstance(m.get("change1m"), (int, float)) else None
-                ),
-                "headline": headline,
-                "summary": headline,
-                "tags": [m.get("sector")] if m.get("sector") else [],
-            })
+        updates, projection = _movers_to_watchlist(movers)
         if updates:
             briefing["watchlist_updates"] = updates
-            briefing["watchlist_movers"] = [
-                {
-                    "ticker": u["ticker"],
-                    "weekly_move": _fmt_signed(u["weekly_change_pct"]) or "—",
-                    "thirty_day_move": _fmt_signed(u["thirty_day_change_pct"]) or "—",
-                    "catalyst": "",
-                    "detail": u["headline"],
-                }
-                for u in updates
-            ]
+            briefing["watchlist_movers"] = projection
             print(f"  [backfill] watchlist_updates from {len(updates)} computed movers")
 
     # 2. sector_summary — one factual line per canonical subsector bucket.
