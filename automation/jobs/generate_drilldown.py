@@ -28,6 +28,11 @@ PROMPT_PATH = ROOT / 'drilldown_prompt.md'
 from automation.perplexity.client import call_perplexity
 from automation.jobs.save_drilldown import save_drilldown
 from automation.jobs.drilldown_validator import validate
+from automation.jobs.drilldown_renderer import (
+    render_bull_base_bear,
+    validate_payload,
+    BBBValidationError,
+)
 from automation.sources.annual_history import fetch_5yr_history
 from automation.shared.supabase_client import fetch_rows
 from automation.jobs.drilldown_chart import (
@@ -638,6 +643,121 @@ def _save_failed(ticker, html, failures):
     return path
 
 
+BBB_OPEN = '<BULL_BASE_BEAR_JSON>'
+BBB_CLOSE = '</BULL_BASE_BEAR_JSON>'
+
+
+def _extract_bbb_json(html: str) -> dict | None:
+    """Pull the Bull/Base/Bear JSON payload from between the delimiters.
+
+    Returns the parsed dict, or None if the delimiters are absent or the
+    enclosed text is not valid JSON.
+    """
+    start = html.find(BBB_OPEN)
+    end = html.find(BBB_CLOSE)
+    if start == -1 or end == -1 or end < start:
+        return None
+    raw = html[start + len(BBB_OPEN):end].strip()
+    # Tolerate a stray fenced ```json wrapper around the payload.
+    m = re.search(r'```(?:json)?\s*(\{.*\})\s*```', raw, flags=re.DOTALL)
+    if m:
+        raw = m.group(1)
+    try:
+        return json.loads(raw)
+    except ValueError:
+        return None
+
+
+def _strip_bbb_block(html: str) -> str:
+    """Remove the raw JSON delimiter block from the document.
+
+    Also strips any redundant three-column Bull/Base/Bear HTML the model emitted
+    on its own inside Section 6's body so only the deterministic render remains.
+    """
+    html = re.sub(
+        re.escape(BBB_OPEN) + r'.*?' + re.escape(BBB_CLOSE),
+        '',
+        html,
+        flags=re.DOTALL,
+    )
+    return html
+
+
+def _inject_bull_base_bear(html: str, payload: dict, current_price: float) -> str:
+    """Replace Section 6's body content with the deterministic BBB render.
+
+    Locates the "Investment Overview — Bull / Base / Bear" section by its
+    section-title, finds the section-body, and swaps its inner content for the
+    rendered FROG-style block. Raises if the section cannot be located.
+    """
+    title_re = re.compile(
+        r'<div[^>]*class=["\']section-title["\'][^>]*>\s*Investment Overview[^<]*'
+        r'Bull\s*/\s*Base\s*/\s*Bear\s*<',
+        re.IGNORECASE,
+    )
+    tm = title_re.search(html)
+    if not tm:
+        raise RuntimeError(
+            'Section 6 (Investment Overview — Bull / Base / Bear) section-title '
+            'not found; cannot inject deterministic render'
+        )
+    content_start, body_close, _section_close = _find_section_body_content(
+        html, tm.end()
+    )
+    if content_start == -1 or body_close == -1:
+        raise RuntimeError('Section 6 section-body could not be located')
+
+    rendered = render_bull_base_bear(payload, current_price)
+    return html[:content_start] + '\n' + rendered + '\n  ' + html[body_close:]
+
+
+def _quarantine_bbb(ticker: str, reason: str, raw_payload) -> Path:
+    """Append a quarantine entry instead of overwriting an existing note."""
+    qpath = ROOT / 'quarantine.json'
+    try:
+        data = json.loads(qpath.read_text(encoding='utf-8'))
+        if not isinstance(data, list):
+            data = [data]
+    except (OSError, ValueError):
+        data = []
+    data.append({
+        'ticker': ticker,
+        'stage': 'bull_base_bear_json',
+        'reason': reason,
+        'ts': _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        'payload_excerpt': (str(raw_payload)[:1000] if raw_payload is not None else None),
+    })
+    qpath.write_text(json.dumps(data, indent=2), encoding='utf-8')
+    return qpath
+
+
+class BBBProcessingError(RuntimeError):
+    """Raised when Section 6 JSON cannot be extracted, validated, or injected."""
+
+
+def _process_bbb(ticker: str, html: str, current_price: float) -> str:
+    """Turn the model's Section 6 JSON into the deterministic FROG render.
+
+    Steps: extract the delimited JSON, validate it against the strict schema,
+    render the FROG-style block, inject it into Section 6, and strip the raw
+    delimiter block. Raises ``BBBProcessingError`` on any failure so the caller
+    can retry the JSON-only prompt once and then quarantine.
+    """
+    payload = _extract_bbb_json(html)
+    if payload is None:
+        raise BBBProcessingError(
+            f'{ticker}: Bull/Base/Bear JSON not found between '
+            f'{BBB_OPEN}/{BBB_CLOSE} or not valid JSON'
+        )
+    try:
+        validate_payload(payload)
+    except BBBValidationError as exc:
+        raise BBBProcessingError(f'{ticker}: BBB JSON schema invalid: {exc}') from exc
+
+    html = _strip_bbb_block(html)
+    return _inject_bull_base_bear(html, payload, current_price or 0.0)
+
+
 def generate_one(ticker, snap, prompt_template, company_name=None):
     ticker = ticker.strip().upper()
 
@@ -674,9 +794,40 @@ def generate_one(ticker, snap, prompt_template, company_name=None):
         'the block. No <script> tags.'
     )
 
+    # Current price feeds the deterministic Bull/Base/Bear payoff returns.
+    q = (snap.get('quotes') or {}).get(ticker) or {}
+    price = q.get('price')
+
     # Generate, validate, and retry once on validation failure with a strict
     # re-instruction prefix. A note that still fails is quarantined, not saved.
     html = _call_model(ticker, full_prompt, system)
+    try:
+        html = _process_bbb(ticker, html, price)
+    except BBBProcessingError as exc:
+        print(f'  [bbb] {ticker} v1 FAILED: {exc}; retrying JSON-only prompt once',
+              file=sys.stderr)
+        bbb_retry_prefix = (
+            'PREVIOUS ATTEMPT had an invalid Section 6 block. Section 6 '
+            '("Investment Overview — Bull / Base / Bear") MUST be emitted as '
+            f'JSON delimited by {BBB_OPEN} and {BBB_CLOSE}, matching the schema '
+            'in the prompt exactly: three cases (bull_case/base_case/bear_case) '
+            'each with price_target_low, price_target_high, probability_pct, '
+            'horizon_months, thesis_bullets (exactly 3 full-sentence strings), '
+            'and claim_refs; plus a probability_rationale paragraph. The three '
+            'probability_pct values MUST sum to 100. Do NOT render Section 6 as '
+            'HTML. Resubmit the full document with a corrected Section 6 JSON '
+            'block inside one fenced ```html block.\n\n'
+        )
+        html = _call_model(ticker, bbb_retry_prefix + full_prompt, system)
+        try:
+            html = _process_bbb(ticker, html, price)
+        except BBBProcessingError as exc2:
+            qpath = _quarantine_bbb(ticker, str(exc2), _extract_bbb_json(html))
+            raise RuntimeError(
+                f'{ticker}: Bull/Base/Bear JSON still invalid after one retry: '
+                f'{exc2}. Quarantined at {qpath.relative_to(ROOT)}; existing note '
+                f'left untouched.'
+            ) from exc2
     ok, failures = validate(html, ticker=ticker)
     if not ok:
         print(f'  [validator] {ticker} v1 FAILED: {failures}', file=sys.stderr)
@@ -711,6 +862,7 @@ def generate_one(ticker, snap, prompt_template, company_name=None):
             'citation. Emit ONLY the corrected HTML in one fenced ```html block.\n\n'
         )
         html = _call_model(ticker, retry_prefix + full_prompt, system)
+        html = _process_bbb(ticker, html, price)
         ok, failures = validate(html, ticker=ticker)
         if not ok:
             failed_path = _save_failed(ticker, html, failures)
@@ -728,8 +880,6 @@ def generate_one(ticker, snap, prompt_template, company_name=None):
     except Exception as exc:
         print(f'  [WARN] {ticker}: chart injection failed, keeping original HTML: {exc}')
 
-    q = (snap.get('quotes') or {}).get(ticker) or {}
-    price = q.get('price')
     company = company_name or q.get('longName') or ticker
     title = f'{company} ({ticker}) — Institutional Drilldown'
 

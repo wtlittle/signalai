@@ -249,25 +249,42 @@ H. DATED CATALYSTS — the CATALYSTS section is a NUMBERED list, each item
    carrying an explicit quarter / month / event date (e.g. "Q3 FY26 print
    (early Aug 2026)", "GTC keynote (Mar 2027)"). No undated catalysts.
 
-I. ASYMMETRIC PAYOFF — there is no standalone "Recommendation" section in
-   the 14-section structure, so the recommendation lives at the END of the
-   "Investment Overview — Bull / Base / Bear" section (section 6). After the
-   three-column Bull/Base/Bear layout and its probability-weighting
-   paragraph, you MUST append a "Recommendation — Asymmetric Payoff"
-   subsection (use `<div class="subsection-title">`) containing a table of
-   the exact shape:
+I. SECTION 6 IS JSON, NOT HTML — Section 6 ("Investment Overview — Bull /
+   Base / Bear") is the ONE section you do NOT render as HTML. Do NOT emit
+   the three-column card layout, the probability-weighting paragraph, the
+   "Recommendation — Asymmetric Payoff" table, or the "What makes us
+   right/wrong" bullets as HTML. A deterministic Python renderer produces all
+   of that from the JSON you provide, guaranteeing a consistent layout.
 
-   | Scenario | Probability | NTM target | Return |
-   |----------|-------------|------------|--------|
-   | Bull     | …%          | $…         | +…%    |
-   | Base     | …%          | $…         | +…%    |
-   | Bear     | …%          | $…         | -…%    |
+   Inside Section 6's `<div class="section-body">`, output ONLY a single JSON
+   object delimited by the exact tags `<BULL_BASE_BEAR_JSON>` and
+   `</BULL_BASE_BEAR_JSON>` (no fenced code block, no prose around it). The
+   schema is EXACTLY:
 
-   (probabilities sum to 100%), followed by the literal bold headings
-   **What makes us right** (1-3 bullets naming the signals that confirm the
-   thesis) and **What makes us wrong** (1-3 bullets naming the signals that
-   break it). Both heading strings are MANDATORY and must appear verbatim —
-   a note missing either one fails validation.
+   <BULL_BASE_BEAR_JSON>
+   {
+     "bull_case": {
+       "price_target_low": float,
+       "price_target_high": float,
+       "probability_pct": int,
+       "horizon_months": int,
+       "thesis_bullets": [3 strings, each 40-80 words, full sentences],
+       "claim_refs": [list of int claim ids]
+     },
+     "base_case": { same shape },
+     "bear_case": { same shape },
+     "probability_rationale": "80-200 word paragraph explaining the weights, citing claim ids"
+   }
+   </BULL_BASE_BEAR_JSON>
+
+   The three `probability_pct` values MUST sum to exactly 100. Each
+   `thesis_bullets` array MUST contain EXACTLY 3 full-sentence strings.
+   `price_target_low` MUST be <= `price_target_high`. The renderer derives the
+   asymmetric-payoff table (returns vs. current price) and the
+   "What makes us right" / "What makes us wrong" bullets from this JSON, so do
+   not write them yourself. Keep the Section 6 header HTML
+   (`<div class="section-num">6</div>` and the `<div class="section-title">`)
+   exactly as the other sections — only the section-BODY is JSON.
 
 J. BANNED PHRASES — these are banned OUTRIGHT (zero occurrences):
    "It is worth noting that", "Importantly,", "Notably,". Also avoid
