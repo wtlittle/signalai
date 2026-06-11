@@ -24,7 +24,7 @@
       "Story names specific buyer or transaction",
       "Story published before or coincident with the move"
     ],
-    "last_rumor_scan": "2026-06-05T19:01:06.841081+00:00"
+    "last_rumor_scan": "2026-06-11T21:04:30.968193+00:00"
   },
   "pending_review": [
     {
@@ -109,6 +109,42 @@
           "label": "Investing.com citing Bloomberg",
           "url": "https://www.investing.com/news/stock-market-news/barrick-stock-rises-after-report-of-newmont-eyeing-nevada-gold-assets-93CH-4308539",
           "published_at": null,
+          "tier": 1
+        }
+      ],
+      "gates": {
+        "gate1_move": true,
+        "gate2_tier1": true,
+        "gate3_named_buyer": true,
+        "gate4_timing": true
+      },
+      "status": "pending_review"
+    },
+    {
+      "ticker": "SITM",
+      "company": "SiTime Corporation",
+      "flagged_at": "2026-06-11T21:01:50.450331+00:00",
+      "intraday_move_pct": 8.58,
+      "price_at_flag": 721.24,
+      "buyer": "SiTime Corporation",
+      "buyer_ticker": "SITM",
+      "target": "Renesas Electronics Corporation's timing business",
+      "target_ticker": null,
+      "deal_type": "strategic",
+      "headline": "SiTime to acquire Renesas' timing business in a $1.5 billion cash-and-stock deal",
+      "rationale": "Gate 1 is satisfied by the verified +8.58% move. Gate 2 is satisfied because Bloomberg reported within the last 24 hours that SiTime was in talks to acquire Renesas's timing division, which is a Tier-1 source. Gate 3 is satisfied because the story names the specific counterparty and transaction, and Gate 4 is satisfied because the Bloomberg rumor preceded the price move; the later press release confirms the deal rather than causing the initial move.",
+      "confidence": 0.97,
+      "sources": [
+        {
+          "label": "Bloomberg via X post snippet",
+          "url": "https://x.com/business/status/1995878190921797921",
+          "published_at": "2026-06-11",
+          "tier": 1
+        },
+        {
+          "label": "SiTime press release",
+          "url": "https://www.sitime.com/company/newsroom/press-release/sitime-acquire-renesas-timing-business",
+          "published_at": "2026-02-04",
           "tier": 1
         }
       ],
