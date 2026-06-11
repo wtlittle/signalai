@@ -2,42 +2,70 @@
 
 Public API
 ----------
-render_earnings_annotated_chart(ticker, earnings_events, sector=None) -> str
-    Returns a self-contained inline SVG string (no JS, no external deps).
+render_earnings_annotated_chart(ticker, earnings_events, sector=None,
+                                require_annotations=True) -> str | None
+    Returns a self-contained inline SVG string (no JS, no external deps), or
+    None when require_annotations is True and no real earnings event date is
+    available to annotate (the caller then omits the chart section entirely).
     The SVG has class="earnings-chart" on the root element so the validator
     can confirm its presence.
 
+generate_chart(ticker, require_annotations=True) -> str | None
+    Convenience wrapper that resolves the ticker's sector ETF and earnings
+    events from on-disk data, then calls render_earnings_annotated_chart().
+
+Theme
+-----
+The drilldown surface (see FROG drilldown) is a LIGHT theme on a near-white
+page (--bg #fafaf9, --surface #ffffff). Chart text therefore uses the same
+dark ink tokens as the rest of the note so it is legible:
+    --text       #1c1917  (title)
+    --text-muted #78716c  (axis labels, legend body)
+    --text-light #a8a29e  (gridlines / faint detail)
+    --green      #10b981  (positive reaction)
+    --red        #ef4444  (negative reaction)
+
 Design
 ------
-- 1100x420 viewBox, responsive width (width="100%" preserveAspectRatio).
+- 1100x446 viewBox, responsive width (width="100%" preserveAspectRatio).
 - 4 price series, all rebased to 100 at the start of the 2-year window
   so they compare on a % return basis ("Indexed, start=100").
-    1. Ticker      — slate-100  (#f1f5f9)  2.5 px  (thickest / brightest)
-    2. Sector ETF  — amber-400  (#fbbf24)  1.8 px
-    3. QQQ         — sky-400    (#38bdf8)  1.8 px
-    4. SPY         — violet-400 (#a78bfa)  1.8 px
+    1. Ticker      — indigo-700 (#4338ca)  2.5 px  (thickest / darkest)
+    2. Sector ETF  — amber-600  (#d97706)  1.8 px
+    3. QQQ         — sky-600     (#0284c7)  1.8 px
+    4. SPY         — slate-500   (#64748b)  1.8 px
 - Legend panel in top-right corner (colour swatch + label), 120px wide, 14px font.
-- Vertical earnings marker at each date on the ticker line:
-    green (#22c55e) when reaction_pct >= 0, red (#ef4444) otherwise.
-    Label: "MM/DD: +X.X%" rotated above the chart area, 12px font in a pill.
+- Filled circle (r=5) earnings marker at each real print date on the ticker
+  line: green (#10b981) when reaction_pct >= 0, red (#ef4444) otherwise.
+  Rotated label "Q? +X.X%" above the chart area, 12px font.
 - 5 horizontal gridlines, linear Y-axis, label "Indexed (start=100)" at 12px.
 - Monthly X-axis tick labels rotated 30° for fit, 13px font.
 - Title: "<TICKER> 2-year performance vs. <SECTOR_ETF> / QQQ / SPY" at 16px.
 - Placeholder HTML returned when ticker price data <30 points or fails.
 
-Sector → ETF mapping (GICS-aligned, SPDR Select Sector ETFs)
--------------------------------------------------------------
-Technology          → XLK
-Communication Svc   → XLC
-Financials          → XLF
-Healthcare          → XLV
-Energy              → XLE
-Industrials         → XLI
-Consumer Disc       → XLY
-Consumer Staples    → XLP
-Utilities           → XLU
-Materials           → XLB
-Real Estate         → XLRE
+Annotation contract (per user: "annotations for key dates, or don't have it")
+------------------------------------------------------------------------------
+A marker is only plotted for an event that carries a real print date
+(event['real'] is True). Events whose date was reconstructed from a
+fiscal-period-end fallback are never labelled as print dates. When
+require_annotations is True and no real-dated event remains, the renderer
+returns None so the caller can omit the chart rather than ship an
+unannotated one.
+
+Sector → ETF mapping
+--------------------
+Resolved per-ticker from data/ticker_sector_etf.json (generated from the
+dashboard's utils.js SUBSECTOR_MAP). Highlights:
+    Software / Cloud / App SW   → IGV
+    Semiconductors              → SOXX
+    Cybersecurity               → CIBR
+    Fintech / Payments          → FINX
+    Energy                      → XLE
+    Industrials                 → XLI
+    Consumer Discretionary      → XLY
+    Healthcare                  → XLV
+    Default fallback            → XLK (broad tech)
+A GICS-sector fallback map (below) is used when the ticker is not in the JSON.
 
 Cache
 -----
@@ -50,15 +78,12 @@ Doctests  (python -m doctest drilldown_chart.py -v)
 --------------------------------------------------------
 >>> from automation.jobs.drilldown_chart import render_earnings_annotated_chart
 
->>> # (b) zero events — chart renders, no annotation elements expected
+>>> # (b) zero real events + require_annotations -> chart omitted (None)
 >>> import automation.jobs.drilldown_chart as _m
 >>> _synthetic = [{"date": f"2024-{(i//22)+1:02d}-{(i%22)+1:02d}", "close": 100.0 + i} for i in range(60)]
 >>> _orig = _m._fetch_price_series
 >>> _m._fetch_price_series = lambda t: _synthetic
->>> svg = render_earnings_annotated_chart('NET', [])
->>> 'class="earnings-chart"' in svg
-True
->>> 'stroke-dasharray="4,3"' not in svg
+>>> render_earnings_annotated_chart('NET', []) is None
 True
 >>> _m._fetch_price_series = _orig
 
@@ -68,22 +93,14 @@ True
 >>> 'Chart data unavailable' in out
 True
 >>> _m._fetch_price_series = _orig
-
->>> # (d) event outside price window — skips gracefully, SVG still renders
->>> _m._fetch_price_series = lambda t: _synthetic
->>> svg = render_earnings_annotated_chart('NET', [{'date': '2000-01-01', 'reaction_pct': 10.0}])
->>> 'class="earnings-chart"' in svg
-True
->>> 'stroke-dasharray="4,3"' not in svg
-True
->>> _m._fetch_price_series = _orig
 """
 from __future__ import annotations
 
 import json
 import math
+import sys as _sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta as _timedelta
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -93,10 +110,15 @@ _HERE = Path(__file__).resolve()
 ROOT = _HERE.parents[2]
 _CACHE_DIR = ROOT / "data" / "cache"
 _CACHE_TTL_SECS = 86400  # 24 h
+_ETF_MAP_PATH = ROOT / "data" / "ticker_sector_etf.json"
 
 # ---------------------------------------------------------------------------
-# Sector → ETF map  (GICS / SPDR Select Sectors)
+# Broad GICS-sector → ETF fallback (used only when a ticker is absent from the
+# per-ticker JSON map). The JSON map (data/ticker_sector_etf.json, generated
+# from utils.js SUBSECTOR_MAP) is the primary, finer-grained resolver.
 # ---------------------------------------------------------------------------
+_DEFAULT_ETF = "XLK"  # broad tech
+
 _SECTOR_ETF: dict[str, str] = {
     "Technology":              "XLK",
     "Communication Services":  "XLC",
@@ -117,28 +139,76 @@ _SECTOR_ETF: dict[str, str] = {
     "Real Estate":             "XLRE",
 }
 
-# ---------------------------------------------------------------------------
-# Palette
-# ---------------------------------------------------------------------------
-_COL_TICKER = "#f1f5f9"    # slate-100   — ticker line
-_COL_SECTOR = "#fbbf24"    # amber-400   — sector ETF
-_COL_QQQ    = "#38bdf8"    # sky-400     — QQQ
-_COL_SPY    = "#a78bfa"    # violet-400  — SPY
-_COL_GREEN  = "#22c55e"
-_COL_RED    = "#ef4444"
-_COL_GRID   = "#64748b"    # slate-500
-_COL_LABEL  = "#cbd5e1"    # slate-300
-_COL_TITLE  = "#e2e8f0"    # slate-200
-_COL_LEGEND_BG = "#1e293b" # slate-800, semi-transparent
+# Per-ticker sector-ETF map, loaded once from data/ticker_sector_etf.json.
+_TICKER_ETF_CACHE: dict[str, str] | None = None
+
+
+def _ticker_etf_map() -> dict[str, str]:
+    """Load (and memoise) the ticker → sector-ETF map from disk.
+
+    Generated from the dashboard's utils.js SUBSECTOR_MAP. Returns {} if the
+    file is missing or malformed so callers fall back to the GICS-sector map.
+    """
+    global _TICKER_ETF_CACHE
+    if _TICKER_ETF_CACHE is not None:
+        return _TICKER_ETF_CACHE
+    try:
+        data = json.loads(_ETF_MAP_PATH.read_text(encoding="utf-8"))
+        _TICKER_ETF_CACHE = {
+            k.upper(): v for k, v in (data.get("ticker_etf") or {}).items()
+        }
+    except (OSError, ValueError, AttributeError):
+        _TICKER_ETF_CACHE = {}
+    return _TICKER_ETF_CACHE
+
+
+def resolve_sector_etf(ticker: str, sector: str | None = None) -> str:
+    """Resolve a ticker to its overlay sector ETF.
+
+    Resolution order:
+      1. Per-ticker JSON map (data/ticker_sector_etf.json) — finest grained.
+      2. Broad GICS-sector fallback map, exact then fuzzy match.
+      3. _DEFAULT_ETF (XLK, broad tech).
+    """
+    etf = _ticker_etf_map().get(ticker.upper())
+    if etf:
+        return etf
+    if sector:
+        etf = _SECTOR_ETF.get(sector)
+        if etf:
+            return etf
+        sl = sector.lower()
+        for k, v in _SECTOR_ETF.items():
+            if sl in k.lower() or k.lower() in sl:
+                return v
+    return _DEFAULT_ETF
 
 # ---------------------------------------------------------------------------
-# Layout  (SVG user units, viewBox 1100 x 420)
+# Palette  (LIGHT theme — matches the drilldown surface --text/--muted tokens)
+# ---------------------------------------------------------------------------
+# Series lines: saturated, dark enough to read on a near-white (#ffffff) page.
+_COL_TICKER = "#4338ca"    # indigo-700  — ticker line (darkest / thickest)
+_COL_SECTOR = "#d97706"    # amber-600   — sector ETF
+_COL_QQQ    = "#0284c7"    # sky-600     — QQQ
+_COL_SPY    = "#64748b"    # slate-500   — SPY
+# Earnings-reaction markers (match FROG --green / --red).
+_COL_GREEN  = "#10b981"
+_COL_RED    = "#ef4444"
+# Text + chrome: the note's own ink tokens so the chart reads like the page.
+_COL_GRID   = "#e7e5e4"    # --border    — gridlines
+_COL_AXIS   = "#a8a29e"    # --text-light — axis rule
+_COL_LABEL  = "#78716c"    # --text-muted — axis labels + legend body
+_COL_TITLE  = "#1c1917"    # --text       — title
+_COL_LEGEND_BG = "#fafaf9" # --bg, semi-transparent panel
+
+# ---------------------------------------------------------------------------
+# Layout  (SVG user units, viewBox 1100 x 446)
 # ---------------------------------------------------------------------------
 _VB_W = 1100
-_VB_H = 420
+_VB_H = 446
 _PAD_LEFT   = 72   # Y-axis labels
 _PAD_RIGHT  = 24
-_PAD_TOP    = 44   # title + legend
+_PAD_TOP    = 70   # title + rotated earnings-reaction labels + legend
 _PAD_BOTTOM = 58   # X-axis labels
 _PLOT_W = _VB_W - _PAD_LEFT - _PAD_RIGHT
 _PLOT_H = _VB_H - _PAD_TOP  - _PAD_BOTTOM
@@ -306,7 +376,8 @@ def render_earnings_annotated_chart(
     ticker: str,
     earnings_events: list[dict],
     sector: str | None = None,
-) -> str:
+    require_annotations: bool = True,
+) -> str | None:
     """Build an inline SVG 4-series annotated chart.
 
     Parameters
@@ -317,34 +388,52 @@ def render_earnings_annotated_chart(
         List of dicts with keys:
             date (str "YYYY-MM-DD") — earnings report date
             reaction_pct (float | None) — 1-day stock reaction in percent
+            real (bool) — True when `date` is a genuine print date (from
+                event_date / earnings_date / measured lag). Markers are ONLY
+                drawn for real-dated events; a fiscal-period-end fallback is
+                never labelled as a print date. Missing key is treated as
+                real for backward compatibility with callers/tests that pass
+                pre-resolved real dates.
+            fiscal (str) — optional fiscal-quarter label (e.g. "Q1") for the
+                marker text. Falls back to MM/DD when absent.
     sector:
-        Optional GICS sector string (e.g. "Technology"). Used to derive the
-        sector ETF overlay. If None or unmapped, the sector overlay is skipped
-        and only ticker + QQQ + SPY are shown.
+        Optional GICS sector string (e.g. "Technology"). Used as a fallback to
+        derive the sector ETF overlay when the ticker is not in the per-ticker
+        JSON map. The overlay always resolves to an ETF (default XLK).
+    require_annotations:
+        When True (default), return None if no real-dated earnings event is
+        available to annotate — the caller then omits the chart entirely
+        rather than shipping an unannotated chart (per user requirement).
+        When False, render the chart even with zero markers.
 
     Returns
     -------
-    str
-        Inline SVG markup, or the plain-HTML placeholder on data failure.
+    str | None
+        Inline SVG markup, the plain-HTML placeholder on data failure, or
+        None when require_annotations is True and no real event date exists.
     """
     ticker = ticker.strip().upper()
+
+    # ---- Gate on annotation availability BEFORE any network fetch ---------
+    # A marker is only valid when the event carries a real print date. Events
+    # missing the `real` key default to real (back-compat with callers that
+    # already pass resolved print dates, e.g. unit tests).
+    real_events = [
+        ev for ev in earnings_events
+        if ev.get("real", True) and (ev.get("date") or "")[:10]
+    ]
+    if require_annotations and not real_events:
+        print(f"  [INFO] drilldown_chart: {ticker} has no real earnings event "
+              f"dates — omitting chart (require_annotations=True)", file=_sys.stderr)
+        return None
 
     # ---- Fetch all price series -------------------------------------------
     ticker_series = _fetch_price_series(ticker)
     if len(ticker_series) < 30:
         return _PLACEHOLDER
 
-    # Determine sector ETF (may be None)
-    sector_etf: str | None = None
-    if sector:
-        sector_etf = _SECTOR_ETF.get(sector)
-    if sector_etf is None and sector:
-        # Try partial / case-insensitive match
-        sl = sector.lower()
-        for k, v in _SECTOR_ETF.items():
-            if sl in k.lower() or k.lower() in sl:
-                sector_etf = v
-                break
+    # Resolve sector ETF (per-ticker JSON map first, GICS fallback, then XLK).
+    sector_etf: str = resolve_sector_etf(ticker, sector)
 
     spy_series  = _fetch_price_series("SPY")
     qqq_series  = _fetch_price_series("QQQ")
@@ -418,7 +507,7 @@ def render_earnings_annotated_chart(
     date_to_idx: dict[str, int] = {d: i for i, d in enumerate(dates)}
 
     markers: list[dict] = []
-    for ev in earnings_events:
+    for ev in real_events:
         date_str = (ev.get("date") or "")[:10]
         if not date_str:
             continue
@@ -437,11 +526,14 @@ def render_earnings_annotated_chart(
         if idx is None:
             continue  # still unresolved — skip
         color = _COL_GREEN if (reaction is not None and reaction >= 0) else _COL_RED
+        # Label: prefer "<fiscal> <±reaction>" (e.g. "Q1 +12.0%"); fall back to
+        # MM/DD when no fiscal label, and to just the period when no reaction.
+        period = ev.get("fiscal") or date_str[5:]
         if reaction is not None:
             sign = "+" if reaction >= 0 else ""
-            label = f"{date_str[5:]}: {sign}{reaction:.1f}%"
+            label = f"{period} {sign}{reaction:.1f}%"
         else:
-            label = date_str[5:]
+            label = str(period)
         markers.append({
             "idx": idx,
             "x": px(idx),
@@ -449,6 +541,13 @@ def render_earnings_annotated_chart(
             "color": color,
             "label": label,
         })
+
+    # If, after windowing, no real marker survived and annotations are
+    # required, omit the chart rather than ship an unannotated one.
+    if require_annotations and not markers:
+        print(f"  [INFO] drilldown_chart: {ticker} real events all fell outside "
+              f"the price window — omitting chart", file=_sys.stderr)
+        return None
 
     # ---- X-axis monthly ticks ---------------------------------------------
     x_ticks: list[tuple[float, str]] = []
@@ -524,9 +623,9 @@ def render_earnings_annotated_chart(
 
     # Axes
     a(f'  <line x1="{ax_x1}" y1="{ax_y1}" x2="{ax_x1}" y2="{ax_y2}" '
-      f'stroke="{_COL_GRID}" stroke-width="0.8"/>')
+      f'stroke="{_COL_AXIS}" stroke-width="0.8"/>')
     a(f'  <line x1="{ax_x1}" y1="{ax_y2}" x2="{ax_x2}" y2="{ax_y2}" '
-      f'stroke="{_COL_GRID}" stroke-width="0.8"/>')
+      f'stroke="{_COL_AXIS}" stroke-width="0.8"/>')
 
     # X-axis tick labels
     for xv, lbl in x_ticks:
@@ -545,26 +644,26 @@ def render_earnings_annotated_chart(
     # Ticker line (front, thickest)
     a(_polyline(tk_vals, _COL_TICKER, 2.5, "line-ticker"))
 
-    # Earnings marker vertical lines + dots + labels
+    # Earnings markers: a filled dot on the ticker line at each real print
+    # date, with a short rotated reaction label leadered up from the dot.
     for mk in markers:
         xv = mk["x"]
+        yv = mk["y"]
         col = mk["color"]
-        a(f'  <line x1="{xv:.1f}" y1="{ax_y1}" x2="{xv:.1f}" y2="{ax_y2}" '
-          f'stroke="{col}" stroke-width="1" stroke-dasharray="4,3" opacity="0.85"/>')
-        a(f'  <circle cx="{xv:.1f}" cy="{mk["y"]:.1f}" r="5" '
-          f'fill="{col}" opacity="0.9"/>')
-        # Pill background + label for date annotation
+        # Short leader from the dot up toward the label (keeps the chart legible
+        # without a full-height vertical rule).
+        a(f'  <line class="earnings-marker" x1="{xv:.1f}" y1="{yv:.1f}" '
+          f'x2="{xv:.1f}" y2="{ax_y1 + 2:.1f}" '
+          f'stroke="{col}" stroke-width="1" stroke-dasharray="4,3" opacity="0.55"/>')
+        # Outlined filled circle (4-5px) — white halo so it reads over any line.
+        a(f'  <circle cx="{xv:.1f}" cy="{yv:.1f}" r="5" '
+          f'fill="{col}" stroke="#ffffff" stroke-width="1.2"/>')
+        # Rotated reaction label above the plot, anchored at the dot's x.
         label_y = ax_y1 - 6
-        pill_w = 62
-        pill_h = 18
-        a(f'  <rect transform="rotate(-65,{xv:.1f},{label_y})" '
-          f'x="{xv:.1f}" y="{label_y - pill_h + 4:.1f}" '
-          f'width="{pill_w}" height="{pill_h}" rx="4" '
-          f'fill="{col}" fill-opacity="0.18"/>')
-        a(f'  <text transform="rotate(-65,{xv:.1f},{label_y})" '
+        a(f'  <text transform="rotate(-60,{xv:.1f},{label_y})" '
           f'x="{xv:.1f}" y="{label_y}" '
           f'text-anchor="start" font-family="ui-monospace,monospace" font-size="12" '
-          f'font-weight="600" fill="{col}">{_esc(mk["label"])}</text>')
+          f'font-weight="700" fill="{col}">{_esc(mk["label"])}</text>')
 
     # Legend panel (top-right)
     lgd_x = ax_x2 - 4
@@ -574,7 +673,8 @@ def render_earnings_annotated_chart(
     lgd_h = len(legend_entries) * row_h + 10
     a(f'  <rect x="{lgd_x - lgd_w}" y="{lgd_y - 2}" '
       f'width="{lgd_w}" height="{lgd_h}" rx="3" '
-      f'fill="{_COL_LEGEND_BG}" fill-opacity="0.75"/>')
+      f'fill="{_COL_LEGEND_BG}" fill-opacity="0.9" '
+      f'stroke="{_COL_GRID}" stroke-width="1"/>')
     for li, (lbl, col) in enumerate(legend_entries):
         ry = lgd_y + li * row_h + row_h / 2 + 1
         sw_x = lgd_x - lgd_w + 8
@@ -587,6 +687,110 @@ def render_earnings_annotated_chart(
 
     a('</svg>')
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Standalone data resolution + convenience wrapper
+# ---------------------------------------------------------------------------
+_SNAPSHOT_PATH = ROOT / "data-snapshot.json"
+_INTEL_PATH = ROOT / "earnings_intel.json"
+
+# Quarter-end month → fiscal-quarter label (calendar-year approximation used
+# only for the marker text; the actual fiscal year is not needed here).
+_QTR_LABEL = {3: "Q1", 6: "Q2", 9: "Q3", 12: "Q4"}
+
+
+def _load_json(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def build_earnings_events(ticker: str, snap: dict | None = None,
+                          intel: dict | None = None) -> list[dict]:
+    """Resolve a ticker's earnings markers to real print dates.
+
+    Mirrors generate_drilldown._earnings_events but is self-contained so the
+    chart can be generated/tested without importing the generator. Each event:
+        {date, reaction_pct, real, fiscal}
+    `real` is True only when the print date came from an actual field
+    (last_earnings_date / event_date / earnings_date) or a measured reporting
+    lag projected from a known recent print — never from a bare period-end.
+    """
+    if snap is None:
+        snap = _load_json(_SNAPSHOT_PATH)
+    if intel is None:
+        intel = (_load_json(_INTEL_PATH).get("tickers") or {}).get(ticker, {}) or {}
+
+    asum = (snap.get("analyst_summary") or {}).get(ticker, {})
+    hist = asum.get("earningsHistory") or []
+
+    period_ends = [(h.get("quarter") or h.get("period_end") or "")[:10] for h in hist]
+    newest_pe = max((p for p in period_ends if p), default="")
+
+    actual_recent = (intel.get("last_earnings_date")
+                     or (intel.get("post_earnings_review") or {}).get("earnings_date")
+                     or "")
+    lag_days: int | None = None
+    if actual_recent and newest_pe:
+        try:
+            lag_days = (datetime.fromisoformat(str(actual_recent)[:10]).date()
+                        - datetime.fromisoformat(newest_pe).date()).days
+        except ValueError:
+            lag_days = None
+
+    events: list[dict] = []
+    for h in hist:
+        period_end = (h.get("quarter") or h.get("period_end") or "")[:10]
+        if not period_end:
+            continue
+        explicit = (h.get("event_date") or h.get("earnings_date") or "")
+        ev_date = ""
+        real = False
+        if period_end == newest_pe and actual_recent:
+            ev_date, real = str(actual_recent)[:10], True
+        elif explicit:
+            ev_date, real = str(explicit)[:10], True
+        elif lag_days is not None:
+            try:
+                pe = datetime.fromisoformat(period_end).date()
+                ev_date = (pe + _timedelta(days=lag_days)).isoformat()
+                real = True
+            except ValueError:
+                ev_date, real = period_end, False
+        else:
+            # No anchor at all → bare period-end. NOT a real print date.
+            ev_date, real = period_end, False
+
+        try:
+            month = datetime.fromisoformat(period_end).month
+        except ValueError:
+            month = 0
+        fiscal = _QTR_LABEL.get(month, "")
+
+        sp = h.get("surprisePercent")
+        reaction = round(float(sp) * 100, 2) if sp is not None else None
+        events.append({"date": ev_date, "reaction_pct": reaction,
+                       "real": real, "fiscal": fiscal})
+    return events
+
+
+def generate_chart(ticker: str, require_annotations: bool = True) -> str | None:
+    """Resolve a ticker's sector ETF + earnings events from disk and render.
+
+    Convenience entry point used by tooling/tests. Returns the inline SVG, the
+    HTML placeholder on price-data failure, or None when require_annotations is
+    True and the ticker has no real earnings event dates to annotate.
+    """
+    ticker = ticker.strip().upper()
+    snap = _load_json(_SNAPSHOT_PATH)
+    intel = (_load_json(_INTEL_PATH).get("tickers") or {}).get(ticker, {}) or {}
+    events = build_earnings_events(ticker, snap, intel)
+    sector = (snap.get("quotes") or {}).get(ticker, {}).get("sector")
+    return render_earnings_annotated_chart(
+        ticker, events, sector=sector, require_annotations=require_annotations
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -619,16 +823,29 @@ def _run_doctests():
     >>> svg = render_earnings_annotated_chart('NET', events_8)
     >>> 'class="earnings-chart"' in svg
     True
-    >>> svg.count('stroke-dasharray="4,3"') == 8
+    >>> svg.count('class="earnings-marker"') == 8
     True
     >>> _m._fetch_price_series = _orig
 
-    # (b) zero events — chart renders, no annotation lines
+    # (b) zero real events + require_annotations -> None (chart omitted)
     >>> _m._fetch_price_series = lambda t: _syn500
-    >>> svg = render_earnings_annotated_chart('NET', [])
+    >>> render_earnings_annotated_chart('NET', []) is None
+    True
+    >>> _m._fetch_price_series = _orig
+
+    # (b2) zero events but require_annotations=False -> chart renders, no markers
+    >>> _m._fetch_price_series = lambda t: _syn500
+    >>> svg = render_earnings_annotated_chart('NET', [], require_annotations=False)
     >>> 'class="earnings-chart"' in svg
     True
-    >>> 'stroke-dasharray="4,3"' not in svg
+    >>> 'class="earnings-marker"' not in svg
+    True
+    >>> _m._fetch_price_series = _orig
+
+    # (b3) only fallback (real=False) events -> None even though dates present
+    >>> _m._fetch_price_series = lambda t: _syn500
+    >>> _fb = [{'date': '2024-06-30', 'reaction_pct': 3.0, 'real': False}]
+    >>> render_earnings_annotated_chart('NET', _fb) is None
     True
     >>> _m._fetch_price_series = _orig
 
@@ -639,12 +856,16 @@ def _run_doctests():
     True
     >>> _m._fetch_price_series = _orig
 
-    # (d) event outside price window — skips, chart still renders
+    # (d) real event outside price window + require_annotations -> None
     >>> _m._fetch_price_series = lambda t: _syn500
-    >>> svg = render_earnings_annotated_chart('NET', [{'date': '2000-01-01', 'reaction_pct': 10.0}])
-    >>> 'class="earnings-chart"' in svg
+    >>> render_earnings_annotated_chart('NET', [{'date': '2000-01-01', 'reaction_pct': 10.0}]) is None
     True
-    >>> 'stroke-dasharray="4,3"' not in svg
+    >>> _m._fetch_price_series = _orig
+
+    # (e) fiscal label renders as "Q1 +12.0%"
+    >>> _m._fetch_price_series = lambda t: _syn500
+    >>> svg = render_earnings_annotated_chart('NET', [{'date': '2024-05-01', 'reaction_pct': 12.0, 'fiscal': 'Q1'}])
+    >>> 'Q1 +12.0%' in svg
     True
     >>> _m._fetch_price_series = _orig
     """

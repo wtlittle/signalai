@@ -416,8 +416,12 @@ def validate(text, ticker=None):
     #     could not be matched.  The check is soft (warning, not blocking) when
     #     the section itself is missing (already flagged in (b)), but hard when
     #     the section is present.
-    if not re.search(r'class=["\']earnings-chart["\']', body, re.IGNORECASE):
-        # Only flag if the section was found (otherwise (b) already covers it)
+    chart_omitted = 'earnings-chart omitted' in body
+    if (not chart_omitted
+            and not re.search(r'class=["\']earnings-chart["\']', body, re.IGNORECASE)):
+        # Only flag if the section was found (otherwise (b) already covers it).
+        # An explicit omission sentinel (no real earnings event dates to
+        # annotate) is an intentional, valid state — not a failure.
         if any(
             any(kw in body.lower() for kw in kws)
             for lbl, kws in REQUIRED_SECTIONS

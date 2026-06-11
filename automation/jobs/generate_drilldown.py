@@ -13,6 +13,7 @@ Usage:
 """
 import argparse
 import datetime as _dt
+import html as _html
 import json
 import os
 import re
@@ -29,7 +30,10 @@ from automation.jobs.save_drilldown import save_drilldown
 from automation.jobs.drilldown_validator import validate
 from automation.sources.annual_history import fetch_5yr_history
 from automation.shared.supabase_client import fetch_rows
-from automation.jobs.drilldown_chart import render_earnings_annotated_chart
+from automation.jobs.drilldown_chart import (
+    render_earnings_annotated_chart,
+    build_earnings_events,
+)
 
 # Supabase table holding per-ticker TAM / competitor intel harvested by
 # automation/jobs/market_intel_refresh.py (90-day TTL). Distinct from the
@@ -476,72 +480,17 @@ def _load_intel_record(ticker: str) -> dict:
     return (data.get('tickers') or {}).get(ticker) or {}
 
 
-def _resolve_event_date(row: dict, period_end: str, lag_days: int | None,
-                        ticker: str) -> str:
-    """Resolve a history row to the actual earnings *event* (print) date.
-
-    Fallback chain (per task spec):
-      1. row['event_date']      — explicit actual print date if present
-      2. row['earnings_date']   — alternate actual-date field
-      3. period_end + measured reporting lag — the actual print typically lands
-         ~lag_days after the fiscal-period-end; this reconstructs a realistic
-         print date when no explicit field exists.
-      4. period_end (raw) with a warning — last resort; markers would otherwise
-         sit on a quarter-end (06-30/09-30/12-31/03-31) instead of the print.
-    """
-    explicit = (row.get('event_date') or row.get('earnings_date') or '')
-    if explicit:
-        return str(explicit)[:10]
-
-    if lag_days is not None and period_end:
-        try:
-            pe = _dt.date.fromisoformat(period_end)
-            return (pe + _dt.timedelta(days=lag_days)).isoformat()
-        except ValueError:
-            pass
-
-    print(f'  [WARN] {ticker}: no event_date/earnings_date for period_end '
-          f'{period_end!r}; marker falls back to fiscal-period-end')
-    return period_end
-
-
 def _earnings_events(ticker: str, hist: list[dict], intel: dict) -> list[dict]:
     """Build chart marker events with actual print dates, newest-aligned.
 
-    The snapshot's earningsHistory rows key off `quarter` (= fiscal-period-end),
-    which is NOT the print date. We measure the reporting lag from the most
-    recent quarter (intel last_earnings_date - newest period_end) and project it
-    across the older quarters so each marker lands on the real print date.
+    Delegates to drilldown_chart.build_earnings_events (the single source of
+    truth). Each event carries a `real` flag — True only when the print date
+    came from an actual field or a measured reporting lag, False when only the
+    fiscal-period-end is known. The chart never labels a fallback date as a
+    print date and omits the chart entirely when no real date exists.
     """
-    period_ends = [(h.get('quarter') or h.get('period_end') or '')[:10]
-                   for h in hist]
-    newest_pe = max((p for p in period_ends if p), default='')
-
-    lag_days: int | None = None
-    actual_recent = (intel.get('last_earnings_date')
-                     or (intel.get('post_earnings_review') or {}).get('earnings_date')
-                     or '')
-    if actual_recent and newest_pe:
-        try:
-            lag_days = (_dt.date.fromisoformat(str(actual_recent)[:10])
-                        - _dt.date.fromisoformat(newest_pe)).days
-        except ValueError:
-            lag_days = None
-
-    events: list[dict] = []
-    for h in hist:
-        period_end = (h.get('quarter') or h.get('period_end') or '')[:10]
-        if not period_end:
-            continue
-        # Most recent quarter: prefer the known actual date directly.
-        if period_end == newest_pe and actual_recent:
-            ev_date = str(actual_recent)[:10]
-        else:
-            ev_date = _resolve_event_date(h, period_end, lag_days, ticker)
-        sp = h.get('surprisePercent')
-        reaction = round(float(sp) * 100, 2) if sp is not None else None
-        events.append({'date': ev_date, 'reaction_pct': reaction})
-    return events
+    snap = {'analyst_summary': {ticker: {'earningsHistory': hist}}}
+    return build_earnings_events(ticker, snap=snap, intel=intel)
 
 
 def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
@@ -552,14 +501,17 @@ def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
     1. Locate the section with an Earnings Setup / 2-Year Price title.
     2. Find the section-body boundaries precisely (handles LLM SVG placeholders,
        tables, and varied structure robustly).
-    3. Remove any <table> or <svg class="earnings-chart"> already in the
-       section-body (LLM placeholders).
-    4. Prepend the deterministic SVG chart at the start of section-body content.
+    3. Remove any <table>, <svg class="earnings-chart">, or empty LLM
+       "earnings-chart-container" twin div already in the section-body.
+    4. Prepend the deterministic SVG chart at the start of section-body content
+       \u2014 UNLESS the chart was omitted (no real earnings event dates), in which
+       case no chart is added and an HTML sentinel comment marks the intentional
+       omission so the validator does not flag a missing chart.
     5. Rename the section-title to "2-Year Price &amp; Earnings Reactions".
 
     Returns the modified HTML, or the original if the section cannot be found.
     """
-    # ---- Build chart SVG ---------------------------------------------------
+    # ---- Build chart SVG (may be None when no real event dates) -----------
     asum = (snap.get('analyst_summary') or {}).get(ticker, {})
     hist = asum.get('earningsHistory') or []
     intel = _load_intel_record(ticker)
@@ -567,14 +519,21 @@ def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
 
     sector = (snap.get('quotes') or {}).get(ticker, {}).get('sector')
 
+    chart_svg: str | None
     try:
-        chart_svg = render_earnings_annotated_chart(ticker, events, sector=sector)
+        chart_svg = render_earnings_annotated_chart(
+            ticker, events, sector=sector, require_annotations=True
+        )
     except Exception as exc:
         print(f'  [WARN] {ticker}: chart render failed: {exc}')
         chart_svg = ('<p class="chart-placeholder" style="font-size:12px;'
                      'color:#94a3b8;padding:12px 0;margin:0;">'
                      'Chart data unavailable \u2014 see Earnings Intel popup '
                      'for per-print detail</p>')
+
+    if chart_svg is None:
+        print(f'  [INFO] {ticker}: earnings chart omitted (no real event dates '
+              f'to annotate) \u2014 section will carry no chart')
 
     # ---- Find the section title -------------------------------------------
     section_title_re = re.compile(
@@ -616,16 +575,35 @@ def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
         body_content,
         flags=re.DOTALL | re.IGNORECASE,
     )
+    # Remove the broken empty "earnings-chart-container" twin the LLM sometimes
+    # emits below the real chart (often preceded by a "Price and earnings
+    # reaction pattern" subsection-title). It is always empty/duplicative — the
+    # deterministic chart above is the single source of truth.
+    body_content = re.sub(
+        r'(?:<div[^>]*class=["\']subsection-title["\'][^>]*>[^<]*'
+        r'(?:price and earnings|earnings reaction)[^<]*</div>\s*)?'
+        r'<div[^>]*class=["\']earnings-chart-container["\'][^>]*>\s*</div>',
+        '', body_content,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
     # Tidy up extra blank lines left by removals
     body_content = re.sub(r'\n{3,}', '\n\n', body_content)
 
     # ---- Build new section-body content ----------------------------------
-    chart_block = (
-        '\n<div class="earnings-chart-wrap" '
-        'style="margin:0 0 16px 0;overflow:hidden;">\n'
-        + chart_svg
-        + '\n</div>\n'
-    )
+    if chart_svg is None:
+        # No annotatable chart: omit it entirely. Leave a sentinel comment so
+        # the validator treats this as an intentional omission, not a failure.
+        chart_block = (
+            f'\n<!-- earnings-chart omitted: no real earnings event dates for '
+            f'{_html.escape(ticker)} (require_annotations) -->\n'
+        )
+    else:
+        chart_block = (
+            '\n<div class="earnings-chart-wrap" '
+            'style="margin:0 0 16px 0;overflow:hidden;">\n'
+            + chart_svg
+            + '\n</div>\n'
+        )
     new_body_content = chart_block + body_content
 
     # ---- Splice into HTML ------------------------------------------------
