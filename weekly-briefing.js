@@ -175,13 +175,27 @@ function renderBriefingSkeletonOverlay() {
 }
 
 // ─── TL;DR synthesis ───
+// Resolve the macro-regime headline from either schema: old weeks nest it under
+// market_summary.macro_regime, new weeks carry it top-level as d.macro_regime
+// (or under tl_dr.headline). Returns a trimmed string or '' when absent.
+function _resolveRegime(d) {
+  const ms = (d.market_summary && typeof d.market_summary === 'object') ? d.market_summary : {};
+  const r = ms.macro_regime
+    || d.macro_regime
+    || (d.tl_dr && !Array.isArray(d.tl_dr) ? d.tl_dr.headline : '')
+    || d.tl_dr_headline
+    || '';
+  return (typeof r === 'string') ? r.trim() : '';
+}
+
 function synthesizeTldr(d) {
+  const headline = _resolveRegime(d);
   // Prefer explicit payload (written by backfill_tldr.py or the pipeline)
   if (Array.isArray(d.tl_dr) && d.tl_dr.length) {
-    return { bullets: d.tl_dr.slice(0, 5), chips: d.tl_dr_chips || [] };
+    return { headline, bullets: d.tl_dr.slice(0, 5), chips: d.tl_dr_chips || [] };
   }
   if (d.tl_dr && typeof d.tl_dr === 'object' && Array.isArray(d.tl_dr.bullets)) {
-    return { bullets: d.tl_dr.bullets.slice(0, 5), chips: d.tl_dr.chips || [] };
+    return { headline, bullets: d.tl_dr.bullets.slice(0, 5), chips: d.tl_dr.chips || [] };
   }
   // Otherwise derive from trends + risks + top picks
   const bullets = [];
@@ -233,9 +247,7 @@ function synthesizeTldr(d) {
   if (!bullets.length && d._salvaged) {
     bullets.push('Limited data this week — see narrative below.');
   }
-  // Regime chip
-  if (ms.macro_regime) chips.push(ms.macro_regime);
-  return { bullets: bullets.slice(0, 5), chips };
+  return { headline, bullets: bullets.slice(0, 5), chips };
 }
 
 // ─── Week-ending picker helpers ───
@@ -701,12 +713,16 @@ function renderWeeklyBriefing() {
   const tldr = synthesizeTldr(d);
   if (tldr.bullets.length) {
     const chipsHtml = (tldr.chips || []).map(c => `<span class="wb-tldr-chip">${c}</span>`).join('');
+    const headlineHtml = tldr.headline
+      ? `<div class="wb-tldr-headline">${_wbEsc(tldr.headline)}</div>`
+      : '';
     html += `
       <section class="wb-tldr">
         <div class="wb-tldr-head">
           <span class="wb-tldr-label">TL;DR</span>
           ${chipsHtml ? `<div class="wb-tldr-chips">${chipsHtml}</div>` : ''}
         </div>
+        ${headlineHtml}
         <ul class="wb-tldr-list">
           ${tldr.bullets.map(b => `<li>${b}</li>`).join('')}
         </ul>

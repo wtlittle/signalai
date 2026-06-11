@@ -228,18 +228,20 @@
   ],
   "index_returns": {
     "sp500": {
-      "close": 7266.99,
-      "weekly_pct": null,
-      "one_month_pct": null,
-      "three_month_pct": null,
-      "ytd_pct": 6.73
+      "close": 7383.74,
+      "weekly_pct": -2.59,
+      "one_month_pct": -0.21,
+      "three_month_pct": 9.55,
+      "ytd_pct": 7.86,
+      "source_note": "Measured from data-snapshot close series"
     },
     "nasdaq": {
-      "close": null,
-      "weekly_pct": null,
-      "one_month_pct": null,
-      "three_month_pct": null,
-      "ytd_pct": 12.9
+      "close": 25709.43,
+      "weekly_pct": -4.68,
+      "one_month_pct": -2.05,
+      "three_month_pct": 14.84,
+      "ytd_pct": 10.62,
+      "source_note": "Measured from data-snapshot close series"
     },
     "dow": {
       "close": 49918.78,
@@ -2325,5 +2327,6 @@
     "Risk: Hawkish Fed and higher‑for‑longer rates",
     "Value setup: DVN — -16.5% off its 52-week high — . FCF yield.",
     "Momentum leader: NINE -10.2% on the week."
-  ]
+  ],
+  "macro_regime": "Risk-Off Pullback; AI / semiconductor unwind and rebound"
 }

@@ -806,6 +806,104 @@ def _macro_catalysts(target_week: date, limit: int = 8) -> list:
     return out[:limit]
 
 
+def _merge_measured_index_returns(briefing: dict, target_week: date) -> None:
+    """Overlay MEASURED index returns onto briefing['index_returns'].
+
+    The sonar narrative call leaves weekly_pct/ytd_pct null (and sometimes a
+    stale close). We compute S&P 500 + Nasdaq from the real snapshot close series
+    and graft them in, preserving any sonar-supplied close for indices we cannot
+    measure (Dow / Russell / VIX) while leaving their pct fields null. Never
+    fabricates: a field with no two real closes behind it stays null.
+    """
+    try:
+        from automation.sources.finance_indices_source import build_index_returns
+    except Exception as exc:
+        print(f"  [index_returns] source import failed: {exc}; leaving as-is")
+        return
+    measured = build_index_returns(target_week)
+    existing = briefing.get("index_returns")
+    existing = existing if isinstance(existing, dict) else {}
+    for key, block in measured.items():
+        prior = existing.get(key) if isinstance(existing.get(key), dict) else {}
+        merged = dict(prior)
+        for field, val in block.items():
+            # Snapshot-measured value wins when present; otherwise keep prior
+            # (e.g. a sonar close for Dow/Russell/VIX) rather than nulling it.
+            if val is not None:
+                merged[field] = val
+            else:
+                merged.setdefault(field, prior.get(field))
+        existing[key] = merged
+    briefing["index_returns"] = existing
+    sp = existing.get("sp500", {}).get("weekly_pct")
+    nq = existing.get("nasdaq", {}).get("weekly_pct")
+    print(f"  index_returns measured: S&P500 weekly={sp} Nasdaq weekly={nq}")
+
+
+def _synthesize_macro_regime(briefing: dict) -> str | None:
+    """Deterministically build the TL;DR headline (macro_regime) from grounded
+    fields: measured index action + the lead trend theme + the lead risk theme.
+
+    Returns a title-case string <=90 chars (CSS upper-cases it), or None when
+    there is not enough real signal to assemble one (renders an em-dash). No
+    fabrication: every fragment is lifted from data already in the briefing.
+    """
+    ir = briefing.get("index_returns") or {}
+    sp = (ir.get("sp500") or {}).get("weekly_pct")
+
+    # 1) Market-action fragment from the measured S&P weekly move.
+    if isinstance(sp, (int, float)):
+        if sp >= 1.5:
+            action = "Risk-On Rally"
+        elif sp <= -1.5:
+            action = "Risk-Off Pullback"
+        elif sp >= 0:
+            action = "Grinding Higher"
+        else:
+            action = "Choppy Consolidation"
+    else:
+        action = None
+
+    def _lead_theme(entries, *keys):
+        for e in entries or []:
+            if not isinstance(e, dict):
+                continue
+            for k in keys:
+                v = e.get(k)
+                if isinstance(v, str) and v.strip():
+                    # First clause only, keep it short.
+                    return v.strip().split(";")[0].split(" - ")[0].split(":")[0].strip()
+        return None
+
+    trend = _lead_theme(briefing.get("trends") or briefing.get("key_trends"),
+                        "theme", "title", "name")
+    risk = _lead_theme(briefing.get("risks"), "risk", "title", "name")
+
+    parts = [p for p in (action, trend) if p]
+    headline = "; ".join(parts) if parts else None
+    if headline and risk and len(headline) + len(risk) + 2 <= 88:
+        headline = f"{headline}; {risk}"
+    if not headline:
+        return None
+    # Title-case-ish: keep existing acronyms (AI, Fed, CPI) intact by only
+    # capitalising lowercase leading letters of words; cap length at 90.
+    headline = headline[:90].rstrip(" ;,")
+    return headline or None
+
+
+def _backfill_index_and_headline(briefing: dict, target_week: date) -> None:
+    """Populate measured index_returns and a deterministic macro_regime headline."""
+    _merge_measured_index_returns(briefing, target_week)
+    if not briefing.get("macro_regime"):
+        regime = _synthesize_macro_regime(briefing)
+        if regime:
+            briefing["macro_regime"] = regime
+            print(f"  macro_regime: {regime}")
+        else:
+            briefing["macro_regime"] = None
+            print("  macro_regime: insufficient signal -> null (em-dash)")
+
+
 def _backfill_volume_sections(briefing: dict, context: dict | None,
                               target_week: date | None = None) -> None:
     """Fill empty/thin volume sections from real local price + calendar data.
@@ -1052,6 +1150,8 @@ def compile_briefing(value, momentum, trends) -> dict:
         "momentum_picks": momentum_picks,
         # Index returns
         "index_returns": trends_data.get("index_returns", {}),
+        # TL;DR headline / macro regime (deterministically backfilled in run())
+        "macro_regime": trends_data.get("macro_regime"),
         # Trends — both old-schema (key_trends) and new-schema (trends) names
         "key_trends": normalized_key_trends,
         "trends": normalized_trends,
@@ -1156,6 +1256,9 @@ def run(output_path: Path | None = None, week_ending: date | None = None) -> dic
     # returned empty arrays (the 5/31 + 6/07 thinness regression). No fabrication.
     _backfill_volume_sections(briefing, context, target_week=target_week)
     _log_section_quality(briefing, context, stage="post-backfill")
+
+    # --- Measured index returns + deterministic TL;DR headline (macro_regime) ---
+    _backfill_index_and_headline(briefing, target_week)
 
     # --- Inject market_intel_lookup (per-ticker TAM/CAGR/competitors from Supabase) ---
     try:

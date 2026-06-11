@@ -6296,6 +6296,20 @@ mark.search-highlight {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+.wb-tldr-headline {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--accent, #3b82f6);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
 .wb-tldr-list {
   margin: 0;
   padding-left: 20px;
