@@ -1035,15 +1035,16 @@ def build_weekly_value_prompt() -> str:
     so EVERY key below is required for every pick. Do not collapse to a thin
     thesis/catalyst/risk shape -- that breaks the card.
     """
-    return """OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Do NOT write a research report, framework, headings, or any prose outside the JSON. Any text that is not part of the JSON array will be discarded and the response treated as a failure. Your response must BEGIN with the character [ and END with the character ].
+    return """OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Do NOT write a research report, framework, headings, or any prose outside the JSON. Any text that is not part of the JSON object will be discarded and the response treated as a failure. Your response must BEGIN with the character { and END with the character }.
 
 HALLUCINATION GUARD: If you cannot source a metric from real public data within the last 7 days, return null. Do not hallucinate analyst targets, FCF figures, or price data. Every number must come from a verifiable public source (Yahoo Finance, SEC filing, Bloomberg, FactSet, or equivalent).
 
 You are a buy-side value-equity analyst. Screen the full US stock market and select the 5 best value stocks currently trading near their 52-week lows that still have strong, defensible fundamentals (positive or improving free cash flow, manageable leverage, a credible re-rating path).
 
-Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 19 keys below, with these EXACT key names. Do NOT rename, omit, or add keys. Do NOT substitute a thin {thesis, catalyst, risk, pb_ratio, dividend_yield} shape -- that schema is WRONG and will be rejected.
+Return ONLY a single JSON object with one key "picks" whose value is an array of EXACTLY 5 objects. Every pick object MUST contain ALL 19 keys below, with these EXACT key names. Do NOT rename, omit, or add keys. Do NOT substitute a thin {thesis, catalyst, risk, pb_ratio, dividend_yield} shape -- that schema is WRONG and will be rejected.
 
-[
+{
+ "picks": [
   {
     "ticker": "<symbol>",
     "name": "<full company name>",
@@ -1067,7 +1068,8 @@ Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain 
     "key_risks": "<3-5 full sentences: the dominant bear thesis -- the specific risks or structural issues that could drive the stock further down. Must be DISTINCT from why_undervalued.>",
     "why_could_go_lower": "<3-5 full sentences: the dominant bear thesis -- the specific risk or structural issue that could drive the stock further down. Must be DISTINCT from why_undervalued; this is what could make the discount deserved or wider>"
   }
-]
+ ]
+}
 
 Field rules:
 - "current_price" and "price" must be set to the SAME numeric value (both are required for backward compatibility). Same for "fifty_two_week_high"/"fifty_two_week_low" which are also required as the canonical names.
@@ -1077,7 +1079,7 @@ Field rules:
 - "why_undervalued", "bull_case", "key_risks", "why_could_go_lower" must each be 3-5 complete sentences of genuine buy-side reasoning -- never one-liners, never empty. "key_risks" and "why_could_go_lower" may be identical text.
 - NEVER fabricate a number; use null when you cannot verify it. Citations in brackets are allowed inside the prose string fields.
 
-CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array parseable by Python json.loads() without preprocessing. No markdown, no prose, no section headers, no code fences. Do NOT wrap in ```json or ``` markers. The first character must be [ and the last character must be ]. Emit all 5 picks; never truncate a pick mid-object."""
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object {"picks": [...]} parseable by Python json.loads() without preprocessing. No markdown, no prose, no section headers, no code fences. Do NOT wrap in ```json or ``` markers. The first character must be { and the last character must be }. Emit all 5 picks; never truncate a pick mid-object."""
 
 
 def build_weekly_momentum_prompt() -> str:
@@ -1086,15 +1088,16 @@ def build_weekly_momentum_prompt() -> str:
     The dashboard renders a 12-field card per pick, so EVERY key below is
     required for every pick.
     """
-    return """OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Do NOT write a research report, framework, headings, or any prose outside the JSON. Any text that is not part of the JSON array will be discarded and the response treated as a failure. Your response must BEGIN with the character [ and END with the character ].
+    return """OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Do NOT write a research report, framework, headings, or any prose outside the JSON. Any text that is not part of the JSON object will be discarded and the response treated as a failure. Your response must BEGIN with the character { and END with the character }.
 
 HALLUCINATION GUARD: If you cannot source a metric from real public data within the last 7 days, return null. Do not hallucinate price performance, analyst targets, or FCF figures. Every number must come from a verifiable public source (Yahoo Finance, SEC filing, Bloomberg, FactSet, or equivalent).
 
 You are a buy-side momentum analyst. Screen the full US stock market and select the 5 strongest momentum stocks -- names with the best recent trailing performance that is backed by a genuine fundamental catalyst (not a low-float squeeze).
 
-Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain ALL 12 keys below, with these EXACT key names. Do NOT rename, omit, or add keys.
+Return ONLY a single JSON object with one key "picks" whose value is an array of EXACTLY 5 objects. Every pick object MUST contain ALL 12 keys below, with these EXACT key names. Do NOT rename, omit, or add keys.
 
-[
+{
+ "picks": [
   {
     "ticker": "<symbol>",
     "name": "<full company name>",
@@ -1109,7 +1112,8 @@ Return ONLY a single JSON array of EXACTLY 5 objects. Every object MUST contain 
     "risk_reward": "<2-3 full sentences on the risk/reward setup from the current price>",
     "key_risks": "<2-3 full sentences: the main risks that could reverse the momentum or make the current valuation untenable>"
   }
-]
+ ]
+}
 
 Field rules:
 - "current_price" and "price" must be set to the SAME numeric value (both required for backward compatibility).
@@ -1118,7 +1122,7 @@ Field rules:
 - "catalyst", "risk_reward", "key_risks" must each be 2-3 complete sentences -- never one-liners, never empty.
 - NEVER fabricate a number; use a best-available figure or null. Citations in brackets are allowed inside the prose string fields.
 
-CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON array parseable by Python json.loads() without preprocessing. No markdown, no prose, no section headers, no code fences. Do NOT wrap in ```json or ``` markers. The first character must be [ and the last character must be ]. Emit all 5 picks; never truncate a pick mid-object."""
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object {"picks": [...]} parseable by Python json.loads() without preprocessing. No markdown, no prose, no section headers, no code fences. Do NOT wrap in ```json or ``` markers. The first character must be { and the last character must be }. Emit all 5 picks; never truncate a pick mid-object."""
 
 
 def build_weekly_trends_prompt(watchlist_tickers: list[str], context: dict | None = None) -> str:
@@ -1190,7 +1194,7 @@ RETURN STRICTLY THIS JSON SHAPE. Return ONLY a single JSON object with EXACTLY t
     "russell2000": {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
     "vix":         {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}}
   }},
-  "market_summary": "<3-5 paragraph multi-sentence narrative string covering macro backdrop, index performance, sector rotation, key earnings prints, and the look-ahead setup for next week. Must be at least 2000 characters. This is a STRING field, not an object.>",
+  "market_summary": "<TIGHT 2-paragraph summary (600-900 characters, NOT more) covering macro backdrop, index performance, sector rotation, and the look-ahead. A separate call writes the long report, so keep THIS field short so the structured arrays below are not truncated. STRING, not an object.>",
   "key_trends": [
     {{"rank": 1, "title": "<short trend title>", "detail": "<3-5 sentences on the trend with specific tickers, numbers, and context>", "theme": "<short theme title>", "summary": "<2-4 sentences on the theme>", "tickers": ["TICK1", "TICK2"]}}
   ],
@@ -1238,15 +1242,15 @@ risks RULES:
 - Provide 4-6 risk objects. Each MUST have BOTH old-schema keys (rank, title, detail) AND new-schema keys (risk, impact). "rank" is an integer 1-6, "title" and "risk" may be identical, "detail" and "impact" may be identical.
 
 watchlist_updates RULES (CRITICAL — this is the most important volume section):
-- Write ONE entry for EACH ticker in the "MATERIAL WATCHLIST MOVERS THIS WEEK" list above. Do not skip any; do not invent tickers that are not on that list.
-- For each ticker, write a 3-5 sentence paragraph in the "headline" field (and copy it into "summary") covering: (a) WHAT moved it this week — the specific catalyst (earnings, guidance, analyst action, product/regulatory news, sector rotation); (b) WHY it matters for the thesis on that name; (c) the TAKEAWAY (add/trim/hold/watch). Research the real catalyst — do not just restate the percent.
+- Write ONE entry for each of the TOP {min_watchlist}-40 movers in the "MATERIAL WATCHLIST MOVERS THIS WEEK" list above (largest absolute moves first). Do not invent tickers that are not on that list.
+- For each ticker, write a TIGHT 2-3 sentence note in the "headline" field (and copy it into "summary") covering: (a) WHAT moved it this week — the specific catalyst (earnings, guidance, analyst action, product/regulatory news, sector rotation); (b) the TAKEAWAY (add/trim/hold/watch). Research the real catalyst — do not just restate the percent. Keep each note under 60 words.
 - weekly_change_pct and thirty_day_change_pct: copy the 1W and 1M numbers given for that ticker in the list above (signed floats, e.g. -29.9, +44.6). These are authoritative; do NOT recompute or override them.
 - tags: array of short strings like ["earnings", "analyst_action", "major_mover", "downgrade", "guidance"].
-- MINIMUM {min_watchlist} entries. A response with fewer than {min_watchlist} watchlist_updates entries is a FAILURE. There is no upper limit — cover every mover in the list.
+- MINIMUM {min_watchlist} entries (target 30-40). A response with fewer than {min_watchlist} watchlist_updates entries is a FAILURE. Keep notes tight so the JSON does not truncate before the array closes.
 
 watchlist_movers RULES:
-- Also populate watchlist_movers as an alias for watchlist_updates, in a slightly different shape: each entry has ticker, weekly_move (string like "+3.2%"), thirty_day_move (string), catalyst (string), detail (string).
-- Include the same tickers as watchlist_updates (30-60 entries).
+- Also populate watchlist_movers as an alias for watchlist_updates, in a slightly different shape: each entry has ticker, weekly_move (string like "+3.2%"), thirty_day_move (string), catalyst (string short phrase), detail (one short sentence).
+- Include the same tickers as watchlist_updates (target 30-40 entries). Keep each catalyst/detail short.
 
 upcoming_catalysts RULES:
 - START with EVERY event in the "UPCOMING WATCHLIST EARNINGS" list above — write one entry per listed earnings event, using the exact ticker and date given.
@@ -1272,6 +1276,196 @@ NARRATIVE REQUIREMENTS (most important field for depth):
 
 RETURN ONLY VALID JSON. NO MARKDOWN FENCES. NO TABS. NO COMMENTARY OUTSIDE JSON.
 CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object parseable by Python json.loads() without preprocessing. Do NOT wrap the whole response in ```json or ``` markers. NO trailing commas. The first character of your response must be {{ and the last character must be }}."""
+
+
+def build_weekly_structured_prompt(watchlist_tickers: list[str], context: dict | None = None) -> str:
+    """Weekly briefing — STRUCTURED sections only (NO narrative).
+
+    Split from build_weekly_trends_prompt so the long-form prose report can't
+    exhaust the token budget and truncate the high-value arrays
+    (watchlist_updates / upcoming_catalysts / sector_summary) — the 6/07
+    regression. This asks for index_returns, market_summary (TIGHT), key_trends,
+    trends, risks, sector_summary (EXACTLY the eight subsector keys from
+    context), upcoming_catalysts (>=6, including MACRO events), watchlist_updates
+    and watchlist_movers — as a single JSON OBJECT with NO "narrative" field.
+    The fixed-size sections are emitted BEFORE the long watchlist arrays.
+    """
+    tickers_str = ", ".join(watchlist_tickers)
+    tickers_count = len(watchlist_tickers)
+
+    if context:
+        movers_block = context.get("movers_block", "")
+        earnings_block = context.get("earnings_block", "")
+        subsector_block = context.get("subsector_block", "")
+        min_watchlist = context.get("min_watchlist", 20)
+        min_catalysts = context.get("min_catalysts", 6)
+        min_sectors = context.get("min_sectors", 8)
+        subsector_order = context.get("subsector_order") or []
+        subsector_keys = ", ".join(f'"{s}"' for s in subsector_order)
+        context_section = f"""
+PRECOMPUTED DATA (authoritative — use these EXACT names; do NOT substitute your own ticker list):
+
+MATERIAL WATCHLIST MOVERS THIS WEEK (computed from our price snapshot; 1W/1M are real):
+{movers_block}
+
+UPCOMING WATCHLIST EARNINGS (next 14 days, from our calendar):
+{earnings_block}
+
+SUBSECTOR BUCKETS (each constituent's real 1-week move in parentheses):
+{subsector_block}
+"""
+    else:
+        movers_block = earnings_block = subsector_block = ""
+        min_watchlist, min_catalysts, min_sectors = 20, 6, 8
+        subsector_order = []
+        subsector_keys = ""
+        context_section = ""
+
+    return f"""OUTPUT CONTRACT (read first): This is a DATA-EXTRACTION task, NOT an essay. Do NOT write a research report, framework, or any long-form prose outside the JSON. Every character of your response that is not part of the single JSON object will be discarded and the response treated as a failure. Your response must BEGIN with the character {{ and END with the character }}. Do NOT include a "narrative" field — a separate call writes the long-form report.
+
+HALLUCINATION GUARD: If you cannot source a metric from real public data within the last 7 days, return null. Do not hallucinate analyst targets, FCF figures, sector breadth statistics, or price data. Every number must come from a verifiable public source.
+
+You are a senior market strategist writing a buy-side weekly market briefing. Produce a comprehensive, well-sourced STRUCTURED summary of this week's US equity market covering ALL of the sections described below.
+
+Watchlist tickers ({tickers_count} total): {tickers_str}
+{context_section}
+RETURN STRICTLY THIS JSON SHAPE. Return ONLY a single JSON object with EXACTLY these keys, EXACT key names, ALL KEYS REQUIRED, NO TRAILING COMMAS:
+
+{{
+  "index_returns": {{
+    "sp500":       {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
+    "nasdaq":      {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
+    "dow":         {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
+    "russell2000": {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}},
+    "vix":         {{"close": 0.0, "weekly_pct": 0.0, "one_month_pct": 0.0, "three_month_pct": 0.0, "ytd_pct": 0.0}}
+  }},
+  "market_summary": "<TIGHT 2-paragraph summary (600-900 characters, NOT more) covering macro backdrop, index performance, sector rotation, and the look-ahead. A separate call writes the long report, so keep THIS field short so the structured arrays below are not truncated. STRING, not an object.>",
+  "key_trends": [
+    {{"rank": 1, "title": "<short trend title>", "detail": "<3-5 sentences on the trend with specific tickers, numbers, and context>", "theme": "<short theme title>", "summary": "<2-4 sentences on the theme>", "tickers": ["TICK1", "TICK2"]}}
+  ],
+  "trends": [
+    {{"theme": "<short theme title>", "summary": "<2-4 sentences on the theme>", "tickers": ["TICK1", "TICK2"]}}
+  ],
+  "risks": [
+    {{"rank": 1, "title": "<short risk title>", "detail": "<2-4 sentences on the specific market impact and what to watch>", "risk": "<short risk title>", "impact": "<2-4 sentences on the specific market impact and what to watch>"}}
+  ],
+  "sector_summary": {{
+    "Software Infrastructure": "<4-6 sentences: week's price action, major company news, year-end positioning read; cite >= 2 tickers>",
+    "Application Software": "<4-6 sentences>",
+    "Cybersecurity": "<4-6 sentences>",
+    "Semiconductors": "<4-6 sentences>",
+    "AdTech/Digital Media": "<4-6 sentences>",
+    "Fintech": "<4-6 sentences>",
+    "Consumer": "<4-6 sentences>",
+    "Energy/Industrials": "<4-6 sentences>"
+  }},
+  "upcoming_catalysts": [
+    {{"ticker": "<ticker or MACRO>", "date": "YYYY-MM-DD", "event_type": "<earnings|conference|macro|IPO|FDA|other>", "event": "<brief event description>", "importance": "<High|Medium|Low>", "context": "<2-4 sentences on why this matters and what to watch>"}}
+  ],
+  "watchlist_updates": [
+    {{"ticker": "...", "weekly_change_pct": 0.0, "thirty_day_change_pct": 0.0, "headline": "<1-2 sentence summary of what happened>", "summary": "<1-2 sentence detail>", "tags": []}}
+  ],
+  "watchlist_movers": [
+    {{"ticker": "...", "weekly_move": "+X.X%", "thirty_day_move": "+X.X%", "catalyst": "<what happened>", "detail": "<1-2 sentence detail>"}}
+  ]
+}}
+
+SECTION ORDER IS DELIBERATE: emit the keys in EXACTLY the order shown above (index_returns, market_summary, key_trends, trends, risks, sector_summary, upcoming_catalysts, watchlist_updates, watchlist_movers). The fixed-size sections come first so they are always complete; the long watchlist arrays come last. There is NO narrative field.
+
+DETAILED SECTION REQUIREMENTS:
+
+index_returns RULES:
+- index_returns is a FLAT JSON OBJECT of five named index objects (sp500, nasdaq, dow, russell2000, vix). It is NEVER a markdown table, NEVER a string, NEVER an array, NEVER a code block.
+- Each index object has EXACTLY five NUMERIC fields: "close" is the index closing LEVEL (number); "weekly_pct", "one_month_pct", "three_month_pct", "ytd_pct" are signed percent NUMBERS — NO quotes, NO "%" sign, NO "+" sign, NO commas inside the number.
+- Use null for any single value you cannot verify; never fabricate a number.
+
+market_summary RULES:
+- A TIGHT 2-paragraph plain-text string, 600-900 characters (NOT more), covering macro backdrop, index performance, sector rotation, and the look-ahead. STRING, not an object. No markdown headers. Keep it short — the long report is a separate call, and an over-long market_summary truncates the arrays that follow.
+
+key_trends / trends RULES:
+- Provide 5-7 trend objects. Each MUST have BOTH the old-schema keys (rank, title, detail) AND new-schema keys (theme, summary, tickers). NEVER return plain strings in these arrays.
+
+risks RULES:
+- Provide 4-6 risk objects. Each MUST have BOTH old-schema keys (rank, title, detail) AND new-schema keys (risk, impact).
+
+sector_summary RULES:
+- Cover EXACTLY these eight subsectors, using these EXACT key names: {subsector_keys}. Use the "SUBSECTOR BUCKETS" list above as the constituent universe for each.
+- For EACH subsector write 4-6 sentences covering price action, company news, and positioning. CITE AT LEAST 2 tickers per subsector.
+- sector_summary is a JSON OBJECT with the eight subsector-name keys and string values (NOT an array).
+- MINIMUM {min_sectors} subsector entries (all eight). Fewer is a FAILURE.
+
+upcoming_catalysts RULES:
+- START with EVERY event in the "UPCOMING WATCHLIST EARNINGS" list above — one entry per listed earnings event, using the exact ticker and date.
+- THEN ADD macro/market catalysts (FOMC, CPI, PCE, jobs/NFP, OPEX, major conferences) until you reach the minimum. Use "MACRO" as the ticker for non-company events.
+- Each entry MUST have: ticker, date (YYYY-MM-DD), event_type, event, importance, context (2-3 sentences).
+- MINIMUM {min_catalysts} entries. Fewer is a FAILURE.
+
+watchlist_updates RULES (CRITICAL — this is the most important volume section):
+- Write ONE entry for each of the TOP {min_watchlist}-40 movers in the "MATERIAL WATCHLIST MOVERS THIS WEEK" list above (largest absolute moves first). Do not invent tickers that are not on that list.
+- For each ticker, write a TIGHT 2-3 sentence note in the "headline" field (and copy it into "summary"): WHAT moved it and the TAKEAWAY. Keep each note under 60 words.
+- weekly_change_pct and thirty_day_change_pct: copy the 1W and 1M numbers given for that ticker (signed floats). These are authoritative.
+- tags: array of short strings.
+- MINIMUM {min_watchlist} entries (target 30-40). Fewer is a FAILURE. Keep notes tight so the JSON does not truncate before the array closes.
+
+watchlist_movers RULES:
+- Also populate watchlist_movers as an alias for watchlist_updates: each entry has ticker, weekly_move (string), thirty_day_move (string), catalyst (short phrase), detail (one short sentence). Same tickers (target 30-40).
+
+RETURN ONLY VALID JSON. NO MARKDOWN FENCES. NO TABS. NO COMMENTARY OUTSIDE JSON. NO "narrative" FIELD.
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object parseable by Python json.loads() without preprocessing. NO trailing commas. The first character must be {{ and the last must be }}."""
+
+
+def build_weekly_narrative_prompt(watchlist_tickers: list[str], context: dict | None = None) -> str:
+    """Weekly briefing — the long-form markdown NARRATIVE report ONLY.
+
+    Returns a single-key JSON object {{"narrative": "<markdown>"}}. Isolated from
+    the structured call so its 15000-35000 char output has its own token budget
+    and can't starve the structured arrays.
+    """
+    tickers_str = ", ".join(watchlist_tickers)
+    tickers_count = len(watchlist_tickers)
+
+    if context:
+        movers_block = context.get("movers_block", "")
+        earnings_block = context.get("earnings_block", "")
+        subsector_block = context.get("subsector_block", "")
+        context_section = f"""
+PRECOMPUTED DATA (authoritative — reference these real names and moves in your prose):
+
+MATERIAL WATCHLIST MOVERS THIS WEEK:
+{movers_block}
+
+UPCOMING WATCHLIST EARNINGS (next 14 days):
+{earnings_block}
+
+SUBSECTOR BUCKETS:
+{subsector_block}
+"""
+    else:
+        context_section = ""
+
+    return f"""OUTPUT CONTRACT (read first): Return ONLY a single JSON object with EXACTLY one key, "narrative", whose value is a long markdown research report (a single escaped JSON string). Your response must BEGIN with the character {{ and END with the character }}. No other keys. No prose outside the JSON.
+
+HALLUCINATION GUARD: Ground every number in real, verifiable public data from the last 7 days. Use specific index levels, % moves, yields, and single-stock moves; never fabricate.
+
+You are a senior market strategist writing the long-form prose section of a buy-side weekly market briefing.
+
+Watchlist tickers ({tickers_count} total): {tickers_str}
+{context_section}
+RETURN STRICTLY THIS JSON SHAPE:
+
+{{
+  "narrative": "<FULL MARKDOWN RESEARCH REPORT — see requirements below>"
+}}
+
+NARRATIVE REQUIREMENTS:
+- A substantial markdown research report of AT LEAST 15000 characters (target 25000-35000).
+- Open with a single "# " title line, then multiple "## " section headers: ## Market Overview, ## Sector Leadership & Rotation, ## Top Movers & Earnings Recap, ## Macro & Rates Environment, ## Watchlist Deep Dives (cover 15+ individual names), ## Upcoming Catalysts, ## What To Watch Next Week.
+- Write in flowing buy-side analyst prose with concrete numbers and inline bracketed citations like [3].
+- A short narrative (2-3 sentences) will be REJECTED.
+- The narrative is a SINGLE Markdown string value. Escape every newline as \\n inside the JSON string. MUST NOT contain literal tab characters.
+
+RETURN ONLY VALID JSON. NO MARKDOWN FENCES OUTSIDE THE STRING. NO TABS.
+CRITICAL OUTPUT INSTRUCTION: Your ENTIRE response must be a single valid JSON object {{"narrative": "..."}} parseable by Python json.loads(). The first character must be {{ and the last must be }}."""
 
 
 def _temporal_header(week_ending) -> str:

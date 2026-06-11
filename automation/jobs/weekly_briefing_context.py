@@ -240,6 +240,135 @@ def render_subsector_block(buckets: dict[str, list[dict]]) -> str:
     return "\n".join(out)
 
 
+# ─── Historical (as-of) context ─────────────────────────────────────────────
+# For REGENERATING a past week's briefing we cannot use the live ``change1w``
+# (that is the current week's move). Instead we compute each ticker's real
+# week-over-week and month-over-month move from the historical close series in
+# data-snapshot.json#tickers[*].{timestamps,closes}, anchored to the trading day
+# on or before the target week-ending date. This keeps regenerated briefings
+# grounded in REAL price action for that week — never fabricated.
+
+def _load_history() -> dict:
+    snap = read_json(DATA_SNAPSHOT)
+    hist = snap.get("tickers") if isinstance(snap, dict) else None
+    return hist if isinstance(hist, dict) else {}
+
+
+def _close_on_or_before(series: dict, target: date):
+    """(date, close) for the last trading day on or before ``target``, or None."""
+    ts = series.get("timestamps") or []
+    cl = series.get("closes") or []
+    best = None
+    for i, epoch in enumerate(ts):
+        if i >= len(cl) or cl[i] is None:
+            continue
+        try:
+            d = datetime.utcfromtimestamp(epoch).date()
+        except (OverflowError, OSError, ValueError):
+            continue
+        if d <= target:
+            best = (d, cl[i])
+    return best
+
+
+def _pct_move(series: dict, end: date, back_days: int):
+    """Percent move from (end - back_days) to end, using on-or-before closes."""
+    cur = _close_on_or_before(series, end)
+    prev = _close_on_or_before(series, end - timedelta(days=back_days))
+    if not cur or not prev or not prev[1]:
+        return None
+    try:
+        return round((cur[1] / prev[1] - 1.0) * 100.0, 2)
+    except ZeroDivisionError:
+        return None
+
+
+def compute_material_movers_asof(week_ending: date, history: dict | None = None) -> list[dict]:
+    """Material movers for a PAST week, computed from historical closes."""
+    history = history if history is not None else _load_history()
+    submap = load_subsector_map()
+    rows = []
+    for sym, series in history.items():
+        if not isinstance(series, dict):
+            continue
+        c1w = _pct_move(series, week_ending, 7)
+        if c1w is None:
+            continue
+        meta = series.get("meta") or {}
+        rows.append({
+            "ticker": sym,
+            "name": meta.get("longName") or meta.get("shortName") or sym,
+            "change1w": c1w,
+            "change1m": _pct_move(series, week_ending, 30),
+            "sector": submap.get(sym, ""),
+        })
+    rows.sort(key=lambda r: abs(r["change1w"]), reverse=True)
+    material = [r for r in rows if abs(r["change1w"]) >= MOVER_THRESHOLD]
+    if len(material) < MOVER_TARGET:
+        material = rows[:MOVER_TARGET]
+    return material
+
+
+def compute_subsector_buckets_asof(week_ending: date, history: dict | None = None) -> dict[str, list[dict]]:
+    """Subsector buckets for a PAST week, with real week-over-week moves."""
+    history = history if history is not None else _load_history()
+    submap = load_subsector_map()
+    fine_to_canon = {}
+    for canon, fines in _SUBSECTOR_ROLLUP.items():
+        for f in fines:
+            fine_to_canon[f] = canon
+
+    buckets: dict[str, list[dict]] = {k: [] for k in SUBSECTOR_ORDER}
+    for ticker, fine in submap.items():
+        canon = fine_to_canon.get(fine)
+        if not canon:
+            continue
+        series = history.get(ticker)
+        if not isinstance(series, dict):
+            continue
+        c1w = _pct_move(series, week_ending, 7)
+        if c1w is None:
+            continue
+        meta = series.get("meta") or {}
+        buckets[canon].append({
+            "ticker": ticker,
+            "name": meta.get("longName") or meta.get("shortName") or ticker,
+            "change1w": c1w,
+        })
+    for canon, members in buckets.items():
+        members.sort(
+            key=lambda r: abs(r["change1w"]) if isinstance(r["change1w"], (int, float)) else 0.0,
+            reverse=True,
+        )
+    return buckets
+
+
+def build_context_blocks_asof(week_ending: date) -> dict:
+    """Concrete-data blocks for REGENERATING a past week's briefing.
+
+    Mirrors build_context_blocks() but sources every number from the historical
+    close series as of ``week_ending`` instead of the live snapshot, and looks up
+    earnings catalysts in the [week_ending, +14d] window. No fabrication: a name
+    with no usable price history that week is simply omitted.
+    """
+    history = _load_history()
+    movers = compute_material_movers_asof(week_ending, history)
+    earnings = compute_upcoming_earnings(week_ending)
+    buckets = compute_subsector_buckets_asof(week_ending, history)
+    return {
+        "movers": movers,
+        "earnings": earnings,
+        "buckets": buckets,
+        "movers_block": render_movers_block(movers),
+        "earnings_block": render_earnings_block(earnings),
+        "subsector_block": render_subsector_block(buckets),
+        "min_watchlist": min(20, len(movers)) if movers else 0,
+        "min_catalysts": 6,
+        "min_sectors": 8,
+        "subsector_order": SUBSECTOR_ORDER,
+    }
+
+
 def build_context_blocks(today: date | None = None) -> dict:
     """Compute all three concrete-data blocks for the trends prompt.
 

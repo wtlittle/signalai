@@ -46,6 +46,8 @@ TASK_MODEL_MAP = {
     "weekly_value": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
     "weekly_momentum": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
     "weekly_trends": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
+    "weekly_structured": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
+    "weekly_narrative": os.environ.get("PERPLEXITY_MODEL_WEEKLY", "sonar-deep-research"),
     "news_tag": os.environ.get("PERPLEXITY_MODEL_NEWS", "sonar"),
 }
 # reasoning_effort applies only to sonar-deep-research. Default to low to keep

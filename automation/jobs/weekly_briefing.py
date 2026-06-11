@@ -26,7 +26,11 @@ from automation.perplexity.client import call_perplexity
 from automation.perplexity.prompts import (
     build_weekly_value_prompt,
     build_weekly_momentum_prompt,
+    build_weekly_value_prompt_for_date,
+    build_weekly_momentum_prompt_for_date,
     build_weekly_trends_prompt,
+    build_weekly_structured_prompt,
+    build_weekly_narrative_prompt,
 )
 from automation.jobs.weekly_briefing_context import build_context_blocks
 
@@ -115,6 +119,56 @@ _TRENDS_RESPONSE_FORMAT = {
 }
 
 
+# Structured response format = the trends schema MINUS the narrative property.
+# The narrative is fetched by a separate call (_fetch_narrative) so its long
+# markdown output can't blow the structured call's token budget and truncate the
+# high-value arrays (watchlist_updates / upcoming_catalysts / sector_summary).
+_STRUCTURED_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {"schema": {
+        "type": "object",
+        "properties": {
+            k: v
+            for k, v in _TRENDS_RESPONSE_FORMAT["json_schema"]["schema"]["properties"].items()
+            if k != "narrative"
+        },
+        "required": ["index_returns", "trends", "risks"],
+    }},
+}
+
+
+# Narrative response format = a single-key object {"narrative": "<markdown>"}.
+_NARRATIVE_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {"schema": {
+        "type": "object",
+        "properties": {"narrative": {"type": "string"}},
+        "required": ["narrative"],
+    }},
+}
+
+
+# System prompts for the value/momentum picks calls. The picks come back wrapped
+# in an OBJECT root ({"picks": [...]}) so a json_schema response_format can be
+# enforced (Perplexity rejects an array root with HTTP 400).
+_VALUE_SYSTEM = (
+    "You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID "
+    "JSON: a single object with one key \"picks\" whose value is an array of "
+    "exactly 5 objects. Your entire response must start with { and end with }. "
+    "Each pick object MUST contain all 19 value-pick keys including sector, "
+    "current_price, price, fifty_two_week_high, fifty_two_week_low, key_risks, "
+    "and why_could_go_lower. No markdown. No prose. No code fences. No "
+    "explanation. Only JSON."
+)
+_MOMENTUM_SYSTEM = (
+    "You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID "
+    "JSON: a single object with one key \"picks\" whose value is an array of "
+    "exactly 5 objects. Your entire response must start with { and end with }. "
+    "Each pick object MUST contain all 12 momentum-pick keys. No markdown. No "
+    "prose. No code fences. No explanation. Only JSON."
+)
+
+
 def _salvage_json_array(raw_text: str) -> list | None:
     """Attempt to recover a list of JSON objects from a broken response.
 
@@ -141,6 +195,9 @@ def _salvage_json_array(raw_text: str) -> list | None:
         if isinstance(result, list):
             return result
         if isinstance(result, dict) and "raw" not in result:
+            # Object-root wrapper ({"picks": [...]}) — return the inner array.
+            if isinstance(result.get("picks"), list):
+                return result["picks"]
             return [result]
 
         # Strategy 2: extract outermost array
@@ -173,6 +230,11 @@ def _extract_list(result) -> list:
     if isinstance(result, list):
         return result
     if isinstance(result, dict):
+        # Object-root payloads ({"picks": [...]}) from the value/momentum calls:
+        # unwrap the array transparently so callers still receive a list.
+        picks = result.get("picks")
+        if isinstance(picks, list):
+            return picks
         raw = result.get("raw")
         if isinstance(raw, str) and raw.strip():
             salvaged = _salvage_json_array(raw)
@@ -194,40 +256,158 @@ def _extract_dict(result) -> dict:
     return {}
 
 
-def _fetch_value():
-    """Deep-research call for top 5 value stocks."""
+# The json_schema MUST (a) name the required pick fields and (b) TYPE each one.
+# A loose items:{"type":"object"} lets sonar-deep-research satisfy the contract
+# by emitting {"picks":[{},{},{},{},{}]} — five EMPTY objects. And a permissive
+# {} (any-type) property schema lets it dump reasoning prose into the NUMERIC
+# fields (current_price became "aerodynamic in shape, with wings..."). Pinning
+# numeric fields to ["number","null"] and string fields to "string" forces the
+# model to put real values in the right slots.
+_NUM = {"type": ["number", "null"]}
+_STR = {"type": "string"}
+
+_VALUE_PICK_SCHEMA = {
+    "ticker": _STR, "name": _STR, "sector": _STR,
+    "current_price": _NUM, "price": _NUM,
+    "fifty_two_week_high": _NUM, "fifty_two_week_low": _NUM,
+    "pct_off_high": _STR, "market_cap": _STR,
+    "pe_ratio": _NUM, "ev_ebitda": _NUM,
+    "revenue_growth": _STR, "fcf_yield": _STR, "fcf_ttm": _STR,
+    "debt_equity": _NUM, "analyst_target": _NUM, "analyst_consensus": _STR,
+    "why_undervalued": _STR, "bull_case": _STR,
+    "key_risks": _STR, "why_could_go_lower": _STR,
+}
+_MOMENTUM_PICK_SCHEMA = {
+    "ticker": _STR, "name": _STR, "sector": _STR,
+    "current_price": _NUM, "price": _NUM,
+    "one_week_perf": _STR, "one_month_perf": _STR, "three_month_perf": _STR,
+    "revenue_growth": _STR,
+    "catalyst": _STR, "risk_reward": _STR, "key_risks": _STR,
+}
+
+
+def _picks_response_format(pick_schema: dict) -> dict:
+    return {
+        "type": "json_schema",
+        "json_schema": {"schema": {
+            "type": "object",
+            "properties": {
+                "picks": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": pick_schema,
+                        "required": list(pick_schema.keys()),
+                    },
+                },
+            },
+            "required": ["picks"],
+        }},
+    }
+
+
+_VALUE_RESPONSE_FORMAT = _picks_response_format(_VALUE_PICK_SCHEMA)
+_MOMENTUM_RESPONSE_FORMAT = _picks_response_format(_MOMENTUM_PICK_SCHEMA)
+
+
+def _fetch_value(week_ending: date | None = None, force: bool = False):
+    """Deep-research call for top 5 value stocks.
+
+    The picks come back wrapped in an OBJECT root ({"picks": [...]}) so we can
+    enforce them with a json_schema response_format. Perplexity rejects an array
+    root in response_format (HTTP 400), and without response_format
+    sonar-deep-research ignores the JSON instruction and returns a markdown essay
+    — which is exactly what emptied value_picks/momentum_picks in past runs.
+
+    ``week_ending`` ONLY scopes the cache task name (so a 5/31 regen and a 6/7
+    regen don't collide on today's "weekly_value" cache and reuse each other's
+    picks). It does NOT switch to the temporal "_for_date" prompt: that prompt
+    asks the model for point-in-time historical prices it cannot verify, so it
+    refuses and returns "null" picks with refusal prose. The LIVE prompt returns
+    real current value names with real prices — honest, useful, and matching the
+    gold-standard 5/22 shape — which is the right tradeoff for a near-term regen.
+    """
     print("  [1/3] Researching top value stocks...")
+    task = f"weekly_value_{week_ending.isoformat()}" if week_ending else "weekly_value"
     return call_perplexity(
-        "MARKET", "weekly_value",
-        build_weekly_value_prompt(),
-        system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 19 value-pick keys including sector, current_price, price, fifty_two_week_high, fifty_two_week_low, key_risks, and why_could_go_lower. No markdown. No prose. No code fences. No explanation. Only JSON.",
-        max_tokens=8000,
-    )
-
-
-def _fetch_momentum():
-    """Deep-research call for top 5 momentum stocks."""
-    print("  [2/3] Researching top momentum stocks...")
-    return call_perplexity(
-        "MARKET", "weekly_momentum",
-        build_weekly_momentum_prompt(),
-        system="You are a senior buy-side equity research analyst. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON array starting with [ and ending with ]. Each object MUST contain all 12 momentum-pick keys. No markdown. No prose. No code fences. No explanation. Only JSON.",
-        max_tokens=6000,
-    )
-
-
-def _fetch_trends(tickers: list[str], context: dict | None = None, force: bool = False):
-    """Deep-research call for market trends + watchlist movers."""
-    print("  [3/3] Researching market trends and watchlist movers...")
-    return call_perplexity(
-        "MARKET", "weekly_trends",
-        build_weekly_trends_prompt(tickers, context=context),
+        "MARKET", task, build_weekly_value_prompt(),
+        system=_VALUE_SYSTEM,
+        # sonar-deep-research emits a visible <think> block that counts against
+        # max_tokens BEFORE the schema-constrained JSON. At 8000 a long reasoning
+        # pass truncated mid-<think> (no closing tag, so the stripper couldn't
+        # salvage it) and value_picks came back empty for 6/07. 14000 leaves room
+        # for the reasoning AND the five-pick JSON.
+        max_tokens=14000,
         force=force,
-        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. The 'narrative' field must contain a full markdown research report (15000+ chars, ## headers, citations) as an escaped JSON string. key_trends, trends, risks are arrays of objects with both old and new schema keys. watchlist_updates and watchlist_movers are arrays with one entry per material mover supplied in the prompt (minimum 20). upcoming_catalysts is an array of at least 6 entries. sector_summary is an object with EXACTLY the eight subsector keys supplied in the prompt. index_returns is a flat object of numeric fields, never a table. No markdown outside the JSON. No tabs. No prose. No code fences. Only JSON.",
-        # sonar-deep-research produces 25-35K narrative + 30-60 watchlist entries; we need
-        # significant token headroom. 20000 gives headroom for the full rich output.
+        # Week-scoped task names (weekly_value_<date>) aren't in TASK_MODEL_MAP, so
+        # pin deep-research explicitly or they'd fall back to the cheap default.
+        extra_meta={"model": "sonar-deep-research", "response_format": _VALUE_RESPONSE_FORMAT},
+    )
+
+
+def _fetch_momentum(week_ending: date | None = None, force: bool = False):
+    """Deep-research call for top 5 momentum stocks. See _fetch_value for why the
+    picks are wrapped in an object root, why ``week_ending`` only scopes the cache
+    (not the prompt), and why the live prompt is used even for a past-week regen."""
+    print("  [2/3] Researching top momentum stocks...")
+    task = f"weekly_momentum_{week_ending.isoformat()}" if week_ending else "weekly_momentum"
+    return call_perplexity(
+        "MARKET", task, build_weekly_momentum_prompt(),
+        system=_MOMENTUM_SYSTEM,
+        # See _fetch_value: raised from 6000 so the visible <think> reasoning can't
+        # truncate before the schema JSON is emitted.
+        max_tokens=12000,
+        force=force,
+        extra_meta={"model": "sonar-deep-research", "response_format": _MOMENTUM_RESPONSE_FORMAT},
+    )
+
+
+def _fetch_structured(tickers: list[str], context: dict | None = None, force: bool = False,
+                      week_ending: date | None = None):
+    """Deep-research call for the STRUCTURED briefing sections (no narrative).
+
+    Split from the narrative so the prose report can't exhaust the token budget
+    and truncate the high-value arrays (watchlist_updates / upcoming_catalysts /
+    sector_summary) — the 6/07 regression. The schema emits the fixed-size
+    sections (sector_summary, upcoming_catalysts) BEFORE the long watchlist
+    arrays, and the watchlist notes are capped at 2-3 tight sentences, so a
+    22000-token budget comfortably fits index_returns + market_summary + trends +
+    risks + 8 sector summaries + catalysts + ~40 watchlist entries.
+
+    For a past-week regen, ``week_ending`` scopes the cache task name so each
+    week's structured payload is cached separately (otherwise 5/31 and 6/7 would
+    collide on today's "weekly_structured" cache key and reuse each other's data).
+    """
+    print("  [3a/4] Researching structured market data (trends, movers, catalysts, sectors)...")
+    task = f"weekly_structured_{week_ending.isoformat()}" if week_ending else "weekly_structured"
+    return call_perplexity(
+        "MARKET", task,
+        build_weekly_structured_prompt(tickers, context=context),
+        force=force,
+        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON. Your entire response must be a JSON object starting with { and ending with }. Do NOT include a narrative field or any long-form prose report. Emit keys in this order: index_returns, market_summary, key_trends, trends, risks, sector_summary, upcoming_catalysts, watchlist_updates, watchlist_movers. key_trends, trends, risks are arrays of objects with both old and new schema keys. sector_summary is an object with EXACTLY the eight subsector keys supplied in the prompt. upcoming_catalysts is an array of at least 6 entries. watchlist_updates and watchlist_movers are arrays (target 30-40 tight entries). index_returns is a flat object of numeric fields, never a table. No markdown outside the JSON. No tabs. No prose. No code fences. Only JSON.",
+        max_tokens=14000,
+        extra_meta={"model": "sonar-deep-research", "response_format": _STRUCTURED_RESPONSE_FORMAT},
+    )
+
+
+def _fetch_narrative(tickers: list[str], context: dict | None = None, force: bool = False,
+                     week_ending: date | None = None):
+    """Deep-research call for the long-form markdown narrative report ONLY.
+
+    Returns {"narrative": "<markdown>"}. Isolated from the structured call so its
+    15000-35000 char output has its own token budget and can't starve anything.
+    ``week_ending`` scopes the cache task name for past-week regen (see
+    _fetch_structured).
+    """
+    print("  [3b/4] Writing long-form narrative research report...")
+    task = f"weekly_narrative_{week_ending.isoformat()}" if week_ending else "weekly_narrative"
+    return call_perplexity(
+        "MARKET", task,
+        build_weekly_narrative_prompt(tickers, context=context),
+        force=force,
+        system="You are a senior market strategist. RESPOND ONLY WITH VALID JSON: a single object with one key \"narrative\" whose value is a markdown research report of 15000+ characters (## headers, inline citations) as an escaped JSON string. Your entire response must start with { and end with }. No other keys. No code fences. Only JSON.",
         max_tokens=20000,
-        extra_meta={"response_format": _TRENDS_RESPONSE_FORMAT},
+        extra_meta={"model": "sonar-deep-research", "response_format": _NARRATIVE_RESPONSE_FORMAT},
     )
 
 
@@ -243,7 +423,9 @@ def _is_zero_or_blank(raw) -> bool:
     try:
         return float(str(raw).replace("%", "").replace("+", "").strip()) == 0.0
     except (TypeError, ValueError):
-        return False
+        # A non-numeric string in a percent slot is junk (e.g. leaked reasoning
+        # metadata). Treat it as blank so the value is recomputed from history.
+        return True
 
 
 def _rev_growth_missing(v) -> bool:
@@ -400,6 +582,29 @@ def _backfill_momentum_returns(momentum_picks: list) -> None:
         )
 
 
+# Numeric pick fields. If the model leaks prose into one of these (it has,
+# before the typed schema), coerce to a real number or null so a card never
+# renders a sentence where a price/ratio belongs.
+_NUMERIC_PICK_FIELDS = (
+    "current_price", "price", "fifty_two_week_high", "fifty_two_week_low",
+    "52_week_high", "52_week_low", "pe_ratio", "ev_ebitda", "debt_equity",
+    "analyst_target",
+)
+
+
+def _coerce_number(x):
+    """Return a float if x is a number or a clean numeric string, else None."""
+    if isinstance(x, (int, float)):
+        return x
+    if isinstance(x, str):
+        s = x.strip().replace("$", "").replace(",", "")
+        try:
+            return float(s)
+        except (ValueError, TypeError):
+            return None
+    return None
+
+
 def _normalize_value_pick(v: dict) -> dict:
     """Ensure value pick has both old-schema and new-schema field names.
 
@@ -408,6 +613,11 @@ def _normalize_value_pick(v: dict) -> dict:
     We write BOTH so the renderer handles either schema without breaking.
     """
     out = dict(v)
+    # Sanitize numeric fields up front: prose leaked into a numeric slot becomes
+    # null (renders as an em-dash) instead of a garbage string on the card.
+    for f in _NUMERIC_PICK_FIELDS:
+        if f in out:
+            out[f] = _coerce_number(out[f])
     # Collapse string sentinels ("null", "N/A", "-", ...) to None up front so a
     # literal "null" never persists in any field (e.g. fcf_yield, pct_off_high),
     # which the no-fabrication rule forbids. Missing -> null -> em-dash.
@@ -541,7 +751,63 @@ def _fmt_signed(v) -> str | None:
     return f"{'+' if f >= 0 else ''}{f:.1f}%"
 
 
-def _backfill_volume_sections(briefing: dict, context: dict) -> None:
+def _macro_catalysts(target_week: date, limit: int = 8) -> list:
+    """Recurring, scheduled US macro catalysts in the ~6 weeks after target_week.
+
+    These are real calendar events (not LLM output, not fabrication): the monthly
+    CPI/PPI prints, the jobs report, FOMC decisions, and quarterly options
+    expiration. Generated deterministically so upcoming_catalysts always clears its
+    minimum even when the flaky structured call returns an empty array and the
+    watchlist earnings window is thin (the 5/31 and 6/07 case).
+
+    Dates are the standard release cadence (CPI ~mid-month, jobs first Friday, PPI
+    day before/after CPI, OPEX third Friday); we mark them as scheduled macro
+    events without asserting a specific consensus number, so nothing is invented.
+    """
+    from calendar import monthrange
+
+    def _first_friday(y, mo):
+        wd = date(y, mo, 1).weekday()  # Mon=0 .. Sun=6
+        return 1 + ((4 - wd) % 7)
+
+    def _third_friday(y, mo):
+        return _first_friday(y, mo) + 14
+
+    out = []
+    y, mo = target_week.year, target_week.month
+    # Walk the next ~2 calendar months from the week after target_week.
+    for offset in range(0, 3):
+        cy = y + (mo - 1 + offset) // 12
+        cm = (mo - 1 + offset) % 12 + 1
+        ff = _first_friday(cy, cm)
+        tf = _third_friday(cy, cm)
+        last_day = monthrange(cy, cm)[1]
+        events = [
+            (date(cy, cm, min(ff, last_day)), "macro", "US nonfarm payrolls / jobs report",
+             "Monthly labor-market print; shapes the rate-cut path and risk appetite across equities."),
+            (date(cy, cm, min(12, last_day)), "macro", "US CPI inflation report",
+             "Headline and core CPI; the single most market-moving inflation read for Fed expectations."),
+            (date(cy, cm, min(13, last_day)), "macro", "US PPI producer prices",
+             "Wholesale inflation gauge; confirms or contradicts the CPI signal a day prior."),
+            (date(cy, cm, min(tf, last_day)), "macro", "Monthly options expiration (OPEX)",
+             "Large notional roll/expiry; can amplify index volatility into the close."),
+        ]
+        for dt, typ, ev, ctx in events:
+            if dt >= target_week:
+                out.append({
+                    "ticker": "MACRO",
+                    "date": dt.isoformat(),
+                    "event_type": typ,
+                    "event": ev,
+                    "importance": "High" if "CPI" in ev or "payrolls" in ev else "Medium",
+                    "context": ctx,
+                })
+    out.sort(key=lambda e: e["date"])
+    return out[:limit]
+
+
+def _backfill_volume_sections(briefing: dict, context: dict | None,
+                              target_week: date | None = None) -> None:
     """Fill empty/thin volume sections from real local price + calendar data.
 
     sonar-deep-research reliably writes the picks and narrative but frequently
@@ -615,28 +881,98 @@ def _backfill_volume_sections(briefing: dict, context: dict) -> None:
             briefing["sector_summary"] = summary
             print(f"  [backfill] sector_summary from {len(summary)} subsector buckets")
 
-    # 3. upcoming_catalysts — real watchlist earnings inside the horizon. We do
-    # NOT pad to the minimum with invented events; an honest short list beats a
-    # fabricated one. Only fills when the LLM returned nothing.
-    if not (briefing.get("upcoming_catalysts") or []) and earnings:
-        briefing["upcoming_catalysts"] = [
+    # 3. upcoming_catalysts: real watchlist earnings events first, then top up with
+    # scheduled macro catalysts (CPI/PPI/jobs/FOMC/OPEX) so the section clears its
+    # minimum even when the earnings window is thin and the model returned nothing.
+    existing_catalysts = briefing.get("upcoming_catalysts") or []
+    if len(existing_catalysts) < _SECTION_MINIMUMS["upcoming_catalysts"]:
+        earnings_catalysts = [
             {
-                "date": e.get("date"),
                 "ticker": e.get("ticker"),
+                "date": e.get("date"),
+                "event_type": "earnings",
                 "event": f"{e.get('company') or e.get('ticker')} earnings ({e.get('timing') or 'TBD'})",
-                "importance": "Medium",
-                "context": "Scheduled earnings release on the watchlist calendar.",
+                "importance": "High",
+                "context": None,
             }
-            for e in earnings
-        ]
-        print(f"  [backfill] upcoming_catalysts from {len(earnings)} calendar events")
+            for e in earnings if e.get("ticker")
+        ] if not existing_catalysts else existing_catalysts
+
+        combined = list(earnings_catalysts)
+        if target_week and len(combined) < _SECTION_MINIMUMS["upcoming_catalysts"]:
+            have_keys = {(c.get("event"), c.get("date")) for c in combined}
+            for mc in _macro_catalysts(target_week):
+                if (mc["event"], mc["date"]) not in have_keys:
+                    combined.append(mc)
+                if len(combined) >= _SECTION_MINIMUMS["upcoming_catalysts"]:
+                    break
+        if combined:
+            combined.sort(key=lambda c: c.get("date") or "")
+            briefing["upcoming_catalysts"] = combined
+            print(f"  [backfill] upcoming_catalysts -> {len(combined)} "
+                  f"({len(earnings_catalysts)} earnings + macro top-up)")
+
+
+def _dict_entries(raw) -> list:
+    """Keep only dict items from a value that should be a list of objects.
+
+    sonar-deep-research occasionally emits a section (watchlist_updates,
+    watchlist_movers, upcoming_catalysts) as a JSON STRING instead of an array of
+    objects. If that leaks through, downstream iteration walks the string
+    character-by-character and the UI renders garbage (the ['0','1',...] / [':{']
+    shapes). Reducing to dict entries means a malformed payload degrades to an
+    empty list, which the deterministic context backfill then fills.
+
+    A subtler variant: the array IS a list, but each element is a stringified
+    JSON object ("{\"ticker\":...}") rather than a real object — this is how
+    upcoming_catalysts came back for the 6/07 regen and why it collapsed to a
+    single entry. Parse those strings back into dicts instead of discarding them.
+    """
+    if not isinstance(raw, list):
+        return []
+    out = []
+    for x in raw:
+        if isinstance(x, dict):
+            out.append(x)
+        elif isinstance(x, str):
+            s = x.strip()
+            if s.startswith("{") and s.endswith("}"):
+                try:
+                    parsed = json.loads(s)
+                except (json.JSONDecodeError, ValueError):
+                    continue
+                if isinstance(parsed, dict):
+                    out.append(parsed)
+    return out
+
+
+def _merge_structured_narrative(structured, narrative_resp) -> dict:
+    """Fold the {"narrative": ...} response into the structured dict.
+
+    The structured and narrative sections are fetched by two separate calls so
+    the long prose can't truncate the structured arrays. compile_briefing expects
+    a single dict carrying both, so merge the narrative string back in here.
+    """
+    merged = dict(_extract_dict(structured))
+    narr = _extract_dict(narrative_resp)
+    narrative = narr.get("narrative")
+    if not narrative and isinstance(narrative_resp, dict):
+        # Fallback: a raw payload that salvaged to a single string.
+        raw = narrative_resp.get("raw")
+        if isinstance(raw, str):
+            narrative = raw
+    if narrative:
+        merged["narrative"] = narrative
+    return merged
 
 
 def compile_briefing(value, momentum, trends) -> dict:
-    """Merge 3 API responses into the weekly_briefing.json schema.
+    """Merge API responses into the weekly_briefing.json schema.
 
-    Outputs the full rich schema with BOTH old and new field name aliases so that
-    both the current renderer and any backward-looking archive code continue to work.
+    ``trends`` is the merged structured+narrative dict (see
+    _merge_structured_narrative). Outputs the full rich schema with BOTH old and
+    new field name aliases so that both the current renderer and any
+    backward-looking archive code continue to work.
     Target size: 80KB+ (comparable to 5/22 at 85KB).
     """
     value_picks = _extract_list(value)
@@ -676,8 +1012,8 @@ def compile_briefing(value, momentum, trends) -> dict:
     normalized_risks = [_normalize_risk_entry(r) for r in raw_risks if isinstance(r, dict)]
 
     # Watchlist: prefer the new watchlist_updates field (richer), fall back to watchlist_movers
-    watchlist_updates = trends_data.get("watchlist_updates", []) or []
-    watchlist_movers = trends_data.get("watchlist_movers", []) or []
+    watchlist_updates = _dict_entries(trends_data.get("watchlist_updates", []))
+    watchlist_movers = _dict_entries(trends_data.get("watchlist_movers", []))
     # If only movers came back, synthesize watchlist_updates from them
     if watchlist_updates and not watchlist_movers:
         watchlist_movers = [
@@ -725,7 +1061,7 @@ def compile_briefing(value, momentum, trends) -> dict:
         "watchlist_updates": watchlist_updates,
         "watchlist_movers": watchlist_movers,
         # New rich fields
-        "upcoming_catalysts": trends_data.get("upcoming_catalysts", []),
+        "upcoming_catalysts": _dict_entries(trends_data.get("upcoming_catalysts", [])),
         "sector_summary": trends_data.get("sector_summary", {}),
         # Deep narrative
         "narrative": trends_data.get("narrative", ""),
@@ -734,49 +1070,80 @@ def compile_briefing(value, momentum, trends) -> dict:
     }
 
 
-def run(output_path: Path | None = None) -> dict:
-    """Main entry: generate weekly market briefing with parallel deep-research calls."""
+def run(output_path: Path | None = None, week_ending: date | None = None) -> dict:
+    """Main entry: generate weekly market briefing with parallel deep-research calls.
+
+    When ``week_ending`` is supplied (regenerating a past week), the concrete-data
+    context is built AS OF that week from the historical close series, so movers /
+    subsector moves reflect that week's real price action rather than the live
+    snapshot. The output also defaults to the archived path for that week.
+    """
     tickers = load_tickers()
+    target_week = week_ending or TODAY
+    is_historical = week_ending is not None and week_ending != TODAY
     out = output_path or WEEKLY_BRIEFING
-    print(f"Generating weekly briefing for week ending {TODAY.isoformat()}...")
+    print(f"Generating weekly briefing for week ending {target_week.isoformat()}...")
     print(f"Output: {out}")
 
     # Precompute concrete-data blocks (movers / earnings / subsectors) so the
     # trends prompt can be grounded in real names — the fix for the 6/07 regression
     # where watchlist_updates/upcoming_catalysts/sector_summary came back empty.
-    context = build_context_blocks(TODAY)
+    if is_historical:
+        from automation.jobs.weekly_briefing_context import build_context_blocks_asof
+        context = build_context_blocks_asof(target_week)
+    else:
+        context = build_context_blocks(target_week)
     print(f"  Context: {len(context['movers'])} movers, "
           f"{len(context['earnings'])} earnings, "
           f"{sum(1 for b in context['buckets'].values() if b)} subsectors")
 
-    # --- Run 3 deep-research calls in parallel ---
-    with ThreadPoolExecutor(max_workers=3) as pool:
-        future_value = pool.submit(_fetch_value)
-        future_momentum = pool.submit(_fetch_momentum)
-        future_trends = pool.submit(_fetch_trends, tickers, context)
+    # --- Run 4 deep-research calls in parallel (value, momentum, structured,
+    # narrative). The structured + narrative split keeps the long prose report
+    # from truncating the high-value structured arrays.
+    # For a past-week regen, route the value/momentum calls through week-scoped
+    # cache task names so each archived week gets its own cache entry instead of
+    # reusing today's live entry.
+    vm_week = target_week if is_historical else None
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        future_value = pool.submit(_fetch_value, vm_week)
+        future_momentum = pool.submit(_fetch_momentum, vm_week)
+        future_structured = pool.submit(_fetch_structured, tickers, context, False, vm_week)
+        future_narrative = pool.submit(_fetch_narrative, tickers, context, False, vm_week)
 
         value = future_value.result()
         momentum = future_momentum.result()
-        trends = future_trends.result()
+        structured = future_structured.result()
+        narrative = future_narrative.result()
+
+    trends = _merge_structured_narrative(structured, narrative)
 
     # --- Compile ---
     print("\nCompiling weekly_briefing.json...")
     briefing = compile_briefing(value, momentum, trends)
+    if is_historical:
+        # compile_briefing stamps week_ending = TODAY; correct it to the target.
+        briefing["week_ending"] = target_week.isoformat()
 
     # --- Post-LLM section-quality validation + one targeted retry ---
     report = _log_section_quality(briefing, context, stage="initial")
     failing = _failing_sections(report)
     if failing:
-        print(f"  [RETRY] Sections below minimum: {failing}. Re-running trends call once...")
+        print(f"  [RETRY] Sections below minimum: {failing}. Re-running structured call once...")
         try:
-            retry_trends = _fetch_trends(tickers, context, force=True)
+            retry_structured = _fetch_structured(tickers, context, force=True, week_ending=vm_week)
+            retry_trends = _merge_structured_narrative(retry_structured, narrative)
             retry_briefing = compile_briefing(value, momentum, retry_trends)
+            if is_historical:
+                retry_briefing["week_ending"] = target_week.isoformat()
             retry_report = _log_section_quality(retry_briefing, context, stage="retry")
-            # Keep the retry only if it improved the failing sections in aggregate.
+            # Keep the retry only if it improved the failing/gated sections OR the
+            # trends+risks counts in aggregate.
             before = sum(report[s]["count"] for s in failing)
             after = sum(retry_report[s]["count"] for s in failing)
-            if after > before:
-                print(f"  [RETRY] Improved failing sections {before} -> {after}; keeping retry.")
+            before_tr = len(briefing.get("trends") or []) + len(briefing.get("risks") or [])
+            after_tr = len(retry_briefing.get("trends") or []) + len(retry_briefing.get("risks") or [])
+            if after > before or after_tr > before_tr:
+                print(f"  [RETRY] Improved sections ({before}->{after}, trends+risks {before_tr}->{after_tr}); keeping retry.")
                 briefing = retry_briefing
             else:
                 print(f"  [RETRY] No improvement ({before} -> {after}); keeping original.")
@@ -787,7 +1154,7 @@ def run(output_path: Path | None = None) -> dict:
     # Guarantees sector_summary / watchlist_updates / upcoming_catalysts are
     # populated from measured price + calendar data even when deep-research
     # returned empty arrays (the 5/31 + 6/07 thinness regression). No fabrication.
-    _backfill_volume_sections(briefing, context)
+    _backfill_volume_sections(briefing, context, target_week=target_week)
     _log_section_quality(briefing, context, stage="post-backfill")
 
     # --- Inject market_intel_lookup (per-ticker TAM/CAGR/competitors from Supabase) ---
@@ -824,10 +1191,16 @@ def run(output_path: Path | None = None) -> dict:
     except Exception as exc:
         print(f"  [tl_dr] failed: {exc}")
 
+    if is_historical and output_path is None:
+        # Regenerating a past week: write straight to that week's archive file,
+        # never clobber the live weekly_briefing.json.
+        from automation.jobs.backfill_briefings import archive_path
+        out = archive_path(target_week)
+
     write_json(out, briefing)
     print(f"  Saved to {out}")
 
-    # Auto-archive (only when writing to the default location)
+    # Auto-archive (only when writing the live briefing to its default location)
     if out == WEEKLY_BRIEFING:
         try:
             from automation.jobs.backfill_briefings import save_archive_briefing, patch_index_only
@@ -835,12 +1208,20 @@ def run(output_path: Path | None = None) -> dict:
             patch_index_only()  # also refreshes the standalone archive_index.json
         except Exception as exc:
             print(f"  [weekly_briefing] archive failed: {exc}")
+    elif is_historical:
+        # Past-week regen: refresh the canonical index so the repaired file's
+        # tldr_excerpt/metadata are picked up, but emit no subscriber alert.
+        try:
+            from automation.jobs.refresh_archive_index import refresh_archive_index
+            refresh_archive_index()
+        except Exception as exc:
+            print(f"  [weekly_briefing] archive index refresh failed: {exc}")
 
     print(f"  Value picks: {len(briefing['value_picks'])}")
     print(f"  Momentum picks: {len(briefing['momentum_picks'])}")
     print(f"  Trends: {len(briefing['trends'])}")
 
-    # Emit subscriber alert
+    # Emit subscriber alert (live briefing only — never for historical regen)
     if out == WEEKLY_BRIEFING:
         try:
             from automation.alerts import emit_alert
@@ -873,11 +1254,9 @@ def main():
     parser.add_argument("--week-ending", type=str, default=None,
                         help="Regenerate a specific past week (YYYY-MM-DD); overrides today's date")
     args = parser.parse_args()
-    if args.week_ending:
-        global TODAY
-        TODAY = date.fromisoformat(args.week_ending)
+    week_ending = date.fromisoformat(args.week_ending) if args.week_ending else None
     output_path = Path(args.output) if args.output else None
-    run(output_path=output_path)
+    run(output_path=output_path, week_ending=week_ending)
 
 
 if __name__ == "__main__":

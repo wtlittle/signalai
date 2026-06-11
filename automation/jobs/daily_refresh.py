@@ -854,6 +854,17 @@ def run(tickers: list[str] | None = None):
     except Exception as exc:
         print(f"  [WARN] drain_queue skipped: {exc}")
 
+    # --- Refresh the canonical weekly-briefing archive index ---
+    # The front-end week picker fetches weekly_briefing_archive_index.json as its
+    # single source of truth. Rebuild it every daily run so a newly archived week
+    # (or a repaired briefing) is always reflected, independent of the weekly job.
+    try:
+        print("\n--- step: refresh weekly archive index ---")
+        from automation.jobs.refresh_archive_index import refresh_archive_index
+        refresh_archive_index()
+    except Exception as exc:
+        print(f"  [WARN] archive index refresh skipped: {exc}")
+
     # --- Queue summary: tasks written to automation/queue/pending_tasks.json ---
     queue_file = ROOT_DIR / "automation" / "queue" / "pending_tasks.json"
     queued_entries = []
