@@ -36,6 +36,7 @@ from automation.earnings.pre_earnings_context import (
     _get_tier,
 )
 from automation.perplexity.client import call_perplexity
+from automation.data.industry_pack_fetcher import fetch_industry_pack
 
 
 # ---------------------------------------------------------------------------
@@ -234,6 +235,32 @@ def build_post_earnings_context(
         "errors": errors,
         "_tier": tier,
     })
+
+    # -- Post-specific Step 5: Grounded industry pack (per-ticker market intel)
+    # Overrides the subsector-level pack the pre-earnings base may have set:
+    # the post-earnings note cross-references TAM / CAGR / named competitors
+    # for THIS ticker from Supabase market_intel_ticker. Missing or stale
+    # (>14d) packs are flagged so the prompt tells the model not to invent
+    # industry numbers.
+    # Drop any industry_pack gap the pre-earnings base recorded against the OLD
+    # subsector-level industry_packs table -- the per-ticker market_intel pack
+    # supersedes it here, so a stale subsector miss must not contradict a fresh
+    # per-ticker pack in DATA GAPS.
+    errors[:] = [e for e in errors if e.get("field") != "industry_pack"]
+
+    industry_pack = fetch_industry_pack(ticker)
+    context["industry_pack"] = industry_pack
+    if industry_pack is None:
+        errors.append({
+            "field": "industry_pack",
+            "reason": f"no market_intel_ticker row for {ticker}",
+        })
+    elif industry_pack.get("is_stale"):
+        errors.append({
+            "field": "industry_pack",
+            "reason": (f"market_intel_ticker row for {ticker} is stale "
+                       f"(updated_at={industry_pack.get('updated_at')})"),
+        })
 
     # If pre-earnings built a consensus_at_print, promote it
     if this_quarter_actuals:

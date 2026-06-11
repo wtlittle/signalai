@@ -162,7 +162,12 @@ Required sections (match the existing note format exactly):
 2. Key Metrics (bulleted list: metric actual vs est)
 3. Guidance and Tone (guidance vs consensus + Management Tone)
 4. Surprises / Disappointments (bulleted, positive and negative)
-5. Thesis Impact (reinforces/challenges/neutral + reasoning)
+5. Thesis Impact (reinforces/challenges/neutral + reasoning). Cross-reference
+   the INDUSTRY PACK here: frame in-quarter growth against the category CAGR to
+   imply share gain/loss, and name the most relevant competitor benchmark. Cite
+   the TAM (with currency + year) and CAGR (with window) and their sources. If
+   the pack is STALE or MISSING, write 'industry data refresh pending' rather
+   than inventing any TAM, CAGR, or competitor figure.
 6. Analyst Reactions (bulleted list of sell-side actions)
 7. Near-Term Outlook (1 paragraph stock view)
 
@@ -426,18 +431,114 @@ def _render_insider(insider: dict | None, errors: list[dict]) -> str:
     )
 
 
-def _render_industry_pack(pack: dict | None, errors: list[dict]) -> str:
-    """Render industry pack."""
-    err = _na("industry_pack", errors)
-    if err:
-        return f"=== INDUSTRY PACK ===\n{err}"
-    if not pack:
-        return "=== INDUSTRY PACK ===\nNot available"
+_INDUSTRY_PACK_INSTRUCTION = (
+    "Cross-reference the Industry Pack below in your post-earnings analysis. "
+    "Cite specific TAM, category CAGR, and competitor benchmarks where relevant "
+    "(for example, frame in-quarter growth against the category CAGR to imply "
+    "share gain or loss). Every industry claim must carry its source. CAGR must "
+    "name its time window; TAM must name its currency and year of estimate; "
+    "competitors must be named (never \"various competitors\"). If the pack is "
+    "marked STALE (>14 days) or MISSING, do NOT invent industry numbers -- say "
+    "'industry data refresh pending' instead."
+)
+
+
+def _render_industry_pack_legacy(pack: dict, errors: list[dict]) -> str:
+    """Render the legacy subsector-level industry pack (industry_packs table).
+
+    Pre-earnings notes still consume the subsector pack shape
+    ``{subsector, week_of, pack, sources}`` populated by industry_packs_refresh.
+    Kept verbatim so wiring the per-ticker market_intel pack into post-earnings
+    does not change pre-earnings output.
+    """
     subsector = _safe(pack.get("subsector"))
     week = _safe(pack.get("week_of"))
     data = pack.get("pack")
     data_str = _json.dumps(data, indent=2) if data else "no pack data"
     return f"=== INDUSTRY PACK ===\nSubsector: {subsector} (week of {week})\n{data_str}"
+
+
+def _render_industry_pack(pack: dict | None, errors: list[dict]) -> str:
+    """Render the per-ticker grounded industry pack (market_intel_ticker).
+
+    Handles three states explicitly so the model never invents numbers:
+      - MISSING: no Supabase row (also surfaced via the errors list).
+      - STALE: a row older than 14 days (``is_stale=True``).
+      - FRESH: a current row -- TAM, CAGR, drivers, named competitors, sources.
+
+    A legacy subsector-shaped pack (``subsector``/``pack`` keys, from the
+    pre-earnings industry_packs table) is delegated to the legacy renderer so
+    pre-earnings notes are unaffected by the post-earnings market_intel wiring.
+    """
+    if pack is not None and ("subsector" in pack or "week_of" in pack):
+        return _render_industry_pack_legacy(pack, errors)
+
+    header = "=== INDUSTRY PACK (grounded market intel) ==="
+    instruction = f"INSTRUCTION: {_INDUSTRY_PACK_INSTRUCTION}"
+
+    err = _na("industry_pack", errors)
+    if pack is None:
+        body = (err or "MISSING: no market_intel row for this ticker.") + \
+            "\nDo NOT invent TAM, CAGR, or competitor figures. Write "
+        body += "'industry data refresh pending' for any industry claim."
+        return f"{header}\n{instruction}\n{body}"
+
+    lines = [header, instruction]
+
+    if pack.get("is_stale"):
+        lines.append(
+            f"STATUS: STALE -- last refreshed {_safe(pack.get('updated_at'))} "
+            f"(>14 days old). Do NOT cite the numbers below as current. Write "
+            f"'industry data refresh pending' instead of inventing figures."
+        )
+    else:
+        lines.append(f"STATUS: FRESH -- refreshed {_safe(pack.get('updated_at'))}.")
+
+    tam = pack.get("tam_usd_bn")
+    tam_src = pack.get("tam_source_url")
+    if tam is not None:
+        tam_line = f"TAM: ${_safe(tam)}B USD (per source)"
+        if tam_src:
+            tam_line += f" [{tam_src}]"
+        lines.append(tam_line)
+    else:
+        lines.append("TAM: -- (not sourced; do not invent)")
+
+    cagr = pack.get("category_cagr_pct")
+    if cagr is not None:
+        lines.append(f"Category CAGR: {_safe(cagr)}% (state the window when citing)")
+    else:
+        lines.append("Category CAGR: -- (not sourced; do not invent)")
+
+    drivers = pack.get("drivers") or []
+    if drivers:
+        lines.append("Demand drivers:")
+        lines.extend(f"  - {d}" for d in drivers)
+    else:
+        lines.append("Demand drivers: -- (none provided)")
+
+    competitors = pack.get("competitors") or []
+    if competitors:
+        lines.append("Named competitors (quadrant / threat / source):")
+        for c in competitors:
+            name = _safe(c.get("name"))
+            tk = c.get("ticker")
+            name_disp = f"{name} ({tk})" if tk else name
+            quad = _safe(c.get("quadrant"), fallback="--")
+            threat = _safe(c.get("threat"), fallback="--")
+            src = c.get("source_url")
+            line = f"  - {name_disp}: {quad}, threat {threat}"
+            if src:
+                line += f" [{src}]"
+            lines.append(line)
+    else:
+        lines.append("Named competitors: -- (none provided)")
+
+    srcs = pack.get("source_urls") or []
+    if srcs:
+        lines.append("Sources: " + "; ".join(srcs))
+
+    return "\n".join(lines)
 
 
 def _render_errors(errors: list[dict]) -> str:
@@ -656,8 +757,10 @@ def build_post_earnings_prompt_v2(
 
     sections.append(_render_insider(ctx.get("insider_tx_90d"), errors))
 
-    if tier == "T1":
-        sections.append(_render_industry_pack(ctx.get("industry_pack"), errors))
+    # Grounded industry pack ships for EVERY tier in post-earnings notes and is
+    # placed before the thesis instructions (_POST_SECTIONS) so the model can
+    # cross-reference TAM / CAGR / competitor benchmarks while writing.
+    sections.append(_render_industry_pack(ctx.get("industry_pack"), errors))
 
     sections.append(_render_transcript_excerpt(ctx.get("transcript"), errors))
     sections.append(_render_errors(errors))

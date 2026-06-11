@@ -15,3 +15,11 @@ To install a skill into your Computer skill library, use `save_custom_skill`.
   filing/provider source hierarchies, and prompt + provenance patterns. Use when
   drafting drilldowns, briefings, valuation memos, or any artifact citing
   financial metrics for a public company.
+- **[industry-cross-reference](industry-cross-reference/SKILL.md)**
+  — grounds every industry claim (TAM, market share, competitive position,
+  category growth) in verifiable data: the source-of-truth hierarchy (Supabase
+  market_intel_ticker first, then transcripts, then a constrained sonar query,
+  else an em-dash), the citation rules for TAM/CAGR/competitors, cross-reference
+  patterns for weaving industry data into a thesis, and the anti-fabrication
+  guardrails. Use when drafting post-earnings notes, drilldowns, or weekly
+  briefing trends.
