@@ -102,3 +102,43 @@ The same pattern applies to the daily cron, swapping `--mode daily` (no
 The `-s` test guarantees a non-empty file before the lock gate, and the renderer
 exits non-zero on a missing key — together these ensure the cron fails loudly
 rather than ever sending a placeholder again.
+
+## Freshness gate (send_briefing.py)
+
+On 2026-06-11 the daily briefing shipped the **prior day's** snapshot stamped
+with the wrong date: the `daily_refresh` cron had crashed (silent OOM) and the
+renderer had no way to refuse a stale snapshot. The freshness gate closes that
+loop.
+
+`render_daily()` now derives the title date from the **actual send date** in ET
+(not the snapshot's `generated` stamp — the two diverge exactly when the
+snapshot is stale), and runs `check_daily_freshness()` first:
+
+- `data-snapshot.json` mtime older than `DAILY_SNAPSHOT_MAX_AGE_HOURS` (4h) →
+  abort.
+- "Earnings today" calendar rows carry a date other than the send date (stale
+  calendar carried forward) → abort. An empty calendar is a legitimate "nothing
+  reports today" and passes.
+
+The weekly path runs `check_weekly_freshness()` (36h window; no earnings-date
+check) because it enriches its picks from the same snapshot.
+
+On abort, `FreshnessGateError` is raised. The cron should call the wrapper,
+**not** `render_email` directly, so the abort fires an operator push instead of
+emailing a stale briefing:
+
+```bash
+cd /home/user/workspace/watchlist-app
+python3 -m automation.jobs.send_briefing --mode daily --output /tmp/daily_email_body.txt
+rc=$?
+if [ "$rc" -eq 5 ]; then echo "ABORT: freshness gate (push fired)"; exit 0; fi
+if [ ! -s /tmp/daily_email_body.txt ]; then echo "ABORT: empty body" >&2; exit 1; fi
+# ...existing lock-file gate + single send_email call...
+```
+
+`send_briefing.py` exit codes: `0` ok, `2` input unreadable, `3` missing key,
+`4` output unwritable, `5` freshness gate aborted (push fired via
+`alert_briefing_skipped`, alert file written under
+`cron_tracking/{daily,weekly}_briefing/freshness_alert_<date>.txt`), `6`
+unexpected. Pass `--no-freshness-gate` for ad-hoc renders of a known-stale
+snapshot — the cron must **never** pass it.

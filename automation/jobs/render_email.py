@@ -32,6 +32,21 @@ GITHUB_PAGES_LINK = "https://wtlittle.github.io/signalai/"
 
 NA = "n/a"
 
+# Freshness gate: the daily briefing must never ship a stale snapshot silently.
+# On 2026-06-11 the daily_refresh cron crashed (silent OOM) and the renderer
+# happily emailed the prior day's snapshot stamped with the wrong date. The gate
+# below aborts the send when the snapshot is too old or the "earnings today"
+# tickers carry a date other than the actual send date.
+DAILY_SNAPSHOT_MAX_AGE_HOURS = 4.0
+FRESHNESS_ALERT_DIR = "/home/user/workspace/cron_tracking/daily_briefing"
+
+# The weekly briefing enriches its picks from the same data-snapshot.json. It
+# runs on a weekly cadence so it tolerates a wider window than the daily, but a
+# multi-day-old snapshot still means the pick prices/quotes are stale and must
+# not ship silently.
+WEEKLY_SNAPSHOT_MAX_AGE_HOURS = 36.0
+WEEKLY_FRESHNESS_ALERT_DIR = "/home/user/workspace/cron_tracking/weekly_briefing"
+
 
 # --------------------------------------------------------------------------- #
 # Small helpers
@@ -585,6 +600,145 @@ def render_weekly(data):
 # --------------------------------------------------------------------------- #
 # Daily mode
 # --------------------------------------------------------------------------- #
+def _today_et():
+    """The actual send date as YYYY-MM-DD in US Eastern.
+
+    This is the date the email is being composed/sent -- NOT the snapshot's
+    ``generated`` timestamp. The two diverge exactly when the snapshot is stale,
+    which is the bug the freshness gate exists to catch.
+    """
+    now = datetime.now(timezone.utc)
+    try:
+        from zoneinfo import ZoneInfo
+        now = now.astimezone(ZoneInfo("America/New_York"))
+    except Exception:
+        pass
+    return now.strftime("%Y-%m-%d")
+
+
+class FreshnessGateError(Exception):
+    """Raised when the daily briefing must NOT ship because its data is stale.
+
+    Carries the structured detail an operator alert needs: a short ``reason``,
+    the snapshot age in hours (when known), and the send date. The cron handler
+    catches this, writes the freshness_alert file, and fires a push instead of
+    emailing a stale briefing.
+    """
+
+    def __init__(self, reason, *, hours_stale=None, send_date=None):
+        super().__init__(reason)
+        self.reason = reason
+        self.hours_stale = hours_stale
+        self.send_date = send_date
+
+
+def _snapshot_age_hours(data_dir):
+    """Age in hours of data-snapshot.json by mtime, or None if it is missing."""
+    path = os.path.join(data_dir, "data-snapshot.json")
+    try:
+        mtime = os.path.getmtime(path)
+    except OSError:
+        return None
+    age_s = datetime.now(timezone.utc).timestamp() - mtime
+    return age_s / 3600.0
+
+
+def _earnings_today_dates(calendar):
+    """The distinct date prefixes carried by today's earnings rows.
+
+    Returns the set of YYYY-MM-DD strings found on every pre/post earnings row.
+    Used to confirm the calendar was refreshed for the current send date rather
+    than carrying yesterday's reporters forward.
+    """
+    dates = set()
+    if not calendar:
+        return dates
+    for bucket in ("pre_earnings", "post_earnings"):
+        for e in calendar.get(bucket) or []:
+            edate = _first(e, "date", "earnings_date")
+            if edate:
+                dates.add(str(edate)[:10])
+    return dates
+
+
+def write_freshness_alert(reason, *, send_date, hours_stale=None, alert_dir=None):
+    """Persist a freshness-gate abort so the cron handler can alert on it.
+
+    Writes ``freshness_alert_<send_date>.txt`` into ``alert_dir`` (default
+    FRESHNESS_ALERT_DIR, the daily location). Never raises -- a failure to write
+    the breadcrumb must not mask the original gate decision. Returns the path
+    written, or None on failure.
+    """
+    alert_dir = alert_dir or FRESHNESS_ALERT_DIR
+    try:
+        os.makedirs(alert_dir, exist_ok=True)
+        path = os.path.join(alert_dir, f"freshness_alert_{send_date}.txt")
+        lines = [
+            f"send_date={send_date}",
+            f"reason={reason}",
+        ]
+        if hours_stale is not None:
+            lines.append(f"hours_stale={hours_stale:.1f}")
+        lines.append(f"written_at={datetime.now(timezone.utc).isoformat()}")
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write("\n".join(lines) + "\n")
+        return path
+    except Exception:
+        return None
+
+
+def check_daily_freshness(data_dir, *, send_date=None):
+    """Raise FreshnessGateError if the daily snapshot is too old or misdated.
+
+    Two independent checks, either of which aborts the send:
+      1. data-snapshot.json mtime older than DAILY_SNAPSHOT_MAX_AGE_HOURS.
+      2. The "earnings today" calendar rows carry a date other than the send
+         date (a stale-calendar tell: yesterday's reporters carried forward).
+
+    Check 2 only fires when the calendar has earnings rows at all -- an empty
+    calendar is a legitimate "nothing reports today" state, not staleness.
+    """
+    send_date = send_date or _today_et()
+
+    age = _snapshot_age_hours(data_dir)
+    if age is None:
+        raise FreshnessGateError(
+            "data-snapshot.json is missing", send_date=send_date)
+    if age > DAILY_SNAPSHOT_MAX_AGE_HOURS:
+        raise FreshnessGateError(
+            f"data-snapshot.json is {age:.1f}h old "
+            f"(max {DAILY_SNAPSHOT_MAX_AGE_HOURS:.0f}h)",
+            hours_stale=age, send_date=send_date)
+
+    calendar = _load_json(os.path.join(data_dir, "earnings_calendar.json"))
+    cal_dates = _earnings_today_dates(calendar)
+    if cal_dates and send_date not in cal_dates:
+        raise FreshnessGateError(
+            "earnings_calendar.json carries no rows dated for the send date "
+            f"{send_date} (found {sorted(cal_dates)}) -- calendar is stale",
+            hours_stale=age, send_date=send_date)
+
+
+def check_weekly_freshness(data_dir=CANONICAL_DIR, *, send_date=None):
+    """Raise FreshnessGateError if the snapshot backing weekly picks is stale.
+
+    The weekly renderer enriches its value/momentum picks from the same
+    data-snapshot.json the daily uses. A multi-day-old snapshot means stale pick
+    prices, so we gate on WEEKLY_SNAPSHOT_MAX_AGE_HOURS. There is no earnings
+    date check here (weekly carries no "earnings today" section).
+    """
+    send_date = send_date or _today_et()
+    age = _snapshot_age_hours(data_dir)
+    if age is None:
+        raise FreshnessGateError(
+            "data-snapshot.json is missing", send_date=send_date)
+    if age > WEEKLY_SNAPSHOT_MAX_AGE_HOURS:
+        raise FreshnessGateError(
+            f"data-snapshot.json is {age:.1f}h old "
+            f"(max {WEEKLY_SNAPSHOT_MAX_AGE_HOURS:.0f}h)",
+            hours_stale=age, send_date=send_date)
+
+
 def _format_et(iso_ts):
     """Format an ISO timestamp as a YYYY-MM-DD date string in US Eastern.
 
@@ -1281,8 +1435,18 @@ def _render_today_events(payload, today, now_utc=None):
     return lines
 
 
-def render_daily(data_dir):
-    """Render the full daily briefing body as plain text from canonical paths."""
+def render_daily(data_dir, *, enforce_freshness=True):
+    """Render the full daily briefing body as plain text from canonical paths.
+
+    When ``enforce_freshness`` is True (the default, and the path the cron
+    takes), the freshness gate runs first and raises FreshnessGateError when the
+    snapshot is stale or misdated -- the caller must catch it and alert rather
+    than send. Set False only for ad-hoc renders of a known-stale snapshot.
+    """
+    send_date = _today_et()
+    if enforce_freshness:
+        check_daily_freshness(data_dir, send_date=send_date)
+
     snapshot = _load_json(os.path.join(data_dir, "data-snapshot.json")) or {}
     calendar = _load_json(os.path.join(data_dir, "earnings_calendar.json"))
     intel = _load_json(os.path.join(data_dir, "earnings_intel.json"))
@@ -1292,7 +1456,9 @@ def render_daily(data_dir):
 
     quotes = snapshot.get("quotes") or {}
     indices = (macro or {}).get("indices") if isinstance(macro, dict) else {}
-    today = _format_et(snapshot.get("generated"))  # YYYY-MM-DD in ET
+    # The title/date MUST reflect the actual send date, not the snapshot's
+    # generated stamp (which would silently mislabel a stale snapshot).
+    today = send_date
 
     out = []
     out.append(f"SignalAI Daily Briefing — {today}")
@@ -1329,6 +1495,9 @@ def main(argv=None):
     parser.add_argument("--output", required=True, help="Output text file path")
     parser.add_argument("--data-dir", default=CANONICAL_DIR,
                         help="Canonical data dir for daily mode")
+    parser.add_argument("--no-freshness-gate", action="store_true",
+                        help="Render daily even if the snapshot is stale "
+                             "(ad-hoc use only; the cron must NOT pass this)")
     args = parser.parse_args(argv)
 
     if args.mode in ("weekly", "weekly_html"):
@@ -1344,9 +1513,34 @@ def main(argv=None):
                 + ", ".join(missing) + "\n"
             )
             return 3
+        if not args.no_freshness_gate:
+            try:
+                check_weekly_freshness(args.data_dir)
+            except FreshnessGateError as exc:
+                path = write_freshness_alert(
+                    exc.reason, send_date=exc.send_date,
+                    hours_stale=exc.hours_stale,
+                    alert_dir=WEEKLY_FRESHNESS_ALERT_DIR)
+                sys.stderr.write(
+                    "FRESHNESS GATE: weekly briefing send aborted -- "
+                    f"{exc.reason}\n")
+                if path:
+                    sys.stderr.write(f"  wrote freshness alert: {path}\n")
+                return 5
         body = render_weekly_html(data) if args.mode == "weekly_html" else render_weekly(data)
     else:  # daily
-        body = render_daily(args.data_dir)
+        try:
+            body = render_daily(args.data_dir,
+                                enforce_freshness=not args.no_freshness_gate)
+        except FreshnessGateError as exc:
+            path = write_freshness_alert(
+                exc.reason, send_date=exc.send_date, hours_stale=exc.hours_stale)
+            sys.stderr.write(
+                "FRESHNESS GATE: daily briefing send aborted -- "
+                f"{exc.reason}\n")
+            if path:
+                sys.stderr.write(f"  wrote freshness alert: {path}\n")
+            return 5
 
     try:
         with open(args.output, "w", encoding="utf-8") as fh:
