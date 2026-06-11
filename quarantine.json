@@ -108,5 +108,35 @@
       ],
       "updated_at": "2026-06-10T11:36:57.619645+00:00"
     }
-  }
+  },
+  "drilldown_failures": [
+    {
+      "ticker": "NET",
+      "stage": "model_call",
+      "reason": "sonar-deep-research HTML truncated before </html> (len=77909 chars, completion=19467 tok < DRILLDOWN_MAX_TOKENS=48000, reasoning=170549 tok). Upstream Perplexity deep-research truncation bug: output is cut regardless of max_tokens. Raising 32k->48k did not help. Existing note left untouched; not published.",
+      "attempts": 2,
+      "ts": "2026-06-11T13:49:27.087325+00:00"
+    },
+    {
+      "ticker": "NVDA",
+      "stage": "model_call",
+      "reason": "sonar-deep-research HTML truncated before </html> (len=67393 chars, completion=17021 tok < DRILLDOWN_MAX_TOKENS=48000, reasoning=163970 tok). Upstream Perplexity deep-research truncation bug: output is cut regardless of max_tokens. Raising 32k->48k did not help. Existing note left untouched; not published.",
+      "attempts": 1,
+      "ts": "2026-06-11T13:49:27.087325+00:00"
+    },
+    {
+      "ticker": "RBRK",
+      "stage": "model_call",
+      "reason": "sonar-deep-research HTML truncated before </html> (len=73655 chars, completion=17833 tok < DRILLDOWN_MAX_TOKENS=48000, reasoning=0 tok). Upstream Perplexity deep-research truncation bug: output is cut regardless of max_tokens. Raising 32k->48k did not help. Existing note left untouched; not published.",
+      "attempts": 1,
+      "ts": "2026-06-11T13:49:27.087325+00:00"
+    },
+    {
+      "ticker": "ORCL",
+      "stage": "model_call",
+      "reason": "sonar-deep-research HTML truncated before </html> (len=69875 chars, completion=17478 tok < DRILLDOWN_MAX_TOKENS=48000, reasoning=145728 tok). Upstream Perplexity deep-research truncation bug: output is cut regardless of max_tokens. Raising 32k->48k did not help. Existing note left untouched; not published.",
+      "attempts": 1,
+      "ts": "2026-06-11T13:49:27.087325+00:00"
+    }
+  ]
 }
