@@ -66,6 +66,50 @@ const WB_RETURN_FIELDS = {
   '3M': ['three_month_perf', 'perf_3m', 'three_month'],
 };
 
+// ARR-led cohort for the momentum pill "ARR Gr" (only shown for these tickers)
+const WB_ARR_COHORT = new Set([
+  'RBRK','NET','CRWD','ZS','OKTA','DDOG','MDB','SNOW','ESTC','S','NTNX','BILL',
+  'GTLB','FROG','CFLT','DT','PD','BOX','ASAN','MNDY','SMAR','ZUO','AI','PATH',
+  'U','RNG','FIVN','TWLO','FSLY','NCNO','BSY','AVPT','DOMO',
+]);
+
+// Format a raw numeric-or-string field into a signed % or em-dash (never "N/A").
+function _wbFmtPct(raw, { decimals = 1 } = {}) {
+  if (raw == null || raw === '' || raw === 'N/A' || raw === 'n/a') return '—';
+  const num = parseFloat(String(raw).replace('%','').replace('+','').trim());
+  if (!isFinite(num)) return '—';
+  return (num >= 0 ? '+' : '') + num.toFixed(decimals) + '%';
+}
+
+// Format a raw multiple / ratio string or number, or em-dash.
+function _wbFmtMultiple(raw, { suffix = 'x', decimals = 1 } = {}) {
+  if (raw == null || raw === '' || raw === 'N/A' || raw === 'n/a') return '—';
+  const num = parseFloat(String(raw).replace('x','').trim());
+  if (!isFinite(num)) return raw.length < 20 ? String(raw) : '—';
+  return num.toFixed(decimals) + suffix;
+}
+
+// Compute % off 52-week high from a pick object (-XX.X% or em-dash)
+function _wbOffHigh(obj) {
+  // Value picks carry pct_off_high; try to compute for momentum picks from price + high
+  const stored = obj.pct_off_high || obj.off_high_pct;
+  if (stored) return stored;
+  const price = parseFloat(obj.current_price || obj.price);
+  const high  = parseFloat(obj['52_week_high'] || obj['fifty_two_week_high']);
+  if (!isFinite(price) || !isFinite(high) || high <= 0) return '—';
+  const pct = ((price - high) / high) * 100;
+  return pct.toFixed(1) + '%';
+}
+
+// Build a canonical wb-stat pill: label + value, coloring positive/negative pct.
+function _wbPill(label, value, { extraClass = '', title = '' } = {}) {
+  const isNum = typeof value === 'string' && value !== '—';
+  const isNeg = isNum && value.startsWith('-');
+  const cls = isNum ? (isNeg ? ' negative' : ' positive') : '';
+  const titleAttr = title ? ` title="${_wbEsc(title)}"` : '';
+  return `<span class="wb-stat${cls}${extraClass ? ' ' + extraClass : ''}"${titleAttr}>${_wbEsc(label)}: ${_wbEsc(value)}</span>`;
+}
+
 let weeklyBriefingData = null;
 let weeklyBriefingArchiveIndex = null; // array of { week_ending, path }
 let weeklyBriefingInFlight = null;
@@ -85,7 +129,15 @@ async function loadWeeklyBriefing(path = 'weekly_briefing.json') {
     if (path === 'weekly_briefing.json' && window.SignalSnapshot && window.SignalSnapshot.fetchWithFallback) {
       resp = await window.SignalSnapshot.fetchWithFallback('weekly_briefing.json', { cacheBust: true });
     } else {
-      const url = path + (path.includes('?') ? '&' : '?') + 'v=' + Date.now();
+      // Resolve the archive path against document.baseURI so that relative
+      // paths like 'archive/briefings/weekly_briefing_2026-05-31.json' always
+      // resolve to the correct subpath on GitHub Pages (/signalai/) regardless
+      // of whether the user landed with or without a trailing slash, or via
+      // a hash-navigation that leaves the URL at an unexpected base.
+      const resolvedPath = (typeof document !== 'undefined' && document.baseURI)
+        ? new URL(path, document.baseURI).href
+        : path;
+      const url = resolvedPath + (resolvedPath.includes('?') ? '&' : '?') + 'v=' + Date.now();
       resp = await fetch(url);
     }
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -119,7 +171,7 @@ function renderBriefingSkeletonOverlay() {
 
 // ─── TL;DR synthesis ───
 function synthesizeTldr(d) {
-  // Prefer explicit payload
+  // Prefer explicit payload (written by backfill_tldr.py or the pipeline)
   if (Array.isArray(d.tl_dr) && d.tl_dr.length) {
     return { bullets: d.tl_dr.slice(0, 5), chips: d.tl_dr_chips || [] };
   }
@@ -131,7 +183,8 @@ function synthesizeTldr(d) {
   const chips = [];
   // Handle market_summary as either object (old schema) or string (new schema).
   const ms = (d.market_summary && typeof d.market_summary === 'object') ? d.market_summary : {};
-  const msNarrative = (typeof d.market_summary === 'string') ? d.market_summary : (ms.narrative || '');
+  // msNarrative: prefer market_summary string, fall back to d.narrative (new schema fields)
+  const msNarrative = (typeof d.market_summary === 'string') ? d.market_summary : (ms.narrative || d.narrative || '');
   // index_returns may be top-level (new schema) or nested under market_summary (old schema).
   const ir = d.index_returns || ms.index_returns || {};
   const sp = ir.sp500_weekly || ir['S&P 500'] || ms.sp500_weekly
@@ -162,6 +215,18 @@ function synthesizeTldr(d) {
     const m = d.momentum_picks[0];
     const w1 = _wbReturnPct(m, WB_RETURN_FIELDS['1W']);
     bullets.push(`Momentum leader: ${m.ticker}${w1 ? ' ' + w1 : ''} on the week.`);
+  }
+  // Fallback: if still under 3 bullets, derive from first sentence of narrative
+  if (bullets.length < 3 && msNarrative) {
+    const stripped = msNarrative.replace(/^#+\s.*$/mg, '').replace(/\[\d+\]/g, '').trim();
+    const firstSentence = (stripped.match(/[^.!?]+[.!?]/) || [stripped.slice(0, 200)])[0].trim();
+    if (firstSentence && firstSentence.length > 20) {
+      bullets.push(firstSentence.length > 130 ? firstSentence.slice(0, 127) + '…' : firstSentence);
+    }
+  }
+  // Last resort for fully salvaged weeks
+  if (!bullets.length && d._salvaged) {
+    bullets.push('Limited data this week — see narrative below.');
   }
   // Regime chip
   if (ms.macro_regime) chips.push(ms.macro_regime);
@@ -489,7 +554,8 @@ function renderWeeklyBriefing() {
   const weekEnd = d.week_ending || '';
   // Handle market_summary as either object (old schema) or string (new schema).
   const ms = (d.market_summary && typeof d.market_summary === 'object') ? d.market_summary : {};
-  const msNarrative = (typeof d.market_summary === 'string') ? d.market_summary : (ms.narrative || '');
+  // msNarrative: prefer market_summary string, fall back to d.narrative (new schema)
+  const msNarrative = (typeof d.market_summary === 'string') ? d.market_summary : (ms.narrative || d.narrative || '');
   // index_returns may be top-level (new schema) or nested under market_summary (old schema).
   const ir = d.index_returns || ms.index_returns || {};
 
@@ -585,7 +651,28 @@ function renderWeeklyBriefing() {
     `;
   }
 
-  html += `<div class="wb-narrative">${msNarrative}</div>`;
+  // Market_intel callout: top 2-3 highest-CAGR categories across this week's watchlist (Workstream D)
+  const _miCallout = (() => {
+    const lookup = d.market_intel_lookup;
+    if (!lookup || typeof lookup !== 'object') return '';
+    const items = Object.entries(lookup)
+      .filter(([, mi]) => mi && mi.category_cagr_pct != null)
+      .map(([ticker, mi]) => ({
+        ticker,
+        cagr: parseFloat(mi.category_cagr_pct),
+        src: mi.tam_source_url || '',
+        tam: mi.tam_usd_bn != null ? `$${parseFloat(mi.tam_usd_bn).toFixed(0)}B` : null,
+      }))
+      .filter(x => isFinite(x.cagr))
+      .sort((a, b) => b.cagr - a.cagr)
+      .slice(0, 3);
+    if (!items.length) return '';
+    const text = items.map(x =>
+      `${x.ticker} (${x.cagr.toFixed(1)}% CAGR${x.tam ? ', TAM ' + x.tam : ''}${x.src ? ` — <a href="${_wbEsc(x.src)}" target="_blank" rel="noopener noreferrer" class="wb-mi-source">source</a>` : ''})`
+    ).join('; ');
+    return `<div class="wb-mi-callout">Highest-growth categories on the watchlist this week: ${text}.</div>`;
+  })();
+  html += `<div class="wb-narrative">${_miCallout}${msNarrative}</div>`;
 
   // --- Trends ---
   html += `<div class="wb-section">
@@ -631,10 +718,13 @@ function renderWeeklyBriefing() {
       { label: 'Bull case',       text: v.bull_case || '' },
       _wbBearPart(v),
     ]);
-    const revGrowth = _wbRevGrowth(v);
-    const revGrowthChip = revGrowth
-      ? `<span class="wb-stat ${revGrowth.startsWith('-') ? 'negative' : 'positive'}">Rev Growth: ${_wbEsc(revGrowth)}</span>`
-      : `<span class="wb-stat" title="No revenue history available">Rev Growth: &mdash;</span>`;
+    // VALUE canonical pill set (convention: EV/NTM Rev, NTM Rev Gr, FCF Mgn GAAP, P/E NG, Net Debt/EBITDA)
+    // Missing fields render as em-dash, never "N/A"
+    const vEvNtmRev    = _wbFmtMultiple(v.ev_ntm_rev, { suffix: 'x' });
+    const vNtmRevGr    = _wbFmtPct(v.ntm_rev_growth || _wbRevGrowth(v));
+    const vFcfMgn      = _wbFmtPct(v.fcf_margin_gaap);
+    const vPeNg        = _wbFmtMultiple(v.pe_ng || v.pe_ratio, { suffix: 'x' });
+    const vNetDebt     = _wbFmtMultiple(v.net_debt_ebitda || v.debt_equity, { suffix: 'x' });
     html += `
       <div class="wb-card wb-value-card" id="wb-card-${_wbEsc(v.ticker)}">
         <div class="wb-card-rank">#${i + 1}</div>
@@ -644,11 +734,11 @@ function renderWeeklyBriefing() {
           <span class="wb-card-price">${_wbEsc(v.price || v.current_price || '')}</span>
         </div>
         <div class="wb-card-stats">
-          <span class="wb-stat negative">${_wbEsc(v.off_high_pct || v.pct_off_high || '')} off 52w high</span>
-          <span class="wb-stat">P/E: ${_wbEsc(v.pe_ratio || 'N/A')}</span>
-          <span class="wb-stat">EV/EBITDA: ${_wbEsc(v.ev_ebitda || 'N/A')}</span>
-          ${revGrowthChip}
-          <span class="wb-stat">FCF Yield: ${_wbEsc(v.fcf_yield || 'N/A')}</span>
+          ${_wbPill('EV/NTM Rev', vEvNtmRev, { title: 'EV / NTM Revenue (forward multiple)' })}
+          ${_wbPill('NTM Rev Gr', vNtmRevGr, { title: 'NTM Revenue Growth' })}
+          ${_wbPill('FCF Mgn (GAAP)', vFcfMgn, { title: 'GAAP Free Cash Flow Margin (LTM)' })}
+          ${_wbPill('P/E (NG)', vPeNg, { title: 'Non-GAAP P/E (NTM)' })}
+          ${_wbPill('Net Debt/EBITDA', vNetDebt, { title: 'Net Debt / LTM EBITDA' })}
         </div>
         ${primerHtml}
       </div>`;
@@ -668,16 +758,15 @@ function renderWeeklyBriefing() {
       { label: 'Catalyst',     text: m.catalyst || '' },
       { label: 'Risk / reward', text: m.risk_reward || '' },
     ]);
-    const w1 = _wbReturnPct(m, WB_RETURN_FIELDS['1W']);
-    const m1 = _wbReturnPct(m, WB_RETURN_FIELDS['1M']);
-    const m3 = _wbReturnPct(m, WB_RETURN_FIELDS['3M']);
-    const _retChip = (label, val) => val
-      ? `<span class="wb-stat ${val.startsWith('-') ? 'negative' : 'positive'}">${label}: ${_wbEsc(val)}</span>`
-      : `<span class="wb-stat" title="No price history available">${label}: &mdash;</span>`;
-    const momRevGrowth = _wbRevGrowth(m);
-    const momRevChip = momRevGrowth
-      ? `<span class="wb-stat ${momRevGrowth.startsWith('-') ? 'negative' : 'positive'}">Rev Growth: ${_wbEsc(momRevGrowth)}</span>`
-      : `<span class="wb-stat" title="No revenue history available">Rev Growth: &mdash;</span>`;
+    // MOMENTUM canonical pill set: 1W/1M/3M perf, NTM Rev Gr, ARR Gr (ARR cohort only), Off 52w high
+    const mw1 = _wbReturnPct(m, WB_RETURN_FIELDS['1W']);
+    const mm1 = _wbReturnPct(m, WB_RETURN_FIELDS['1M']);
+    const mm3 = _wbReturnPct(m, WB_RETURN_FIELDS['3M']);
+    const mNtmRevGr  = _wbFmtPct(m.ntm_rev_growth || _wbRevGrowth(m));
+    const mArrGr     = WB_ARR_COHORT.has((m.ticker || '').toUpperCase())
+      ? _wbFmtPct(m.arr_growth)
+      : null; // omit pill entirely for non-ARR tickers
+    const mOffHigh   = _wbOffHigh(m);
     html += `
       <div class="wb-card wb-momentum-card" id="wb-card-${_wbEsc(m.ticker)}">
         <div class="wb-card-rank">#${i + 1}</div>
@@ -687,10 +776,12 @@ function renderWeeklyBriefing() {
           <span class="wb-card-price">${_wbEsc(m.price || m.current_price || '')}</span>
         </div>
         <div class="wb-card-stats">
-          ${_retChip('1W', w1)}
-          ${_retChip('1M', m1)}
-          ${_retChip('3M', m3)}
-          ${momRevChip}
+          ${_wbPill('1W', mw1 || '—', { title: '1-week price return' })}
+          ${_wbPill('1M', mm1 || '—', { title: '1-month price return' })}
+          ${_wbPill('3M', mm3 || '—', { title: '3-month price return' })}
+          ${_wbPill('NTM Rev Gr', mNtmRevGr, { title: 'NTM Revenue Growth' })}
+          ${mArrGr !== null ? _wbPill('ARR Gr', mArrGr, { title: 'Annual Recurring Revenue Growth' }) : ''}
+          ${_wbPill('Off 52w high', mOffHigh, { title: '% below 52-week high' })}
         </div>
         ${primerHtml}
       </div>`;
@@ -842,10 +933,32 @@ function renderWeeklyBriefing() {
     sectorEntries.forEach(([sector, text]) => {
       if (!sector && !text) return;
       const displayText = (typeof text === 'string') ? text : (text && (text.summary || text.detail || JSON.stringify(text))) || '';
+      // Prepend highest-CAGR market_intel category that mentions this sector keyword
+      const miLookup = d.market_intel_lookup;
+      let miPrepend = '';
+      if (miLookup && typeof miLookup === 'object') {
+        const sectorLower = (sector || '').toLowerCase();
+        const matches = Object.entries(miLookup)
+          .filter(([, mi]) => mi && mi.category_cagr_pct != null &&
+            Array.isArray(mi.drivers) && mi.drivers.some(dr =>
+              String(dr).toLowerCase().includes(sectorLower.split(' ')[0])
+            )
+          )
+          .map(([ticker, mi]) => ({ ticker, cagr: parseFloat(mi.category_cagr_pct), src: mi.tam_source_url }))
+          .filter(x => isFinite(x.cagr))
+          .sort((a, b) => b.cagr - a.cagr);
+        if (matches.length) {
+          const top = matches[0];
+          const srcHtml = top.src
+            ? ` <a href="${_wbEsc(top.src)}" target="_blank" rel="noopener noreferrer" class="wb-mi-source">[source]</a>`
+            : '';
+          miPrepend = `<span class="wb-mi-cagr-tag">Category CAGR: ${top.cagr.toFixed(1)}% (${top.ticker})${srcHtml}</span> `;
+        }
+      }
       html += `
         <div class="wb-sector-item">
           <div class="wb-sector-name">${_wbEsc(sector)}</div>
-          <div class="wb-sector-detail">${_wbEsc(displayText)}</div>
+          <div class="wb-sector-detail">${miPrepend}${_wbEsc(displayText)}</div>
         </div>`;
     });
     html += `</div></div>`;
@@ -960,23 +1073,33 @@ function openPrimerDrawer(ticker, kind) {
         { label: 'Risk / reward',  text: p.risk_reward || '' },
       ];
 
-  const dw1 = kind === 'momentum' ? _wbReturnPct(p, WB_RETURN_FIELDS['1W']) : null;
-  const dm1 = kind === 'momentum' ? _wbReturnPct(p, WB_RETURN_FIELDS['1M']) : null;
-  const dm3 = kind === 'momentum' ? _wbReturnPct(p, WB_RETURN_FIELDS['3M']) : null;
-  const dRev = _wbRevGrowth(p);
-  const statChips = [
-    p.current_price || p.price ? `<span class="wb-stat">${_wbEsc(p.current_price || p.price)}</span>` : '',
-    (kind === 'value')
-      ? `<span class="wb-stat negative">${_wbEsc(p.pct_off_high || p.off_high_pct || '')} off 52w high</span>`
-      : '',
-    (kind === 'value' && (p.pe_ratio)) ? `<span class="wb-stat">P/E ${_wbEsc(p.pe_ratio)}</span>` : '',
-    (kind === 'value' && (p.ev_ebitda)) ? `<span class="wb-stat">EV/EBITDA ${_wbEsc(p.ev_ebitda)}</span>` : '',
-    (kind === 'value' && (p.fcf_yield)) ? `<span class="wb-stat">FCF Yld ${_wbEsc(p.fcf_yield)}</span>` : '',
-    dw1 ? `<span class="wb-stat">1W ${_wbEsc(dw1)}</span>` : '',
-    dm1 ? `<span class="wb-stat">1M ${_wbEsc(dm1)}</span>` : '',
-    dm3 ? `<span class="wb-stat">3M ${_wbEsc(dm3)}</span>` : '',
-    dRev ? `<span class="wb-stat">Rev ${_wbEsc(dRev)}</span>` : '',
-  ].filter(Boolean).join('');
+  // Drawer stat chips — canonical pill sets matching card convention
+  const statChips = (() => {
+    const chips = [];
+    if (p.current_price || p.price) chips.push(`<span class="wb-stat">${_wbEsc(p.current_price || p.price)}</span>`);
+    if (kind === 'value') {
+      // VALUE canonical pills: EV/NTM Rev, NTM Rev Gr, FCF Mgn GAAP, P/E NG, Net Debt/EBITDA
+      chips.push(_wbPill('EV/NTM Rev',      _wbFmtMultiple(p.ev_ntm_rev, { suffix: 'x' }),      { title: 'EV / NTM Revenue' }));
+      chips.push(_wbPill('NTM Rev Gr',      _wbFmtPct(p.ntm_rev_growth || _wbRevGrowth(p)),      { title: 'NTM Revenue Growth' }));
+      chips.push(_wbPill('FCF Mgn (GAAP)',  _wbFmtPct(p.fcf_margin_gaap),                        { title: 'GAAP FCF Margin (LTM)' }));
+      chips.push(_wbPill('P/E (NG)',        _wbFmtMultiple(p.pe_ng || p.pe_ratio, { suffix: 'x' }), { title: 'Non-GAAP P/E (NTM)' }));
+      chips.push(_wbPill('Net Debt/EBITDA', _wbFmtMultiple(p.net_debt_ebitda || p.debt_equity, { suffix: 'x' }), { title: 'Net Debt / LTM EBITDA' }));
+    } else {
+      // MOMENTUM canonical pills: 1W/1M/3M, NTM Rev Gr, ARR Gr (cohort), Off 52w high
+      const dw1 = _wbReturnPct(p, WB_RETURN_FIELDS['1W']);
+      const dm1 = _wbReturnPct(p, WB_RETURN_FIELDS['1M']);
+      const dm3 = _wbReturnPct(p, WB_RETURN_FIELDS['3M']);
+      chips.push(_wbPill('1W', dw1 || '—', { title: '1-week return' }));
+      chips.push(_wbPill('1M', dm1 || '—', { title: '1-month return' }));
+      chips.push(_wbPill('3M', dm3 || '—', { title: '3-month return' }));
+      chips.push(_wbPill('NTM Rev Gr', _wbFmtPct(p.ntm_rev_growth || _wbRevGrowth(p)), { title: 'NTM Revenue Growth' }));
+      if (WB_ARR_COHORT.has((p.ticker || '').toUpperCase())) {
+        chips.push(_wbPill('ARR Gr', _wbFmtPct(p.arr_growth), { title: 'Annual Recurring Revenue Growth' }));
+      }
+      chips.push(_wbPill('Off 52w high', _wbOffHigh(p), { title: '% below 52-week high' }));
+    }
+    return chips.join('');
+  })();
 
   drawer.innerHTML = `
     <header class="wb-drawer-header">
@@ -1000,6 +1123,34 @@ function openPrimerDrawer(ticker, kind) {
           ${pt.text ? _renderFullPrimerBlock(pt.text) : `<p class="wb-primer-placeholder">${_wbEsc(pt.placeholder)}</p>`}
         </section>
       `).join('')}
+      ${(() => {
+        // Industry context block from market_intel_lookup (Workstream D)
+        const mi = weeklyBriefingData && weeklyBriefingData.market_intel_lookup
+          && weeklyBriefingData.market_intel_lookup[(p.ticker || '').toUpperCase()];
+        if (!mi) return '';
+        const tamStr = mi.tam_usd_bn != null ? `$${parseFloat(mi.tam_usd_bn).toFixed(0)}B` : null;
+        const cagrStr = mi.category_cagr_pct != null ? `${parseFloat(mi.category_cagr_pct).toFixed(1)}%` : null;
+        const competitors = Array.isArray(mi.competitors)
+          ? mi.competitors.slice(0, 3).map(c => typeof c === 'string' ? c : (c.name || '')).filter(Boolean)
+          : [];
+        const drivers = Array.isArray(mi.drivers)
+          ? mi.drivers.slice(0, 2).map(d => typeof d === 'string' ? d : String(d)).filter(Boolean)
+          : [];
+        if (!tamStr && !cagrStr && !competitors.length) return '';
+        const tamLink = mi.tam_source_url
+          ? `<a href="${_wbEsc(mi.tam_source_url)}" target="_blank" rel="noopener noreferrer" class="wb-mi-source">[source]</a>`
+          : '';
+        return `
+          <section class="wb-drawer-section wb-drawer-section--industry">
+            <h3 class="wb-drawer-sectionhead">Industry context</h3>
+            <div class="wb-mi-block">
+              ${tamStr ? `<div class="wb-mi-row"><span class="wb-mi-label">TAM:</span> <span class="wb-mi-val">${_wbEsc(tamStr)}</span>${tamLink}</div>` : ''}
+              ${cagrStr ? `<div class="wb-mi-row"><span class="wb-mi-label">Category CAGR:</span> <span class="wb-mi-val">${_wbEsc(cagrStr)}</span></div>` : ''}
+              ${competitors.length ? `<div class="wb-mi-row"><span class="wb-mi-label">Top competitors:</span> <span class="wb-mi-val">${competitors.map(c => _wbEsc(c)).join(', ')}</span></div>` : ''}
+              ${drivers.length ? `<div class="wb-mi-row"><span class="wb-mi-label">Key drivers:</span> <span class="wb-mi-val">${_wbEsc(drivers[0])}</span></div>` : ''}
+            </div>
+          </section>`;
+      })()}
     </div>
   `;
 
@@ -1376,7 +1527,8 @@ async function exportBriefingPDF() {
     // ── MACRO OVERVIEW ──
     // Handle market_summary as either object (old schema) or string (new schema).
     const ms = (d.market_summary && typeof d.market_summary === 'object') ? d.market_summary : {};
-    const msNarrative = (typeof d.market_summary === 'string') ? d.market_summary : (ms.narrative || '');
+    // msNarrative: prefer market_summary string, fall back to d.narrative (new schema)
+    const msNarrative = (typeof d.market_summary === 'string') ? d.market_summary : (ms.narrative || d.narrative || '');
     const ir = d.index_returns || ms.index_returns || {};
     drawSectionHeader('Macro Overview', ACCENT_GREEN);
     const sp = ms.sp500_weekly || ir.sp500_weekly || ir['S&P 500'] || '—';

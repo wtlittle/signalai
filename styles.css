@@ -9387,3 +9387,34 @@ mark.search-highlight {
 .wb-sector-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border, #1e2433); border-radius: 6px; padding: 12px; }
 .wb-sector-name { font-size: 0.8rem; font-weight: 700; color: var(--accent, #6366f1); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
 .wb-sector-detail { font-size: 0.8rem; color: var(--text-muted, #9ca3af); line-height: 1.55; }
+
+/* ===== Weekly Briefing: Market Intel (Workstream D) ===== */
+.wb-mi-block { display: flex; flex-direction: column; gap: 6px; }
+.wb-mi-row { font-size: 0.8rem; line-height: 1.5; color: var(--text-muted, #9ca3af); }
+.wb-mi-label { font-weight: 600; color: var(--text, #e5e7eb); margin-right: 4px; }
+.wb-mi-val { color: var(--text, #e5e7eb); }
+.wb-mi-source { font-size: 0.72rem; color: var(--accent, #6366f1); margin-left: 4px; opacity: 0.75; text-decoration: none; }
+.wb-mi-source:hover { opacity: 1; text-decoration: underline; }
+.wb-mi-callout {
+  font-size: 0.8rem;
+  background: rgba(99,102,241,0.08);
+  border-left: 3px solid var(--accent, #6366f1);
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+  color: var(--text-muted, #9ca3af);
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+.wb-mi-callout a { color: var(--accent, #6366f1); text-decoration: none; }
+.wb-mi-callout a:hover { text-decoration: underline; }
+.wb-mi-cagr-tag {
+  font-size: 0.72rem;
+  background: rgba(99,102,241,0.12);
+  color: #a5b4fc;
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+.wb-mi-cagr-tag a { color: #a5b4fc; text-decoration: none; }
+.wb-mi-cagr-tag a:hover { text-decoration: underline; }
+.wb-drawer-section--industry { border-top: 1px solid rgba(255,255,255,0.06); margin-top: 8px; }

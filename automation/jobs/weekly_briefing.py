@@ -603,6 +603,8 @@ def compile_briefing(value, momentum, trends) -> dict:
         "sector_summary": trends_data.get("sector_summary", {}),
         # Deep narrative
         "narrative": trends_data.get("narrative", ""),
+        # market_intel_lookup: populated by run() after compile; placeholder here
+        "market_intel_lookup": {},
     }
 
 
@@ -654,6 +656,40 @@ def run(output_path: Path | None = None) -> dict:
                 print(f"  [RETRY] No improvement ({before} -> {after}); keeping original.")
         except Exception as exc:
             print(f"  [RETRY] failed: {exc}; keeping original briefing.")
+
+    # --- Inject market_intel_lookup (per-ticker TAM/CAGR/competitors from Supabase) ---
+    try:
+        from automation.shared.supabase_client import fetch_rows as _fetch_rows
+        mi_rows = _fetch_rows("market_intel_ticker", params={"limit": "500"})
+        mi_map = {r["ticker"]: r for r in mi_rows if "ticker" in r}
+        all_tickers = set()
+        for pick in briefing.get("value_picks", []) + briefing.get("momentum_picks", []):
+            t = (pick.get("ticker") or "").strip().upper()
+            if t:
+                all_tickers.add(t)
+        briefing["market_intel_lookup"] = {
+            t: {
+                "tam_usd_bn": mi_map[t].get("tam_usd_bn"),
+                "tam_source_url": mi_map[t].get("tam_source_url"),
+                "category_cagr_pct": mi_map[t].get("category_cagr_pct"),
+                "drivers": mi_map[t].get("drivers") or [],
+                "competitors": mi_map[t].get("competitors") or [],
+            }
+            for t in all_tickers if t in mi_map
+        }
+        found = len(briefing["market_intel_lookup"])
+        print(f"  market_intel_lookup: {found}/{len(all_tickers)} tickers enriched")
+    except Exception as exc:
+        print(f"  [market_intel_lookup] failed: {exc}; leaving empty dict")
+        briefing.setdefault("market_intel_lookup", {})
+
+    # --- Inject deterministic tl_dr field (removes client-side synthesis dependence) ---
+    try:
+        from automation.jobs.backfill_tldr import inject_tl_dr as _inject_tl_dr
+        briefing = _inject_tl_dr(briefing, force=True)
+        print(f"  tl_dr: {len(briefing.get('tl_dr', []))} bullets")
+    except Exception as exc:
+        print(f"  [tl_dr] failed: {exc}")
 
     write_json(out, briefing)
     print(f"  Saved to {out}")
