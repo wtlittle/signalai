@@ -44,6 +44,10 @@ _SECTION_MINIMUMS = {
     "sector_summary": 8,
 }
 
+# String values that should be treated as "missing" and collapsed to None in
+# pick fields, so a literal "null"/"N/A" never reaches the rendered card.
+_PICK_SENTINELS = {"null", "n/a", "na", "nan", "none", "missing", "-", "--", ""}
+
 
 # --- Structured-output schema for the trends call (advisory for
 # sonar-deep-research, but it meaningfully reduces drift to off-spec shapes).
@@ -404,6 +408,12 @@ def _normalize_value_pick(v: dict) -> dict:
     We write BOTH so the renderer handles either schema without breaking.
     """
     out = dict(v)
+    # Collapse string sentinels ("null", "N/A", "-", ...) to None up front so a
+    # literal "null" never persists in any field (e.g. fcf_yield, pct_off_high),
+    # which the no-fabrication rule forbids. Missing -> null -> em-dash.
+    for f, val in list(out.items()):
+        if isinstance(val, str) and val.strip().lower() in _PICK_SENTINELS:
+            out[f] = None
     # price aliases
     cp = out.get("current_price") or out.get("price")
     out["current_price"] = cp
@@ -504,6 +514,122 @@ def _log_section_quality(briefing: dict, context: dict | None, stage: str) -> di
 
 def _failing_sections(report: dict) -> list[str]:
     return [s for s, r in report.items() if not r["ok"]]
+
+
+# Sector-key slugs the renderer (and the gold 5/22 briefing) use for the
+# sector_summary object. Maps the eight canonical context buckets to the slug
+# the front-end expects so a deterministic backfill renders identically to an
+# LLM-authored summary.
+_SECTOR_SLUG = {
+    "Software Infrastructure": "software_infrastructure",
+    "Application Software": "application_software",
+    "Cybersecurity": "cybersecurity",
+    "Semiconductors": "semiconductors",
+    "AdTech/Digital Media": "adtech_digital_media",
+    "Fintech": "fintech",
+    "Consumer": "consumer",
+    "Energy/Industrials": "energy_industrials",
+}
+
+
+def _fmt_signed(v) -> str | None:
+    """Format a numeric move as a signed percent string, or None if not numeric."""
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    return f"{'+' if f >= 0 else ''}{f:.1f}%"
+
+
+def _backfill_volume_sections(briefing: dict, context: dict) -> None:
+    """Fill empty/thin volume sections from real local price + calendar data.
+
+    sonar-deep-research reliably writes the picks and narrative but frequently
+    returns EMPTY watchlist_updates / sector_summary / upcoming_catalysts (it
+    burns its budget on reasoning and punts on the high-cardinality lists). That
+    is the 5/31 + 6/07 regression. The grounded context blocks in
+    weekly_briefing_context.py already hold the real numbers, so when a section
+    comes back below its minimum we synthesise it deterministically from that
+    real data. This is NOT fabrication: every number is a measured 1W/1M move or
+    a real calendar date; descriptions state only what the number shows.
+    """
+    movers = context.get("movers") or []
+    buckets = context.get("buckets") or {}
+    earnings = context.get("earnings") or []
+
+    # 1. watchlist_updates — one factual entry per material mover.
+    if len(briefing.get("watchlist_updates") or []) < (context.get("min_watchlist") or 0):
+        updates = []
+        for m in movers:
+            w = _fmt_signed(m.get("change1w"))
+            mo = _fmt_signed(m.get("change1m"))
+            if w is None:
+                continue
+            name = m.get("name") or m.get("ticker")
+            bits = [f"{name} moved {w} on the week"]
+            if mo is not None:
+                bits.append(f"{mo} over 30 days")
+            headline = ", ".join(bits) + "."
+            updates.append({
+                "ticker": m.get("ticker"),
+                "weekly_change_pct": m.get("change1w"),
+                "thirty_day_change_pct": (
+                    m.get("change1m") if isinstance(m.get("change1m"), (int, float)) else None
+                ),
+                "headline": headline,
+                "summary": headline,
+                "tags": [m.get("sector")] if m.get("sector") else [],
+            })
+        if updates:
+            briefing["watchlist_updates"] = updates
+            briefing["watchlist_movers"] = [
+                {
+                    "ticker": u["ticker"],
+                    "weekly_move": _fmt_signed(u["weekly_change_pct"]) or "—",
+                    "thirty_day_move": _fmt_signed(u["thirty_day_change_pct"]) or "—",
+                    "catalyst": "",
+                    "detail": u["headline"],
+                }
+                for u in updates
+            ]
+            print(f"  [backfill] watchlist_updates from {len(updates)} computed movers")
+
+    # 2. sector_summary — one factual line per canonical subsector bucket.
+    ss = briefing.get("sector_summary")
+    ss_count = len(ss) if isinstance(ss, (dict, list)) else 0
+    if ss_count < (context.get("min_sectors") or 0):
+        summary = {}
+        for canon, members in buckets.items():
+            slug = _SECTOR_SLUG.get(canon)
+            if not slug or not members:
+                continue
+            top = members[:6]
+            leaders = ", ".join(
+                f"{x['ticker']} {_fmt_signed(x.get('change1w')) or 'flat'}" for x in top
+            )
+            summary[slug] = (
+                f"{canon}: {len(members)} watchlist names tracked this week. "
+                f"Largest moves — {leaders}."
+            )
+        if summary:
+            briefing["sector_summary"] = summary
+            print(f"  [backfill] sector_summary from {len(summary)} subsector buckets")
+
+    # 3. upcoming_catalysts — real watchlist earnings inside the horizon. We do
+    # NOT pad to the minimum with invented events; an honest short list beats a
+    # fabricated one. Only fills when the LLM returned nothing.
+    if not (briefing.get("upcoming_catalysts") or []) and earnings:
+        briefing["upcoming_catalysts"] = [
+            {
+                "date": e.get("date"),
+                "ticker": e.get("ticker"),
+                "event": f"{e.get('company') or e.get('ticker')} earnings ({e.get('timing') or 'TBD'})",
+                "importance": "Medium",
+                "context": "Scheduled earnings release on the watchlist calendar.",
+            }
+            for e in earnings
+        ]
+        print(f"  [backfill] upcoming_catalysts from {len(earnings)} calendar events")
 
 
 def compile_briefing(value, momentum, trends) -> dict:
@@ -656,6 +782,13 @@ def run(output_path: Path | None = None) -> dict:
                 print(f"  [RETRY] No improvement ({before} -> {after}); keeping original.")
         except Exception as exc:
             print(f"  [RETRY] failed: {exc}; keeping original briefing.")
+
+    # --- Deterministic backfill of volume sections from real local data ---
+    # Guarantees sector_summary / watchlist_updates / upcoming_catalysts are
+    # populated from measured price + calendar data even when deep-research
+    # returned empty arrays (the 5/31 + 6/07 thinness regression). No fabrication.
+    _backfill_volume_sections(briefing, context)
+    _log_section_quality(briefing, context, stage="post-backfill")
 
     # --- Inject market_intel_lookup (per-ticker TAM/CAGR/competitors from Supabase) ---
     try:

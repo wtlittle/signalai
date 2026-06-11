@@ -41,6 +41,44 @@ def _fmt_pct(raw) -> str | None:
     return ("+" if num >= 0 else "") + f"{num:.1f}%"
 
 
+_MISSING_TOKENS = {"", "na", "n/a", "nan", "null", "none", "-", "--"}
+
+
+def _clean(raw) -> str:
+    """Return a trimmed display string, or '' for missing/sentinel values."""
+    if raw is None:
+        return ""
+    s = str(raw).strip()
+    return "" if s.lower() in _MISSING_TOKENS else s
+
+
+def _narrative_sentences(text: str, limit: int, max_len: int = 150) -> list[str]:
+    """Extract up to `limit` distinct substantive sentences from narrative prose.
+
+    Used to top tl_dr up to the 5-bullet target when trends/risks come back
+    empty. These are real sentences lifted verbatim from the generated
+    narrative — no fabrication.
+    """
+    if not text:
+        return []
+    cleaned = re.sub(r"^#+\s+.*$", "", text, flags=re.MULTILINE)
+    cleaned = re.sub(r"\[\d+\]", "", cleaned)
+    cleaned = re.sub(r"[*_`>#]+", "", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    out: list[str] = []
+    seen: set[str] = set()
+    for m in re.finditer(r"[A-Z][^.!?]{40,}[.!?]", cleaned):
+        s = m.group(0).strip()
+        key = s[:40].lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(s[:max_len] + "…" if len(s) > max_len else s)
+        if len(out) >= limit:
+            break
+    return out
+
+
 def _first_sentence(text: str, max_len: int = 130) -> str | None:
     """Extract the first meaningful sentence from markdown/plain text."""
     if not text:
@@ -136,40 +174,50 @@ def inject_tl_dr(d: dict, force: bool = False) -> dict:
     value_picks = d.get("value_picks") or []
     if value_picks and len(bullets) < 5:
         v = value_picks[0]
-        ticker = v.get("ticker", "")
-        off_high = v.get("pct_off_high") or v.get("off_high_pct") or ""
-        fcf_raw = v.get("fcf_yield")
-        fcf = "solid FCF" if not fcf_raw or str(fcf_raw).upper() in ("NA", "N/A", "NONE", "") else fcf_raw
-        bullets.append(
-            f"Value setup: {ticker} {off_high} off 52w high with {fcf}."
-        )
+        ticker = _clean(v.get("ticker"))
+        if ticker:
+            off_high = _clean(v.get("pct_off_high") or v.get("off_high_pct"))
+            fcf = _clean(v.get("fcf_yield"))
+            parts = [f"Value setup: {ticker}"]
+            if off_high:
+                parts.append(f"{off_high} off its 52-week high")
+            if fcf:
+                parts.append(f"{fcf} FCF yield")
+            bullets.append(
+                " — ".join(parts) + "."
+                if len(parts) > 1
+                else f"{ticker} screens as a value setup."
+            )
 
     # ── 5. Momentum pick bullet ──────────────────────────────────────────────
     momentum_picks = d.get("momentum_picks") or []
     if momentum_picks and len(bullets) < 5:
         m = momentum_picks[0]
-        ticker = m.get("ticker", "")
-        w1_raw = (
-            m.get("one_week_perf")
-            or m.get("perf_1w")
-            or m.get("one_week")
-        )
-        w1 = _fmt_pct(w1_raw)
-        bullets.append(
-            f"Momentum leader: {ticker}{' ' + w1 if w1 else ''} on the week."
-        )
+        ticker = _clean(m.get("ticker"))
+        if ticker:
+            w1 = _fmt_pct(
+                m.get("one_week_perf") or m.get("perf_1w") or m.get("one_week")
+            )
+            bullets.append(
+                f"Momentum leader: {ticker}{' ' + w1 if w1 else ''} on the week."
+            )
 
-    # ── 6. Narrative fallback: use first sentence of narrative when under 3 bullets ───
-    if len(bullets) < 3:
+    # ── 6. Narrative top-up: pull distinct sentences until we reach 5 bullets.
+    #       Trends/risks arrays are frequently empty (sonar burns its budget on
+    #       reasoning), which leaves tl_dr short. The narrative is reliably rich,
+    #       so lift real sentences from it — no fabrication. ─────────────────────
+    if len(bullets) < 5:
         narrative = (
             (d.get("market_summary") if isinstance(d.get("market_summary"), str) else None)
             or ms.get("narrative")
             or d.get("narrative")
             or ""
         )
-        sentence = _first_sentence(narrative)
-        if sentence:
-            bullets.append(sentence)
+        for sentence in _narrative_sentences(narrative, limit=5 - len(bullets)):
+            if sentence not in bullets:
+                bullets.append(sentence)
+            if len(bullets) >= 5:
+                break
 
     # ── 7. Last resort for salvaged weeks ────────────────────────────────────
     if not bullets and d.get("_salvaged"):
