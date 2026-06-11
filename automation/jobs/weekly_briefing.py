@@ -699,7 +699,7 @@ def run(output_path: Path | None = None) -> dict:
         try:
             from automation.jobs.backfill_briefings import save_archive_briefing, patch_index_only
             save_archive_briefing(TODAY, briefing)
-            patch_index_only()
+            patch_index_only()  # also refreshes the standalone archive_index.json
         except Exception as exc:
             print(f"  [weekly_briefing] archive failed: {exc}")
 

@@ -144,6 +144,11 @@ async function loadWeeklyBriefing(path = 'weekly_briefing.json') {
     const data = await resp.json();
     if (weeklyBriefingInFlight !== path) return; // stale
     weeklyBriefingData = data;
+    // Resolve the canonical archive index BEFORE rendering so the picker is
+    // built from the standalone source of truth, never from this payload's
+    // (possibly stale) baked-in archive[].
+    await ensureArchiveIndex(data);
+    if (weeklyBriefingInFlight !== path) return; // stale after await
     renderWeeklyBriefing();
   } catch (e) {
     console.error('Failed to load weekly briefing:', e);
@@ -234,12 +239,31 @@ function synthesizeTldr(d) {
 }
 
 // ─── Week-ending picker helpers ───
-function weekEndingFriday(d) {
-  const dt = (d instanceof Date) ? new Date(d) : new Date(d + 'T12:00:00');
-  const dow = dt.getDay(); // 0=Sun..6=Sat
-  const diff = (5 - dow + 7) % 7; // days to Friday
-  dt.setDate(dt.getDate() + diff);
-  return dt.toISOString().slice(0, 10);
+
+// Snap an arbitrary picker date to the week_ending key that ACTUALLY exists in
+// the canonical archive index. Briefings were Friday-ending through 2026-05-22
+// and Sunday-ending from 2026-05-31, so a fixed "round to Friday" rule produces
+// phantom dates (e.g. 2026-05-31 -> 2026-06-05) that no briefing matches. We
+// therefore resolve against real keys: exact match wins; otherwise pick the
+// nearest archived week to the requested date (preferring an earlier week on a
+// tie so navigation stays monotonic). Returns the input unchanged when the
+// index is empty.
+function normalizeWeekEnding(d) {
+  const raw = (d instanceof Date) ? d.toISOString().slice(0, 10) : String(d || '').slice(0, 10);
+  const idx = weeklyBriefingArchiveIndex || [];
+  if (!raw || !idx.length) return raw;
+  if (idx.some(a => a.week_ending === raw)) return raw;
+  // Nearest key by absolute day distance; ties resolve to the earlier week.
+  const target = new Date(raw + 'T12:00:00').getTime();
+  let best = null, bestDist = Infinity;
+  for (const a of idx) {
+    const t = new Date(a.week_ending + 'T12:00:00').getTime();
+    const dist = Math.abs(t - target);
+    if (dist < bestDist || (dist === bestDist && a.week_ending < best.week_ending)) {
+      best = a; bestDist = dist;
+    }
+  }
+  return best ? best.week_ending : raw;
 }
 
 function shiftWeek(dateStr, deltaWeeks) {
@@ -248,16 +272,54 @@ function shiftWeek(dateStr, deltaWeeks) {
   return dt.toISOString().slice(0, 10);
 }
 
+// Fetch the canonical, standalone archive index (weekly_briefing_archive_index.json).
+// This is the SINGLE SOURCE OF TRUTH for the week picker. We deliberately fetch
+// it same-origin (repo-relative, never via the R2 snapshot host) so a stale R2
+// snapshot can never clobber the list — the bug that made arrow-nav dead-end on
+// "No saved briefing for week ending …". Falls back to the payload's baked-in
+// archive[] only if the canonical file is unreachable.
+let weeklyArchiveIndexFetch = null;
 async function ensureArchiveIndex(d) {
-  if (weeklyBriefingArchiveIndex) return weeklyBriefingArchiveIndex;
-  const fromPayload = Array.isArray(d.archive) ? d.archive : [];
-  const normalized = fromPayload.map(a => typeof a === 'string' ? { week_ending: a, path: `archive/briefings/weekly_briefing_${a}.json` } : a)
-                                .filter(a => a && a.week_ending);
+  if (Array.isArray(weeklyBriefingArchiveIndex) && weeklyBriefingArchiveIndex.length) {
+    return weeklyBriefingArchiveIndex;
+  }
+  if (!weeklyArchiveIndexFetch) {
+    weeklyArchiveIndexFetch = (async () => {
+      try {
+        const base = (typeof document !== 'undefined' && document.baseURI) ? document.baseURI : '';
+        const url = new URL('weekly_briefing_archive_index.json', base).href + '?v=' + Date.now();
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const payload = await resp.json();
+        const weeks = Array.isArray(payload.weeks) ? payload.weeks : [];
+        return weeks
+          .filter(w => w && w.week_ending)
+          .map(w => ({ week_ending: w.week_ending, path: w.file || `archive/briefings/weekly_briefing_${w.week_ending}.json`, week_label: w.week_label, tldr_excerpt: w.tldr_excerpt }));
+      } catch (e) {
+        console.warn('archive_index.json unavailable, falling back to payload archive[]:', e);
+        return null;
+      }
+    })();
+  }
+  const fetched = await weeklyArchiveIndexFetch;
+  if (fetched && fetched.length) {
+    weeklyBriefingArchiveIndex = fetched.slice().sort((a, b) => a.week_ending.localeCompare(b.week_ending));
+    return weeklyBriefingArchiveIndex;
+  }
+  // Fallback: derive from the payload that was passed in.
+  const fromPayload = Array.isArray(d && d.archive) ? d.archive : [];
+  const normalized = fromPayload
+    .map(a => typeof a === 'string' ? { week_ending: a, path: `archive/briefings/weekly_briefing_${a}.json` } : a)
+    .filter(a => a && a.week_ending)
+    .sort((a, b) => a.week_ending.localeCompare(b.week_ending));
   weeklyBriefingArchiveIndex = normalized;
   return normalized;
 }
 
 function jumpToWeek(weekEnding) {
+  // Snap to a real archive key first so callers can pass any date (e.g. a raw
+  // picker value) and still land on an existing briefing.
+  weekEnding = normalizeWeekEnding(weekEnding);
   // Current live briefing matches?
   if (weeklyBriefingData && weeklyBriefingData.week_ending === weekEnding) return;
   const idx = weeklyBriefingArchiveIndex || [];
@@ -354,7 +416,9 @@ function wireWeekPicker() {
     if (later) jumpToWeek(later.week_ending);
   });
   if (input) input.addEventListener('change', (e) => {
-    const picked = weekEndingFriday(e.target.value);
+    // Snap the typed/picked date to a week that actually exists in the index
+    // (handles the Friday->Sunday schema switch and any off-day pick).
+    const picked = normalizeWeekEnding(e.target.value);
     jumpToWeek(picked);
   });
   // Update button disabled state based on current position in the index.
@@ -575,11 +639,12 @@ function renderWeeklyBriefing() {
     || (ir.russell ? (ir.russell.weekly_pct != null ? (ir.russell.weekly_pct >= 0 ? '+' : '') + ir.russell.weekly_pct.toFixed(2) + '%' : null) : null);
   const russell = russellRaw;
 
-  // Build archive set for picker. The current live payload carries the full
-  // archive list; archived payloads DO NOT (they were snapshotted before the
-  // archive was known). We therefore MERGE the incoming archive into whatever
-  // we already have in memory rather than overwriting — this is the fix for
-  // the picker bug where navigating back one week wiped the archive list.
+  // Build the picker set. The canonical index (fetched in ensureArchiveIndex)
+  // is the source of truth and is already in weeklyBriefingArchiveIndex. We only
+  // ADD entries here (the current week, or any archive[] entry not yet known) —
+  // we never let a payload's stale archive[] SHRINK the list. This is the
+  // durable fix for the dead-end where navigating into an old briefing wiped
+  // future weeks out of the picker.
   const incomingArchive = Array.isArray(d.archive) ? d.archive : [];
   const merged = new Map();
   (weeklyBriefingArchiveIndex || []).forEach(a => {
@@ -587,12 +652,10 @@ function renderWeeklyBriefing() {
   });
   incomingArchive.forEach(a => {
     const rec = typeof a === 'string' ? { week_ending: a, path: `archive/briefings/weekly_briefing_${a}.json` } : a;
-    if (rec && rec.week_ending) merged.set(rec.week_ending, rec);
+    if (rec && rec.week_ending && !merged.has(rec.week_ending)) merged.set(rec.week_ending, rec);
   });
   // Ensure current week is in the set.
   if (weekEnd && !merged.has(weekEnd)) {
-    // If the live file name maps to the current week, point there; otherwise
-    // assume it's the weekly_briefing.json canonical file.
     merged.set(weekEnd, { week_ending: weekEnd, path: 'weekly_briefing.json' });
   }
   weeklyBriefingArchiveIndex = Array.from(merged.values())

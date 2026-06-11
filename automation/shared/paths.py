@@ -26,6 +26,10 @@ EARNINGS_CALENDAR = ROOT_DIR / "earnings_calendar.json"
 EARNINGS_DATA     = ROOT_DIR / "earnings_data.json"
 EARNINGS_INTEL    = ROOT_DIR / "earnings_intel.json"
 WEEKLY_BRIEFING   = ROOT_DIR / "weekly_briefing.json"
+# Canonical, standalone index of every archived weekly briefing. The renderer
+# fetches THIS file (not the archive[] baked into a briefing payload) to build
+# the week picker, so navigating into an old briefing can never clobber the list.
+WEEKLY_ARCHIVE_INDEX = ROOT_DIR / "weekly_briefing_archive_index.json"
 MACRO_DATA        = ROOT_DIR / "macro_data.json"
 DATA_SNAPSHOT     = ROOT_DIR / "data-snapshot.json"
 UTILS_JS          = ROOT_DIR / "utils.js"

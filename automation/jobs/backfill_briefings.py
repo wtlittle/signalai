@@ -133,6 +133,12 @@ def patch_index_only():
             pass
     print(f"Found {len(found)} archived briefings")
     patch_live_briefing_archive_index(found)
+    # Also refresh the standalone canonical index the front-end fetches.
+    try:
+        from automation.jobs.refresh_archive_index import refresh_archive_index
+        refresh_archive_index()
+    except Exception as exc:
+        print(f"  [archive-index] refresh failed: {exc}")
 
 
 def run(weeks: int = 25, start=None, end=None):
@@ -162,6 +168,11 @@ def run(weeks: int = 25, start=None, end=None):
 
     if not dry_run:
         patch_live_briefing_archive_index(all_fridays)
+        try:
+            from automation.jobs.refresh_archive_index import refresh_archive_index
+            refresh_archive_index()
+        except Exception as exc:
+            print(f"  [archive-index] refresh failed: {exc}")
 
     print(f"\n=== Backfill complete: {generated} generated, {skipped} skipped ===")
 
