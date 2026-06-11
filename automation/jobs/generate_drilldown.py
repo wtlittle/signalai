@@ -533,6 +533,107 @@ def _earnings_events(ticker: str, hist: list[dict], intel: dict) -> list[dict]:
     return build_earnings_events(ticker, snap=snap, intel=intel)
 
 
+def _build_beat_miss_table(hist: list[dict]) -> str:
+    """Build a deterministic earnings-history table with beat/miss coloring.
+
+    Each row applies class="beat" (green) or class="miss" (red) to the
+    Rev Beat/Miss and EPS result cells, matching FROG's earnings-section
+    style.  Returns an HTML table string, or empty string when hist is empty.
+    """
+    def _bm_fmt_num(v, decimals=1, prefix=''):
+        if v is None:
+            return '&mdash;'
+        try:
+            return prefix + f'{float(v):,.{decimals}f}'
+        except (TypeError, ValueError):
+            return _html.escape(str(v))
+
+    def _beat_miss_class(val):
+        if val is None:
+            return '', '&mdash;'
+        try:
+            f = float(val)
+            if f >= 0:
+                return 'beat', f'+{f:.1f}%'
+            else:
+                return 'miss', f'{f:.1f}%'
+        except (TypeError, ValueError):
+            return '', '&mdash;'
+
+    if not hist:
+        return ''
+    rows = []
+    for h in hist[-8:]:  # most recent 8 quarters
+        period = h.get('period') or '?'
+        act_rev = h.get('revActual')
+        est_rev = h.get('revEstimate')
+        rev_beat = h.get('revBeatPct')
+        act_eps = h.get('epsActual')
+        est_eps_val = h.get('epsEstimate')
+        eps_beat = h.get('epsBeatPct')
+        # fallback: compute eps beat from actual vs estimate
+        if eps_beat is None and act_eps is not None and est_eps_val not in (None, 0):
+            try:
+                eps_beat = (act_eps - est_eps_val) / abs(est_eps_val) * 100.0
+            except (TypeError, ZeroDivisionError):
+                pass
+        if eps_beat is None and h.get('surprisePercent') is not None:
+            eps_beat = h['surprisePercent'] * 100.0
+        mv = h.get('oneDayReturn')
+        guidance = h.get('guidanceTone') or '&mdash;'
+
+        rev_cls, rev_str = _beat_miss_class(rev_beat)
+        eps_cls, eps_str = _beat_miss_class(eps_beat)
+        try:
+            mv_cls = 'pos' if mv is not None and float(mv) >= 0 else 'neg'
+            mv_str = f'{float(mv)*100:+.1f}%' if mv is not None else '&mdash;'
+        except (TypeError, ValueError):
+            mv_cls = 'pos'
+            mv_str = '&mdash;'
+
+        rev_cell = f'<span class="{rev_cls}">{rev_str}</span>' if rev_cls else rev_str
+        eps_label = 'Beat' if eps_cls == 'beat' else 'Miss'
+        eps_cell = (
+            f'<span class="{eps_cls}">{eps_label}</span>'
+            if eps_cls else '&mdash;'
+        )
+        mv_cell = f'<span class="{mv_cls}">{mv_str}</span>'
+
+        rows.append(
+            '        <tr>'
+            f'<td>{_html.escape(period)}</td>'
+            f'<td class="num">{_bm_fmt_num(act_rev, 0, "$") if act_rev is not None else "&mdash;"}</td>'
+            f'<td class="num">{_bm_fmt_num(est_rev, 0, "$") if est_rev is not None else "&mdash;"}</td>'
+            f'<td class="num">{rev_cell}</td>'
+            f'<td class="num">{_bm_fmt_num(act_eps, 2)}</td>'
+            f'<td class="num">{eps_cell}</td>'
+            f'<td class="num">{mv_cell}</td>'
+            f'<td>{_html.escape(str(guidance))}</td>'
+            '</tr>'
+        )
+    if not rows:
+        return ''
+    header = (
+        '    <table style="margin-bottom:16px;">\n'
+        '      <thead>\n'
+        '        <tr>\n'
+        '          <th>Quarter</th>\n'
+        '          <th class="num">Actual Rev</th>\n'
+        '          <th class="num">Consensus Est.</th>\n'
+        '          <th class="num">Rev Beat/Miss</th>\n'
+        '          <th class="num">EPS Actual</th>\n'
+        '          <th class="num">EPS Result</th>\n'
+        '          <th class="num">1D Stock Move</th>\n'
+        '          <th>Guidance Tone</th>\n'
+        '        </tr>\n'
+        '      </thead>\n'
+        '      <tbody>\n'
+        + '\n'.join(rows)
+        + '\n      </tbody>\n    </table>\n'
+    )
+    return header
+
+
 def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
     """Post-process the LLM-generated HTML to insert a deterministic SVG
     annotated price chart into the Earnings Setup section.
@@ -644,7 +745,12 @@ def _inject_earnings_chart(html: str, ticker: str, snap: dict) -> str:
             + chart_svg
             + '\n</div>\n'
         )
-    new_body_content = chart_block + body_content
+    # ---- Build deterministic beat/miss table from snap earnings history ----
+    asum2 = (snap.get('analyst_summary') or {}).get(ticker, {})
+    hist2 = asum2.get('earningsHistory') or []
+    beat_miss_table = _build_beat_miss_table(hist2)
+
+    new_body_content = chart_block + beat_miss_table + body_content
 
     # ---- Splice into HTML ------------------------------------------------
     html = html[:content_start] + new_body_content + html[body_close:]

@@ -619,6 +619,12 @@ def validate_debate(p: dict) -> list[str]:
     out: list[str] = []
     if not isinstance(p, dict):
         return ["payload is not an object"]
+    # ceo_quote / ceo_attr are optional (FROG-grade pull-quote block); no penalty
+    # if absent, but they must be strings if present.
+    for k in ("ceo_quote", "ceo_attr"):
+        v = p.get(k)
+        if v is not None and not isinstance(v, str):
+            out.append(f"{k} must be a string when present")
 
     def _risk(r):
         if not isinstance(r, dict):
@@ -662,9 +668,13 @@ DEBATE_SCHEMA = {
         "bear_risks (3-7 objects, each {title, quant, detail}; quant is a short "
         "magnitude tag like '-$20M' or '-3pts'; detail is 1-3 sentences), "
         "bull_rebuttals (3-7 objects, each {title, detail} answering the bear "
-        "risks directly), and diligence_questions (3-8 strings, each >= 8 words, "
-        "each a specific question an analyst would ask management). Never write "
-        "the literal word MISSING."
+        "risks directly), diligence_questions (3-8 strings, each >= 8 words, "
+        "each a specific question an analyst would ask management), "
+        "ceo_quote (one verbatim sentence or short paragraph from the CEO or CFO "
+        "from the most recent earnings transcript that captures the investment "
+        "thesis -- include exact words, do NOT paraphrase; omit if not verifiable), "
+        "and ceo_attr (attribution string, e.g. '-- CEO Name, Q1 2026 Earnings Call'). "
+        "Never write the literal word MISSING."
     ),
     "json_schema": {
         "type": "json_schema",
@@ -700,6 +710,8 @@ DEBATE_SCHEMA = {
                         "type": "array",
                         "items": {"type": "string"},
                     },
+                    "ceo_quote": {"type": "string"},
+                    "ceo_attr": {"type": "string"},
                 },
                 "required": [
                     "bear_risks", "bull_rebuttals", "diligence_questions",

@@ -64,6 +64,32 @@ WEIGHTS = {
     "section_completeness": 15,
 }
 
+# Style-parity constants (penalty pool, not a weighted category so the existing
+# 100-pt weights sum is unchanged; penalties are deducted post-scoring).
+# FROG golden HTML has 89 unique classes; v2 notes target ~68+.
+STYLE_PARITY_BASELINE = 68
+STYLE_PARITY_CLASS_FLOOR = 60   # below this, -1pt per missing class (up to -20)
+
+# Must-have classes calibrated against the FROG golden HTML
+# (golden/FROG_drilldown_golden.html).  Only classes the FROG golden actually
+# emits are in this set so FROG itself still scores 100 after this rule lands.
+# beat/miss/sources are excluded because FROG golden pre-dates the earnings
+# table and citation-sources features; those classes are enforced via the
+# assembler renderer instead (they will be present in all future v2 notes).
+STYLE_MUST_HAVE_CLASSES = {
+    "kpi-value kpi-positive",
+    "kpi-value kpi-neutral",
+    "pos",
+    "neg",
+    "quote-block",
+    "debate-box",
+    "mgmt-table",
+    "risk-item",
+    "brand-bar",
+    "exchange-badge",
+    "disclaimer",
+}
+
 # Citation / word-count calibration.
 CLAIM_FULL = 30      # >= this many claim: refs earns full citation credit
 CLAIM_FLOOR = 10     # below this earns zero
@@ -249,6 +275,73 @@ def _score_completeness(html: str) -> tuple[float, int, list[str]]:
 
 
 # --------------------------------------------------------------------------- #
+# Style-parity penalty scorer (deducted from total after category scoring)
+# --------------------------------------------------------------------------- #
+
+def _extract_unique_classes(html: str) -> set[str]:
+    """Return the set of unique class= attribute values found in the HTML.
+
+    A single class= attribute may carry multiple space-separated names;
+    we treat each multi-class token verbatim (e.g. 'kpi-value kpi-positive')
+    as well as each individual name.
+    """
+    classes: set[str] = set()
+    for raw in re.findall(r'class=["\']([^"\']+)["\']', html, re.IGNORECASE):
+        classes.add(raw.strip())      # full multi-class token
+        for cls in raw.strip().split():
+            classes.add(cls)          # individual names
+    return classes
+
+
+def _score_style_parity(html: str, ticker: str | None = None) -> tuple[int, list[str]]:
+    """Return (penalty_pts, notes_list) for style-parity gaps.
+
+    Two sub-penalties:
+      1. Total unique class count < STYLE_PARITY_CLASS_FLOOR: -1pt per missing
+         class vs the floor, capped at 20pts.
+      2. Each must-have class absent from the HTML: -3pts each.
+
+    FROG's class count is ~68; a well-formed v2 note should hit 60+.
+    A POET-grade stub (missing kpi-grid, debate-box, etc.) will drop to <80
+    after combined penalty, triggering quarantine.
+    """
+    unique = _extract_unique_classes(html)
+    n_unique = len(unique)
+    penalty = 0
+    notes: list[str] = []
+
+    # 1. Total class count gap (-1 per class below the floor, max 20).
+    if n_unique < STYLE_PARITY_CLASS_FLOOR:
+        gap = STYLE_PARITY_CLASS_FLOOR - n_unique
+        pts = min(gap, 20)
+        penalty += pts
+        notes.append(
+            f"style-parity: -{pts} unique CSS classes {n_unique} < floor {STYLE_PARITY_CLASS_FLOOR} "
+            f"(FROG baseline ~{STYLE_PARITY_BASELINE})"
+        )
+
+    # 2. Must-have class checks (-3 per missing class).
+    missing_must = []
+    for must in sorted(STYLE_MUST_HAVE_CLASSES):
+        # Match on the raw multi-class token or the individual class.
+        token_present = any(
+            must == raw.strip() or must in raw.strip().split()
+            for raw in re.findall(r'class=["\']([^"\']+)["\']', html, re.IGNORECASE)
+        )
+        if not token_present:
+            missing_must.append(must)
+    if missing_must:
+        pts = 3 * len(missing_must)
+        penalty += pts
+        notes.append(
+            f"style-parity: -{pts} must-have classes absent: "
+            + ", ".join(sorted(missing_must))
+        )
+
+    return penalty, notes
+
+
+# --------------------------------------------------------------------------- #
 # Compliance penalty scorer (deducted from total after category scoring)
 # --------------------------------------------------------------------------- #
 #
@@ -378,6 +471,17 @@ def score_drilldown(path: str | None = None, *, html: str | None = None,
         }
         total -= penalty
         issues.extend(pen_notes)
+
+    # Apply style-parity penalties (post-score deductions).
+    sp_penalty, sp_notes = _score_style_parity(html, ticker)
+    if sp_penalty:
+        breakdown["style_parity_penalties"] = {
+            "score": -sp_penalty,
+            "max": 0,
+            "notes": sp_notes,
+        }
+        total -= sp_penalty
+        issues.extend(sp_notes)
 
     score = int(round(max(0.0, total)))
     return {

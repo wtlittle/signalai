@@ -49,6 +49,7 @@ _STYLE = """  *, *::before, *::after { box-sizing: border-box; margin: 0; paddin
     --text: #1c1917; --text-muted: #78716c; --text-light: #a8a29e;
     --red: #ef4444; --red-light: #fef2f2; --green: #10b981; --green-light: #f0fdf4;
     --amber: #f59e0b; --amber-light: #fffbeb; --highlight: #fef9c3;
+    --bull: #10b981; --bear: #ef4444; --base: #14b8a6;
   }
   body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
   .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; }
@@ -141,6 +142,9 @@ _STYLE = """  *, *::before, *::after { box-sizing: border-box; margin: 0; paddin
   .sources-list a:hover { text-decoration: underline; }
   .disclaimer { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; }
   .disclaimer p { font-size: 11px; line-height: 1.7; color: #78350f; }
+  /* ── Quote Block ── */
+  .quote-block { background: var(--bg); border-left: 4px solid var(--teal); padding: 14px 18px; margin: 12px 0; font-style: italic; font-size: 13px; line-height: 1.6; border-radius: 0 6px 6px 0; }
+  .quote-attr { font-style: normal; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 6px; }
   @media print { body { background: white; font-size: 11px; } .container { padding: 10px; } .kpi-grid { grid-template-columns: repeat(3, 1fr); } .three-col, .two-col { grid-template-columns: 1fr; } a[href^="claim:"] { border-bottom: none; } .section { break-inside: avoid; } }
   @media (max-width: 720px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } .three-col { grid-template-columns: 1fr; } .two-col { grid-template-columns: 1fr; } .container { padding: 12px; } .company-name { font-size: 20px; } .current-price { font-size: 24px; } }"""
 
@@ -241,6 +245,39 @@ def _unavailable(reason: str) -> str:
 # --------------------------------------------------------------------------- #
 # Header / Investment Overview (logical: summary) -- validator section 1 + KPIs
 # --------------------------------------------------------------------------- #
+def _kpi_direction_class(val, sub: str) -> str:
+    """Return the CSS modifier class (kpi-positive / kpi-neutral / kpi-negative)
+    for a KPI card value.  Positive = green; negative = red; neutral = amber.
+
+    Detection order:
+      1. If sub text has explicit YoY/QoQ direction signal (+/-), use it.
+      2. If value string starts with '+' -> positive; '-' -> negative.
+      3. Default to kpi-neutral (amber) so the card always has a color modifier.
+    """
+    combined = (str(val or "") + " " + (sub or "")).lower()
+    # Explicit positive signals in sub / value
+    if re.search(r'(?:^|[\s(])\+', combined):
+        return "kpi-positive"
+    if re.search(r'yoy.*growing|qoq.*up|yoy.*up|accelerat|expand', combined):
+        return "kpi-positive"
+    # Explicit negative signals
+    if re.search(r'(?:^|[\s(])-\d', combined):
+        return "kpi-negative"
+    if re.search(r'deceler|contract|shrink|declining|compressing', combined):
+        return "kpi-negative"
+    # Try numeric sign from value
+    val_str = str(val or "").strip().lstrip('$').replace(',', '')
+    try:
+        f = float(val_str.rstrip('%xXbBmMkK'))
+        if f > 0:
+            return "kpi-positive"
+        if f < 0:
+            return "kpi-negative"
+    except (ValueError, TypeError):
+        pass
+    return "kpi-neutral"
+
+
 def _render_header(meta: dict, summary: dict, citer: _Citer) -> str:
     company = meta.get("company") or meta.get("ticker")
     ticker = meta.get("ticker", "")
@@ -280,11 +317,17 @@ def _render_header(meta: dict, summary: dict, citer: _Citer) -> str:
         cards = []
         for k in kpis[:6]:
             val = k.get("value")
+            # Determine direction modifier: positive (green), neutral (amber),
+            # or negative (red) based on sub text or value sign. FROG emits
+            # kpi-value kpi-positive / kpi-value kpi-neutral on every card.
+            sub = k.get("sub") or ""
+            direction_mod = _kpi_direction_class(val, sub)
+            val_html = citer.wrap(str(val), max_links=1) if val is not None else "&mdash;"
             cards.append(
                 '  <div class="kpi-card">\n'
                 f'    <div class="kpi-label">{_esc(k.get("label", ""))}</div>\n'
-                f'    <div class="kpi-value">{citer.wrap(str(val), max_links=1) if val is not None else "&mdash;"}</div>\n'
-                f'    <div class="kpi-sub">{_esc(k.get("sub", ""))}</div>\n'
+                f'    <div class="kpi-value {direction_mod}">{val_html}</div>\n'
+                f'    <div class="kpi-sub">{_esc(sub)}</div>\n'
                 '  </div>'
             )
         kpi_html = (
@@ -552,9 +595,18 @@ def _render_sensitivity(meta: dict, citer: _Citer) -> str:
                 val = _fmt_price(round(implied))
             else:
                 val = "&mdash;"
-            cls = "sens-today" if (gi == 2 and m == 12) else (
-                "sens-high" if m >= 15 else "sens-mid" if m >= 9 else "sens-low"
-            )
+            # Gradient: sens-high (dark green) / sens-mid-high (light green) /
+            # sens-mid (amber) / sens-low (red) -- matches FROG's 5-tier palette.
+            if gi == 2 and m == 12:
+                cls = "sens-today"
+            elif m >= 15 and gi >= 3:
+                cls = "sens-high"
+            elif m >= 15 or (m >= 12 and gi >= 3):
+                cls = "sens-mid-high"
+            elif m >= 9:
+                cls = "sens-mid"
+            else:
+                cls = "sens-low"
             cells.append(f'<td class="{cls}">{val}</td>')
         rows.append(
             f'        <tr><td class="row-head">{g} growth</td>' + "".join(cells) + "</tr>"
@@ -592,7 +644,8 @@ def _render_earnings_setup(citer: _Citer) -> str:
 # Sourced from meta (light) -- always present so the validator's 14-section gate
 # passes even though there is no dedicated logical section for it.
 # --------------------------------------------------------------------------- #
-def _render_management(meta: dict, business: dict, citer: _Citer) -> str:
+def _render_management(meta: dict, business: dict, citer: _Citer,
+                       debate: dict | None = None) -> str:
     note = meta.get("management_note")
     if note:
         para = citer.wrap(note)
@@ -603,9 +656,27 @@ def _render_management(meta: dict, business: dict, citer: _Citer) -> str:
             "Where a specific figure is not disclosed it is shown as an em-dash "
             "rather than estimated."
         )
+    # Pull-quote block (CEO/CFO commentary): FROG places this in management.
+    # The debate payload may carry a ceo_quote and ceo_attr; render as
+    # blockquote.quote-block with .quote-attr attribution line.
+    quote_html = ""
+    if debate and isinstance(debate, dict):
+        ceo_quote = debate.get("ceo_quote") or ""
+        ceo_attr = debate.get("ceo_attr") or ""
+        if ceo_quote and ceo_quote.strip():
+            attr_html = (
+                f'\n  <div class="quote-attr">{_esc(ceo_attr)}</div>'
+                if ceo_attr else ""
+            )
+            quote_html = (
+                f'\n    <div class="quote-block">\n'
+                f'  {_esc(ceo_quote)}{attr_html}\n'
+                f'    </div>\n'
+            )
     body = (
         f'    <p style="font-size:12px;line-height:1.7;">{para}</p>\n'
-        '    <table class="mgmt-table" style="margin-top:14px;">\n'
+        + quote_html
+        + '    <table class="mgmt-table" style="margin-top:14px;">\n'
         '      <thead><tr><th>Dimension</th><th>Rating</th><th>Evidence</th></tr></thead>\n'
         '      <tbody>\n'
         '        <tr><td>Execution Track Record</td>'
@@ -751,6 +822,69 @@ def _render_citation_sources(sources: list[dict]) -> str:
 _INLINE_CITATION_RE = re.compile(r'\[(\d+)\]')
 
 
+# Regex that matches signed numeric deltas in text nodes (between > and <).
+# Captures: optional whitespace, then +/-N[.N][%/x/bp] patterns.
+# Does NOT run inside attribute values or existing span tags.
+_POS_NEG_RE = re.compile(
+    r'(?<=>)'           # preceded by >
+    r'([^<]*?)'         # text content (lazy, captured as group 1)
+    r'(?=<)',           # followed by <
+    re.DOTALL,
+)
+_SIGNED_NUM_RE = re.compile(
+    r'((?:^|(?<=[\s(\[,]))([+\-]\d[\d,.]*(?:[%xbBmMkK]|bp|pp|pts|ppt)?))'
+)
+
+
+# Track whether we are inside a pos/neg span to avoid double-wrapping.
+_POS_NEG_INSIDE_RE = re.compile(
+    r'class=["\'](?:pos|neg)["\']', re.IGNORECASE
+)
+
+
+def _apply_pos_neg(html: str) -> str:
+    """Wrap signed numeric deltas (+X%/-X%) in text nodes with pos/neg spans.
+
+    Only applies to text nodes that are NOT already the direct child of a
+    class="pos" or class="neg" span. Positive deltas get <span class="pos">,
+    negative get <span class="neg">. Idempotent: running twice produces the same
+    output as running once.
+    """
+    # Split on tag boundaries; process only text nodes.
+    parts = re.split(r'(<[^>]+>)', html)
+    out = []
+    inside_pos_neg = 0  # nesting counter for pos/neg spans
+    for i, part in enumerate(parts):
+        if i % 2 == 1:
+            # Tag token: track depth of pos/neg spans.
+            tag = part
+            if _POS_NEG_INSIDE_RE.search(tag):
+                if tag.startswith('</'):  # closing tag
+                    inside_pos_neg = max(0, inside_pos_neg - 1)
+                else:
+                    inside_pos_neg += 1
+            out.append(part)
+            continue
+        if not part or inside_pos_neg > 0:
+            out.append(part)
+            continue
+
+        def _replace_signed(m):
+            sign = m.group(2)[0]
+            inner = m.group(2)
+            cls = 'pos' if sign == '+' else 'neg'
+            prefix = m.group(1)[:-len(m.group(2))]  # chars before the sign
+            return prefix + f'<span class="{cls}">{inner}</span>'
+        new_part = re.sub(
+            r'((?:^|(?<=[\s(\[,;]))([+\-]\d[\d,.]*(?:%|bp|pp|ppt|pts|x)?))'
+            r'(?=[\s)\].,;:<]|$)',
+            _replace_signed,
+            part,
+        )
+        out.append(new_part)
+    return ''.join(out)
+
+
 def _process_inline_citations(html: str, sources: list[dict]) -> str:
     """Wrap [N] markers in anchor tags when N has a matching source entry.
 
@@ -894,11 +1028,11 @@ def assemble_document(meta: dict, sections: dict,
     # 10: earnings setup (chart injected post-assembly)
     parts.append(_render_earnings_setup(citer))
 
-    # 11: management (always present, light)
-    parts.append(_render_management(meta, business or {}, citer))
+    # 11: management (always present, light) -- pass debate for ceo_quote block
+    debate = _payload("debate")
+    parts.append(_render_management(meta, business or {}, citer, debate=debate))
 
     # 12: risks (debate)
-    debate = _payload("debate")
     if debate:
         parts.append(_render_risks(debate, citer))
     else:
@@ -938,6 +1072,11 @@ def assemble_document(meta: dict, sections: dict,
 
     # Apply inline-citation processing: wrap matched [N], strip orphans.
     body = _process_inline_citations(body, deduped_sources)
+
+    # Apply pos/neg coloring to signed numeric deltas in prose text nodes.
+    # This ensures +X% tokens get class="pos" (green) and -X% get class="neg"
+    # (red), matching FROG's style without requiring the model to emit spans.
+    body = _apply_pos_neg(body)
 
     # Append sources section before the disclaimer (which comes from
     # _render_sources / footer). Insert before </section>\n\n<section class="disclaimer">
