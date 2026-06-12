@@ -38,6 +38,10 @@ NA = "n/a"
 # below aborts the send when the snapshot is too old or the "earnings today"
 # tickers carry a date other than the actual send date.
 DAILY_SNAPSHOT_MAX_AGE_HOURS = 4.0
+# The earnings calendar refreshes on a slower cadence than the price snapshot and
+# legitimately has zero rows on quiet days, so it is gated on file freshness
+# (mtime) and total emptiness -- NOT on whether the send date happens to appear.
+DAILY_CALENDAR_MAX_AGE_HOURS = 24.0
 FRESHNESS_ALERT_DIR = "/home/user/workspace/cron_tracking/daily_briefing"
 
 # The weekly briefing enriches its picks from the same data-snapshot.json. It
@@ -632,9 +636,8 @@ class FreshnessGateError(Exception):
         self.send_date = send_date
 
 
-def _snapshot_age_hours(data_dir):
-    """Age in hours of data-snapshot.json by mtime, or None if it is missing."""
-    path = os.path.join(data_dir, "data-snapshot.json")
+def _file_age_hours(path):
+    """Age in hours of `path` by mtime, or None if it is missing/unreadable."""
     try:
         mtime = os.path.getmtime(path)
     except OSError:
@@ -643,22 +646,20 @@ def _snapshot_age_hours(data_dir):
     return age_s / 3600.0
 
 
-def _earnings_today_dates(calendar):
-    """The distinct date prefixes carried by today's earnings rows.
+def _snapshot_age_hours(data_dir):
+    """Age in hours of data-snapshot.json by mtime, or None if it is missing."""
+    return _file_age_hours(os.path.join(data_dir, "data-snapshot.json"))
 
-    Returns the set of YYYY-MM-DD strings found on every pre/post earnings row.
-    Used to confirm the calendar was refreshed for the current send date rather
-    than carrying yesterday's reporters forward.
+
+def _calendar_total_rows(calendar):
+    """Total earnings rows across ALL dates (both pre/post buckets).
+
+    Zero means the calendar is fully empty -- a corruption / failed-refresh tell,
+    distinct from a healthy calendar that merely has no rows for one date.
     """
-    dates = set()
-    if not calendar:
-        return dates
-    for bucket in ("pre_earnings", "post_earnings"):
-        for e in calendar.get(bucket) or []:
-            edate = _first(e, "date", "earnings_date")
-            if edate:
-                dates.add(str(edate)[:10])
-    return dates
+    if not isinstance(calendar, dict):
+        return 0
+    return sum(len(calendar.get(b) or []) for b in ("pre_earnings", "post_earnings"))
 
 
 def write_freshness_alert(reason, *, send_date, hours_stale=None, alert_dir=None):
@@ -688,15 +689,20 @@ def write_freshness_alert(reason, *, send_date, hours_stale=None, alert_dir=None
 
 
 def check_daily_freshness(data_dir, *, send_date=None):
-    """Raise FreshnessGateError if the daily snapshot is too old or misdated.
+    """Raise FreshnessGateError if the daily snapshot or calendar is stale.
 
-    Two independent checks, either of which aborts the send:
-      1. data-snapshot.json mtime older than DAILY_SNAPSHOT_MAX_AGE_HOURS.
-      2. The "earnings today" calendar rows carry a date other than the send
-         date (a stale-calendar tell: yesterday's reporters carried forward).
+    Three independent checks, any of which aborts the send:
+      1. data-snapshot.json mtime older than DAILY_SNAPSHOT_MAX_AGE_HOURS (the
+         price quotes the whole briefing leans on are stale).
+      2. earnings_calendar.json mtime older than DAILY_CALENDAR_MAX_AGE_HOURS
+         (the calendar refresh failed to run -- the FILE itself is stale).
+      3. earnings_calendar.json has ZERO rows across ALL dates (full corruption
+         or a wiped calendar).
 
-    Check 2 only fires when the calendar has earnings rows at all -- an empty
-    calendar is a legitimate "nothing reports today" state, not staleness.
+    Critically, a fresh calendar that simply has no rows for the send date is
+    NOT a freshness failure: quiet sessions (e.g. Fridays after Q1 season) report
+    no earnings, and the briefing renders an honest "None today." That false
+    positive blocked the 2026-06-12 daily; the date-membership check is gone.
     """
     send_date = send_date or _today_et()
 
@@ -710,13 +716,23 @@ def check_daily_freshness(data_dir, *, send_date=None):
             f"(max {DAILY_SNAPSHOT_MAX_AGE_HOURS:.0f}h)",
             hours_stale=age, send_date=send_date)
 
-    calendar = _load_json(os.path.join(data_dir, "earnings_calendar.json"))
-    cal_dates = _earnings_today_dates(calendar)
-    if cal_dates and send_date not in cal_dates:
+    cal_path = os.path.join(data_dir, "earnings_calendar.json")
+    cal_age = _file_age_hours(cal_path)
+    if cal_age is None:
         raise FreshnessGateError(
-            "earnings_calendar.json carries no rows dated for the send date "
-            f"{send_date} (found {sorted(cal_dates)}) -- calendar is stale",
-            hours_stale=age, send_date=send_date)
+            "earnings_calendar.json is missing", send_date=send_date)
+    if cal_age > DAILY_CALENDAR_MAX_AGE_HOURS:
+        raise FreshnessGateError(
+            f"earnings_calendar.json is {cal_age:.1f}h old "
+            f"(max {DAILY_CALENDAR_MAX_AGE_HOURS:.0f}h) -- calendar refresh stale",
+            hours_stale=cal_age, send_date=send_date)
+
+    calendar = _load_json(cal_path)
+    if _calendar_total_rows(calendar) == 0:
+        raise FreshnessGateError(
+            "earnings_calendar.json has zero rows across all dates "
+            "-- calendar is empty/corrupt",
+            send_date=send_date)
 
 
 def check_weekly_freshness(data_dir=CANONICAL_DIR, *, send_date=None):
