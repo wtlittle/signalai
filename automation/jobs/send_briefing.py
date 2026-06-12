@@ -26,6 +26,17 @@ from __future__ import annotations
 
 import argparse
 import sys
+from datetime import datetime
+
+
+def _valid_date(s: str) -> str:
+    """argparse type for --date: enforce YYYY-MM-DD, return it unchanged."""
+    try:
+        datetime.strptime(s, "%Y-%m-%d")
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            f"--date must be YYYY-MM-DD, got {s!r}")
+    return s
 
 from automation.jobs.render_email import (
     CANONICAL_DIR,
@@ -61,7 +72,8 @@ def _fire_skip_alert(kind: str, exc: FreshnessGateError) -> None:
 def _run_daily(args) -> int:
     try:
         body = render_daily(args.data_dir,
-                            enforce_freshness=not args.no_freshness_gate)
+                            enforce_freshness=not args.no_freshness_gate,
+                            send_date=args.date)
     except FreshnessGateError as exc:
         write_freshness_alert(exc.reason, send_date=exc.send_date,
                               hours_stale=exc.hours_stale)
@@ -121,6 +133,10 @@ def main(argv=None) -> int:
     parser.add_argument("--output", required=True, help="Output text file path")
     parser.add_argument("--data-dir", default=CANONICAL_DIR,
                         help="Canonical data dir for the freshness gate")
+    parser.add_argument("--date", type=_valid_date, default=None,
+                        help="Send date YYYY-MM-DD for daily mode "
+                             "(default: today US Eastern). Supports backfills "
+                             "and cron reruns; ignored for weekly modes.")
     parser.add_argument("--no-freshness-gate", action="store_true",
                         help="Bypass the gate (ad-hoc use only)")
     args = parser.parse_args(argv)

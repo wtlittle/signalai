@@ -1435,15 +1435,20 @@ def _render_today_events(payload, today, now_utc=None):
     return lines
 
 
-def render_daily(data_dir, *, enforce_freshness=True):
+def render_daily(data_dir, *, enforce_freshness=True, send_date=None):
     """Render the full daily briefing body as plain text from canonical paths.
 
     When ``enforce_freshness`` is True (the default, and the path the cron
     takes), the freshness gate runs first and raises FreshnessGateError when the
     snapshot is stale or misdated -- the caller must catch it and alert rather
     than send. Set False only for ad-hoc renders of a known-stale snapshot.
+
+    ``send_date`` (YYYY-MM-DD) overrides the date the briefing is composed for;
+    it drives the freshness gate's earnings-date check, the title line, and the
+    "earnings today" / "yesterday's reactions" windows. Defaults to today in US
+    Eastern when not supplied, preserving the original cron behavior.
     """
-    send_date = _today_et()
+    send_date = send_date or _today_et()
     if enforce_freshness:
         check_daily_freshness(data_dir, send_date=send_date)
 
@@ -1495,6 +1500,9 @@ def main(argv=None):
     parser.add_argument("--output", required=True, help="Output text file path")
     parser.add_argument("--data-dir", default=CANONICAL_DIR,
                         help="Canonical data dir for daily mode")
+    parser.add_argument("--date", default=None,
+                        help="Send date YYYY-MM-DD for daily mode "
+                             "(default: today US Eastern). Supports backfills.")
     parser.add_argument("--no-freshness-gate", action="store_true",
                         help="Render daily even if the snapshot is stale "
                              "(ad-hoc use only; the cron must NOT pass this)")
@@ -1531,7 +1539,8 @@ def main(argv=None):
     else:  # daily
         try:
             body = render_daily(args.data_dir,
-                                enforce_freshness=not args.no_freshness_gate)
+                                enforce_freshness=not args.no_freshness_gate,
+                                send_date=args.date)
         except FreshnessGateError as exc:
             path = write_freshness_alert(
                 exc.reason, send_date=exc.send_date, hours_stale=exc.hours_stale)
