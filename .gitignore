@@ -5,3 +5,6 @@ node_modules/
 *.log
 .env
 data/cache/
+
+# Transient regen checkpoint (run artifact, not source)
+archive/briefings/_regen_checkpoint.json
