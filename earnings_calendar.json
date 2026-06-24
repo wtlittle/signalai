@@ -39,7 +39,11 @@
       "earnings_date": "2026-06-24",
       "ticker": "MU",
       "timing": "AMC",
-      "post_earnings_review": {}
+      "post_earnings_review": {
+        "stock_reaction_pct": 14.5,
+        "stock_reaction_basis_date": "2026-06-24",
+        "stock_reaction_calc_method": "postmarket_d"
+      }
     },
     {
       "company": "Paychex",
@@ -48,7 +52,11 @@
       "earnings_date": "2026-06-24",
       "ticker": "PAYX",
       "timing": "BMO",
-      "post_earnings_review": {}
+      "post_earnings_review": {
+        "stock_reaction_pct": -1.7,
+        "stock_reaction_basis_date": "2026-06-23",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
     }
   ],
   "pre_earnings": [
@@ -85,5 +93,5 @@
       "timing": "BMO"
     }
   ],
-  "updated": "2026-06-24T12:23:29+00:00"
+  "updated": "2026-06-24T23:00:14+00:00"
 }
