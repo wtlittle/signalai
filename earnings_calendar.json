@@ -1,62 +1,11 @@
 {
-  "updated": "2026-06-23T23:01:51+00:00",
-  "pre_earnings": [
-    {
-      "ticker": "MU",
-      "company": "Micron",
-      "date": "2026-06-24",
-      "earnings_date": "2026-06-24",
-      "days_until": 1,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "PAYX",
-      "company": "Paychex",
-      "date": "2026-06-24",
-      "earnings_date": "2026-06-24",
-      "days_until": 1,
-      "timing": "BMO"
-    },
-    {
-      "ticker": "MKC",
-      "company": "McCormick",
-      "date": "2026-06-25",
-      "earnings_date": "2026-06-25",
-      "days_until": 2,
-      "timing": "BMO"
-    },
-    {
-      "ticker": "NKE",
-      "company": "Nike",
-      "date": "2026-06-30",
-      "earnings_date": "2026-06-30",
-      "days_until": 7,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "STZ",
-      "company": "Constellation Brands",
-      "date": "2026-06-30",
-      "earnings_date": "2026-06-30",
-      "days_until": 7,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "GIS",
-      "company": "GIS",
-      "date": "2026-07-01",
-      "earnings_date": "2026-07-01",
-      "days_until": 8,
-      "timing": "BMO"
-    }
-  ],
   "post_earnings": [
     {
-      "ticker": "ACN",
       "company": "Accenture",
       "date": "2026-06-18",
+      "days_since": 6,
       "earnings_date": "2026-06-18",
-      "days_since": 5,
+      "ticker": "ACN",
       "timing": "BMO",
       "revenue_actual": 18044066000,
       "eps_actual": 2.93,
@@ -69,11 +18,11 @@
       }
     },
     {
-      "ticker": "ORCL",
       "company": "Oracle",
       "date": "2026-06-10",
+      "days_since": 14,
       "earnings_date": "2026-06-10",
-      "days_since": 13,
+      "ticker": "ORCL",
       "timing": "AMC",
       "revenue_actual": "$17.2B",
       "eps_actual": "$1.79",
@@ -82,6 +31,59 @@
         "stock_reaction_basis_date": "2026-06-10",
         "stock_reaction_calc_method": "eod_d_plus_1"
       }
+    },
+    {
+      "company": "Micron",
+      "date": "2026-06-24",
+      "days_since": 0,
+      "earnings_date": "2026-06-24",
+      "ticker": "MU",
+      "timing": "AMC",
+      "post_earnings_review": {}
+    },
+    {
+      "company": "Paychex",
+      "date": "2026-06-24",
+      "days_since": 0,
+      "earnings_date": "2026-06-24",
+      "ticker": "PAYX",
+      "timing": "BMO",
+      "post_earnings_review": {}
     }
-  ]
+  ],
+  "pre_earnings": [
+    {
+      "company": "McCormick",
+      "date": "2026-06-25",
+      "days_until": 1,
+      "earnings_date": "2026-06-25",
+      "ticker": "MKC",
+      "timing": "BMO"
+    },
+    {
+      "company": "Nike",
+      "date": "2026-06-30",
+      "days_until": 6,
+      "earnings_date": "2026-06-30",
+      "ticker": "NKE",
+      "timing": "AMC"
+    },
+    {
+      "company": "Constellation Brands",
+      "date": "2026-06-30",
+      "days_until": 6,
+      "earnings_date": "2026-06-30",
+      "ticker": "STZ",
+      "timing": "AMC"
+    },
+    {
+      "company": "GIS",
+      "date": "2026-07-01",
+      "days_until": 7,
+      "earnings_date": "2026-07-01",
+      "ticker": "GIS",
+      "timing": "BMO"
+    }
+  ],
+  "updated": "2026-06-24T12:23:29+00:00"
 }
