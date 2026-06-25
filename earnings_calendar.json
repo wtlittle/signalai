@@ -8,9 +8,9 @@
       "ticker": "MU",
       "timing": "AMC",
       "post_earnings_review": {
-        "stock_reaction_pct": 17.2,
+        "stock_reaction_pct": 15.7,
         "stock_reaction_basis_date": "2026-06-24",
-        "stock_reaction_calc_method": "premarket_d_plus_1"
+        "stock_reaction_calc_method": "eod_d_plus_1"
       }
     },
     {
@@ -50,7 +50,11 @@
       "earnings_date": "2026-06-25",
       "ticker": "MKC",
       "timing": "BMO",
-      "post_earnings_review": {}
+      "post_earnings_review": {
+        "stock_reaction_pct": 1.6,
+        "stock_reaction_basis_date": "2026-06-24",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
     }
   ],
   "pre_earnings": [
@@ -79,5 +83,5 @@
       "timing": "BMO"
     }
   ],
-  "updated": "2026-06-25T12:25:50+00:00"
+  "updated": "2026-06-25T23:09:37+00:00"
 }
