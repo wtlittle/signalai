@@ -63,7 +63,11 @@
       "earnings_date": "2026-06-30",
       "ticker": "NKE",
       "timing": "AMC",
-      "post_earnings_review": {}
+      "post_earnings_review": {
+        "stock_reaction_pct": -1.2,
+        "stock_reaction_basis_date": "2026-06-30",
+        "stock_reaction_calc_method": "postmarket_d"
+      }
     },
     {
       "company": "Constellation Brands",
@@ -82,7 +86,9 @@
       "guidanceEpsDeltaBasis": "vs_consensus",
       "guidanceProfitMetricUsed": "eps",
       "post_earnings_review": {
-        "stock_reaction_pct": -1.0
+        "stock_reaction_pct": 4.0,
+        "stock_reaction_basis_date": "2026-06-30",
+        "stock_reaction_calc_method": "postmarket_d"
       }
     }
   ],
@@ -128,5 +134,5 @@
       "timing": "BMO"
     }
   ],
-  "updated": "2026-06-30T12:19:16+00:00"
+  "updated": "2026-06-30T23:05:10+00:00"
 }
