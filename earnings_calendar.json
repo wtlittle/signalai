@@ -1,38 +1,11 @@
 {
-  "updated": "2026-06-29T14:11:57+00:00",
-  "pre_earnings": [
-    {
-      "ticker": "NKE",
-      "company": "Nike",
-      "date": "2026-06-30",
-      "earnings_date": "2026-06-30",
-      "days_until": 1,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "STZ",
-      "company": "Constellation Brands",
-      "date": "2026-06-30",
-      "earnings_date": "2026-06-30",
-      "days_until": 1,
-      "timing": "AMC"
-    },
-    {
-      "ticker": "GIS",
-      "company": "GIS",
-      "date": "2026-07-01",
-      "earnings_date": "2026-07-01",
-      "days_until": 2,
-      "timing": "BMO"
-    }
-  ],
   "post_earnings": [
     {
-      "ticker": "MKC",
       "company": "McCormick",
       "date": "2026-06-25",
+      "days_since": 5,
       "earnings_date": "2026-06-25",
-      "days_since": 4,
+      "ticker": "MKC",
       "timing": "BMO",
       "post_earnings_review": {
         "stock_reaction_pct": 1.6,
@@ -41,11 +14,11 @@
       }
     },
     {
-      "ticker": "MU",
       "company": "Micron",
       "date": "2026-06-24",
+      "days_since": 6,
       "earnings_date": "2026-06-24",
-      "days_since": 5,
+      "ticker": "MU",
       "timing": "AMC",
       "post_earnings_review": {
         "stock_reaction_pct": 15.7,
@@ -54,11 +27,11 @@
       }
     },
     {
-      "ticker": "PAYX",
       "company": "Paychex",
       "date": "2026-06-24",
+      "days_since": 6,
       "earnings_date": "2026-06-24",
-      "days_since": 5,
+      "ticker": "PAYX",
       "timing": "BMO",
       "post_earnings_review": {
         "stock_reaction_pct": -1.7,
@@ -67,11 +40,11 @@
       }
     },
     {
-      "ticker": "ACN",
       "company": "Accenture",
       "date": "2026-06-18",
+      "days_since": 12,
       "earnings_date": "2026-06-18",
-      "days_since": 11,
+      "ticker": "ACN",
       "timing": "BMO",
       "revenue_actual": 18044066000,
       "eps_actual": 2.93,
@@ -82,6 +55,78 @@
         "stock_reaction_basis_date": "2026-06-17",
         "stock_reaction_calc_method": "eod_bmo"
       }
+    },
+    {
+      "company": "Nike",
+      "date": "2026-06-30",
+      "days_since": 0,
+      "earnings_date": "2026-06-30",
+      "ticker": "NKE",
+      "timing": "AMC",
+      "post_earnings_review": {}
+    },
+    {
+      "company": "Constellation Brands",
+      "date": "2026-06-30",
+      "days_since": 0,
+      "earnings_date": "2026-06-30",
+      "ticker": "STZ",
+      "timing": "AMC",
+      "revenue_actual": "$1.92B",
+      "eps_actual": "$11.10",
+      "revenue_beat_miss": "beat (+102.1%)",
+      "eps_beat_miss": "beat (+9.5%)",
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": -1.0
+      }
     }
-  ]
+  ],
+  "pre_earnings": [
+    {
+      "company": "GIS",
+      "date": "2026-07-01",
+      "days_until": 1,
+      "earnings_date": "2026-07-01",
+      "ticker": "GIS",
+      "timing": "BMO"
+    },
+    {
+      "company": "Goldman Sachs",
+      "date": "2026-07-14",
+      "days_until": 14,
+      "earnings_date": "2026-07-14",
+      "ticker": "GS",
+      "timing": "BMO"
+    },
+    {
+      "company": "JPMorgan Chase",
+      "date": "2026-07-14",
+      "days_until": 14,
+      "earnings_date": "2026-07-14",
+      "ticker": "JPM",
+      "timing": "BMO"
+    },
+    {
+      "company": "Wells Fargo",
+      "date": "2026-07-14",
+      "days_until": 14,
+      "earnings_date": "2026-07-14",
+      "ticker": "WFC",
+      "timing": "BMO"
+    },
+    {
+      "company": "Bank of America",
+      "date": "2026-07-14",
+      "days_until": 14,
+      "earnings_date": "2026-07-14",
+      "ticker": "BAC",
+      "timing": "BMO"
+    }
+  ],
+  "updated": "2026-06-30T12:19:16+00:00"
 }
