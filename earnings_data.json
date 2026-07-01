@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-06-30",
+  "as_of": "2026-07-01",
   "pre_window_days": 14,
   "post_window_days": 14,
   "all_tickers": {
@@ -358,7 +358,8 @@
     },
     "NKE": {
       "earnings_dates": [
-        "2026-06-30"
+        "2026-06-30",
+        "2026-09-29"
       ]
     },
     "UNH": {
@@ -528,9 +529,7 @@
       ]
     },
     "SEMR": {
-      "earnings_dates": [
-        "2026-05-06"
-      ]
+      "earnings_dates": []
     },
     "ORCL": {
       "earnings_dates": [
@@ -724,7 +723,6 @@
     },
     "FANG": {
       "earnings_dates": [
-        "2026-05-04",
         "2026-08-03"
       ]
     },
@@ -1033,8 +1031,8 @@
   },
   "summary": {
     "total_tickers": 184,
-    "tickers_with_dates": 182,
+    "tickers_with_dates": 181,
     "pre_earnings_count": 7,
-    "post_earnings_count": 4
+    "post_earnings_count": 6
   }
 }
