@@ -8,9 +8,9 @@
       "ticker": "NKE",
       "timing": "AMC",
       "post_earnings_review": {
-        "stock_reaction_pct": -1.1,
+        "stock_reaction_pct": 4.9,
         "stock_reaction_basis_date": "2026-06-30",
-        "stock_reaction_calc_method": "premarket_d_plus_1"
+        "stock_reaction_calc_method": "eod_d_plus_1"
       }
     },
     {
@@ -30,9 +30,9 @@
       "guidanceEpsDeltaBasis": "vs_consensus",
       "guidanceProfitMetricUsed": "eps",
       "post_earnings_review": {
-        "stock_reaction_pct": 2.1,
+        "stock_reaction_pct": -1.6,
         "stock_reaction_basis_date": "2026-06-30",
-        "stock_reaction_calc_method": "premarket_d_plus_1"
+        "stock_reaction_calc_method": "eod_d_plus_1"
       }
     },
     {
@@ -98,7 +98,11 @@
       "earnings_date": "2026-07-01",
       "ticker": "GIS",
       "timing": "BMO",
-      "post_earnings_review": {}
+      "post_earnings_review": {
+        "stock_reaction_pct": 8.5,
+        "stock_reaction_basis_date": "2026-06-30",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
     }
   ],
   "pre_earnings": [
@@ -151,5 +155,5 @@
       "timing": "AMC"
     }
   ],
-  "updated": "2026-07-01T12:42:33+00:00"
+  "updated": "2026-07-01T23:03:34+00:00"
 }
