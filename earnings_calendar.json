@@ -1,74 +1,6 @@
 {
   "post_earnings": [
     {
-      "company": "Goldman Sachs",
-      "date": "2026-07-14",
-      "days_since": 1,
-      "earnings_date": "2026-07-14",
-      "ticker": "GS",
-      "timing": "BMO",
-      "revenue_actual": "$17.23B",
-      "eps_actual": "$17.55",
-      "revenue_beat_miss": "beat (+1.7%)",
-      "eps_beat_miss": "beat (+6.6%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 2.1,
-        "stock_reaction_basis_date": "2026-04-13",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "company": "JPMorgan Chase",
-      "date": "2026-07-14",
-      "days_since": 1,
-      "earnings_date": "2026-07-14",
-      "ticker": "JPM",
-      "timing": "BMO",
-      "revenue_actual": "$50.5B",
-      "eps_actual": "$5.94",
-      "revenue_beat_miss": "beat (+12.2%)",
-      "eps_beat_miss": "beat (+10.0%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 2.5,
-        "stock_reaction_basis_date": "2026-07-13",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
-      "company": "Wells Fargo",
-      "date": "2026-07-14",
-      "days_since": 1,
-      "earnings_date": "2026-07-14",
-      "ticker": "WFC",
-      "timing": "BMO",
-      "revenue_actual": "$21.45B",
-      "eps_actual": "$1.60",
-      "revenue_beat_miss": "miss (-1.4%)",
-      "eps_beat_miss": "beat (+1.3%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -2.7,
-        "stock_reaction_basis_date": "2026-07-13",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
-      "company": "Bank of America",
-      "date": "2026-07-14",
-      "days_since": 1,
-      "earnings_date": "2026-07-14",
-      "ticker": "BAC",
-      "timing": "BMO",
-      "revenue_actual": "$30.3B",
-      "eps_actual": "$1.11",
-      "revenue_beat_miss": "beat (+6.3%)",
-      "eps_beat_miss": "beat (+9.9%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -1.5,
-        "stock_reaction_basis_date": "2026-04-15",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
       "company": "GIS",
       "date": "2026-07-01",
       "days_since": 14,
@@ -88,7 +20,11 @@
       "earnings_date": "2026-07-15",
       "ticker": "ELV",
       "timing": "BMO",
-      "post_earnings_review": {}
+      "post_earnings_review": {
+        "stock_reaction_pct": -8.5,
+        "stock_reaction_basis_date": "2026-07-14",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
     },
     {
       "company": "Morgan Stanley",
@@ -114,7 +50,11 @@
       "earnings_date": "2026-07-15",
       "ticker": "UAL",
       "timing": "AMC",
-      "post_earnings_review": {}
+      "post_earnings_review": {
+        "stock_reaction_pct": -2.5,
+        "stock_reaction_basis_date": "2026-07-15",
+        "stock_reaction_calc_method": "postmarket_d"
+      }
     }
   ],
   "pre_earnings": [
@@ -463,6 +403,14 @@
       "timing": "AMC"
     },
     {
+      "company": "FICO",
+      "date": "2026-07-29",
+      "days_until": 14,
+      "earnings_date": "2026-07-29",
+      "ticker": "FICO",
+      "timing": "AMC"
+    },
+    {
       "company": "AEM",
       "date": "2026-07-29",
       "days_until": 14,
@@ -503,5 +451,5 @@
       "timing": "BMO"
     }
   ],
-  "updated": "2026-07-15T12:00:44+00:00"
+  "updated": "2026-07-15T23:14:03+00:00"
 }
