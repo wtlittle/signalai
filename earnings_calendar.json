@@ -14,23 +14,6 @@
       }
     },
     {
-      "company": "Morgan Stanley",
-      "date": "2026-07-15",
-      "days_since": 1,
-      "earnings_date": "2026-07-15",
-      "ticker": "MS",
-      "timing": "BMO",
-      "revenue_actual": "$20.6B",
-      "eps_actual": "$3.43",
-      "revenue_beat_miss": "beat (+14.4%)",
-      "eps_beat_miss": "beat (+14.3%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -2.2,
-        "stock_reaction_basis_date": "2026-04-15",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
       "company": "United Airlines",
       "date": "2026-07-15",
       "days_since": 1,
@@ -38,9 +21,9 @@
       "ticker": "UAL",
       "timing": "AMC",
       "post_earnings_review": {
-        "stock_reaction_pct": -3.3,
+        "stock_reaction_pct": -1.8,
         "stock_reaction_basis_date": "2026-07-15",
-        "stock_reaction_calc_method": "premarket_d_plus_1"
+        "stock_reaction_calc_method": "eod_d_plus_1"
       }
     },
     {
@@ -58,6 +41,43 @@
         "stock_reaction_pct": 2.0,
         "stock_reaction_basis_date": "2026-04-16",
         "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "company": "Datadog",
+      "date": "2026-07-16",
+      "days_since": 0,
+      "earnings_date": "2026-07-16",
+      "ticker": "DDOG",
+      "timing": "BMO",
+      "revenue_actual": "$1.01B",
+      "eps_actual": "$0.60",
+      "revenue_beat_miss": "beat (+3.0%)",
+      "eps_beat_miss": "beat (+15.9%)",
+      "guidanceRevenueDeltaPct": 0.04854368932038835,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaPct": 0.06194690265486732,
+      "guidanceEpsDeltaAbs": 0.14000000000000012,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceFYNorthStarMetric": "revenue",
+      "guidanceFYNorthStarUnits": "USD millions",
+      "guidanceFYTopLineNorthStarMetric": "revenue",
+      "guidanceFYTopLineNorthStarUnits": "USD millions",
+      "guidanceFYBottomLineNorthStarMetric": "EPS",
+      "guidanceFYBottomLineNorthStarUnits": "USD",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
+      "guidanceNextQTopLineNorthStarMetric": "revenue",
+      "guidanceNextQTopLineNorthStarUnits": "USD millions",
+      "guidanceNextQBottomLineNorthStarMetric": "EPS",
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.8,
+        "stock_reaction_basis_date": "2026-07-15",
+        "stock_reaction_calc_method": "eod_bmo"
       }
     },
     {
@@ -567,5 +587,5 @@
       "timing": "AMC"
     }
   ],
-  "updated": "2026-07-16T12:11:42+00:00"
+  "updated": "2026-07-16T23:15:05+00:00"
 }
