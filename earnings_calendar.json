@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-17T11:54:48+00:00",
+  "updated": "2026-07-17T23:00:41+00:00",
   "pre_earnings": [
     {
       "ticker": "NOC",
@@ -98,14 +98,6 @@
       "timing": "BMO"
     },
     {
-      "ticker": "FIX",
-      "company": "Comfort Systems",
-      "date": "2026-07-23",
-      "earnings_date": "2026-07-23",
-      "days_until": 6,
-      "timing": "AMC"
-    },
-    {
       "ticker": "INTC",
       "company": "Intel",
       "date": "2026-07-23",
@@ -162,14 +154,6 @@
       "timing": "AMC"
     },
     {
-      "ticker": "NUE",
-      "company": "Nucor",
-      "date": "2026-07-27",
-      "earnings_date": "2026-07-27",
-      "days_until": 10,
-      "timing": "AMC"
-    },
-    {
       "ticker": "VRNS",
       "company": "Varonis",
       "date": "2026-07-28",
@@ -194,28 +178,12 @@
       "timing": "AMC"
     },
     {
-      "ticker": "STX",
-      "company": "Seagate",
-      "date": "2026-07-28",
-      "earnings_date": "2026-07-28",
-      "days_until": 11,
-      "timing": "AMC"
-    },
-    {
       "ticker": "TER",
       "company": "Teradyne",
       "date": "2026-07-28",
       "earnings_date": "2026-07-28",
       "days_until": 11,
       "timing": "AMC"
-    },
-    {
-      "ticker": "GLW",
-      "company": "Corning",
-      "date": "2026-07-28",
-      "earnings_date": "2026-07-28",
-      "days_until": 11,
-      "timing": "BMO"
     },
     {
       "ticker": "MANH",
@@ -410,14 +378,6 @@
       "timing": "BMO"
     },
     {
-      "ticker": "MHK",
-      "company": "MHK",
-      "date": "2026-07-30",
-      "earnings_date": "2026-07-30",
-      "days_until": 13,
-      "timing": "AMC"
-    },
-    {
       "ticker": "LKQ",
       "company": "LKQ",
       "date": "2026-07-30",
@@ -474,33 +434,6 @@
       "post_earnings_review": {
         "stock_reaction_pct": 1.9,
         "stock_reaction_basis_date": "2026-01-21",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "ticker": "ABT",
-      "company": "ABT",
-      "date": "2026-07-16",
-      "earnings_date": "2026-07-16",
-      "days_since": 1,
-      "timing": "BMO",
-      "revenue_actual": "$11.16B",
-      "eps_actual": "$1.15",
-      "revenue_beat_miss": "beat (+1.2%)",
-      "eps_beat_miss": "in-line",
-      "guidanceEpsDeltaPct": -0.03521126760563368,
-      "guidanceEpsDeltaAbs": -0.1999999999999993,
-      "guidanceEpsPriorSource": "prior_guidance",
-      "guidanceEpsDeltaBasis": "vs_prior_guide",
-      "guidanceEpsStreetDeltaPct": -0.03521126760563368,
-      "guidanceEpsStreetDeltaAbs": -0.1999999999999993,
-      "guidanceProfitMetricUsed": "eps",
-      "guidanceNextQEpsDeltaPct": -0.044776119402985114,
-      "guidanceNextQEpsDeltaAbs": -0.06000000000000005,
-      "guidanceNextQEpsPriorSource": "consensus",
-      "post_earnings_review": {
-        "stock_reaction_pct": 1.4,
-        "stock_reaction_basis_date": "2026-04-16",
         "stock_reaction_calc_method": "amc_d_plus_1"
       }
     },
