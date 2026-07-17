@@ -1,37 +1,454 @@
 {
+  "updated": "2026-07-17T11:54:48+00:00",
+  "pre_earnings": [
+    {
+      "ticker": "NOC",
+      "company": "NOC",
+      "date": "2026-07-21",
+      "earnings_date": "2026-07-21",
+      "days_until": 4,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "COF",
+      "company": "Capital One",
+      "date": "2026-07-21",
+      "earnings_date": "2026-07-21",
+      "days_until": 4,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "SYF",
+      "company": "Synchrony Financial",
+      "date": "2026-07-21",
+      "earnings_date": "2026-07-21",
+      "days_until": 4,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "DHR",
+      "company": "Danaher",
+      "date": "2026-07-21",
+      "earnings_date": "2026-07-21",
+      "days_until": 4,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "VMI",
+      "company": "VMI",
+      "date": "2026-07-21",
+      "earnings_date": "2026-07-21",
+      "days_until": 4,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "GOOG",
+      "company": "Google",
+      "date": "2026-07-22",
+      "earnings_date": "2026-07-22",
+      "days_until": 5,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "NOW",
+      "company": "ServiceNow",
+      "date": "2026-07-22",
+      "earnings_date": "2026-07-22",
+      "days_until": 5,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "GEV",
+      "company": "GE Vernova",
+      "date": "2026-07-22",
+      "earnings_date": "2026-07-22",
+      "days_until": 5,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "IBM",
+      "company": "IBM",
+      "date": "2026-07-22",
+      "earnings_date": "2026-07-22",
+      "days_until": 5,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "KALU",
+      "company": "KALU",
+      "date": "2026-07-22",
+      "earnings_date": "2026-07-22",
+      "days_until": 5,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "TMO",
+      "company": "Thermo Fisher",
+      "date": "2026-07-23",
+      "earnings_date": "2026-07-23",
+      "days_until": 6,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "CMCSA",
+      "company": "Comcast",
+      "date": "2026-07-23",
+      "earnings_date": "2026-07-23",
+      "days_until": 6,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "FIX",
+      "company": "Comfort Systems",
+      "date": "2026-07-23",
+      "earnings_date": "2026-07-23",
+      "days_until": 6,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "INTC",
+      "company": "Intel",
+      "date": "2026-07-23",
+      "earnings_date": "2026-07-23",
+      "days_until": 6,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "RNG",
+      "company": "RingCentral",
+      "date": "2026-07-23",
+      "earnings_date": "2026-07-23",
+      "days_until": 6,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "ROP",
+      "company": "Roper Technologies",
+      "date": "2026-07-23",
+      "earnings_date": "2026-07-23",
+      "days_until": 6,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "FCX",
+      "company": "Freeport-McMoRan",
+      "date": "2026-07-23",
+      "earnings_date": "2026-07-23",
+      "days_until": 6,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "NEM",
+      "company": "Newmont",
+      "date": "2026-07-23",
+      "earnings_date": "2026-07-23",
+      "days_until": 6,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "BKR",
+      "company": "BKR",
+      "date": "2026-07-26",
+      "earnings_date": "2026-07-26",
+      "days_until": 9,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "CDNS",
+      "company": "Cadence",
+      "date": "2026-07-27",
+      "earnings_date": "2026-07-27",
+      "days_until": 10,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "NUE",
+      "company": "Nucor",
+      "date": "2026-07-27",
+      "earnings_date": "2026-07-27",
+      "days_until": 10,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "VRNS",
+      "company": "Varonis",
+      "date": "2026-07-28",
+      "earnings_date": "2026-07-28",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "ACGL",
+      "company": "Arch Capital",
+      "date": "2026-07-28",
+      "earnings_date": "2026-07-28",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "MDLZ",
+      "company": "Mondelez",
+      "date": "2026-07-28",
+      "earnings_date": "2026-07-28",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "STX",
+      "company": "Seagate",
+      "date": "2026-07-28",
+      "earnings_date": "2026-07-28",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "TER",
+      "company": "Teradyne",
+      "date": "2026-07-28",
+      "earnings_date": "2026-07-28",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "GLW",
+      "company": "Corning",
+      "date": "2026-07-28",
+      "earnings_date": "2026-07-28",
+      "days_until": 11,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "MANH",
+      "company": "Manhattan Associates",
+      "date": "2026-07-28",
+      "earnings_date": "2026-07-28",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "IQV",
+      "company": "IQV",
+      "date": "2026-07-28",
+      "earnings_date": "2026-07-28",
+      "days_until": 11,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "OMC",
+      "company": "OMC",
+      "date": "2026-07-28",
+      "earnings_date": "2026-07-28",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "META",
+      "company": "Meta",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "MSFT",
+      "company": "Microsoft",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "ARM",
+      "company": "Arm",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "FTNT",
+      "company": "Fortinet",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "TENB",
+      "company": "Tenable",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "VRT",
+      "company": "VRT",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "PTC",
+      "company": "PTC",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "PCOR",
+      "company": "Procore",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "TYL",
+      "company": "Tyler Technologies",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "FICO",
+      "company": "FICO",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "AEM",
+      "company": "AEM",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "ADP",
+      "company": "ADP",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "GNRC",
+      "company": "Generac",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "GEHC",
+      "company": "GEHC",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "CTSH",
+      "company": "CTSH",
+      "date": "2026-07-29",
+      "earnings_date": "2026-07-29",
+      "days_until": 12,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "AMZN",
+      "company": "Amazon",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "COIN",
+      "company": "Coinbase",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "LPLA",
+      "company": "LPL Financial",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "CHKP",
+      "company": "Check Point",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "GDDY",
+      "company": "GoDaddy",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "VLO",
+      "company": "VLO",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "MHK",
+      "company": "MHK",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "LKQ",
+      "company": "LKQ",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "EMN",
+      "company": "EMN",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "CTVA",
+      "company": "CTVA",
+      "date": "2026-07-30",
+      "earnings_date": "2026-07-30",
+      "days_until": 13,
+      "timing": "AMC"
+    }
+  ],
   "post_earnings": [
     {
-      "company": "Elevance Health",
-      "date": "2026-07-15",
-      "days_since": 1,
-      "earnings_date": "2026-07-15",
-      "ticker": "ELV",
-      "timing": "BMO",
-      "post_earnings_review": {
-        "stock_reaction_pct": -8.5,
-        "stock_reaction_basis_date": "2026-07-14",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
-      "company": "United Airlines",
-      "date": "2026-07-15",
-      "days_since": 1,
-      "earnings_date": "2026-07-15",
-      "ticker": "UAL",
-      "timing": "AMC",
-      "post_earnings_review": {
-        "stock_reaction_pct": -1.8,
-        "stock_reaction_basis_date": "2026-07-15",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      }
-    },
-    {
+      "ticker": "TSM",
       "company": "TSMC",
       "date": "2026-07-16",
-      "days_since": 0,
       "earnings_date": "2026-07-16",
-      "ticker": "TSM",
+      "days_since": 1,
       "timing": "BMO",
       "revenue_actual": "$35.9B",
       "eps_actual": "$22.08",
@@ -44,48 +461,11 @@
       }
     },
     {
-      "company": "Datadog",
-      "date": "2026-07-16",
-      "days_since": 0,
-      "earnings_date": "2026-07-16",
-      "ticker": "DDOG",
-      "timing": "BMO",
-      "revenue_actual": "$1.01B",
-      "eps_actual": "$0.60",
-      "revenue_beat_miss": "beat (+3.0%)",
-      "eps_beat_miss": "beat (+15.9%)",
-      "guidanceRevenueDeltaPct": 0.04854368932038835,
-      "guidanceRevenuePriorSource": "consensus",
-      "guidanceRevenueDeltaBasis": "vs_consensus",
-      "guidanceEpsDeltaPct": 0.06194690265486732,
-      "guidanceEpsDeltaAbs": 0.14000000000000012,
-      "guidanceEpsPriorSource": "consensus",
-      "guidanceEpsDeltaBasis": "vs_consensus",
-      "guidanceProfitMetricUsed": "eps",
-      "guidanceFYNorthStarMetric": "revenue",
-      "guidanceFYNorthStarUnits": "USD millions",
-      "guidanceFYTopLineNorthStarMetric": "revenue",
-      "guidanceFYTopLineNorthStarUnits": "USD millions",
-      "guidanceFYBottomLineNorthStarMetric": "EPS",
-      "guidanceFYBottomLineNorthStarUnits": "USD",
-      "guidanceNextQNorthStarMetric": "revenue",
-      "guidanceNextQNorthStarUnits": "USD millions",
-      "guidanceNextQTopLineNorthStarMetric": "revenue",
-      "guidanceNextQTopLineNorthStarUnits": "USD millions",
-      "guidanceNextQBottomLineNorthStarMetric": "EPS",
-      "guidanceNextQBottomLineNorthStarUnits": "USD",
-      "post_earnings_review": {
-        "stock_reaction_pct": -0.8,
-        "stock_reaction_basis_date": "2026-07-15",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
+      "ticker": "UNH",
       "company": "UnitedHealth",
       "date": "2026-07-16",
-      "days_since": 0,
       "earnings_date": "2026-07-16",
-      "ticker": "UNH",
+      "days_since": 1,
       "timing": "BMO",
       "revenue_actual": 111721000000,
       "eps_actual": "$2.11",
@@ -98,11 +478,11 @@
       }
     },
     {
+      "ticker": "ABT",
       "company": "ABT",
       "date": "2026-07-16",
-      "days_since": 0,
       "earnings_date": "2026-07-16",
-      "ticker": "ABT",
+      "days_since": 1,
       "timing": "BMO",
       "revenue_actual": "$11.16B",
       "eps_actual": "$1.15",
@@ -125,11 +505,11 @@
       }
     },
     {
+      "ticker": "NFLX",
       "company": "Netflix",
       "date": "2026-07-16",
-      "days_since": 0,
       "earnings_date": "2026-07-16",
-      "ticker": "NFLX",
+      "days_since": 1,
       "timing": "AMC",
       "revenue_actual": "$12.25B",
       "eps_actual": "$1.23",
@@ -143,449 +523,32 @@
         "stock_reaction_basis_date": "2026-04-16",
         "stock_reaction_calc_method": "amc_d_plus_1"
       }
+    },
+    {
+      "ticker": "ELV",
+      "company": "Elevance Health",
+      "date": "2026-07-15",
+      "earnings_date": "2026-07-15",
+      "days_since": 2,
+      "timing": "BMO",
+      "post_earnings_review": {
+        "stock_reaction_pct": -8.5,
+        "stock_reaction_basis_date": "2026-07-14",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
+    },
+    {
+      "ticker": "UAL",
+      "company": "United Airlines",
+      "date": "2026-07-15",
+      "earnings_date": "2026-07-15",
+      "days_since": 2,
+      "timing": "AMC",
+      "post_earnings_review": {
+        "stock_reaction_pct": -1.8,
+        "stock_reaction_basis_date": "2026-07-15",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
     }
-  ],
-  "pre_earnings": [
-    {
-      "company": "NOC",
-      "date": "2026-07-21",
-      "days_until": 5,
-      "earnings_date": "2026-07-21",
-      "ticker": "NOC",
-      "timing": "BMO"
-    },
-    {
-      "company": "Capital One",
-      "date": "2026-07-21",
-      "days_until": 5,
-      "earnings_date": "2026-07-21",
-      "ticker": "COF",
-      "timing": "AMC"
-    },
-    {
-      "company": "Synchrony Financial",
-      "date": "2026-07-21",
-      "days_until": 5,
-      "earnings_date": "2026-07-21",
-      "ticker": "SYF",
-      "timing": "BMO"
-    },
-    {
-      "company": "Danaher",
-      "date": "2026-07-21",
-      "days_until": 5,
-      "earnings_date": "2026-07-21",
-      "ticker": "DHR",
-      "timing": "BMO"
-    },
-    {
-      "company": "VMI",
-      "date": "2026-07-21",
-      "days_until": 5,
-      "earnings_date": "2026-07-21",
-      "ticker": "VMI",
-      "timing": "BMO"
-    },
-    {
-      "company": "Google",
-      "date": "2026-07-22",
-      "days_until": 6,
-      "earnings_date": "2026-07-22",
-      "ticker": "GOOG",
-      "timing": "AMC"
-    },
-    {
-      "company": "ServiceNow",
-      "date": "2026-07-22",
-      "days_until": 6,
-      "earnings_date": "2026-07-22",
-      "ticker": "NOW",
-      "timing": "AMC"
-    },
-    {
-      "company": "GE Vernova",
-      "date": "2026-07-22",
-      "days_until": 6,
-      "earnings_date": "2026-07-22",
-      "ticker": "GEV",
-      "timing": "BMO"
-    },
-    {
-      "company": "IBM",
-      "date": "2026-07-22",
-      "days_until": 6,
-      "earnings_date": "2026-07-22",
-      "ticker": "IBM",
-      "timing": "AMC"
-    },
-    {
-      "company": "KALU",
-      "date": "2026-07-22",
-      "days_until": 6,
-      "earnings_date": "2026-07-22",
-      "ticker": "KALU",
-      "timing": "AMC"
-    },
-    {
-      "company": "Thermo Fisher",
-      "date": "2026-07-23",
-      "days_until": 7,
-      "earnings_date": "2026-07-23",
-      "ticker": "TMO",
-      "timing": "BMO"
-    },
-    {
-      "company": "Comcast",
-      "date": "2026-07-23",
-      "days_until": 7,
-      "earnings_date": "2026-07-23",
-      "ticker": "CMCSA",
-      "timing": "BMO"
-    },
-    {
-      "company": "Comfort Systems",
-      "date": "2026-07-23",
-      "days_until": 7,
-      "earnings_date": "2026-07-23",
-      "ticker": "FIX",
-      "timing": "AMC"
-    },
-    {
-      "company": "Intel",
-      "date": "2026-07-23",
-      "days_until": 7,
-      "earnings_date": "2026-07-23",
-      "ticker": "INTC",
-      "timing": "AMC"
-    },
-    {
-      "company": "RingCentral",
-      "date": "2026-07-23",
-      "days_until": 7,
-      "earnings_date": "2026-07-23",
-      "ticker": "RNG",
-      "timing": "AMC"
-    },
-    {
-      "company": "Roper Technologies",
-      "date": "2026-07-23",
-      "days_until": 7,
-      "earnings_date": "2026-07-23",
-      "ticker": "ROP",
-      "timing": "BMO"
-    },
-    {
-      "company": "Freeport-McMoRan",
-      "date": "2026-07-23",
-      "days_until": 7,
-      "earnings_date": "2026-07-23",
-      "ticker": "FCX",
-      "timing": "BMO"
-    },
-    {
-      "company": "Newmont",
-      "date": "2026-07-23",
-      "days_until": 7,
-      "earnings_date": "2026-07-23",
-      "ticker": "NEM",
-      "timing": "AMC"
-    },
-    {
-      "company": "BKR",
-      "date": "2026-07-26",
-      "days_until": 10,
-      "earnings_date": "2026-07-26",
-      "ticker": "BKR",
-      "timing": "AMC"
-    },
-    {
-      "company": "Cadence",
-      "date": "2026-07-27",
-      "days_until": 11,
-      "earnings_date": "2026-07-27",
-      "ticker": "CDNS",
-      "timing": "AMC"
-    },
-    {
-      "company": "Nucor",
-      "date": "2026-07-27",
-      "days_until": 11,
-      "earnings_date": "2026-07-27",
-      "ticker": "NUE",
-      "timing": "AMC"
-    },
-    {
-      "company": "Varonis",
-      "date": "2026-07-28",
-      "days_until": 12,
-      "earnings_date": "2026-07-28",
-      "ticker": "VRNS",
-      "timing": "AMC"
-    },
-    {
-      "company": "Arch Capital",
-      "date": "2026-07-28",
-      "days_until": 12,
-      "earnings_date": "2026-07-28",
-      "ticker": "ACGL",
-      "timing": "AMC"
-    },
-    {
-      "company": "Mondelez",
-      "date": "2026-07-28",
-      "days_until": 12,
-      "earnings_date": "2026-07-28",
-      "ticker": "MDLZ",
-      "timing": "AMC"
-    },
-    {
-      "company": "Seagate",
-      "date": "2026-07-28",
-      "days_until": 12,
-      "earnings_date": "2026-07-28",
-      "ticker": "STX",
-      "timing": "AMC"
-    },
-    {
-      "company": "Teradyne",
-      "date": "2026-07-28",
-      "days_until": 12,
-      "earnings_date": "2026-07-28",
-      "ticker": "TER",
-      "timing": "AMC"
-    },
-    {
-      "company": "Corning",
-      "date": "2026-07-28",
-      "days_until": 12,
-      "earnings_date": "2026-07-28",
-      "ticker": "GLW",
-      "timing": "BMO"
-    },
-    {
-      "company": "Manhattan Associates",
-      "date": "2026-07-28",
-      "days_until": 12,
-      "earnings_date": "2026-07-28",
-      "ticker": "MANH",
-      "timing": "AMC"
-    },
-    {
-      "company": "IQV",
-      "date": "2026-07-28",
-      "days_until": 12,
-      "earnings_date": "2026-07-28",
-      "ticker": "IQV",
-      "timing": "BMO"
-    },
-    {
-      "company": "OMC",
-      "date": "2026-07-28",
-      "days_until": 12,
-      "earnings_date": "2026-07-28",
-      "ticker": "OMC",
-      "timing": "AMC"
-    },
-    {
-      "company": "Meta",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "META",
-      "timing": "AMC"
-    },
-    {
-      "company": "Microsoft",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "MSFT",
-      "timing": "AMC"
-    },
-    {
-      "company": "Arm",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "ARM",
-      "timing": "AMC"
-    },
-    {
-      "company": "Fortinet",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "FTNT",
-      "timing": "AMC"
-    },
-    {
-      "company": "Tenable",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "TENB",
-      "timing": "AMC"
-    },
-    {
-      "company": "VRT",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "VRT",
-      "timing": "BMO"
-    },
-    {
-      "company": "PTC",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "PTC",
-      "timing": "AMC"
-    },
-    {
-      "company": "Procore",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "PCOR",
-      "timing": "AMC"
-    },
-    {
-      "company": "Tyler Technologies",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "TYL",
-      "timing": "AMC"
-    },
-    {
-      "company": "FICO",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "FICO",
-      "timing": "AMC"
-    },
-    {
-      "company": "AEM",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "AEM",
-      "timing": "AMC"
-    },
-    {
-      "company": "ADP",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "ADP",
-      "timing": "BMO"
-    },
-    {
-      "company": "Generac",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "GNRC",
-      "timing": "BMO"
-    },
-    {
-      "company": "GEHC",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "GEHC",
-      "timing": "BMO"
-    },
-    {
-      "company": "CTSH",
-      "date": "2026-07-29",
-      "days_until": 13,
-      "earnings_date": "2026-07-29",
-      "ticker": "CTSH",
-      "timing": "BMO"
-    },
-    {
-      "company": "Amazon",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "AMZN",
-      "timing": "AMC"
-    },
-    {
-      "company": "Coinbase",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "COIN",
-      "timing": "AMC"
-    },
-    {
-      "company": "LPL Financial",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "LPLA",
-      "timing": "AMC"
-    },
-    {
-      "company": "Check Point",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "CHKP",
-      "timing": "BMO"
-    },
-    {
-      "company": "GoDaddy",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "GDDY",
-      "timing": "AMC"
-    },
-    {
-      "company": "VLO",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "VLO",
-      "timing": "BMO"
-    },
-    {
-      "company": "MHK",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "MHK",
-      "timing": "AMC"
-    },
-    {
-      "company": "LKQ",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "LKQ",
-      "timing": "BMO"
-    },
-    {
-      "company": "EMN",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "EMN",
-      "timing": "AMC"
-    },
-    {
-      "company": "CTVA",
-      "date": "2026-07-30",
-      "days_until": 14,
-      "earnings_date": "2026-07-30",
-      "ticker": "CTVA",
-      "timing": "AMC"
-    }
-  ],
-  "updated": "2026-07-16T23:15:05+00:00"
+  ]
 }
