@@ -1,15 +1,20 @@
 {
   "ticker": "CHKP",
-  "scanned_at": "2026-07-17T22:29:02.458037Z",
+  "scanned_at": "2026-07-20T22:38:21.736827Z",
   "payload": {
     "has_material_update": true,
     "items": [
       {
-        "headline": "Check Point discloses and fixes VPN security flaw affecting Remote Access and Mobile Access gateways, notes unauthorized access instances but deems financial impact not reasonably likely to be material so far",
-        "impact": "negative",
+        "headline": "Check Point discloses and fixes VPN security flaw affecting Remote Access and Mobile Access gateways; reports unauthorized access in some customer environments but deems matter not reasonably likely to be material financially",
+        "impact": "neutral",
         "url": "https://www.stocktitan.net/sec-filings/CHKP/6-k-check-point-software-technologies-ltd-current-report-foreign-issu-33c620868d6d.html"
+      },
+      {
+        "headline": "Check Point warns of critical zero-day authentication bypass in Remote Access VPN and Mobile Access, exploited since early May (CVE-2026-50751), now added to CISA Known Exploited Vulnerabilities catalog",
+        "impact": "negative",
+        "url": "https://www.cybersecuritydive.com/news/check-point-zero-day-ransomware/822372/"
       }
     ],
-    "catalyst_type": "product"
+    "catalyst_type": "regulatory"
   }
 }
