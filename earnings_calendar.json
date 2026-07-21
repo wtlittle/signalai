@@ -114,7 +114,11 @@
       "earnings_date": "2026-07-21",
       "ticker": "NOC",
       "timing": "BMO",
-      "post_earnings_review": {}
+      "post_earnings_review": {
+        "stock_reaction_pct": -2.2,
+        "stock_reaction_basis_date": "2026-07-20",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
     },
     {
       "company": "Capital One",
@@ -174,7 +178,11 @@
       "earnings_date": "2026-07-21",
       "ticker": "VMI",
       "timing": "BMO",
-      "post_earnings_review": {}
+      "post_earnings_review": {
+        "stock_reaction_pct": -3.9,
+        "stock_reaction_basis_date": "2026-07-20",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
     }
   ],
   "pre_earnings": [
@@ -755,5 +763,5 @@
       "timing": "BMO"
     }
   ],
-  "updated": "2026-07-21T12:49:48+00:00"
+  "updated": "2026-07-21T23:26:19+00:00"
 }
