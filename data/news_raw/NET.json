@@ -1,35 +1,20 @@
 {
   "ticker": "NET",
-  "scanned_at": "2026-05-21T22:55:20.304191Z",
+  "scanned_at": "2026-07-23T22:40:08.276195Z",
   "payload": {
     "has_material_update": true,
     "items": [
       {
-        "headline": "Cloudflare outage causes widespread 500 errors, taking down major sites including X and ChatGPT; company cites spike in unusual traffic and later rules out cyberattack",
+        "headline": "Cloudflare is investigating elevated error rates affecting R2 and dependent services such as Stream, Pipelines, and Log Explorer",
         "impact": "negative",
-        "url": "https://www.tomshardware.com/news/live/cloudflare-outage-under-investigation-as-twitter-downdetector-go-down-company-confirms-global-network-issue-clone"
+        "url": "https://www.cloudflarestatus.com/"
       },
       {
-        "headline": "Cloudflare says it has resolved network issues that caused outages at X, League of Legends and other apps; services now operating normally",
-        "impact": "neutral",
-        "url": "https://www.cbsnews.com/news/cloudflare-500-error-outage-x-league-of-legends-down-not-working/"
-      },
-      {
-        "headline": "Cloudflare outage causes service delays for websites like X and OpenAI, underscoring reliance on provider for global web traffic",
+        "headline": "NBC News reported that Cloudflare\u2019s widely used internet infrastructure experienced a broader service disruption, with the company attributing the issue to a bug in its bot mitigation system",
         "impact": "negative",
-        "url": "https://www.cbsnews.com/video/cloudflare-outage-causes-service-delays-for-websites-like-x-and-openai/"
-      },
-      {
-        "headline": "Tech Field Day rundown highlights major Cloudflare global disruption that generated 500 errors and impacted ~20% of web traffic, including X and ChatGPT",
-        "impact": "negative",
-        "url": "https://www.youtube.com/watch?v=sGqOE85yzs0"
-      },
-      {
-        "headline": "Cloudflare status page reports and tracks major global network incident causing elevated errors, followed by implemented fix and monitoring",
-        "impact": "negative",
-        "url": "https://www.cloudflarestatus.com"
+        "url": "https://www.nbcnews.com/tech/internet/cloudflare-internet-services-disrupted-x-spotify-rcna244577"
       }
     ],
-    "catalyst_type": "product"
+    "catalyst_type": "macro"
   }
 }

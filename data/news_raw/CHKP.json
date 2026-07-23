@@ -1,15 +1,20 @@
 {
   "ticker": "CHKP",
-  "scanned_at": "2026-07-22T22:41:34.825494Z",
+  "scanned_at": "2026-07-23T22:37:56.753505Z",
   "payload": {
     "has_material_update": true,
     "items": [
       {
-        "headline": "Check Point warns of critical zero-day flaw in Remote Access VPN under active exploitation",
+        "headline": "Check Point discloses and fixes VPN security flaw; SEC Form 6-K filed stating issue not reasonably likely to be material to financial condition or results",
+        "impact": "negative",
+        "url": "https://www.stocktitan.net/sec-filings/CHKP/6-k-check-point-software-technologies-ltd-current-report-foreign-issu-33c620868d6d.html"
+      },
+      {
+        "headline": "Check Point Research warns of critical zero-day authentication bypass flaw (CVE-2026-50751) in Remote Access VPN and Mobile Access, under active exploitation since May",
         "impact": "negative",
         "url": "https://www.cybersecuritydive.com/news/check-point-zero-day-ransomware/822372/"
       }
     ],
-    "catalyst_type": "product"
+    "catalyst_type": "regulatory"
   }
 }
