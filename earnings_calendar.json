@@ -1,1179 +1,1537 @@
 {
+  "updated": "2026-08-14T12:05:55+00:00",
+  "pre_earnings": [
+    {
+      "ticker": "HD",
+      "company": "Home Depot",
+      "date": "2026-08-18",
+      "earnings_date": "2026-08-18",
+      "days_until": 4,
+      "timing": "BMO"
+    },
+    {
+      "ticker": "BILL",
+      "company": "Bill.com",
+      "date": "2026-08-19",
+      "earnings_date": "2026-08-19",
+      "days_until": 5,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "ROST",
+      "company": "ROST",
+      "date": "2026-08-20",
+      "earnings_date": "2026-08-20",
+      "days_until": 6,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "INTU",
+      "company": "Intuit",
+      "date": "2026-08-25",
+      "earnings_date": "2026-08-25",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "ZM",
+      "company": "Zoom",
+      "date": "2026-08-25",
+      "earnings_date": "2026-08-25",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "PVH",
+      "company": "PVH",
+      "date": "2026-08-25",
+      "earnings_date": "2026-08-25",
+      "days_until": 11,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "NVDA",
+      "company": "NVIDIA",
+      "date": "2026-08-26",
+      "earnings_date": "2026-08-26",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "SNPS",
+      "company": "Synopsys",
+      "date": "2026-08-26",
+      "earnings_date": "2026-08-26",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "CRWD",
+      "company": "CrowdStrike",
+      "date": "2026-08-26",
+      "earnings_date": "2026-08-26",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "OKTA",
+      "company": "Okta",
+      "date": "2026-08-26",
+      "earnings_date": "2026-08-26",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "CRM",
+      "company": "Salesforce",
+      "date": "2026-08-26",
+      "earnings_date": "2026-08-26",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "NTNX",
+      "company": "NTNX",
+      "date": "2026-08-26",
+      "earnings_date": "2026-08-26",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "VEEV",
+      "company": "Veeva Systems",
+      "date": "2026-08-26",
+      "earnings_date": "2026-08-26",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "FIVE",
+      "company": "Five Below",
+      "date": "2026-08-26",
+      "earnings_date": "2026-08-26",
+      "days_until": 12,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "MRVL",
+      "company": "Marvell",
+      "date": "2026-08-27",
+      "earnings_date": "2026-08-27",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "S",
+      "company": "SentinelOne",
+      "date": "2026-08-27",
+      "earnings_date": "2026-08-27",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "RBRK",
+      "company": "Rubrik",
+      "date": "2026-08-27",
+      "earnings_date": "2026-08-27",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "WDAY",
+      "company": "Workday",
+      "date": "2026-08-27",
+      "earnings_date": "2026-08-27",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "ESTC",
+      "company": "Elastic",
+      "date": "2026-08-27",
+      "earnings_date": "2026-08-27",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "AFRM",
+      "company": "Affirm",
+      "date": "2026-08-27",
+      "earnings_date": "2026-08-27",
+      "days_until": 13,
+      "timing": "AMC"
+    },
+    {
+      "ticker": "ADSK",
+      "company": "Autodesk",
+      "date": "2026-08-27",
+      "earnings_date": "2026-08-27",
+      "days_until": 13,
+      "timing": "AMC"
+    }
+  ],
   "post_earnings": [
     {
-      "company": "BKR",
-      "date": "2026-07-26",
+      "ticker": "POET",
+      "company": "POET Technologies",
+      "date": "2026-08-13",
+      "earnings_date": "2026-08-13",
       "days_since": 1,
-      "earnings_date": "2026-07-26",
-      "ticker": "BKR",
-      "timing": "AMC",
-      "revenue_actual": 6587000000,
-      "eps_actual": "$0.78",
-      "revenue_beat_miss": "miss (-1.8%)",
-      "eps_beat_miss": "beat (+15.1%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 4.4,
-        "stock_reaction_basis_date": "2026-01-23",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "company": "Thermo Fisher",
-      "date": "2026-07-23",
-      "days_since": 4,
-      "earnings_date": "2026-07-23",
-      "ticker": "TMO",
       "timing": "BMO",
       "post_earnings_review": {
-        "stock_reaction_pct": 8.7,
-        "stock_reaction_basis_date": "2026-07-22",
+        "stock_reaction_pct": 0.5,
+        "stock_reaction_basis_date": "2026-08-12",
         "stock_reaction_calc_method": "eod_bmo"
       }
     },
     {
-      "company": "Comcast",
-      "date": "2026-07-23",
-      "days_since": 4,
-      "earnings_date": "2026-07-23",
-      "ticker": "CMCSA",
+      "ticker": "TRMB",
+      "company": "Trimble",
+      "date": "2026-08-12",
+      "earnings_date": "2026-08-12",
+      "days_since": 2,
       "timing": "BMO",
-      "post_earnings_review": {
-        "stock_reaction_pct": -6.8,
-        "stock_reaction_basis_date": "2026-07-22",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
-      "company": "Comfort Systems",
-      "date": "2026-07-23",
-      "days_since": 4,
-      "earnings_date": "2026-07-23",
-      "ticker": "FIX",
-      "timing": "AMC",
-      "post_earnings_review": {
-        "stock_reaction_pct": -5.3,
-        "stock_reaction_basis_date": "2026-07-23",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      }
-    },
-    {
-      "company": "Intel",
-      "date": "2026-07-23",
-      "days_since": 4,
-      "earnings_date": "2026-07-23",
-      "ticker": "INTC",
-      "timing": "AMC",
-      "revenue_actual": 13577000000,
-      "eps_actual": "$0.15",
-      "revenue_beat_miss": "in-line",
-      "eps_beat_miss": "beat (+80.9%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -5.7,
-        "stock_reaction_basis_date": "2026-01-23",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "company": "RingCentral",
-      "date": "2026-07-23",
-      "days_since": 4,
-      "earnings_date": "2026-07-23",
-      "ticker": "RNG",
-      "timing": "AMC",
-      "revenue_actual": "$644.2M",
-      "eps_actual": "$1.20",
-      "revenue_beat_miss": "in-line",
-      "eps_beat_miss": "beat (+2.6%)",
-      "guidanceRevenueDeltaPct": 0.003816793893129771,
+      "revenue_actual": "$939.9M",
+      "eps_actual": "$0.79",
+      "revenue_beat_miss": "beat (+1.8%)",
+      "eps_beat_miss": "beat (+8.2%)",
+      "guidanceRevenueDeltaPct": -0.00641025641025641,
       "guidanceRevenuePriorSource": "consensus",
       "guidanceRevenueDeltaBasis": "vs_consensus",
-      "guidanceEpsDeltaPct": 0.016494845360824757,
-      "guidanceEpsDeltaAbs": 0.08000000000000007,
+      "guidanceEpsDeltaPct": 0.033430232558139594,
+      "guidanceEpsDeltaAbs": 0.11500000000000021,
       "guidanceEpsPriorSource": "consensus",
       "guidanceEpsDeltaBasis": "vs_consensus",
       "guidanceProfitMetricUsed": "eps",
-      "guidanceNextQRevenueDeltaPct": 0.0024657112035752814,
+      "post_earnings_review": {
+        "stock_reaction_pct": -2.5,
+        "stock_reaction_basis_date": "2026-05-06",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "GLBE",
+      "company": "Global-E",
+      "date": "2026-08-12",
+      "earnings_date": "2026-08-12",
+      "days_since": 2,
+      "timing": "BMO",
+      "revenue_actual": "$252.09M",
+      "eps_actual": "$0.27",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+50.0%)",
+      "guidanceRevenueDeltaPct": 0.041666666666666664,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.0,
+      "guidanceNextQRevenueDeltaPct": 0.017683146878383255,
       "guidanceNextQRevenuePriorSource": "consensus",
-      "guidanceNextQEpsDeltaPct": 0.0943396226415093,
-      "guidanceNextQEpsDeltaAbs": 0.09999999999999987,
-      "guidanceNextQEpsPriorSource": "consensus",
-      "post_earnings_review": {
-        "stock_reaction_pct": 25.1,
-        "stock_reaction_basis_date": "2026-07-23",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      }
-    },
-    {
-      "company": "Roper Technologies",
-      "date": "2026-07-23",
-      "days_since": 4,
-      "earnings_date": "2026-07-23",
-      "ticker": "ROP",
-      "timing": "BMO",
-      "post_earnings_review": {
-        "stock_reaction_pct": 5.5,
-        "stock_reaction_basis_date": "2026-07-22",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
-      "company": "Freeport-McMoRan",
-      "date": "2026-07-23",
-      "days_since": 4,
-      "earnings_date": "2026-07-23",
-      "ticker": "FCX",
-      "timing": "BMO",
-      "post_earnings_review": {
-        "stock_reaction_pct": -2.3,
-        "stock_reaction_basis_date": "2026-07-22",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
-      "company": "Newmont",
-      "date": "2026-07-23",
-      "days_since": 4,
-      "earnings_date": "2026-07-23",
-      "ticker": "NEM",
-      "timing": "AMC",
-      "revenue_actual": 7307000000,
-      "eps_actual": "$2.52",
-      "revenue_beat_miss": "beat (+7.0%)",
-      "eps_beat_miss": "beat (+24.7%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 1.3,
-        "stock_reaction_basis_date": "2026-01-23",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "company": "Google",
-      "date": "2026-07-22",
-      "days_since": 5,
-      "earnings_date": "2026-07-22",
-      "ticker": "GOOG",
-      "timing": "AMC",
-      "revenue_actual": "$109.90B",
-      "eps_actual": "$5.11",
-      "revenue_beat_miss": "beat (+2.6%)",
-      "eps_beat_miss": "beat (+93.6%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": -6.9,
-        "stock_reaction_basis_date": "2026-07-22",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      }
-    },
-    {
-      "company": "ServiceNow",
-      "date": "2026-07-22",
-      "days_since": 5,
-      "earnings_date": "2026-07-22",
-      "ticker": "NOW",
-      "timing": "AMC",
-      "post_earnings_review": {
-        "stock_reaction_pct": -3.7,
-        "stock_reaction_basis_date": "2026-07-22",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      }
-    },
-    {
-      "company": "GE Vernova",
-      "date": "2026-07-22",
-      "days_since": 5,
-      "earnings_date": "2026-07-22",
-      "ticker": "GEV",
-      "timing": "BMO",
-      "post_earnings_review": {
-        "stock_reaction_pct": -8.7,
-        "stock_reaction_basis_date": "2026-07-21",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
-      "company": "KALU",
-      "date": "2026-07-22",
-      "days_since": 5,
-      "earnings_date": "2026-07-22",
-      "ticker": "KALU",
-      "timing": "AMC",
-      "post_earnings_review": {
-        "stock_reaction_pct": 9.9,
-        "stock_reaction_basis_date": "2026-07-22",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      }
-    },
-    {
-      "company": "NOC",
-      "date": "2026-07-21",
-      "days_since": 6,
-      "earnings_date": "2026-07-21",
-      "ticker": "NOC",
-      "timing": "BMO",
-      "post_earnings_review": {
-        "stock_reaction_pct": -2.2,
-        "stock_reaction_basis_date": "2026-07-20",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
-      "company": "Capital One",
-      "date": "2026-07-21",
-      "days_since": 6,
-      "earnings_date": "2026-07-21",
-      "ticker": "COF",
-      "timing": "AMC",
-      "revenue_actual": 15231000000,
-      "eps_actual": "$3.86",
-      "revenue_beat_miss": "in-line",
-      "eps_beat_miss": "miss (-7.1%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 1.8,
-        "stock_reaction_basis_date": "2026-01-21",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "company": "Synchrony Financial",
-      "date": "2026-07-21",
-      "days_since": 6,
-      "earnings_date": "2026-07-21",
-      "ticker": "SYF",
-      "timing": "BMO",
-      "revenue_actual": 3698000000,
-      "eps_actual": "$2.04",
-      "revenue_beat_miss": "miss (-2.4%)",
-      "eps_beat_miss": "miss (-1.2%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 1.3,
-        "stock_reaction_basis_date": "2026-01-21",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "company": "Danaher",
-      "date": "2026-07-21",
-      "days_since": 6,
-      "earnings_date": "2026-07-21",
-      "ticker": "DHR",
-      "timing": "BMO",
-      "revenue_actual": 5951000000,
-      "eps_actual": "$2.23",
-      "revenue_beat_miss": "in-line",
-      "eps_beat_miss": "beat (+2.6%)",
       "post_earnings_review": {
         "stock_reaction_pct": -0.8,
-        "stock_reaction_basis_date": "2026-01-21",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "company": "VMI",
-      "date": "2026-07-21",
-      "days_since": 6,
-      "earnings_date": "2026-07-21",
-      "ticker": "VMI",
-      "timing": "BMO",
-      "post_earnings_review": {
-        "stock_reaction_pct": -3.9,
-        "stock_reaction_basis_date": "2026-07-20",
+        "stock_reaction_basis_date": "2026-08-11",
         "stock_reaction_calc_method": "eod_bmo"
       }
     },
     {
-      "company": "TSMC",
-      "date": "2026-07-16",
-      "days_since": 11,
-      "earnings_date": "2026-07-16",
-      "ticker": "TSM",
+      "ticker": "SE",
+      "company": "Sea Limited",
+      "date": "2026-08-11",
+      "earnings_date": "2026-08-11",
+      "days_since": 3,
       "timing": "BMO",
-      "revenue_actual": "$35.9B",
-      "eps_actual": "$22.08",
-      "revenue_beat_miss": "beat (+2.6%)",
+      "revenue_actual": "$7.10B",
+      "eps_actual": "$0.67",
+      "revenue_beat_miss": "beat (+10.1%)",
+      "eps_beat_miss": "miss (-10.9%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 14.6,
+        "stock_reaction_basis_date": "2026-08-10",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
+    },
+    {
+      "ticker": "CSU.TO",
+      "company": "Constellation Software",
+      "date": "2026-08-11",
+      "earnings_date": "2026-08-11",
+      "days_since": 3,
+      "timing": "AMC",
+      "revenue_actual": "$3.181B",
+      "eps_actual": 37.64,
+      "revenue_beat_miss": "beat (+1.5%)",
+      "eps_beat_miss": "beat (+7.6%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -4.5,
+        "stock_reaction_basis_date": "2026-08-11",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
+    },
+    {
+      "ticker": "LITE",
+      "company": "LITE",
+      "date": "2026-08-11",
+      "earnings_date": "2026-08-11",
+      "days_since": 3,
+      "timing": "AMC",
+      "revenue_actual": "$808.4M",
+      "eps_actual": "$2.37",
+      "revenue_beat_miss": "in-line",
       "eps_beat_miss": "beat (+4.4%)",
-      "post_earnings_review": {
-        "stock_reaction_pct": 2.0,
-        "stock_reaction_basis_date": "2026-04-16",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "company": "UnitedHealth",
-      "date": "2026-07-16",
-      "days_since": 11,
-      "earnings_date": "2026-07-16",
-      "ticker": "UNH",
-      "timing": "BMO",
-      "revenue_actual": 111721000000,
-      "eps_actual": "$2.11",
-      "revenue_beat_miss": "beat (+2.1%)",
-      "eps_beat_miss": "in-line",
-      "post_earnings_review": {
-        "stock_reaction_pct": 1.9,
-        "stock_reaction_basis_date": "2026-01-21",
-        "stock_reaction_calc_method": "amc_d_plus_1"
-      }
-    },
-    {
-      "company": "ABT",
-      "date": "2026-07-16",
-      "days_since": 11,
-      "earnings_date": "2026-07-16",
-      "ticker": "ABT",
-      "timing": "BMO",
-      "revenue_actual": "$11.16B",
-      "eps_actual": "$1.15",
-      "revenue_beat_miss": "beat (+1.2%)",
-      "eps_beat_miss": "in-line",
-      "guidanceEpsDeltaPct": -0.03521126760563368,
-      "guidanceEpsDeltaAbs": -0.1999999999999993,
-      "guidanceEpsPriorSource": "prior_guidance",
-      "guidanceEpsDeltaBasis": "vs_prior_guide",
-      "guidanceEpsStreetDeltaPct": -0.03521126760563368,
-      "guidanceEpsStreetDeltaAbs": -0.1999999999999993,
+      "guidanceRevenueDeltaPct": 0.07303186247673273,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaPct": 0.13899613899613913,
+      "guidanceEpsDeltaAbs": 0.3600000000000003,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
       "guidanceProfitMetricUsed": "eps",
-      "guidanceNextQEpsDeltaPct": -0.044776119402985114,
-      "guidanceNextQEpsDeltaAbs": -0.06000000000000005,
+      "post_earnings_review": {
+        "stock_reaction_pct": -5.1,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "MNDY",
+      "company": "monday.com",
+      "date": "2026-08-10",
+      "earnings_date": "2026-08-10",
+      "days_since": 4,
+      "timing": "BMO",
+      "revenue_actual": "$351.3M",
+      "eps_actual": "$1.15",
+      "revenue_beat_miss": "beat (+3.6%)",
+      "eps_beat_miss": "beat (+20.9%)",
+      "guidanceRevenueDeltaPct": 0.0034129692832764505,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceNextQRevenueDeltaPct": 0.0031082226617688614,
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": -6.4,
+        "stock_reaction_basis_date": "2026-05-11",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "SOC",
+      "company": "Sable Offshore",
+      "date": "2026-08-10",
+      "earnings_date": "2026-08-10",
+      "days_since": 4,
+      "timing": "AMC",
+      "revenue_actual": "$1.3M",
+      "eps_actual": "-$1.37",
+      "revenue_beat_miss": "miss (-91.9%)",
+      "eps_beat_miss": "miss (-154.5%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -4.3,
+        "stock_reaction_basis_date": "2026-05-06",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "HIMS",
+      "company": "Hims & Hers",
+      "date": "2026-08-10",
+      "earnings_date": "2026-08-10",
+      "days_since": 4,
+      "timing": "AMC",
+      "revenue_actual": "$608M",
+      "eps_actual": "-$0.19",
+      "revenue_beat_miss": "miss (-1.4%)",
+      "eps_beat_miss": "miss (-529.9%)",
+      "guidanceRevenueDeltaPct": 0.16,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.11538461538461539,
+      "post_earnings_review": {
+        "stock_reaction_pct": -14.1,
+        "stock_reaction_basis_date": "2026-05-11",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "RPD",
+      "company": "Rapid7",
+      "date": "2026-08-10",
+      "earnings_date": "2026-08-10",
+      "days_since": 4,
+      "timing": "AMC",
+      "revenue_actual": "$209.7M",
+      "eps_actual": "$0.36",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+44.0%)",
+      "guidanceNextQRevenueDeltaPct": -0.0033540967896502154,
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "guidanceNextQEpsDeltaPct": 0.07812499999999989,
+      "guidanceNextQEpsDeltaAbs": 0.024999999999999967,
       "guidanceNextQEpsPriorSource": "consensus",
       "post_earnings_review": {
-        "stock_reaction_pct": 1.4,
-        "stock_reaction_basis_date": "2026-04-16",
+        "stock_reaction_pct": -1.6,
+        "stock_reaction_basis_date": "2026-05-05",
         "stock_reaction_calc_method": "amc_d_plus_1"
       }
     },
     {
-      "company": "Netflix",
-      "date": "2026-07-16",
-      "days_since": 11,
-      "earnings_date": "2026-07-16",
-      "ticker": "NFLX",
+      "ticker": "CRC",
+      "company": "California Resources",
+      "date": "2026-08-10",
+      "earnings_date": "2026-08-10",
+      "days_since": 4,
+      "timing": "BMO",
+      "revenue_actual": "$967M",
+      "eps_actual": "$0.88",
+      "revenue_beat_miss": "beat (+2.2%)",
+      "eps_beat_miss": "beat (+2.3%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 3.2,
+        "stock_reaction_basis_date": "2026-08-07",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
+    },
+    {
+      "ticker": "CSU.TO",
+      "company": "Constellation Software",
+      "date": "2026-08-10",
+      "earnings_date": "2026-08-10",
+      "days_since": 4,
       "timing": "AMC",
-      "revenue_actual": "$12.25B",
-      "eps_actual": "$1.23",
+      "revenue_actual": "$3.181B",
+      "eps_actual": 37.64,
+      "revenue_beat_miss": "beat (+1.5%)",
+      "eps_beat_miss": "beat (+7.6%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 1.18,
+        "stock_reaction_basis_date": "2026-08-11",
+        "stock_reaction_calc_method": "eod_d_plus_1"
+      }
+    },
+    {
+      "ticker": "TEAM",
+      "company": "Atlassian",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "AMC",
+      "revenue_actual": "$1.79B",
+      "eps_actual": "$1.75",
+      "revenue_beat_miss": "beat (+5.3%)",
+      "eps_beat_miss": "beat (+78.6%)",
+      "guidanceRevenueDeltaPct": 0.0,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceNextQRevenueDeltaPct": -0.025294117647058825,
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": 29.6,
+        "stock_reaction_basis_date": "2026-04-30",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "DDOG",
+      "company": "Datadog",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "BMO",
+      "revenue_actual": "$1.01B",
+      "eps_actual": "$0.60",
+      "revenue_beat_miss": "beat (+3.0%)",
+      "eps_beat_miss": "beat (+15.9%)",
+      "guidanceRevenueDeltaPct": 0.04854368932038835,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaPct": 0.06194690265486732,
+      "guidanceEpsDeltaAbs": 0.14000000000000012,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceFYNorthStarMetric": "revenue",
+      "guidanceFYNorthStarUnits": "USD millions",
+      "guidanceFYTopLineNorthStarMetric": "revenue",
+      "guidanceFYTopLineNorthStarUnits": "USD millions",
+      "guidanceFYBottomLineNorthStarMetric": "EPS",
+      "guidanceFYBottomLineNorthStarUnits": "USD",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
+      "guidanceNextQTopLineNorthStarMetric": "revenue",
+      "guidanceNextQTopLineNorthStarUnits": "USD millions",
+      "guidanceNextQBottomLineNorthStarMetric": "EPS",
+      "guidanceNextQBottomLineNorthStarUnits": "USD",
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.8,
+        "stock_reaction_basis_date": "2026-07-15",
+        "stock_reaction_calc_method": "eod_bmo"
+      }
+    },
+    {
+      "ticker": "NET",
+      "company": "Cloudflare",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "AMC",
+      "revenue_actual": "$639.8M",
+      "eps_actual": "$0.25",
+      "revenue_beat_miss": "beat (+1.9%)",
+      "eps_beat_miss": "beat (+8.7%)",
+      "guidanceRevenueDeltaPct": -0.0012799544905070042,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaPct": -0.004166666666666578,
+      "guidanceEpsDeltaAbs": -0.004999999999999893,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceOperatingProfitDeltaPct": 0.010843373493975903,
+      "guidanceOperatingProfitDeltaAbs": 4500000.0,
+      "guidanceOperatingProfitPriorSource": "consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceNextQRevenueDeltaPct": -0.0013825854347630068,
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "guidanceNextQEpsDeltaPct": 0.0,
+      "guidanceNextQEpsDeltaAbs": 0.0,
+      "guidanceNextQEpsPriorSource": "consensus",
+      "guidanceFYAdjOpIncomeDeltaPct": 0.2955528103767758,
+      "guidanceFYAdjOpIncomeDeltaAbs": 95700000.0,
+      "guidanceFYAdjOpIncomePriorSource": "prior_fy_actual",
+      "guidanceFYAdjOpIncomeDeltaBasis": "vs_prior_fy_actual",
+      "guidanceFYAdjOpIncomeUnits": "USD millions",
+      "guidanceNextQAdjOpIncomeDeltaPct": 0.010044642857142858,
+      "guidanceNextQAdjOpIncomeDeltaAbs": 900000.0,
+      "guidanceNextQAdjOpIncomePriorSource": "consensus",
+      "guidanceNextQAdjOpIncomeDeltaBasis": "vs_consensus",
+      "guidanceNextQAdjOpIncomeUnits": "USD millions",
+      "guidanceFYNorthStarMetric": "revenue",
+      "guidanceFYNorthStarUnits": "USD millions",
+      "guidanceFYTopLineNorthStarMetric": "revenue",
+      "guidanceFYTopLineNorthStarUnits": "USD millions",
+      "guidanceFYBottomLineNorthStarMetric": "adj_op_income",
+      "guidanceFYBottomLineNorthStarUnits": "USD millions",
+      "guidanceNextQNorthStarMetric": "revenue",
+      "guidanceNextQNorthStarUnits": "USD millions",
+      "guidanceNextQTopLineNorthStarMetric": "revenue",
+      "guidanceNextQTopLineNorthStarUnits": "USD millions",
+      "guidanceNextQBottomLineNorthStarMetric": "adj_op_income",
+      "guidanceNextQBottomLineNorthStarUnits": "USD millions",
+      "post_earnings_review": {
+        "stock_reaction_pct": -23.6,
+        "stock_reaction_basis_date": "2026-05-07",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "FOUR",
+      "company": "Shift4 Payments",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "BMO",
+      "revenue_actual": "$1.12B",
+      "eps_actual": "$0.97",
+      "revenue_beat_miss": "beat (+2.8%)",
+      "eps_beat_miss": "miss (-2.0%)",
+      "guidanceEpsDeltaPct": 0.03896103896103896,
+      "guidanceEpsDeltaAbs": 0.20999999999999996,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": -9.1,
+        "stock_reaction_basis_date": "2026-05-07",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "TTD",
+      "company": "Trade Desk",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "AMC",
+      "revenue_actual": "$689M",
+      "eps_actual": "$0.08",
+      "revenue_beat_miss": "beat (+1.5%)",
+      "eps_beat_miss": "miss (-75.0%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -1.7,
+        "stock_reaction_basis_date": "2026-05-07",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "GCT",
+      "company": "GigaCloud",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "BMO",
+      "revenue_actual": "$359.5M",
+      "eps_actual": "$1.04",
+      "revenue_beat_miss": "beat (+3.9%)",
+      "eps_beat_miss": "beat (+25.3%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -6.2,
+        "stock_reaction_basis_date": "2026-05-07",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "TWLO",
+      "company": "Twilio",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "AMC",
+      "revenue_actual": "$1.41B",
+      "eps_actual": "$1.50",
+      "revenue_beat_miss": "beat (+5.2%)",
+      "eps_beat_miss": "beat (+19.0%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 23.83
+      }
+    },
+    {
+      "ticker": "BSY",
+      "company": "Bentley Systems",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "BMO",
+      "revenue_actual": "$424.2M",
+      "eps_actual": "$0.38",
+      "revenue_beat_miss": "beat (+1.2%)",
+      "eps_beat_miss": "beat (+7.0%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -2.6,
+        "stock_reaction_basis_date": "2026-05-07",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "AKAM",
+      "company": "Akamai",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "AMC",
+      "revenue_actual": "$1.07B",
+      "eps_actual": "$1.61",
+      "revenue_beat_miss": "miss (-2.2%)",
+      "eps_beat_miss": "miss (-1.4%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 26.6,
+        "stock_reaction_basis_date": "2026-05-07",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "KDP",
+      "company": "KDP",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "BMO",
+      "post_earnings_review": {}
+    },
+    {
+      "ticker": "ZTS",
+      "company": "ZTS",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "BMO",
+      "revenue_actual": "$2,262M",
+      "eps_actual": "$1.53",
+      "revenue_beat_miss": "miss (-2.8%)",
+      "eps_beat_miss": "miss (-5.6%)",
+      "guidanceRevenueDeltaPct": -0.009331651954602775,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": -0.00808080808080808,
+      "guidanceEpsDeltaPct": -0.01773049645390071,
+      "guidanceEpsDeltaAbs": -0.125,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceEpsStreetDeltaPct": -0.014935988620199207,
+      "guidanceEpsStreetDeltaAbs": -0.10500000000000043,
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": -5.1,
+        "stock_reaction_basis_date": "2026-05-07",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "ONTO",
+      "company": "ONTO",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "AMC",
+      "revenue_actual": "$291.9M",
+      "eps_actual": "$1.42",
       "revenue_beat_miss": "in-line",
-      "eps_beat_miss": "beat (+61.8%)",
-      "guidanceRevenueDeltaPct": -0.013618677042801557,
+      "eps_beat_miss": "beat (+2.9%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -3.6,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "FROG",
+      "company": "JFrog",
+      "date": "2026-08-06",
+      "earnings_date": "2026-08-06",
+      "days_since": 8,
+      "timing": "AMC",
+      "post_earnings_review": {}
+    },
+    {
+      "ticker": "HUBS",
+      "company": "HubSpot",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$881.00M",
+      "eps_actual": "$2.72",
+      "revenue_beat_miss": "beat (+1.6%)",
+      "eps_beat_miss": "beat (+8.1%)",
+      "guidanceRevenueDeltaPct": 0.003794037940379404,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.001081081081081081,
+      "guidanceEpsDeltaPct": 0.05144694533762063,
+      "guidanceEpsDeltaAbs": 0.6400000000000006,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceEpsStreetDeltaPct": 0.22357343311506087,
+      "guidanceEpsStreetDeltaAbs": 2.3900000000000006,
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": -19.0,
+        "stock_reaction_basis_date": "2026-05-07",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "DT",
+      "company": "Dynatrace",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "BMO",
+      "revenue_actual": "$531.72M",
+      "eps_actual": "$0.41",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+2.4%)",
+      "guidanceRevenueDeltaPct": 0.13691931540342298,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaPct": 0.18275862068965526,
+      "guidanceEpsDeltaAbs": 0.2650000000000001,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceOperatingProfitDeltaPct": 0.08181818181818182,
+      "guidanceOperatingProfitDeltaAbs": 45000000.0,
+      "guidanceOperatingProfitPriorSource": "prior_guidance",
+      "guidanceFcfDeltaPct": 0.02358490566037736,
+      "guidanceFcfDeltaAbs": 12500000.0,
+      "guidanceFcfPriorSource": "prior_guidance",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceFYFcfDeltaPct": 0.02358490566037736,
+      "guidanceFYFcfDeltaAbs": 12500000.0,
+      "guidanceFYFcfPriorSource": "prior_guidance",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide",
+      "post_earnings_review": {
+        "stock_reaction_pct": 11.4
+      }
+    },
+    {
+      "ticker": "FSLY",
+      "company": "Fastly",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$173M",
+      "eps_actual": "$0.13",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+62.5%)",
+      "guidanceRevenueDeltaPct": 0.12637362637362637,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceOperatingProfitDeltaPct": 0.18867924528301888,
+      "guidanceOperatingProfitDeltaAbs": 10000000.0,
+      "guidanceOperatingProfitPriorSource": "prior_guidance",
+      "guidanceProfitMetricUsed": "operating_income",
+      "post_earnings_review": {
+        "stock_reaction_pct": -38.2,
+        "stock_reaction_basis_date": "2026-05-06",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "XYZ",
+      "company": "Block",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$6.06B",
+      "eps_actual": "$0.85",
+      "revenue_beat_miss": "miss (-1.8%)",
+      "eps_beat_miss": "beat (+41.7%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 10.0
+      }
+    },
+    {
+      "ticker": "SHOP",
+      "company": "Shopify",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "BMO",
+      "revenue_actual": "$3.17B",
+      "eps_actual": "$0.36",
+      "revenue_beat_miss": "beat (+2.6%)",
+      "eps_beat_miss": "beat (+12.5%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -2.0,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "SNDK",
+      "company": "SanDisk",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$5.95B",
+      "eps_actual": "$23.41",
+      "revenue_beat_miss": "beat (+26.1%)",
+      "eps_beat_miss": "beat (+60.1%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 8.3,
+        "stock_reaction_basis_date": "2026-04-30",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "WDC",
+      "company": "Western Digital",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$3,337M",
+      "eps_actual": "$2.72",
+      "revenue_beat_miss": "beat (+2.1%)",
+      "eps_beat_miss": "beat (+15.3%)",
+      "guidanceRevenueDeltaPct": 0.08823529411764706,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaPct": 0.20817843866171007,
+      "guidanceEpsDeltaAbs": 0.56,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.7,
+        "stock_reaction_basis_date": "2026-04-30",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "CF",
+      "company": "CF Industries",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$1.99B",
+      "eps_actual": "$3.98",
+      "revenue_beat_miss": "beat (+5.9%)",
+      "eps_beat_miss": "beat (+65.8%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.9,
+        "stock_reaction_basis_date": "2026-05-06",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "NVO",
+      "company": "Novo Nordisk",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "BMO",
+      "revenue_actual": "$96.82B",
+      "eps_actual": "$1.03",
+      "revenue_beat_miss": "beat (+1.5%)",
+      "eps_beat_miss": "miss (-85.2%)",
+      "guidanceRevenueDeltaPct": -0.02422907491189427,
       "guidanceRevenuePriorSource": "consensus",
       "guidanceRevenueDeltaBasis": "vs_consensus",
       "post_earnings_review": {
-        "stock_reaction_pct": -9.7,
-        "stock_reaction_basis_date": "2026-04-16",
+        "stock_reaction_pct": 2.0
+      }
+    },
+    {
+      "ticker": "KHC",
+      "company": "Kraft Heinz",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "BMO",
+      "revenue_actual": "$6.047B",
+      "eps_actual": "$0.58",
+      "revenue_beat_miss": "beat (+2.8%)",
+      "eps_beat_miss": "beat (+16.0%)",
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": 5.0
+      }
+    },
+    {
+      "ticker": "KVYO",
+      "company": "Klaviyo",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$358M",
+      "eps_actual": "$0.22",
+      "revenue_beat_miss": "beat (+2.7%)",
+      "eps_beat_miss": "beat (+10.0%)",
+      "guidanceRevenueDeltaPct": 0.033356024506466984,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": 28.0
+      }
+    },
+    {
+      "ticker": "AMPL",
+      "company": "Amplitude",
+      "date": "2026-08-05",
+      "earnings_date": "2026-08-05",
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$93.5M",
+      "eps_actual": "-$0.02",
+      "revenue_beat_miss": "beat (+1.1%)",
+      "eps_beat_miss": "miss (-181.7%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -21.4,
+        "stock_reaction_basis_date": "2026-05-06",
         "stock_reaction_calc_method": "amc_d_plus_1"
       }
     },
     {
-      "company": "Elevance Health",
-      "date": "2026-07-15",
-      "days_since": 12,
-      "earnings_date": "2026-07-15",
-      "ticker": "ELV",
-      "timing": "BMO",
-      "post_earnings_review": {
-        "stock_reaction_pct": -8.5,
-        "stock_reaction_basis_date": "2026-07-14",
-        "stock_reaction_calc_method": "eod_bmo"
-      }
-    },
-    {
-      "company": "United Airlines",
-      "date": "2026-07-15",
-      "days_since": 12,
-      "earnings_date": "2026-07-15",
-      "ticker": "UAL",
-      "timing": "AMC",
-      "post_earnings_review": {
-        "stock_reaction_pct": -1.8,
-        "stock_reaction_basis_date": "2026-07-15",
-        "stock_reaction_calc_method": "eod_d_plus_1"
-      }
-    },
-    {
-      "company": "Cadence",
-      "date": "2026-07-27",
-      "days_since": 0,
-      "earnings_date": "2026-07-27",
-      "ticker": "CDNS",
-      "timing": "AMC",
-      "post_earnings_review": {
-        "stock_reaction_pct": 3.5,
-        "stock_reaction_basis_date": "2026-07-27",
-        "stock_reaction_calc_method": "postmarket_d"
-      }
-    },
-    {
-      "company": "Nucor",
-      "date": "2026-07-27",
-      "days_since": 0,
-      "earnings_date": "2026-07-27",
-      "ticker": "NUE",
-      "timing": "AMC",
-      "post_earnings_review": {
-        "stock_reaction_pct": -0.3,
-        "stock_reaction_basis_date": "2026-07-27",
-        "stock_reaction_calc_method": "postmarket_d"
-      }
-    }
-  ],
-  "pre_earnings": [
-    {
-      "company": "Varonis",
-      "date": "2026-07-28",
-      "days_until": 1,
-      "earnings_date": "2026-07-28",
-      "ticker": "VRNS",
-      "timing": "AMC"
-    },
-    {
-      "company": "Arch Capital",
-      "date": "2026-07-28",
-      "days_until": 1,
-      "earnings_date": "2026-07-28",
-      "ticker": "ACGL",
-      "timing": "AMC"
-    },
-    {
-      "company": "Mondelez",
-      "date": "2026-07-28",
-      "days_until": 1,
-      "earnings_date": "2026-07-28",
-      "ticker": "MDLZ",
-      "timing": "AMC"
-    },
-    {
-      "company": "Seagate",
-      "date": "2026-07-28",
-      "days_until": 1,
-      "earnings_date": "2026-07-28",
-      "ticker": "STX",
-      "timing": "AMC"
-    },
-    {
-      "company": "Teradyne",
-      "date": "2026-07-28",
-      "days_until": 1,
-      "earnings_date": "2026-07-28",
-      "ticker": "TER",
-      "timing": "AMC"
-    },
-    {
-      "company": "Corning",
-      "date": "2026-07-28",
-      "days_until": 1,
-      "earnings_date": "2026-07-28",
-      "ticker": "GLW",
-      "timing": "BMO"
-    },
-    {
-      "company": "Manhattan Associates",
-      "date": "2026-07-28",
-      "days_until": 1,
-      "earnings_date": "2026-07-28",
-      "ticker": "MANH",
-      "timing": "AMC"
-    },
-    {
-      "company": "IQV",
-      "date": "2026-07-28",
-      "days_until": 1,
-      "earnings_date": "2026-07-28",
-      "ticker": "IQV",
-      "timing": "BMO"
-    },
-    {
-      "company": "OMC",
-      "date": "2026-07-28",
-      "days_until": 1,
-      "earnings_date": "2026-07-28",
-      "ticker": "OMC",
-      "timing": "AMC"
-    },
-    {
-      "company": "Meta",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "META",
-      "timing": "AMC"
-    },
-    {
-      "company": "Microsoft",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "MSFT",
-      "timing": "AMC"
-    },
-    {
-      "company": "Arm",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "ARM",
-      "timing": "AMC"
-    },
-    {
-      "company": "Fortinet",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "FTNT",
-      "timing": "AMC"
-    },
-    {
-      "company": "Tenable",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "TENB",
-      "timing": "AMC"
-    },
-    {
-      "company": "VRT",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "VRT",
-      "timing": "BMO"
-    },
-    {
-      "company": "PTC",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "PTC",
-      "timing": "AMC"
-    },
-    {
-      "company": "Procore",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "PCOR",
-      "timing": "AMC"
-    },
-    {
-      "company": "Tyler Technologies",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "TYL",
-      "timing": "AMC"
-    },
-    {
-      "company": "FICO",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "FICO",
-      "timing": "AMC"
-    },
-    {
-      "company": "AEM",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "AEM",
-      "timing": "AMC"
-    },
-    {
-      "company": "ADP",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "ADP",
-      "timing": "BMO"
-    },
-    {
-      "company": "Generac",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "GNRC",
-      "timing": "BMO"
-    },
-    {
-      "company": "GEHC",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "GEHC",
-      "timing": "BMO"
-    },
-    {
-      "company": "CTSH",
-      "date": "2026-07-29",
-      "days_until": 2,
-      "earnings_date": "2026-07-29",
-      "ticker": "CTSH",
-      "timing": "BMO"
-    },
-    {
-      "company": "Amazon",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "AMZN",
-      "timing": "AMC"
-    },
-    {
-      "company": "Coinbase",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "COIN",
-      "timing": "AMC"
-    },
-    {
-      "company": "LPL Financial",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "LPLA",
-      "timing": "AMC"
-    },
-    {
-      "company": "Check Point",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "CHKP",
-      "timing": "BMO"
-    },
-    {
-      "company": "GoDaddy",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "GDDY",
-      "timing": "AMC"
-    },
-    {
-      "company": "VLO",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "VLO",
-      "timing": "BMO"
-    },
-    {
-      "company": "MHK",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "MHK",
-      "timing": "AMC"
-    },
-    {
-      "company": "LKQ",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "LKQ",
-      "timing": "BMO"
-    },
-    {
-      "company": "EMN",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "EMN",
-      "timing": "AMC"
-    },
-    {
-      "company": "CTVA",
-      "date": "2026-07-30",
-      "days_until": 3,
-      "earnings_date": "2026-07-30",
-      "ticker": "CTVA",
-      "timing": "AMC"
-    },
-    {
-      "company": "Palantir",
-      "date": "2026-08-03",
-      "days_until": 7,
-      "earnings_date": "2026-08-03",
-      "ticker": "PLTR",
-      "timing": "AMC"
-    },
-    {
-      "company": "BWX Technologies",
-      "date": "2026-08-03",
-      "days_until": 7,
-      "earnings_date": "2026-08-03",
-      "ticker": "BWXT",
-      "timing": "AMC"
-    },
-    {
-      "company": "VRTX",
-      "date": "2026-08-03",
-      "days_until": 7,
-      "earnings_date": "2026-08-03",
-      "ticker": "VRTX",
-      "timing": "AMC"
-    },
-    {
-      "company": "FANG",
-      "date": "2026-08-03",
-      "days_until": 7,
-      "earnings_date": "2026-08-03",
-      "ticker": "FANG",
-      "timing": "AMC"
-    },
-    {
-      "company": "CLX",
-      "date": "2026-08-03",
-      "days_until": 7,
-      "earnings_date": "2026-08-03",
-      "ticker": "CLX",
-      "timing": "AMC"
-    },
-    {
-      "company": "CNH",
-      "date": "2026-08-03",
-      "days_until": 7,
-      "earnings_date": "2026-08-03",
-      "ticker": "CNH",
-      "timing": "BMO"
-    },
-    {
-      "company": "AMD",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "AMD",
-      "timing": "AMC"
-    },
-    {
-      "company": "Arista Networks",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "ANET",
-      "timing": "AMC"
-    },
-    {
-      "company": "DigitalOcean",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "DOCN",
-      "timing": "BMO"
-    },
-    {
-      "company": "Pinterest",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "PINS",
-      "timing": "AMC"
-    },
-    {
-      "company": "Zeta Global",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "ZETA",
-      "timing": "AMC"
-    },
-    {
-      "company": "Freshworks",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "FRSH",
-      "timing": "AMC"
-    },
-    {
-      "company": "BlackLine",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "BL",
-      "timing": "AMC"
-    },
-    {
-      "company": "Qualys",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "QLYS",
-      "timing": "AMC"
-    },
-    {
-      "company": "Wix",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "WIX",
-      "timing": "BMO"
-    },
-    {
-      "company": "KMB",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "KMB",
-      "timing": "BMO"
-    },
-    {
-      "company": "Devon Energy",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "DVN",
-      "timing": "AMC"
-    },
-    {
-      "company": "Astera Labs",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "ALAB",
-      "timing": "AMC"
-    },
-    {
-      "company": "Caterpillar",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "CAT",
-      "timing": "BMO"
-    },
-    {
-      "company": "MOS",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "MOS",
-      "timing": "AMC"
-    },
-    {
-      "company": "TSEM",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "TSEM",
-      "timing": "BMO"
-    },
-    {
-      "company": "PFE",
-      "date": "2026-08-04",
-      "days_until": 8,
-      "earnings_date": "2026-08-04",
-      "ticker": "PFE",
-      "timing": "BMO"
-    },
-    {
-      "company": "HubSpot",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "HUBS",
-      "timing": "AMC"
-    },
-    {
-      "company": "Dynatrace",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "DT",
-      "timing": "BMO"
-    },
-    {
-      "company": "Fastly",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "FSLY",
-      "timing": "AMC"
-    },
-    {
-      "company": "Block",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "XYZ",
-      "timing": "AMC"
-    },
-    {
-      "company": "Shopify",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "SHOP",
-      "timing": "BMO"
-    },
-    {
-      "company": "SanDisk",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "SNDK",
-      "timing": "AMC"
-    },
-    {
-      "company": "Western Digital",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "WDC",
-      "timing": "AMC"
-    },
-    {
-      "company": "CF Industries",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "CF",
-      "timing": "AMC"
-    },
-    {
-      "company": "Novo Nordisk",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "NVO",
-      "timing": "BMO"
-    },
-    {
-      "company": "Kraft Heinz",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "KHC",
-      "timing": "BMO"
-    },
-    {
-      "company": "Klaviyo",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "KVYO",
-      "timing": "AMC"
-    },
-    {
-      "company": "Amplitude",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "AMPL",
-      "timing": "AMC"
-    },
-    {
+      "ticker": "RAMP",
       "company": "LiveRamp",
       "date": "2026-08-05",
-      "days_until": 9,
       "earnings_date": "2026-08-05",
-      "ticker": "RAMP",
-      "timing": "AMC"
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": 206092000,
+      "eps_actual": "$0.52",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+2.8%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.3,
+        "stock_reaction_basis_date": "2026-05-21",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
+      "ticker": "APP",
       "company": "AppLovin",
       "date": "2026-08-05",
-      "days_until": 9,
       "earnings_date": "2026-08-05",
-      "ticker": "APP",
-      "timing": "AMC"
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$1.84B",
+      "eps_actual": "$3.56",
+      "revenue_beat_miss": "beat (+4.0%)",
+      "eps_beat_miss": "beat (+3.6%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 6.4
+      }
     },
     {
-      "company": "Trimble",
-      "date": "2026-08-05",
-      "days_until": 9,
-      "earnings_date": "2026-08-05",
-      "ticker": "TRMB",
-      "timing": "BMO"
-    },
-    {
+      "ticker": "OXY",
       "company": "Occidental Petroleum",
       "date": "2026-08-05",
-      "days_until": 9,
       "earnings_date": "2026-08-05",
-      "ticker": "OXY",
-      "timing": "AMC"
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$5.23B",
+      "eps_actual": "$1.06",
+      "revenue_beat_miss": "miss (-5.2%)",
+      "eps_beat_miss": "beat (+77.5%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -7.1,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
+      "ticker": "ZBH",
       "company": "Zimmer Biomet",
       "date": "2026-08-05",
-      "days_until": 9,
       "earnings_date": "2026-08-05",
-      "ticker": "ZBH",
-      "timing": "BMO"
+      "days_since": 9,
+      "timing": "BMO",
+      "revenue_actual": "$2.09B",
+      "eps_actual": "$2.09",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+11.0%)",
+      "guidanceEpsDeltaPct": 0.011940298507462643,
+      "guidanceEpsDeltaAbs": 0.09999999999999964,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceEpsStreetDeltaPct": 0.010131108462455194,
+      "guidanceEpsStreetDeltaAbs": 0.08499999999999908,
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": 4.5
+      }
     },
     {
+      "ticker": "GPN",
       "company": "GPN",
       "date": "2026-08-05",
-      "days_until": 9,
       "earnings_date": "2026-08-05",
-      "ticker": "GPN",
-      "timing": "BMO"
+      "days_since": 9,
+      "timing": "BMO",
+      "revenue_actual": "$2,856M",
+      "eps_actual": "$2.96",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+3.5%)",
+      "guidanceRevenueDeltaPct": -0.20967741935483872,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceEpsStreetDeltaPct": 0.011644832605531306,
+      "guidanceEpsStreetDeltaAbs": 0.16000000000000014,
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": 0.7,
+        "stock_reaction_basis_date": "2026-05-06",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
+      "ticker": "AVT",
       "company": "AVT",
       "date": "2026-08-05",
-      "days_until": 9,
       "earnings_date": "2026-08-05",
-      "ticker": "AVT",
-      "timing": "BMO"
+      "days_since": 9,
+      "timing": "BMO",
+      "revenue_actual": "$7.12B",
+      "eps_actual": "$1.48",
+      "revenue_beat_miss": "beat (+12.1%)",
+      "eps_beat_miss": "beat (+11.0%)",
+      "guidanceRevenueDeltaPct": 0.1640625,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "guidanceEpsDeltaPct": 0.25000000000000006,
+      "guidanceEpsDeltaAbs": 0.3500000000000001,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": 1.2,
+        "stock_reaction_basis_date": "2026-04-29",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
+      "ticker": "IONQ",
       "company": "IONQ",
       "date": "2026-08-05",
-      "days_until": 9,
       "earnings_date": "2026-08-05",
-      "ticker": "IONQ",
-      "timing": "AMC"
+      "days_since": 9,
+      "timing": "AMC",
+      "revenue_actual": "$64.7M",
+      "eps_actual": "-$0.34",
+      "revenue_beat_miss": "beat (+30.1%)",
+      "eps_beat_miss": "beat (+5.4%)",
+      "guidanceRevenueDeltaPct": 0.1276595744680851,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.12145577655522641,
+      "post_earnings_review": {
+        "stock_reaction_pct": -9.3,
+        "stock_reaction_basis_date": "2026-05-06",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
+      "ticker": "SITM",
       "company": "SITM",
       "date": "2026-08-05",
-      "days_until": 9,
       "earnings_date": "2026-08-05",
-      "ticker": "SITM",
-      "timing": "AMC"
+      "days_since": 9,
+      "timing": "AMC",
+      "post_earnings_review": {}
     },
     {
-      "company": "Atlassian",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "TEAM",
-      "timing": "AMC"
+      "ticker": "AMD",
+      "company": "AMD",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$10.3B",
+      "eps_actual": "$1.37",
+      "revenue_beat_miss": "beat (+4.7%)",
+      "eps_beat_miss": "beat (+9.6%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 18.6,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "Datadog",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "DDOG",
-      "timing": "BMO"
+      "ticker": "ANET",
+      "company": "Arista Networks",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$2,709M",
+      "eps_actual": "$0.87",
+      "revenue_beat_miss": "beat (+1.7%)",
+      "eps_beat_miss": "beat (+6.1%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -13.6,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "Cloudflare",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "NET",
-      "timing": "AMC"
+      "ticker": "DOCN",
+      "company": "DigitalOcean",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "BMO",
+      "revenue_actual": "$257.9M",
+      "eps_actual": "$0.44",
+      "revenue_beat_miss": "beat (+3.3%)",
+      "eps_beat_miss": "beat (+91.3%)",
+      "guidanceRevenueDeltaPct": 0.04597701149425287,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.03409090909090909,
+      "guidanceEpsDeltaPct": 0.09523809523809511,
+      "guidanceEpsDeltaAbs": 0.09999999999999987,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceEpsStreetDeltaPct": 0.32183908045977,
+      "guidanceEpsStreetDeltaAbs": 0.2799999999999999,
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": 5.4,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "Shift4 Payments",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "FOUR",
-      "timing": "BMO"
+      "ticker": "PINS",
+      "company": "Pinterest",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$1,008M",
+      "eps_actual": "$0.27",
+      "revenue_beat_miss": "beat (+4.8%)",
+      "eps_beat_miss": "beat (+14.8%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 6.9,
+        "stock_reaction_basis_date": "2026-05-04",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "Trade Desk",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "TTD",
-      "timing": "AMC"
+      "ticker": "NVO",
+      "company": "Novo Nordisk",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$96.82B",
+      "eps_actual": "$1.03",
+      "revenue_beat_miss": "beat (+1.5%)",
+      "eps_beat_miss": "miss (-85.2%)",
+      "guidanceRevenueDeltaPct": -0.02422907491189427,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": 2.0
+      }
     },
     {
-      "company": "GigaCloud",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "GCT",
-      "timing": "BMO"
+      "ticker": "ZETA",
+      "company": "Zeta Global",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$396.3M",
+      "eps_actual": "$0.13",
+      "revenue_beat_miss": "beat (+4.9%)",
+      "eps_beat_miss": "miss (-35.0%)",
+      "guidanceRevenueDeltaPct": 0.031791907514450865,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.02,
+      "guidanceFcfDeltaPct": 0.09117647058823529,
+      "guidanceFcfDeltaAbs": 31000000.0,
+      "guidanceFcfPriorSource": "prior_guidance",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceProfitMetricUsed": "fcf",
+      "guidanceNextQRevenueDeltaPct": 0.01057438115837539,
+      "guidanceNextQRevenuePriorSource": "consensus",
+      "guidanceFYFcfDeltaPct": 0.09117647058823529,
+      "guidanceFYFcfDeltaAbs": 31000000.0,
+      "guidanceFYFcfPriorSource": "prior_guidance",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide",
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.8,
+        "stock_reaction_basis_date": "2026-05-01",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "Twilio",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "TWLO",
-      "timing": "AMC"
+      "ticker": "FRSH",
+      "company": "Freshworks",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$228.63M",
+      "eps_actual": "$0.11",
+      "revenue_beat_miss": "beat (+2.2%)",
+      "eps_beat_miss": "beat (+37.5%)",
+      "guidanceRevenueDeltaPct": -0.0005200208008320333,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": -7.2
+      }
     },
     {
-      "company": "Bentley Systems",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "BSY",
-      "timing": "BMO"
+      "ticker": "BL",
+      "company": "BlackLine",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$183.16M",
+      "eps_actual": "$0.56",
+      "revenue_beat_miss": "miss (-1.8%)",
+      "eps_beat_miss": "beat (+24.4%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -8.6,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "Akamai",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "AKAM",
-      "timing": "AMC"
+      "ticker": "QLYS",
+      "company": "Qualys",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$175.6M",
+      "eps_actual": "$1.95",
+      "revenue_beat_miss": "beat (+1.1%)",
+      "eps_beat_miss": "beat (+6.2%)",
+      "guidanceRevenueDeltaPct": 0.004160887656033287,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.004160887656033287,
+      "post_earnings_review": {
+        "stock_reaction_pct": -1.4,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "KDP",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "KDP",
-      "timing": "BMO"
+      "ticker": "WIX",
+      "company": "Wix",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "BMO",
+      "revenue_actual": "$541.2M",
+      "eps_actual": "$0.68",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "miss (-43.8%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 27.0
+      }
     },
     {
-      "company": "ZTS",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "ZTS",
-      "timing": "BMO"
+      "ticker": "KMB",
+      "company": "KMB",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "BMO",
+      "revenue_actual": "$4,163M",
+      "eps_actual": "$1.97",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+3.1%)",
+      "guidanceRevenueDeltaPct": 0.002932551319648094,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceEpsDeltaPct": 0.0,
+      "guidanceEpsDeltaAbs": 0.0,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": -2.4,
+        "stock_reaction_basis_date": "2026-04-28",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "ONTO",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "ONTO",
-      "timing": "AMC"
+      "ticker": "DVN",
+      "company": "Devon Energy",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$3.81B",
+      "eps_actual": "$1.04",
+      "revenue_beat_miss": "miss (-2.1%)",
+      "eps_beat_miss": "miss (-2.9%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -8.6,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "JFrog",
-      "date": "2026-08-06",
-      "days_until": 10,
-      "earnings_date": "2026-08-06",
-      "ticker": "FROG",
-      "timing": "AMC"
+      "ticker": "ALAB",
+      "company": "Astera Labs",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$308.4M",
+      "eps_actual": "$0.61",
+      "revenue_beat_miss": "beat (+5.4%)",
+      "eps_beat_miss": "beat (+238.9%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.8,
+        "stock_reaction_basis_date": "2026-05-05",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "monday.com",
-      "date": "2026-08-10",
-      "days_until": 14,
-      "earnings_date": "2026-08-10",
-      "ticker": "MNDY",
-      "timing": "BMO"
+      "ticker": "CAT",
+      "company": "Caterpillar",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "BMO",
+      "revenue_actual": "$17.4B",
+      "eps_actual": "$5.54",
+      "revenue_beat_miss": "beat (+7.4%)",
+      "eps_beat_miss": "beat (+19.4%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -0.0,
+        "stock_reaction_basis_date": "2026-04-30",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
     },
     {
-      "company": "Sable Offshore",
-      "date": "2026-08-10",
-      "days_until": 14,
-      "earnings_date": "2026-08-10",
-      "ticker": "SOC",
-      "timing": "AMC"
+      "ticker": "MOS",
+      "company": "MOS",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "AMC",
+      "revenue_actual": "$2,998M",
+      "eps_actual": "$0.05",
+      "revenue_beat_miss": "beat (+3.5%)",
+      "eps_beat_miss": "miss (-75.0%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 2.4
+      }
     },
     {
-      "company": "Hims & Hers",
-      "date": "2026-08-10",
-      "days_until": 14,
-      "earnings_date": "2026-08-10",
-      "ticker": "HIMS",
-      "timing": "AMC"
+      "ticker": "TSEM",
+      "company": "TSEM",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "BMO",
+      "revenue_actual": "$413.63M",
+      "eps_actual": "$0.65",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+13.4%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": 23.0
+      }
     },
     {
-      "company": "Rapid7",
-      "date": "2026-08-10",
-      "days_until": 14,
-      "earnings_date": "2026-08-10",
-      "ticker": "RPD",
-      "timing": "AMC"
+      "ticker": "PFE",
+      "company": "PFE",
+      "date": "2026-08-04",
+      "earnings_date": "2026-08-04",
+      "days_since": 10,
+      "timing": "BMO",
+      "post_earnings_review": {}
     },
     {
-      "company": "California Resources",
-      "date": "2026-08-10",
-      "days_until": 14,
-      "earnings_date": "2026-08-10",
-      "ticker": "CRC",
-      "timing": "BMO"
+      "ticker": "PLTR",
+      "company": "Palantir",
+      "date": "2026-08-03",
+      "earnings_date": "2026-08-03",
+      "days_since": 11,
+      "timing": "AMC",
+      "revenue_actual": "$1.63B",
+      "eps_actual": "$0.33",
+      "revenue_beat_miss": "beat (+5.8%)",
+      "eps_beat_miss": "beat (+22.2%)",
+      "guidanceRevenueDeltaPct": 0.000784313725490196,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "post_earnings_review": {
+        "stock_reaction_pct": -6.9
+      }
+    },
+    {
+      "ticker": "BWXT",
+      "company": "BWX Technologies",
+      "date": "2026-08-03",
+      "earnings_date": "2026-08-03",
+      "days_since": 11,
+      "timing": "AMC",
+      "revenue_actual": "$860.2M",
+      "eps_actual": "$1.12",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+19.1%)",
+      "guidanceRevenueDeltaPct": 0.0,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": -0.013157894736842105,
+      "guidanceEpsDeltaPct": 0.010810810810810773,
+      "guidanceEpsDeltaAbs": 0.04999999999999982,
+      "guidanceEpsPriorSource": "prior_guidance",
+      "guidanceEpsDeltaBasis": "vs_prior_guide",
+      "guidanceEpsStreetDeltaPct": 0.014099783080260195,
+      "guidanceEpsStreetDeltaAbs": 0.0649999999999995,
+      "guidanceFcfDeltaPct": 0.032,
+      "guidanceFcfDeltaAbs": 10000000.0,
+      "guidanceFcfPriorSource": "prior_guidance",
+      "guidanceFcfDeltaBasis": "vs_prior_guide",
+      "guidanceProfitMetricUsed": "eps",
+      "guidanceFYFcfDeltaPct": 0.032,
+      "guidanceFYFcfDeltaAbs": 10000000.0,
+      "guidanceFYFcfPriorSource": "prior_guidance",
+      "guidanceFYFcfDeltaBasis": "vs_prior_guide",
+      "post_earnings_review": {
+        "stock_reaction_pct": -4.9,
+        "stock_reaction_basis_date": "2026-05-04",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "VRTX",
+      "company": "VRTX",
+      "date": "2026-08-03",
+      "earnings_date": "2026-08-03",
+      "days_since": 11,
+      "timing": "AMC",
+      "revenue_actual": "$2.99B",
+      "eps_actual": "$4.47",
+      "revenue_beat_miss": "beat (+1.4%)",
+      "eps_beat_miss": "beat (+6.2%)",
+      "guidanceRevenueDeltaPct": 0.005403319181783096,
+      "guidanceRevenuePriorSource": "consensus",
+      "guidanceRevenueDeltaBasis": "vs_consensus",
+      "post_earnings_review": {
+        "stock_reaction_pct": -1.3,
+        "stock_reaction_basis_date": "2026-05-04",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "FANG",
+      "company": "FANG",
+      "date": "2026-08-03",
+      "earnings_date": "2026-08-03",
+      "days_since": 11,
+      "timing": "AMC",
+      "revenue_actual": "$4.24B",
+      "eps_actual": "$4.23",
+      "revenue_beat_miss": "beat (+10.7%)",
+      "eps_beat_miss": "beat (+16.0%)",
+      "post_earnings_review": {
+        "stock_reaction_pct": -3.5,
+        "stock_reaction_basis_date": "2026-05-04",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "CLX",
+      "company": "CLX",
+      "date": "2026-08-03",
+      "earnings_date": "2026-08-03",
+      "days_since": 11,
+      "timing": "AMC",
+      "revenue_actual": "$1,670M",
+      "eps_actual": "$1.64",
+      "revenue_beat_miss": "in-line",
+      "eps_beat_miss": "beat (+4.5%)",
+      "guidanceRevenueDeltaPct": 0.0,
+      "guidanceRevenuePriorSource": "prior_guidance",
+      "guidanceRevenueDeltaBasis": "vs_prior_guide",
+      "guidanceRevenueStreetDeltaPct": 0.0,
+      "guidanceEpsDeltaPct": -0.05290102389078506,
+      "guidanceEpsDeltaAbs": -0.3100000000000005,
+      "guidanceEpsPriorSource": "consensus",
+      "guidanceEpsDeltaBasis": "vs_consensus",
+      "guidanceProfitMetricUsed": "eps",
+      "post_earnings_review": {
+        "stock_reaction_pct": -9.7,
+        "stock_reaction_basis_date": "2026-04-30",
+        "stock_reaction_calc_method": "amc_d_plus_1"
+      }
+    },
+    {
+      "ticker": "CNH",
+      "company": "CNH",
+      "date": "2026-08-03",
+      "earnings_date": "2026-08-03",
+      "days_since": 11,
+      "timing": "BMO",
+      "post_earnings_review": {}
     }
-  ],
-  "updated": "2026-07-28T00:01:43+00:00"
+  ]
 }
