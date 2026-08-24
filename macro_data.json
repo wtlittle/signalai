@@ -1,35 +1,35 @@
 {
-  "generated": "2026-08-21T10:18:39.709Z",
+  "generated": "2026-08-24T10:27:09.057Z",
   "pillars": {
     "growth": {
-      "score": 0.75,
+      "score": 0.5,
       "label": "Expanding",
       "color": "green",
       "signals": [
         {
           "ticker": "XLI",
           "name": "Industrials ETF",
-          "price": 179.77,
-          "change1d": -1.1981296976126374,
-          "change1w": -3.240211653595663,
-          "change1m": 0.5143964984898194,
-          "change3m": 5.294915229394401,
-          "change6m": 1.9451105851210102,
-          "change1y": 19.305822279453373,
-          "trend": "up",
-          "direction": "\u2191",
+          "price": 180.25,
+          "change1d": 0.2670054603834669,
+          "change1w": -3.3563855510201615,
+          "change1m": -0.9288789813831706,
+          "change3m": 5.699877611142737,
+          "change6m": 1.7040029031562356,
+          "change1y": 17.702756117539906,
+          "trend": "flat",
+          "direction": "\u2192",
           "unit": ""
         },
         {
           "ticker": "XLY",
           "name": "Consumer Disc ETF",
-          "price": 116.68,
-          "change1d": -1.6105880739287588,
-          "change1w": -1.494298597440929,
-          "change1m": 2.3329273289108894,
-          "change3m": -1.0683416229844918,
-          "change6m": 0.3785292924058053,
-          "change1y": 3.1516620330928826,
+          "price": 118.02,
+          "change1d": 1.148439913712251,
+          "change1w": -0.15228452607710335,
+          "change1m": 8.514154399553124,
+          "change3m": -0.5728730603694016,
+          "change6m": 0.4853126518814692,
+          "change1y": 1.2612557295736797,
           "trend": "up",
           "direction": "\u2191",
           "unit": ""
@@ -37,13 +37,13 @@
         {
           "ticker": "IWM",
           "name": "Russell 2000",
-          "price": 297.67,
-          "change1d": -1.342304522178694,
-          "change1w": -1.9209181457217874,
-          "change1m": 1.320672851343489,
-          "change3m": 6.360102412226659,
-          "change6m": 12.498112834994135,
-          "change1y": 31.72988087786149,
+          "price": 299.96,
+          "change1d": 0.7693037487706321,
+          "change1w": -1.6814726619652787,
+          "change1m": 2.6943733834976893,
+          "change3m": 6.184290355282569,
+          "change6m": 13.359286519951008,
+          "change1y": 27.734952568318054,
           "trend": "up",
           "direction": "\u2191",
           "unit": ""
@@ -51,33 +51,33 @@
         {
           "ticker": "^GSPC",
           "name": "S&P 500",
-          "price": 7641.16,
-          "change1d": -0.86689353939768,
-          "change1w": -2.0237245256359557,
-          "change1m": 1.8962655628677674,
-          "change3m": 2.8008983675259675,
-          "change6m": 11.35649222014337,
-          "change1y": 19.952218700013827,
+          "price": 7674.37,
+          "change1d": 0.4346178207354583,
+          "change1w": -1.4306843749443408,
+          "change1m": 3.5915165357056376,
+          "change3m": 3.070890333589418,
+          "change6m": 11.06967610593303,
+          "change1y": 18.671358218430484,
           "trend": "up",
           "direction": "\u2192"
         }
       ]
     },
     "inflation": {
-      "score": 0.771,
+      "score": 0.8,
       "label": "Rising",
       "color": "green",
       "signals": [
         {
           "ticker": "CL=F",
           "name": "WTI Crude",
-          "price": 87.24,
-          "change1d": -0.6717543194290148,
-          "change1w": 5.87378185468911,
-          "change1m": -5.3693507392874,
-          "change3m": -9.4551123556047,
-          "change6m": 31.405330118698625,
-          "change1y": 37.3425649166643,
+          "price": 85.04,
+          "change1d": -2.3202361764761483,
+          "change1w": 0.6390543379021819,
+          "change1m": -4.781095912879163,
+          "change3m": -11.966871367695358,
+          "change6m": 28.24612282692837,
+          "change1y": 31.234563133589987,
           "trend": "up",
           "direction": "\u2191",
           "unit": ""
@@ -85,27 +85,27 @@
         {
           "ticker": "HG=F",
           "name": "Copper",
-          "price": 6.58,
-          "change1d": 1.857584537839244,
-          "change1w": -0.3030529643634772,
-          "change1m": 4.3536935368635215,
-          "change3m": 5.154230948614071,
-          "change6m": 12.83656947753088,
-          "change1y": 48.47117817139216,
-          "trend": "up",
-          "direction": "\u2191",
+          "price": 6.604,
+          "change1d": 0.37236569491757476,
+          "change1w": 0,
+          "change1m": 4.493669496478836,
+          "change3m": 4.13119021772556,
+          "change6m": 14.394601803374583,
+          "change1y": 47.856271783420155,
+          "trend": "flat",
+          "direction": "\u2192",
           "unit": ""
         },
         {
           "ticker": "GC=F",
           "name": "Gold",
-          "price": 4641.2,
-          "change1d": 2.7655426059816715,
-          "change1w": 5.953800994954999,
-          "change1m": 14.6938190902688,
-          "change3m": 2.2335872722911834,
-          "change6m": -8.263981687498058,
-          "change1y": 39.08718664448532,
+          "price": 4704.3,
+          "change1d": 1.7343894087500384,
+          "change1w": 6.485128631134657,
+          "change1m": 15.65295731500538,
+          "change3m": 4.054408420426896,
+          "change6m": -9.614394140812852,
+          "change1y": 39.43623619074635,
           "trend": "up",
           "direction": "\u2191",
           "unit": ""
@@ -114,26 +114,26 @@
           "ticker": "DFII10",
           "name": "10Y TIPS Real Yield",
           "price": 2.35,
-          "change1d": -2.4896265560165993,
-          "change1w": -2.892561983471068,
-          "change1m": -0.8438818565400852,
-          "change3m": 7.798165137614675,
-          "change6m": 31.28491620111732,
-          "change1y": 20.51282051282052,
-          "trend": "flat",
-          "direction": "\u2192",
+          "change1d": 0,
+          "change1w": -1.673640167364018,
+          "change1m": -1.673640167364018,
+          "change3m": 10.328638497652593,
+          "change6m": 30.555555555555557,
+          "change1y": 19.897959183673475,
+          "trend": "down",
+          "direction": "\u2193",
           "unit": "%"
         },
         {
           "ticker": "DX-Y.NYB",
           "name": "US Dollar (DXY)",
-          "price": 98.641,
-          "change1d": -0.26188222637299824,
-          "change1w": -1.032406288268491,
-          "change1m": -2.74968101789647,
-          "change3m": -0.5534868308915785,
-          "change6m": 0.859913867414857,
-          "change1y": 0.021289893698292036,
+          "price": 98.981,
+          "change1d": 0.18319528608451982,
+          "change1w": -0.661377545230809,
+          "change1m": -2.4529401627503895,
+          "change3m": -0.34131784962610817,
+          "change6m": 1.3111626401110628,
+          "change1y": 0.5597912229331088,
           "trend": "down",
           "direction": "\u2193",
           "unit": ""
@@ -148,13 +148,13 @@
         {
           "ticker": "^TNX",
           "name": "10Y Treasury Yield",
-          "price": 4.696,
-          "change1d": 0.9241376144081217,
-          "change1w": 1.185096048631844,
-          "change1m": 0.8374497270601347,
-          "change3m": 2.712162549322452,
-          "change6m": 15.23927163149929,
-          "change1y": 9.3109891762627,
+          "price": 4.738,
+          "change1d": 0.8943760632625704,
+          "change1w": 0.894374276138667,
+          "change1m": 0.7442025707230708,
+          "change3m": 3.3144341811351117,
+          "change6m": 15.956925009478976,
+          "change1y": 9.422632784284152,
           "trend": "up",
           "direction": "\u2191",
           "unit": "%"
@@ -162,13 +162,13 @@
         {
           "ticker": "^FVX",
           "name": "5Y Treasury Yield",
-          "price": 4.387,
-          "change1d": 0.7810667283900277,
-          "change1w": 1.7157402799795731,
-          "change1m": -0.4538230231951465,
-          "change3m": 1.3632165971058807,
-          "change6m": 1.3632165971058807,
-          "change1y": 1.3632165971058807,
+          "price": 4.424,
+          "change1d": 0.8433990282391588,
+          "change1w": 1.4213617144361959,
+          "change1m": -0.8294144715428905,
+          "change3m": 3.922946161421645,
+          "change6m": 21.205470432504356,
+          "change1y": 14.700535579474888,
           "trend": "flat",
           "direction": "\u2192",
           "unit": "%"
@@ -176,13 +176,13 @@
         {
           "ticker": "TLT",
           "name": "Long Bond ETF",
-          "price": 82.34,
-          "change1d": -0.8190757294172863,
-          "change1w": -0.30270009817799814,
-          "change1m": -1.3183198362057553,
-          "change3m": -1.8710609649606136,
-          "change6m": -8.123193690673096,
-          "change1y": -4.710111273844837,
+          "price": 82.05,
+          "change1d": -0.35219377069267543,
+          "change1w": 0.012191779764565666,
+          "change1m": -1.3466335720152665,
+          "change3m": -2.576582922693997,
+          "change6m": -8.231741761431802,
+          "change1y": -5.743825186343901,
           "trend": "down",
           "direction": "\u2193",
           "unit": ""
@@ -190,13 +190,13 @@
         {
           "ticker": "HYG",
           "name": "High Yield ETF",
-          "price": 79.56,
-          "change1d": -0.1881810139198377,
-          "change1w": -0.2882608776719972,
-          "change1m": 0.05030296430581094,
-          "change3m": -0.37566121896438565,
-          "change6m": -1.7049726231618383,
-          "change1y": -0.7980042568598439,
+          "price": 79.61,
+          "change1d": 0.06284872164484923,
+          "change1w": -0.12545286070712458,
+          "change1m": 0.47961282003999106,
+          "change3m": -0.3629548310251471,
+          "change6m": -1.7160486291956016,
+          "change1y": -1.5337017775781856,
           "trend": "flat",
           "direction": "\u2192",
           "unit": ""
@@ -204,13 +204,13 @@
         {
           "ticker": "LQD",
           "name": "IG Credit ETF",
-          "price": 106.06,
-          "change1d": -0.47855840882486705,
-          "change1w": -0.45988313386160773,
-          "change1m": -0.5718577114676947,
-          "change3m": -1.750810044538138,
-          "change6m": -5.032237402601058,
-          "change1y": -2.999816068367862,
+          "price": 105.92,
+          "change1d": -0.13199845541803398,
+          "change1w": -0.18847019643821164,
+          "change1m": -0.31997361231863586,
+          "change3m": -2.080059201337729,
+          "change6m": -5.0810989829023345,
+          "change1y": -3.883846549748154,
           "trend": "flat",
           "direction": "\u2192",
           "unit": ""
@@ -218,13 +218,13 @@
         {
           "ticker": "DX-Y.NYB",
           "name": "US Dollar (DXY)",
-          "price": 98.641,
-          "change1d": -0.26188222637299824,
-          "change1w": -1.032406288268491,
-          "change1m": -2.74968101789647,
-          "change3m": -0.5534868308915785,
-          "change6m": 0.859913867414857,
-          "change1y": 0.021289893698292036,
+          "price": 98.981,
+          "change1d": 0.18319528608451982,
+          "change1w": -0.661377545230809,
+          "change1m": -2.4529401627503895,
+          "change3m": -0.34131784962610817,
+          "change6m": 1.3111626401110628,
+          "change1y": 0.5597912229331088,
           "trend": "down",
           "direction": "\u2193",
           "unit": ""
@@ -239,13 +239,13 @@
         {
           "ticker": "SPHB",
           "name": "S&P High Beta",
-          "price": 146.42,
-          "change1d": -1.4537634973990412,
-          "change1w": -3.3658962247287643,
-          "change1m": 1.1816677325288665,
-          "change3m": 6.355778394986402,
-          "change6m": 18.7510093633026,
-          "change1y": 44.284581518927595,
+          "price": 148.51,
+          "change1d": 1.4274018967294002,
+          "change1w": -2.0317975496149723,
+          "change1m": 3.57067796846446,
+          "change3m": 6.0785675048828125,
+          "change6m": 19.40022333675914,
+          "change1y": 41.62692508336237,
           "trend": "up",
           "direction": "\u2191",
           "unit": ""
@@ -253,13 +253,13 @@
         {
           "ticker": "SPLV",
           "name": "S&P Low Vol",
-          "price": 75.66,
-          "change1d": -0.4211678636421054,
-          "change1w": -0.747736678109924,
-          "change1m": -0.7086526348545599,
-          "change3m": 2.854820790121531,
-          "change6m": -0.05283129160514607,
-          "change1y": 2.091489730120594,
+          "price": 75.31,
+          "change1d": -0.462600641248257,
+          "change1w": -1.3750694648573265,
+          "change1m": -1.3750694648573265,
+          "change3m": 2.1983919982573217,
+          "change6m": -0.8296087207774308,
+          "change1y": 1.1959142858724565,
           "trend": "down",
           "direction": "\u2193",
           "unit": ""
@@ -267,13 +267,13 @@
         {
           "ticker": "^VIX",
           "name": "VIX",
-          "price": 15.63,
-          "change1d": -2.3735179478406225,
-          "change1w": 9.68421132940995,
-          "change1m": -16.41711509757159,
-          "change3m": -6.407189219254855,
-          "change6m": -25.60685414484284,
-          "change1y": -5.84337496830182,
+          "price": 15.89,
+          "change1d": 5.0231320542667826,
+          "change1w": 4.608300080820604,
+          "change1m": -14.477931062589267,
+          "change3m": -4.219408094194279,
+          "change6m": -18.721222693449548,
+          "change1y": 7.437460340141261,
           "trend": "down",
           "direction": "\u2192"
         }
@@ -305,329 +305,329 @@
   },
   "sectors": {
     "XLK": {
-      "name": "State Street Technology Select ",
-      "price": 183.1,
-      "change1d": -0.2940532517116107,
-      "change_1w": -4.020547254373854,
-      "change_1m": 1.5698683996131766,
-      "change_3m": 3.3645741980371,
-      "change_6m": 30.5898276413152,
-      "change_1y": 41.43911282969999,
+      "name": "State Street Technology Select Sector SPDR ETF",
+      "price": 183.31,
+      "change1d": 0.11468808819463237,
+      "change_1w": -3.526128699509616,
+      "change_1m": 2.7234523359286813,
+      "change_3m": 2.637173176997675,
+      "change_6m": 30.117824535196156,
+      "change_1y": 39.70733037026838,
       "sectorName": "Technology"
     },
     "XLF": {
       "name": "State Street Financial Select Sector SPDR ETF",
-      "price": 56.95,
-      "change1d": -0.9220590578586929,
-      "change_1w": -2.248536897244585,
-      "change_1m": 1.6057119324344622,
-      "change_3m": 10.240032774201305,
-      "change_6m": 9.204216867910533,
-      "change_1y": 8.064516012282022,
+      "price": 57.48,
+      "change1d": 0.9306395609487751,
+      "change_1w": -1.1691889734522387,
+      "change_1m": 2.9553961258583583,
+      "change_3m": 11.115407018910295,
+      "change_6m": 9.506568306734499,
+      "change_1y": 7.298861059709662,
       "sectorName": "Financials"
     },
     "XLV": {
-      "name": "State Street Health Care Select",
-      "price": 172.39,
-      "change1d": -1.8727190419759239,
-      "change_1w": 2.381514663588931,
-      "change_1m": 8.128964002540485,
-      "change_3m": 17.16848614730575,
-      "change_6m": 9.621013233696136,
-      "change_1y": 25.79539392541164,
+      "name": "State Street Health Care Select Sector SPDR ETF",
+      "price": 174.62,
+      "change1d": 1.2935788724676291,
+      "change_1w": 4.331720267377534,
+      "change_1m": 8.164019125659301,
+      "change_3m": 17.867028222220714,
+      "change_6m": 11.35058472237412,
+      "change_1y": 26.380543845468896,
       "sectorName": "Health Care"
     },
     "XLE": {
       "name": "State Street Energy Select Sector SPDR ETF",
-      "price": 63.75,
-      "change1d": 0.2673767915217006,
-      "change_1w": 4.405500435978779,
-      "change_1m": 7.685809423010936,
-      "change_3m": 6.605352530659355,
-      "change_6m": 15.530988849995293,
-      "change_1y": 47.603616640489015,
+      "price": 63.64,
+      "change1d": -0.17254901960784225,
+      "change_1w": 2.7943782046522547,
+      "change_1m": 7.174129748914164,
+      "change_3m": 7.627258988779448,
+      "change_6m": 15.96209575626754,
+      "change_1y": 44.40662543758222,
       "sectorName": "Energy"
     },
     "XLI": {
       "name": "State Street Industrial Select Sector SPDR ETF",
-      "price": 179.77,
-      "change1d": -1.1981296976126374,
-      "change_1w": -3.240211653595663,
-      "change_1m": 0.5143964984898194,
-      "change_3m": 5.294915229394401,
-      "change_6m": 1.9451105851210102,
-      "change_1y": 19.305822279453373,
+      "price": 180.25,
+      "change1d": 0.2670054603834669,
+      "change_1w": -3.3563855510201615,
+      "change_1m": -0.9288789813831706,
+      "change_3m": 5.699877611142737,
+      "change_6m": 1.7040029031562356,
+      "change_1y": 17.702756117539906,
       "sectorName": "Industrials"
     },
     "XLC": {
       "name": "State Street Communication Services Select Sector SPDR ETF",
-      "price": 110.68,
-      "change1d": -0.5749188794275288,
-      "change_1w": -1.6614861802554393,
-      "change_1m": 1.3553144673026638,
-      "change_3m": -4.66838780377197,
-      "change_6m": -3.8735444746525056,
-      "change_1y": 0.8657586067431385,
+      "price": 111.4,
+      "change1d": 0.6505237557273071,
+      "change_1w": -1.3722846075627126,
+      "change_1m": 5.712663151797226,
+      "change_3m": -4.048231705437813,
+      "change_6m": -4.623288856838466,
+      "change_1y": 0.08085883501864063,
       "sectorName": "Communication Svcs"
     },
     "XLY": {
-      "name": "State Street Consumer Discretio",
-      "price": 116.68,
-      "change1d": -1.6105880739287588,
-      "change_1w": -1.494298597440929,
-      "change_1m": 2.3329273289108894,
-      "change_3m": -1.0683416229844918,
-      "change_6m": 0.3785292924058053,
-      "change_1y": 3.1516620330928826,
+      "name": "State Street Consumer Discretionary Select Sector SPDR ETF",
+      "price": 118.02,
+      "change1d": 1.148439913712251,
+      "change_1w": -0.15228452607710335,
+      "change_1m": 8.514154399553124,
+      "change_3m": -0.5728730603694016,
+      "change_6m": 0.4853126518814692,
+      "change_1y": 1.2612557295736797,
       "sectorName": "Consumer Disc"
     },
     "XLP": {
       "name": "State Street Consumer Staples Select Sector SPDR ETF",
-      "price": 85.32,
-      "change1d": -1.4097537585170665,
-      "change_1w": -0.7906980292741642,
-      "change_1m": 1.1140109883899925,
-      "change_3m": -0.23385986446761908,
-      "change_6m": -2.680504760126157,
-      "change_1y": 3.4558002084831245,
+      "price": 85.99,
+      "change1d": 0.7852793103284791,
+      "change_1w": -0.11615574210110823,
+      "change_1m": 3.340943167749217,
+      "change_3m": 1.570982924792161,
+      "change_6m": -2.1617949016650986,
+      "change_1y": 4.268214612542957,
       "sectorName": "Consumer Staples"
     },
     "XLRE": {
       "name": "State Street Real Estate Select Sector SPDR ETF",
       "price": 45.08,
-      "change1d": 0.2000407161048776,
-      "change_1w": -0.08864605890274864,
-      "change_1m": 0.15552879833811067,
-      "change_3m": 1.4629788913217399,
-      "change_6m": 4.351854247484309,
-      "change_1y": 8.157393236527154,
+      "change1d": -4.061789296432386e-06,
+      "change_1w": -0.4197009604323964,
+      "change_1m": 0.2892126049137204,
+      "change_3m": 1.3033749012464888,
+      "change_6m": 3.4894407939474172,
+      "change_1y": 6.47142576427063,
       "sectorName": "Real Estate"
     },
     "XLU": {
       "name": "State Street Utilities Select Sector SPDR ETF",
-      "price": 43.77,
-      "change1d": -0.5679247050520576,
-      "change_1w": -0.6130800457555776,
-      "change_1m": -4.702808258350267,
-      "change_3m": -1.6625430053353485,
-      "change_6m": -5.074821343772803,
-      "change_1y": 2.2902536136210094,
+      "price": 42.77,
+      "change1d": -2.2846708871493613,
+      "change_1w": -3.475515386590845,
+      "change_1m": -7.404196299256278,
+      "change_3m": -4.955554538302952,
+      "change_6m": -7.684008704063489,
+      "change_1y": -0.5811250519289183,
       "sectorName": "Utilities"
     },
     "XLB": {
       "name": "State Street Materials Select Sector SPDR ETF",
-      "price": 52.42,
-      "change1d": -0.19040452568938962,
-      "change_1w": 0.21027870916948624,
-      "change_1m": 3.1483638011199084,
-      "change_3m": 5.430404026454296,
-      "change_6m": -0.7760811052411614,
-      "change_1y": 15.986278400060502,
+      "price": 53.54,
+      "change1d": 2.136592655812412,
+      "change_1w": 1.9033117293008388,
+      "change_1m": 6.462517281435448,
+      "change_3m": 7.037185976709298,
+      "change_6m": 1.0951696395038992,
+      "change_1y": 16.1640285056956,
       "sectorName": "Materials"
     }
   },
   "factors": {
     "MTUM": {
       "name": "iShares MSCI USA Momentum Factor ETF",
-      "price": 305.11,
-      "change1d": -0.25173429793408286,
-      "change_1w": -3.455372423476953,
-      "change_1m": -2.9054242510645802,
-      "change_3m": 1.8425144634823494,
-      "change_6m": 20.45399987192979,
-      "change_1y": 26.323846683062825,
+      "price": 305.17,
+      "change1d": 0.01966984081768551,
+      "change_1w": -3.795586000338454,
+      "change_1m": -2.805910328787577,
+      "change_3m": 0.9961641941833391,
+      "change_6m": 19.777853398958463,
+      "change_1y": 25.24419635605143,
       "factorName": "Momentum"
     },
     "VLUE": {
       "name": "iShares MSCI USA Value Factor ETF",
-      "price": 201.6,
-      "change1d": 0.2935204762388031,
-      "change_1w": -0.630914209626635,
-      "change_1m": 3.125479788564034,
-      "change_3m": 10.350869456129292,
-      "change_6m": 33.174791650707,
-      "change_1y": 72.64709420156198,
+      "price": 202.52,
+      "change1d": 0.45634616499564773,
+      "change_1w": -0.764404912091865,
+      "change_1m": 3.5378312643216914,
+      "change_3m": 9.517632639946292,
+      "change_6m": 32.86970653810388,
+      "change_1y": 69.5721374486878,
       "factorName": "Value"
     },
     "QUAL": {
       "name": "iShares MSCI USA Quality Factor ETF",
-      "price": 222.3,
-      "change1d": -0.9137535314216733,
-      "change_1w": -2.1480719171374787,
-      "change_1m": 2.282141712267283,
-      "change_3m": 4.744855829496707,
-      "change_6m": 9.491210357247914,
-      "change_1y": 19.157378838375593,
+      "price": 223.22,
+      "change1d": 0.41385377220529534,
+      "change_1w": -1.1601112113319347,
+      "change_1m": 3.342593157732928,
+      "change_3m": 4.926198861020437,
+      "change_6m": 9.212780413564772,
+      "change_1y": 17.87506309147248,
       "factorName": "Quality"
     },
     "SIZE": {
       "name": "iShares MSCI USA Size Factor ETF",
-      "price": 184.34,
-      "change1d": -0.3190356887190387,
-      "change_1w": -1.3855434865301774,
-      "change_1m": 3.964806765604825,
-      "change_3m": 7.4931427098466035,
-      "change_6m": 9.550122812981767,
-      "change_1y": 17.19007804293278,
+      "price": 184.89,
+      "change1d": 0.29836371543656665,
+      "change_1w": -0.8260437411543544,
+      "change_1m": 4.652743140260031,
+      "change_3m": 7.375571617500738,
+      "change_6m": 9.344138265982835,
+      "change_1y": 15.311215923956148,
       "factorName": "Size (Small)"
     },
     "USMV": {
       "name": "iShares MSCI USA Min Vol Factor ETF",
-      "price": 100.67,
-      "change1d": -0.6121047585382127,
-      "change_1w": -0.6905441044395368,
-      "change_1m": 4.592205889813312,
-      "change_3m": 4.9739275987177205,
-      "change_6m": 4.80998955793677,
-      "change_1y": 6.721081538030263,
+      "price": 101.23,
+      "change1d": 0.5562748000798523,
+      "change_1w": 0.0988886643248129,
+      "change_1m": 5.3272320404403155,
+      "change_3m": 5.404000824584699,
+      "change_6m": 5.239630717960986,
+      "change_1y": 7.076372304442698,
       "factorName": "Low Volatility"
     },
     "IWM": {
       "name": "iShares Russell 2000 ETF",
-      "price": 297.67,
-      "change1d": -1.342304522178694,
-      "change_1w": -1.9209181457217874,
-      "change_1m": 1.320672851343489,
-      "change_3m": 6.360102412226659,
-      "change_6m": 12.498112834994135,
-      "change_1y": 31.72988087786149,
+      "price": 299.96,
+      "change1d": 0.7693037487706321,
+      "change_1w": -1.6814726619652787,
+      "change_1m": 2.6943733834976893,
+      "change_3m": 6.184290355282569,
+      "change_6m": 13.359286519951008,
+      "change_1y": 27.734952568318054,
       "factorName": "Russell 2000"
     },
     "IWF": {
       "name": "iShares Russell 1000 Growth ETF",
-      "price": 121.82,
-      "change1d": -0.6929144710466799,
-      "change_1w": -3.055868100728891,
-      "change_1m": 0.7442950210944055,
-      "change_3m": -2.278199810568737,
-      "change_6m": 8.106671104536755,
-      "change_1y": 11.142031092667553,
+      "price": 122.39,
+      "change1d": 0.4679037158132578,
+      "change_1w": -2.3146312592288485,
+      "change_1m": 3.204320068389846,
+      "change_3m": -1.8367026868159866,
+      "change_6m": 7.86586466294838,
+      "change_1y": 9.949240179078126,
       "factorName": "Russell Growth"
     },
     "IWD": {
       "name": "iShares Russell 1000 Value ETF",
-      "price": 256.17,
-      "change1d": -1.004749052848818,
-      "change_1w": -0.9779662388543605,
-      "change_1m": 3.494670736087991,
-      "change_3m": 9.568011156537226,
-      "change_6m": 14.37693085303014,
-      "change_1y": 29.11144030015232,
+      "price": 257.29,
+      "change1d": 0.43720440081157036,
+      "change_1w": -0.49502987316386443,
+      "change_1m": 4.512964578633529,
+      "change_3m": 9.625058325697978,
+      "change_6m": 14.214055873028345,
+      "change_1y": 27.51648069427073,
       "factorName": "Russell Value"
     }
   },
   "indices": {
     "^GSPC": {
       "name": "S&P 500",
-      "price": 7641.16,
-      "change1d": -0.86689353939768,
-      "change_1w": -2.0237245256359557,
-      "change_1m": 1.8962655628677674,
-      "change_3m": 2.8008983675259675,
-      "change_6m": 11.35649222014337,
-      "change_1y": 19.952218700013827
+      "price": 7674.37,
+      "change1d": 0.4346178207354583,
+      "change_1w": -1.4306843749443408,
+      "change_1m": 3.5915165357056376,
+      "change_3m": 3.070890333589418,
+      "change_6m": 11.06967610593303,
+      "change_1y": 18.671358218430484
     },
     "^IXIC": {
       "name": "NASDAQ Composite",
-      "price": 26067.166,
-      "change1d": -1.0023278387493118,
-      "change_1w": -2.7454336106918884,
-      "change_1m": 1.46460235152874,
-      "change_3m": -0.7734551713760102,
-      "change_6m": 14.920776216900972,
-      "change_1y": 23.539271443261303
+      "price": 26180.455,
+      "change1d": 0.43458909603353363,
+      "change_1w": -2.052811295014443,
+      "change_1m": 4.14823918610136,
+      "change_3m": -0.42839632279352047,
+      "change_6m": 14.394741342731335,
+      "change_1y": 21.789190629160142
     },
     "^RUT": {
       "name": " Russell 2000 Index",
-      "price": 2992.434,
-      "change1d": -1.3355339106210213,
-      "change_1w": -1.9791396263449386,
-      "change_1m": 1.0976570767493072,
-      "change_3m": 6.213589523973591,
-      "change_6m": 12.282505767341025,
-      "change_1y": 31.58743252879262
+      "price": 3017.871,
+      "change1d": 0.8501809212096343,
+      "change_1w": -1.6474213430543383,
+      "change_1m": 2.643060493344831,
+      "change_3m": 6.134103606913882,
+      "change_6m": 13.292767570755073,
+      "change_1y": 27.7702821641158
     },
     "^VIX": {
       "name": "CBOE Volatility Index",
-      "price": 15.63,
-      "change1d": -2.3735179478406225,
-      "change_1w": 9.68421132940995,
-      "change_1m": -16.41711509757159,
-      "change_3m": -6.407189219254855,
-      "change_6m": -25.60685414484284,
-      "change_1y": -5.84337496830182
+      "price": 15.89,
+      "change1d": 5.0231320542667826,
+      "change_1w": 4.608300080820604,
+      "change_1m": -14.477931062589267,
+      "change_3m": -4.219408094194279,
+      "change_6m": -18.721222693449548,
+      "change_1y": 7.437460340141261
     }
   },
   "commodities": {
     "WTI": {
-      "name": "Crude Oil Sep 26",
-      "price": 87.24,
-      "change1d": -0.6717543194290148,
-      "change_1w": 5.87378185468911,
-      "change_1m": -5.3693507392874,
-      "change_3m": -9.4551123556047,
-      "change_6m": 31.405330118698625,
-      "change_1y": 37.3425649166643,
+      "name": "Crude Oil Oct 26",
+      "price": 85.04,
+      "change1d": -2.3202361764761483,
+      "change_1w": 0.6390543379021819,
+      "change_1m": -4.781095912879163,
+      "change_3m": -11.966871367695358,
+      "change_6m": 28.24612282692837,
+      "change_1y": 31.234563133589987,
       "ticker": "CL=F",
       "commodityName": "WTI Crude"
     },
     "BRENT": {
       "name": "Brent Crude Oil Last Day Financial Futures",
-      "price": 94.11,
-      "change1d": 0.35188870228048713,
-      "change_1w": 6.3149617931249775,
-      "change_1m": -6.534910787080114,
-      "change_3m": -8.256971212237733,
-      "change_6m": 31.145481896295735,
-      "change_1y": 39.07197156322656,
+      "price": 92.81,
+      "change1d": -1.673905498320949,
+      "change_1w": 2.134912240975683,
+      "change_1m": -4.10208852115876,
+      "change_3m": -10.363147828912634,
+      "change_6m": 29.82235324087063,
+      "change_1y": 34.89824628172381,
       "ticker": "BZ=F",
       "commodityName": "Brent Crude"
     },
     "NATGAS": {
-      "name": "Natural Gas Sep 26",
-      "price": 2.783,
-      "change1d": 1.8294899089970311,
-      "change_1w": 1.8294896298388046,
-      "change_1m": -4.561039164913549,
-      "change_3m": -7.786610465817624,
-      "change_6m": -8.664258119925096,
-      "change_1y": -1.5215846854616888,
+      "name": "Natural Gas Oct 26",
+      "price": 2.829,
+      "change1d": 2.0194734242384835,
+      "change_1w": 5.167283866472126,
+      "change_1m": -1.4629068115547392,
+      "change_3m": -2.6831808367565166,
+      "change_6m": -5.226127450350028,
+      "change_1y": 4.933230419521175,
       "ticker": "NG=F",
       "commodityName": "Natural Gas"
     },
     "COPPER": {
       "name": "Copper Sep 26",
-      "price": 6.58,
-      "change1d": 1.857584537839244,
-      "change_1w": -0.3030529643634772,
-      "change_1m": 4.3536935368635215,
-      "change_3m": 5.154230948614071,
-      "change_6m": 12.83656947753088,
-      "change_1y": 48.47117817139216,
+      "price": 6.604,
+      "change1d": 0.37236569491757476,
+      "change_1w": 0,
+      "change_1m": 4.493669496478836,
+      "change_3m": 4.13119021772556,
+      "change_6m": 14.394601803374583,
+      "change_1y": 47.856271783420155,
       "ticker": "HG=F",
       "commodityName": "Copper"
     },
     "GOLD": {
       "name": "Gold Dec 26",
-      "price": 4641.2,
-      "change1d": 2.7655426059816715,
-      "change_1w": 5.953800994954999,
-      "change_1m": 14.6938190902688,
-      "change_3m": 2.2335872722911834,
-      "change_6m": -8.263981687498058,
-      "change_1y": 39.08718664448532,
+      "price": 4704.3,
+      "change1d": 1.7343894087500384,
+      "change_1w": 6.485128631134657,
+      "change_1m": 15.65295731500538,
+      "change_3m": 4.054408420426896,
+      "change_6m": -9.614394140812852,
+      "change_1y": 39.43623619074635,
       "ticker": "GC=F",
       "commodityName": "Gold"
     },
     "SILVER": {
       "name": "Silver Sep 26",
-      "price": 69.4,
-      "change1d": 2.019814488155639,
-      "change_1w": 6.788949704435504,
-      "change_1m": 20.073360882384524,
-      "change_3m": -9.178946010557787,
-      "change_6m": -15.656935277775228,
-      "change_1y": 82.50190850223954,
+      "price": 68.965,
+      "change1d": -0.7212210193729847,
+      "change_1w": 4.301196361392433,
+      "change_1m": 17.575351914548072,
+      "change_3m": -9.128643761560125,
+      "change_6m": -20.29287675419503,
+      "change_1y": 78.31010589565402,
       "ticker": "SI=F",
       "commodityName": "Silver"
     }
@@ -635,90 +635,90 @@
   "rates": {
     "^TNX": {
       "name": "CBOE Interest Rate 10 Year T No",
-      "price": 4.696,
-      "change1d": 0.9241376144081217,
-      "change_1w": 1.185096048631844,
-      "change_1m": 0.8374497270601347,
-      "change_3m": 2.712162549322452,
-      "change_6m": 15.23927163149929,
-      "change_1y": 9.3109891762627,
+      "price": 4.738,
+      "change1d": 0.8943760632625704,
+      "change_1w": 0.894374276138667,
+      "change_1m": 0.7442025707230708,
+      "change_3m": 3.3144341811351117,
+      "change_6m": 15.956925009478976,
+      "change_1y": 9.422632784284152,
       "rateName": "10Y Treasury Yield"
     },
     "^FVX": {
       "name": "Treasury Yield 5 Years",
-      "price": 4.387,
-      "change1d": 0.7810667283900277,
-      "change_1w": 1.7157402799795731,
-      "change_1m": -0.4538230231951465,
-      "change_3m": 1.3632165971058807,
-      "change_6m": 1.3632165971058807,
-      "change_1y": 1.3632165971058807,
+      "price": 4.424,
+      "change1d": 0.8433990282391588,
+      "change_1w": 1.4213617144361959,
+      "change_1m": -0.8294144715428905,
+      "change_3m": 3.922946161421645,
+      "change_6m": 21.205470432504356,
+      "change_1y": 14.700535579474888,
       "rateName": "5Y Treasury Yield"
     },
     "^TYX": {
       "name": "Treasury Yield 30 Years",
-      "price": 5.237,
-      "change1d": 0.8278828383324598,
-      "change_1w": 0.4603907284120042,
-      "change_1m": 1.7485944327986156,
-      "change_3m": 2.3251261689870626,
-      "change_6m": 2.3251261689870626,
-      "change_1y": 2.3251261689870626,
+      "price": 5.276,
+      "change1d": 0.7447013849401548,
+      "change_1w": 0.20892985150122198,
+      "change_1m": 2.030555385728617,
+      "change_3m": 3.20813839396357,
+      "change_6m": 11.661378399508408,
+      "change_1y": 7.148664739691833,
       "rateName": "30Y Treasury Yield"
     },
     "^IRX": {
       "name": "13 WEEK TREASURY BILL",
-      "price": 3.703,
-      "change1d": 0.08107979128708566,
-      "change_1w": -0.05397719521417646,
-      "change_1m": -1.1214904720420626,
-      "change_3m": -0.05397719521417646,
-      "change_6m": -0.05397719521417646,
-      "change_1y": -0.05397719521417646,
+      "price": 3.71,
+      "change1d": 0.189034059023759,
+      "change_1w": 0.35163676900715846,
+      "change_1m": -2.36841882364899,
+      "change_3m": 3.57342323750464,
+      "change_6m": 3.198887583352826,
+      "change_1y": -10.125963334131526,
       "rateName": "13-Week T-Bill"
     },
     "DX-Y.NYB": {
       "name": "US Dollar Index",
-      "price": 98.641,
-      "change1d": -0.26188222637299824,
-      "change_1w": -1.032406288268491,
-      "change_1m": -2.74968101789647,
-      "change_3m": -0.5534868308915785,
-      "change_6m": 0.859913867414857,
-      "change_1y": 0.021289893698292036,
+      "price": 98.981,
+      "change1d": 0.18319528608451982,
+      "change_1w": -0.661377545230809,
+      "change_1m": -2.4529401627503895,
+      "change_3m": -0.34131784962610817,
+      "change_6m": 1.3111626401110628,
+      "change_1y": 0.5597912229331088,
       "rateName": "US Dollar Index (DXY)"
     },
     "TLT": {
       "name": "iShares 20+ Year Treasury Bond ETF",
-      "price": 82.34,
-      "change1d": -0.8190757294172863,
-      "change_1w": -0.30270009817799814,
-      "change_1m": -1.3183198362057553,
-      "change_3m": -1.8710609649606136,
-      "change_6m": -8.123193690673096,
-      "change_1y": -4.710111273844837,
+      "price": 82.05,
+      "change1d": -0.35219377069267543,
+      "change_1w": 0.012191779764565666,
+      "change_1m": -1.3466335720152665,
+      "change_3m": -2.576582922693997,
+      "change_6m": -8.231741761431802,
+      "change_1y": -5.743825186343901,
       "rateName": "20+ Year Treasury Bond ETF"
     },
     "HYG": {
-      "name": "iShares iBoxx $ High Yield Corp",
-      "price": 79.56,
-      "change1d": -0.1881810139198377,
-      "change_1w": -0.2882608776719972,
-      "change_1m": 0.05030296430581094,
-      "change_3m": -0.37566121896438565,
-      "change_6m": -1.7049726231618383,
-      "change_1y": -0.7980042568598439,
+      "name": "iShares iBoxx $ High Yield Corporate Bond ETF",
+      "price": 79.61,
+      "change1d": 0.06284872164484923,
+      "change_1w": -0.12545286070712458,
+      "change_1m": 0.47961282003999106,
+      "change_3m": -0.3629548310251471,
+      "change_6m": -1.7160486291956016,
+      "change_1y": -1.5337017775781856,
       "rateName": "High Yield Corporate Bond ETF"
     },
     "LQD": {
-      "name": "iShares iBoxx $ Investment Grad",
-      "price": 106.06,
-      "change1d": -0.47855840882486705,
-      "change_1w": -0.45988313386160773,
-      "change_1m": -0.5718577114676947,
-      "change_3m": -1.750810044538138,
-      "change_6m": -5.032237402601058,
-      "change_1y": -2.999816068367862,
+      "name": "iShares iBoxx $ Investment Grade Corporate Bond ETF",
+      "price": 105.92,
+      "change1d": -0.13199845541803398,
+      "change_1w": -0.18847019643821164,
+      "change_1m": -0.31997361231863586,
+      "change_3m": -2.080059201337729,
+      "change_6m": -5.0810989829023345,
+      "change_1y": -3.883846549748154,
       "rateName": "Investment Grade Bond ETF"
     }
   },
@@ -730,10 +730,10 @@
         "subsector": "Data & Analytics",
         "sectorEtf": "XLK",
         "sectorName": "Technology",
-        "reason": "cheap-for-growth (100th pctile peers, ERG 0.20x on 19% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
+        "reason": "cheap-for-growth (100th pctile peers, ERG 0.21x on 19% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
         "reason_bullets": [
-          "cheap-for-growth (100th pctile peers, ERG 0.20x on 19% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
-          "leading Technology (1M alpha +46.4%)",
+          "cheap-for-growth (100th pctile peers, ERG 0.21x on 19% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
+          "leading Technology (1M alpha +62.4%)",
           "Reflation regime score 71/100 \u2014 value tailwind",
           "Tag fit: long-duration cash flows (headwind)"
         ],
@@ -778,12 +778,12 @@
           "duration-long",
           "rate-sensitive"
         ],
-        "alpha_1m": 46.37,
+        "alpha_1m": 62.37,
         "r40": 40.2,
         "r40_formula": "rev_growth + fcf_margin",
         "value_for_growth_percentile": 100,
         "value_for_growth_details": {
-          "score": 0.2,
+          "score": 0.21,
           "formula": "EV/Sales \u00f7 Street FY1 rev growth (ERG; generic)",
           "kind": "erg",
           "lowerIsBetter": true,
@@ -799,10 +799,10 @@
         "subsector": "Materials",
         "sectorEtf": "XLB",
         "sectorName": "Materials",
-        "reason": "expensive-for-growth (25th pctile peers, ERG 0.24x on 30% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
+        "reason": "expensive-for-growth (25th pctile peers, ERG 0.25x on 30% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
         "reason_bullets": [
-          "expensive-for-growth (25th pctile peers, ERG 0.24x on 30% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
-          "leading Materials (1M alpha +41.0%)",
+          "expensive-for-growth (25th pctile peers, ERG 0.25x on 30% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
+          "leading Materials (1M alpha +43.0%)",
           "Reflation regime score 49/100 \u2014 momentum tailwind",
           "Tag fit: commodity-linked (positive)"
         ],
@@ -829,8 +829,8 @@
           {
             "factor": "size",
             "weight": 1,
-            "z": -0.92,
-            "contribution": -0.92
+            "z": -0.88,
+            "contribution": -0.88
           }
         ],
         "regime_tags_applied": [
@@ -847,17 +847,80 @@
           "commodity-linked",
           "cyclical"
         ],
-        "alpha_1m": 41.05,
+        "alpha_1m": 43.05,
         "r40": 64.5,
         "r40_formula": "rev_growth + fcf_margin",
         "value_for_growth_percentile": 25,
         "value_for_growth_details": {
-          "score": 0.24,
+          "score": 0.25,
           "formula": "EV/Sales \u00f7 Street FY1 rev growth (ERG; generic)",
           "kind": "erg",
           "lowerIsBetter": true,
           "growthSource": "Street FY1",
           "growthValue": 29.74
+        },
+        "earnings_momentum_tag": "neutral",
+        "earnings_momentum_note": "Mixed post-earnings signals"
+      },
+      {
+        "ticker": "IONQ",
+        "name": "IonQ, Inc.",
+        "subsector": "Quantum Computing",
+        "sectorEtf": "XLK",
+        "sectorName": "Technology",
+        "reason": "R40-positive: +251 (rev_growth + fcf_margin)",
+        "reason_bullets": [
+          "R40-positive: +251 (rev_growth + fcf_margin)",
+          "leading Technology (1M alpha +28.9%)",
+          "Reflation regime score 78/100 \u2014 beta tailwind",
+          "Tag fit: long-duration cash flows (headwind)"
+        ],
+        "regime_factor_score": 78,
+        "regime_components": [
+          {
+            "factor": "beta",
+            "weight": 2,
+            "z": 3.07,
+            "contribution": 6.15
+          },
+          {
+            "factor": "momentum",
+            "weight": 1,
+            "z": 2,
+            "contribution": 2
+          },
+          {
+            "factor": "size",
+            "weight": 1,
+            "z": 0.6,
+            "contribution": 0.6
+          }
+        ],
+        "regime_tags_applied": [
+          {
+            "tag": "duration-long",
+            "boost": -1
+          },
+          {
+            "tag": "rate-sensitive",
+            "boost": -1
+          }
+        ],
+        "passthrough_tags": [
+          "duration-long",
+          "rate-sensitive"
+        ],
+        "alpha_1m": 28.95,
+        "r40": 251.2,
+        "r40_formula": "rev_growth + fcf_margin",
+        "value_for_growth_percentile": null,
+        "value_for_growth_details": {
+          "score": 0.5,
+          "formula": "EV/Sales \u00f7 Street FY1 rev growth (ERG; generic)",
+          "kind": "erg",
+          "lowerIsBetter": true,
+          "growthSource": "Street FY1",
+          "growthValue": 120.87
         },
         "earnings_momentum_tag": "neutral",
         "earnings_momentum_note": "Mixed post-earnings signals"
@@ -871,7 +934,7 @@
         "reason": "sub-R40 (mid-cycle margin): +34 (rev_growth + fcf_margin)",
         "reason_bullets": [
           "sub-R40 (mid-cycle margin): +34 (rev_growth + fcf_margin)",
-          "leading Consumer Disc (1M alpha +32.1%)",
+          "leading Consumer Disc (1M alpha +30.3%)",
           "Reflation regime score 70/100 \u2014 momentum tailwind",
           "Tag fit: cyclical (positive)"
         ],
@@ -907,12 +970,12 @@
           "cyclical",
           "discretionary"
         ],
-        "alpha_1m": 32.06,
+        "alpha_1m": 30.25,
         "r40": 33.6,
         "r40_formula": "rev_growth + fcf_margin",
         "value_for_growth_percentile": null,
         "value_for_growth_details": {
-          "score": 0.07,
+          "score": 0.06,
           "formula": "EV/Sales \u00f7 Street FY1 rev growth (ERG; generic)",
           "kind": "erg",
           "lowerIsBetter": true,
@@ -923,78 +986,15 @@
         "earnings_momentum_note": "Mixed post-earnings signals"
       },
       {
-        "ticker": "IONQ",
-        "name": "IonQ, Inc.",
-        "subsector": "Quantum Computing",
-        "sectorEtf": "XLK",
-        "sectorName": "Technology",
-        "reason": "R40-positive: +251 (rev_growth + fcf_margin)",
-        "reason_bullets": [
-          "R40-positive: +251 (rev_growth + fcf_margin)",
-          "leading Technology (1M alpha +18.2%)",
-          "Reflation regime score 78/100 \u2014 beta tailwind",
-          "Tag fit: long-duration cash flows (headwind)"
-        ],
-        "regime_factor_score": 78,
-        "regime_components": [
-          {
-            "factor": "beta",
-            "weight": 2,
-            "z": 3.07,
-            "contribution": 6.15
-          },
-          {
-            "factor": "momentum",
-            "weight": 1,
-            "z": 1.98,
-            "contribution": 1.98
-          },
-          {
-            "factor": "size",
-            "weight": 1,
-            "z": 0.64,
-            "contribution": 0.64
-          }
-        ],
-        "regime_tags_applied": [
-          {
-            "tag": "duration-long",
-            "boost": -1
-          },
-          {
-            "tag": "rate-sensitive",
-            "boost": -1
-          }
-        ],
-        "passthrough_tags": [
-          "duration-long",
-          "rate-sensitive"
-        ],
-        "alpha_1m": 18.18,
-        "r40": 251.2,
-        "r40_formula": "rev_growth + fcf_margin",
-        "value_for_growth_percentile": null,
-        "value_for_growth_details": {
-          "score": 0.46,
-          "formula": "EV/Sales \u00f7 Street FY1 rev growth (ERG; generic)",
-          "kind": "erg",
-          "lowerIsBetter": true,
-          "growthSource": "Street FY1",
-          "growthValue": 120.87
-        },
-        "earnings_momentum_tag": "neutral",
-        "earnings_momentum_note": "Mixed post-earnings signals"
-      },
-      {
         "ticker": "NEM",
         "name": "Newmont",
         "subsector": "Materials",
         "sectorEtf": "XLB",
         "sectorName": "Materials",
-        "reason": "expensive-for-growth (0th pctile peers, ERG 0.29x on 18% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
+        "reason": "expensive-for-growth (0th pctile peers, ERG 0.30x on 18% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
         "reason_bullets": [
-          "expensive-for-growth (0th pctile peers, ERG 0.29x on 18% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
-          "leading Materials (1M alpha +30.2%)",
+          "expensive-for-growth (0th pctile peers, ERG 0.30x on 18% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
+          "leading Materials (1M alpha +32.5%)",
           "Reflation regime score 43/100 \u2014 value headwind",
           "Tag fit: commodity-linked (positive)"
         ],
@@ -1039,12 +1039,12 @@
           "commodity-linked",
           "cyclical"
         ],
-        "alpha_1m": 30.16,
+        "alpha_1m": 32.45,
         "r40": 49.3,
         "r40_formula": "rev_growth + fcf_margin",
         "value_for_growth_percentile": 0,
         "value_for_growth_details": {
-          "score": 0.29,
+          "score": 0.3,
           "formula": "EV/Sales \u00f7 Street FY1 rev growth (ERG; generic)",
           "kind": "erg",
           "lowerIsBetter": true,
@@ -1065,7 +1065,7 @@
         "reason": "sub-R40 (mid-cycle margin): +30 (rev_growth + fcf_margin)",
         "reason_bullets": [
           "sub-R40 (mid-cycle margin): +30 (rev_growth + fcf_margin)",
-          "in-line vs Technology (1M alpha -0.6%)",
+          "lagging Technology (1M alpha -2.2%)",
           "earnings headwind: Miss or cautious tone",
           "Reflation regime score 39/100 \u2014 size headwind",
           "Tag fit: long-duration cash flows (headwind)"
@@ -1099,7 +1099,7 @@
           "duration-long",
           "rate-sensitive"
         ],
-        "alpha_1m": -0.61,
+        "alpha_1m": -2.24,
         "r40": 30.4,
         "r40_formula": "rev_growth + fcf_margin",
         "value_for_growth_percentile": null,
@@ -1115,6 +1115,54 @@
         "earnings_momentum_note": "Miss or cautious tone"
       },
       {
+        "ticker": "KHC",
+        "name": "Kraft Heinz",
+        "subsector": "Consumer Staples",
+        "sectorEtf": "XLP",
+        "sectorName": "Consumer Staples",
+        "reason": "R40-deficit: -127 (rev_growth + fcf_margin)",
+        "reason_bullets": [
+          "R40-deficit: -127 (rev_growth + fcf_margin)",
+          "lagging Consumer Staples (1M alpha -2.5%)",
+          "earnings headwind: Miss or cautious tone",
+          "Reflation regime score 40/100 \u2014 beta headwind"
+        ],
+        "regime_factor_score": 40,
+        "regime_components": [
+          {
+            "factor": "beta",
+            "weight": 2,
+            "z": -1.55,
+            "contribution": -3.11
+          },
+          {
+            "factor": "size",
+            "weight": 1,
+            "z": 0.16,
+            "contribution": 0.16
+          }
+        ],
+        "regime_tags_applied": [],
+        "passthrough_tags": [
+          "pricing-power",
+          "cycle-resilient"
+        ],
+        "alpha_1m": -2.47,
+        "r40": -126.9,
+        "r40_formula": "rev_growth + fcf_margin",
+        "value_for_growth_percentile": null,
+        "value_for_growth_details": {
+          "score": -10.47,
+          "formula": "Street FY1 growth / Fwd P/E (generic)",
+          "kind": "peg_yield",
+          "lowerIsBetter": false,
+          "growthSource": "Street FY1",
+          "growthValue": -128
+        },
+        "earnings_momentum_tag": "headwind",
+        "earnings_momentum_note": "Miss or cautious tone"
+      },
+      {
         "ticker": "BAC",
         "name": "Bank of America",
         "subsector": "Diversified Banking",
@@ -1123,7 +1171,7 @@
         "reason": "R40-deficit: +17 (rev_growth + fcf_margin)",
         "reason_bullets": [
           "R40-deficit: +17 (rev_growth + fcf_margin)",
-          "lagging Technology (1M alpha -1.2%)",
+          "lagging Technology (1M alpha -2.0%)",
           "earnings headwind: Miss or cautious tone",
           "Reflation regime score 41/100 \u2014 size headwind",
           "Tag fit: long-duration cash flows (headwind)"
@@ -1151,7 +1199,7 @@
           "duration-long",
           "rate-sensitive"
         ],
-        "alpha_1m": -1.18,
+        "alpha_1m": -2.05,
         "r40": 16.8,
         "r40_formula": "rev_growth + fcf_margin",
         "value_for_growth_percentile": null,
@@ -1167,118 +1215,6 @@
         "earnings_momentum_note": "Miss or cautious tone"
       },
       {
-        "ticker": "KHC",
-        "name": "Kraft Heinz",
-        "subsector": "Consumer Staples",
-        "sectorEtf": "XLP",
-        "sectorName": "Consumer Staples",
-        "reason": "R40-deficit: -127 (rev_growth + fcf_margin)",
-        "reason_bullets": [
-          "R40-deficit: -127 (rev_growth + fcf_margin)",
-          "lagging Consumer Staples (1M alpha -2.6%)",
-          "earnings headwind: Miss or cautious tone",
-          "Reflation regime score 39/100 \u2014 beta headwind"
-        ],
-        "regime_factor_score": 39,
-        "regime_components": [
-          {
-            "factor": "beta",
-            "weight": 2,
-            "z": -1.55,
-            "contribution": -3.11
-          },
-          {
-            "factor": "size",
-            "weight": 1,
-            "z": 0.16,
-            "contribution": 0.16
-          },
-          {
-            "factor": "momentum",
-            "weight": 1,
-            "z": -0.15,
-            "contribution": -0.15
-          }
-        ],
-        "regime_tags_applied": [],
-        "passthrough_tags": [
-          "pricing-power",
-          "cycle-resilient"
-        ],
-        "alpha_1m": -2.61,
-        "r40": -126.9,
-        "r40_formula": "rev_growth + fcf_margin",
-        "value_for_growth_percentile": null,
-        "value_for_growth_details": {
-          "score": -10.47,
-          "formula": "Street FY1 growth / Fwd P/E (generic)",
-          "kind": "peg_yield",
-          "lowerIsBetter": false,
-          "growthSource": "Street FY1",
-          "growthValue": -128
-        },
-        "earnings_momentum_tag": "headwind",
-        "earnings_momentum_note": "Miss or cautious tone"
-      },
-      {
-        "ticker": "ZTS",
-        "name": "Zoetis Inc.",
-        "subsector": "Health Care",
-        "sectorEtf": "XLK",
-        "sectorName": "Technology",
-        "reason": "R40-deficit: +1 (rev_growth + fcf_margin)",
-        "reason_bullets": [
-          "R40-deficit: +1 (rev_growth + fcf_margin)",
-          "in-line vs Technology (1M alpha -0.5%)",
-          "earnings headwind: Miss or cautious tone",
-          "Reflation regime score 44/100 \u2014 beta headwind",
-          "Tag fit: long-duration cash flows (headwind)"
-        ],
-        "regime_factor_score": 44,
-        "regime_components": [
-          {
-            "factor": "beta",
-            "weight": 2,
-            "z": -0.62,
-            "contribution": -1.25
-          },
-          {
-            "factor": "size",
-            "weight": 1,
-            "z": 0.16,
-            "contribution": 0.16
-          }
-        ],
-        "regime_tags_applied": [
-          {
-            "tag": "duration-long",
-            "boost": -1
-          },
-          {
-            "tag": "rate-sensitive",
-            "boost": -1
-          }
-        ],
-        "passthrough_tags": [
-          "duration-long",
-          "rate-sensitive"
-        ],
-        "alpha_1m": -0.45,
-        "r40": 1.2,
-        "r40_formula": "rev_growth + fcf_margin",
-        "value_for_growth_percentile": null,
-        "value_for_growth_details": {
-          "score": -0.19,
-          "formula": "Street FY1 growth / Fwd P/E (generic)",
-          "kind": "peg_yield",
-          "lowerIsBetter": false,
-          "growthSource": "Street FY1",
-          "growthValue": -2.15
-        },
-        "earnings_momentum_tag": "headwind",
-        "earnings_momentum_note": "Miss or cautious tone"
-      },
-      {
         "ticker": "ACGL",
         "name": "Arch Capital",
         "subsector": "Insurance",
@@ -1287,7 +1223,7 @@
         "reason": "R40-deficit: +12 (rev_growth + fcf_margin)",
         "reason_bullets": [
           "R40-deficit: +12 (rev_growth + fcf_margin)",
-          "in-line vs Financials (1M alpha -0.9%)",
+          "lagging Financials (1M alpha -3.7%)",
           "earnings headwind: Miss or cautious tone",
           "Reflation regime score 44/100 \u2014 beta headwind",
           "Tag fit: benefits from higher rates (positive)"
@@ -1311,7 +1247,7 @@
           "rate-beneficiary",
           "underwriting-cycle"
         ],
-        "alpha_1m": -0.92,
+        "alpha_1m": -3.67,
         "r40": 11.9,
         "r40_formula": "rev_growth + fcf_margin",
         "value_for_growth_percentile": null,
@@ -1325,45 +1261,99 @@
         },
         "earnings_momentum_tag": "headwind",
         "earnings_momentum_note": "Miss or cautious tone"
+      },
+      {
+        "ticker": "KMB",
+        "name": "Kimberly-Clark Corporation",
+        "subsector": "Consumer Staples",
+        "sectorEtf": "XLP",
+        "sectorName": "Consumer Staples",
+        "reason": "cheap-for-growth (100th pctile peers, ERG 0.02x on 127% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
+        "reason_bullets": [
+          "cheap-for-growth (100th pctile peers, ERG 0.02x on 127% Street FY1 growth; EV/Sales \u00f7 Street FY1 rev growth (ERG; generic))",
+          "lagging Consumer Staples (1M alpha -1.5%)",
+          "earnings headwind: Miss or cautious tone",
+          "Reflation regime score 49/100 \u2014 beta headwind"
+        ],
+        "regime_factor_score": 49,
+        "regime_components": [
+          {
+            "factor": "beta",
+            "weight": 2,
+            "z": -1.28,
+            "contribution": -2.55
+          },
+          {
+            "factor": "value",
+            "weight": 1,
+            "z": 2,
+            "contribution": 2
+          },
+          {
+            "factor": "momentum",
+            "weight": 1,
+            "z": 0.19,
+            "contribution": 0.19
+          }
+        ],
+        "regime_tags_applied": [],
+        "passthrough_tags": [
+          "pricing-power",
+          "cycle-resilient"
+        ],
+        "alpha_1m": -1.48,
+        "r40": 65.7,
+        "r40_formula": "rev_growth + fcf_margin",
+        "value_for_growth_percentile": 100,
+        "value_for_growth_details": {
+          "score": 0.02,
+          "formula": "EV/Sales \u00f7 Street FY1 rev growth (ERG; generic)",
+          "kind": "erg",
+          "lowerIsBetter": true,
+          "growthSource": "Street FY1",
+          "growthValue": 127
+        },
+        "earnings_momentum_tag": "headwind",
+        "earnings_momentum_note": "Miss or cautious tone"
       }
     ]
   },
   "signals": {
     "AMZN": {
-      "alpha_1m": 4.66,
+      "alpha_1m": 7.97,
       "r40": 61.1,
       "value_for_growth_percentile": 67,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 48,
+      "regime_factor_score": 50,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "GOOG": {
-      "alpha_1m": -2.66,
+      "alpha_1m": 4.63,
       "r40": 29.3,
       "value_for_growth_percentile": 33,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 38,
+      "regime_factor_score": 41,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "META": {
-      "alpha_1m": -14.54,
+      "alpha_1m": -11.99,
       "r40": 37.4,
-      "value_for_growth_percentile": 100,
+      "value_for_growth_percentile": 67,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 44,
+      "regime_factor_score": 40,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "MSFT": {
-      "alpha_1m": 21.69,
+      "alpha_1m": 23.92,
       "r40": 22.7,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "tailwind",
@@ -1374,7 +1364,7 @@
       ]
     },
     "NVDA": {
-      "alpha_1m": 0.69,
+      "alpha_1m": 0.13,
       "r40": 103.5,
       "value_for_growth_percentile": 76,
       "earnings_momentum_tag": "neutral",
@@ -1386,7 +1376,7 @@
       ]
     },
     "AVGO": {
-      "alpha_1m": -9.83,
+      "alpha_1m": -8.84,
       "r40": 84,
       "value_for_growth_percentile": 47,
       "earnings_momentum_tag": "neutral",
@@ -1398,11 +1388,11 @@
       ]
     },
     "AMD": {
-      "alpha_1m": -16.57,
+      "alpha_1m": -15.03,
       "r40": 71.5,
       "value_for_growth_percentile": 35,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 51,
+      "regime_factor_score": 52,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -1410,11 +1400,11 @@
       ]
     },
     "TSM": {
-      "alpha_1m": -2.81,
+      "alpha_1m": -1.91,
       "r40": 52.5,
       "value_for_growth_percentile": 94,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 51,
+      "regime_factor_score": 52,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -1422,11 +1412,11 @@
       ]
     },
     "ARM": {
-      "alpha_1m": -13.1,
+      "alpha_1m": -16.75,
       "r40": 48.3,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "headwind",
-      "regime_factor_score": 63,
+      "regime_factor_score": 62,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -1434,11 +1424,11 @@
       ]
     },
     "MRVL": {
-      "alpha_1m": 17.4,
+      "alpha_1m": 10.52,
       "r40": 53.6,
       "value_for_growth_percentile": 12,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 59,
+      "regime_factor_score": 57,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -1446,7 +1436,7 @@
       ]
     },
     "SNPS": {
-      "alpha_1m": 3.81,
+      "alpha_1m": 3.8,
       "r40": 82.7,
       "value_for_growth_percentile": 71,
       "earnings_momentum_tag": "neutral",
@@ -1458,11 +1448,11 @@
       ]
     },
     "CDNS": {
-      "alpha_1m": -8.52,
+      "alpha_1m": -6.18,
       "r40": 51.8,
       "value_for_growth_percentile": 6,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 40,
+      "regime_factor_score": 41,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -1470,9 +1460,21 @@
       ]
     },
     "CRWD": {
-      "alpha_1m": -0.55,
+      "alpha_1m": 1.93,
       "r40": 63.4,
       "value_for_growth_percentile": 10,
+      "earnings_momentum_tag": "neutral",
+      "regime_factor_score": 41,
+      "passthrough_tags": [
+        "duration-long",
+        "AI-beneficiary",
+        "secular-growth"
+      ]
+    },
+    "PANW": {
+      "alpha_1m": 7.18,
+      "r40": 64.8,
+      "value_for_growth_percentile": 20,
       "earnings_momentum_tag": "neutral",
       "regime_factor_score": 39,
       "passthrough_tags": [
@@ -1481,20 +1483,8 @@
         "secular-growth"
       ]
     },
-    "PANW": {
-      "alpha_1m": 2.69,
-      "r40": 64.8,
-      "value_for_growth_percentile": 20,
-      "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 37,
-      "passthrough_tags": [
-        "duration-long",
-        "AI-beneficiary",
-        "secular-growth"
-      ]
-    },
     "ZS": {
-      "alpha_1m": 21.41,
+      "alpha_1m": 27.38,
       "r40": 60.3,
       "value_for_growth_percentile": 90,
       "earnings_momentum_tag": "neutral",
@@ -1506,11 +1496,11 @@
       ]
     },
     "FTNT": {
-      "alpha_1m": -4.32,
+      "alpha_1m": -1.42,
       "r40": 55.7,
       "value_for_growth_percentile": 40,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 42,
+      "regime_factor_score": 43,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -1518,11 +1508,11 @@
       ]
     },
     "S": {
-      "alpha_1m": 13.36,
+      "alpha_1m": 19.2,
       "r40": 46.4,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 62,
+      "regime_factor_score": 63,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -1530,11 +1520,11 @@
       ]
     },
     "OKTA": {
-      "alpha_1m": -3.42,
+      "alpha_1m": -3.43,
       "r40": 43.8,
-      "value_for_growth_percentile": 40,
+      "value_for_growth_percentile": 50,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 44,
+      "regime_factor_score": 46,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -1542,7 +1532,7 @@
       ]
     },
     "RBRK": {
-      "alpha_1m": 30.77,
+      "alpha_1m": 35.09,
       "r40": 69.9,
       "value_for_growth_percentile": 60,
       "earnings_momentum_tag": "neutral",
@@ -1554,11 +1544,11 @@
       ]
     },
     "VRNS": {
-      "alpha_1m": -11.45,
+      "alpha_1m": -10.65,
       "r40": 38.5,
       "value_for_growth_percentile": 80,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 51,
+      "regime_factor_score": 52,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -1566,11 +1556,11 @@
       ]
     },
     "TENB": {
-      "alpha_1m": 2.33,
+      "alpha_1m": 6.01,
       "r40": 33.2,
       "value_for_growth_percentile": 70,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 57,
+      "regime_factor_score": 58,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -1578,7 +1568,7 @@
       ]
     },
     "CRM": {
-      "alpha_1m": 24.46,
+      "alpha_1m": 30.57,
       "r40": 51.9,
       "value_for_growth_percentile": 33,
       "earnings_momentum_tag": "neutral",
@@ -1589,29 +1579,29 @@
       ]
     },
     "NOW": {
-      "alpha_1m": 34.35,
+      "alpha_1m": 37.02,
       "r40": 59,
-      "value_for_growth_percentile": 33,
+      "value_for_growth_percentile": 39,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 45,
+      "regime_factor_score": 46,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "WDAY": {
-      "alpha_1m": 47.44,
+      "alpha_1m": 53.7,
       "r40": 45.1,
-      "value_for_growth_percentile": 33,
+      "value_for_growth_percentile": 39,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 50,
+      "regime_factor_score": 51,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "INTU": {
-      "alpha_1m": 25.64,
+      "alpha_1m": 27.64,
       "r40": 35.4,
       "value_for_growth_percentile": 61,
       "earnings_momentum_tag": "neutral",
@@ -1622,7 +1612,7 @@
       ]
     },
     "ADBE": {
-      "alpha_1m": 23.1,
+      "alpha_1m": 27.03,
       "r40": 49.3,
       "value_for_growth_percentile": 56,
       "earnings_momentum_tag": "neutral",
@@ -1633,29 +1623,29 @@
       ]
     },
     "HUBS": {
-      "alpha_1m": 15.49,
+      "alpha_1m": 23.59,
       "r40": 39.1,
       "value_for_growth_percentile": 94,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 63,
+      "regime_factor_score": 64,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "TEAM": {
-      "alpha_1m": 103.24,
+      "alpha_1m": 111.64,
       "r40": 52.8,
       "value_for_growth_percentile": 22,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 48,
+      "regime_factor_score": 49,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "MNDY": {
-      "alpha_1m": 21.96,
+      "alpha_1m": 23.75,
       "r40": 42.7,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "neutral",
@@ -1666,7 +1656,7 @@
       ]
     },
     "ASAN": {
-      "alpha_1m": 36.51,
+      "alpha_1m": 43.09,
       "r40": 32.9,
       "value_for_growth_percentile": 78,
       "earnings_momentum_tag": "neutral",
@@ -1677,7 +1667,7 @@
       ]
     },
     "SNOW": {
-      "alpha_1m": 18.4,
+      "alpha_1m": 22.8,
       "r40": 68.1,
       "value_for_growth_percentile": 12,
       "earnings_momentum_tag": "neutral",
@@ -1688,7 +1678,7 @@
       ]
     },
     "MDB": {
-      "alpha_1m": 36.27,
+      "alpha_1m": 41.3,
       "r40": 45.1,
       "value_for_growth_percentile": 37,
       "earnings_momentum_tag": "neutral",
@@ -1699,7 +1689,7 @@
       ]
     },
     "DDOG": {
-      "alpha_1m": -6.95,
+      "alpha_1m": -6.31,
       "r40": 62.1,
       "value_for_growth_percentile": 25,
       "earnings_momentum_tag": "neutral",
@@ -1710,7 +1700,7 @@
       ]
     },
     "PLTR": {
-      "alpha_1m": 38.08,
+      "alpha_1m": 43.13,
       "r40": 127.9,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
@@ -1721,7 +1711,7 @@
       ]
     },
     "ESTC": {
-      "alpha_1m": 44.82,
+      "alpha_1m": 47.18,
       "r40": 42.5,
       "value_for_growth_percentile": 87,
       "earnings_momentum_tag": "neutral",
@@ -1732,7 +1722,7 @@
       ]
     },
     "CFLT": {
-      "alpha_1m": -0.16,
+      "alpha_1m": -1.31,
       "r40": 38.5,
       "value_for_growth_percentile": 50,
       "earnings_momentum_tag": "neutral",
@@ -1743,7 +1733,7 @@
       ]
     },
     "DT": {
-      "alpha_1m": 17.34,
+      "alpha_1m": 18.56,
       "r40": 42.3,
       "value_for_growth_percentile": 75,
       "earnings_momentum_tag": "neutral",
@@ -1754,11 +1744,11 @@
       ]
     },
     "NET": {
-      "alpha_1m": 2.12,
-      "r40": 63.4,
+      "alpha_1m": 9.03,
+      "r40": 63.5,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 45,
+      "regime_factor_score": 48,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -1766,7 +1756,7 @@
       ]
     },
     "ANET": {
-      "alpha_1m": 3.51,
+      "alpha_1m": 4.1,
       "r40": 74.6,
       "value_for_growth_percentile": 50,
       "earnings_momentum_tag": "neutral",
@@ -1778,11 +1768,11 @@
       ]
     },
     "DOCN": {
-      "alpha_1m": -21.43,
+      "alpha_1m": -14.55,
       "r40": 26.2,
       "value_for_growth_percentile": 67,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 51,
+      "regime_factor_score": 54,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -1790,11 +1780,11 @@
       ]
     },
     "FSLY": {
-      "alpha_1m": 9.43,
+      "alpha_1m": 25.69,
       "r40": 36,
-      "value_for_growth_percentile": 100,
+      "value_for_growth_percentile": 83,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 57,
+      "regime_factor_score": 58,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -1802,7 +1792,7 @@
       ]
     },
     "GTLB": {
-      "alpha_1m": 32.66,
+      "alpha_1m": 35.17,
       "r40": 54.2,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -1813,7 +1803,7 @@
       ]
     },
     "PATH": {
-      "alpha_1m": 47.22,
+      "alpha_1m": 57.97,
       "r40": 47.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -1824,42 +1814,31 @@
       ]
     },
     "COIN": {
-      "alpha_1m": 2.14,
+      "alpha_1m": 12.76,
       "r40": 26.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 76,
+      "regime_factor_score": 80,
       "passthrough_tags": [
         "rate-beneficiary",
         "credit-cycle"
       ]
     },
     "BILL": {
-      "alpha_1m": 11.54,
-      "r40": 24,
-      "value_for_growth_percentile": 0,
+      "alpha_1m": 12.94,
+      "r40": 27.3,
+      "value_for_growth_percentile": 33,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 55,
+      "regime_factor_score": 61,
       "passthrough_tags": [
         "rate-beneficiary",
         "credit-cycle"
       ]
     },
     "FOUR": {
-      "alpha_1m": -2.36,
+      "alpha_1m": 0.49,
       "r40": 41.5,
       "value_for_growth_percentile": 100,
-      "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 68,
-      "passthrough_tags": [
-        "rate-beneficiary",
-        "credit-cycle"
-      ]
-    },
-    "XYZ": {
-      "alpha_1m": 1.77,
-      "r40": -1.5,
-      "value_for_growth_percentile": 67,
       "earnings_momentum_tag": "neutral",
       "regime_factor_score": 70,
       "passthrough_tags": [
@@ -1867,19 +1846,30 @@
         "credit-cycle"
       ]
     },
-    "AFRM": {
-      "alpha_1m": -0.07,
-      "r40": 40.2,
+    "XYZ": {
+      "alpha_1m": 4.45,
+      "r40": -1.5,
       "value_for_growth_percentile": 33,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 77,
+      "regime_factor_score": 66,
+      "passthrough_tags": [
+        "rate-beneficiary",
+        "credit-cycle"
+      ]
+    },
+    "AFRM": {
+      "alpha_1m": 5.21,
+      "r40": 40.2,
+      "value_for_growth_percentile": 0,
+      "earnings_momentum_tag": "neutral",
+      "regime_factor_score": 75,
       "passthrough_tags": [
         "rate-beneficiary",
         "credit-cycle"
       ]
     },
     "SHOP": {
-      "alpha_1m": 21.96,
+      "alpha_1m": 24.75,
       "r40": 45.7,
       "value_for_growth_percentile": 25,
       "earnings_momentum_tag": "neutral",
@@ -1891,11 +1881,11 @@
       ]
     },
     "SE": {
-      "alpha_1m": 9.45,
+      "alpha_1m": 9.61,
       "r40": 71.9,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 66,
+      "regime_factor_score": 69,
       "passthrough_tags": [
         "consumer-spend-sensitive",
         "cyclical",
@@ -1903,7 +1893,7 @@
       ]
     },
     "TTD": {
-      "alpha_1m": -25.59,
+      "alpha_1m": -27.21,
       "r40": 22.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -1914,18 +1904,18 @@
       ]
     },
     "PINS": {
-      "alpha_1m": 1.7,
+      "alpha_1m": 1.19,
       "r40": 44.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 50,
+      "regime_factor_score": 52,
       "passthrough_tags": [
         "ad-spend-sensitive",
         "duration-long"
       ]
     },
     "AI": {
-      "alpha_1m": 24.32,
+      "alpha_1m": 23.66,
       "r40": -63.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -1936,39 +1926,39 @@
       ]
     },
     "IOT": {
-      "alpha_1m": 15.38,
+      "alpha_1m": 24.11,
       "r40": 44.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 55,
+      "regime_factor_score": 56,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "ELV": {
-      "alpha_1m": -6.28,
+      "alpha_1m": -2.56,
       "r40": 142.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 43,
+      "regime_factor_score": 45,
       "passthrough_tags": [
         "cycle-resilient",
         "policy-sensitive"
       ]
     },
     "TMO": {
-      "alpha_1m": 11.07,
+      "alpha_1m": 1.79,
       "r40": 24,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 48,
+      "regime_factor_score": 45,
       "passthrough_tags": [
         "cycle-resilient"
       ]
     },
     "ACGL": {
-      "alpha_1m": -0.92,
+      "alpha_1m": -3.67,
       "r40": 11.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "headwind",
@@ -1979,11 +1969,11 @@
       ]
     },
     "LPLA": {
-      "alpha_1m": 6.53,
+      "alpha_1m": 8.8,
       "r40": 36.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "headwind",
-      "regime_factor_score": 48,
+      "regime_factor_score": 49,
       "passthrough_tags": [
         "risk-on-beneficiary",
         "cyclical",
@@ -1991,7 +1981,7 @@
       ]
     },
     "SNDK": {
-      "alpha_1m": -1.49,
+      "alpha_1m": -3.6,
       "r40": 409.7,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -2002,7 +1992,7 @@
       ]
     },
     "CIEN": {
-      "alpha_1m": -2.54,
+      "alpha_1m": -8.59,
       "r40": 52.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -2013,33 +2003,33 @@
       ]
     },
     "WDC": {
-      "alpha_1m": -17.31,
+      "alpha_1m": -20.43,
       "r40": 61.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 48,
+      "regime_factor_score": 47,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "CF": {
-      "alpha_1m": -4.45,
+      "alpha_1m": -4.18,
       "r40": 34.1,
       "value_for_growth_percentile": 50,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 48,
+      "regime_factor_score": 49,
       "passthrough_tags": [
         "commodity-linked",
         "cyclical"
       ]
     },
     "NKE": {
-      "alpha_1m": -7.07,
+      "alpha_1m": -9.07,
       "r40": -105.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 48,
+      "regime_factor_score": 49,
       "passthrough_tags": [
         "consumer-spend-sensitive",
         "cyclical",
@@ -2047,33 +2037,33 @@
       ]
     },
     "UNH": {
-      "alpha_1m": -18.9,
+      "alpha_1m": -16.06,
       "r40": 45.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 35,
+      "regime_factor_score": 36,
       "passthrough_tags": [
         "cycle-resilient",
         "policy-sensitive"
       ]
     },
     "CMCSA": {
-      "alpha_1m": 10.97,
+      "alpha_1m": 16.78,
       "r40": -109.8,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 45,
+      "regime_factor_score": 48,
       "passthrough_tags": [
         "ad-spend-sensitive",
         "duration-long"
       ]
     },
     "HD": {
-      "alpha_1m": -1.41,
+      "alpha_1m": -5.15,
       "r40": 12.3,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 50,
+      "regime_factor_score": 51,
       "passthrough_tags": [
         "consumer-spend-sensitive",
         "cyclical",
@@ -2081,22 +2071,22 @@
       ]
     },
     "MKC": {
-      "alpha_1m": 5.04,
+      "alpha_1m": 7.06,
       "r40": 26.4,
       "value_for_growth_percentile": 60,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 51,
+      "regime_factor_score": 52,
       "passthrough_tags": [
         "pricing-power",
         "cycle-resilient"
       ]
     },
     "MU": {
-      "alpha_1m": -0.02,
+      "alpha_1m": -5.09,
       "r40": 354.2,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 70,
+      "regime_factor_score": 69,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -2104,11 +2094,11 @@
       ]
     },
     "SOC": {
-      "alpha_1m": 8.06,
+      "alpha_1m": 2.27,
       "r40": null,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "headwind",
-      "regime_factor_score": 56,
+      "regime_factor_score": 54,
       "passthrough_tags": [
         "oil-beneficiary",
         "commodity-linked",
@@ -2116,17 +2106,17 @@
       ]
     },
     "HIMS": {
-      "alpha_1m": -7.56,
+      "alpha_1m": -4.98,
       "r40": 71.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "headwind",
-      "regime_factor_score": 68,
+      "regime_factor_score": 69,
       "passthrough_tags": [
         "cycle-resilient"
       ]
     },
     "GCT": {
-      "alpha_1m": 32.06,
+      "alpha_1m": 30.25,
       "r40": 33.6,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -2138,7 +2128,7 @@
       ]
     },
     "BWXT": {
-      "alpha_1m": -11.2,
+      "alpha_1m": -10.33,
       "r40": 22.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
@@ -2150,39 +2140,39 @@
       ]
     },
     "NVO": {
-      "alpha_1m": -12.38,
+      "alpha_1m": -11.15,
       "r40": 13.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 35,
+      "regime_factor_score": 36,
       "passthrough_tags": [
         "cycle-resilient"
       ]
     },
     "KHC": {
-      "alpha_1m": -2.61,
+      "alpha_1m": -2.47,
       "r40": -126.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "headwind",
-      "regime_factor_score": 39,
+      "regime_factor_score": 40,
       "passthrough_tags": [
         "pricing-power",
         "cycle-resilient"
       ]
     },
     "UL": {
-      "alpha_1m": 1.43,
+      "alpha_1m": 3.19,
       "r40": 63.3,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 32,
+      "regime_factor_score": 34,
       "passthrough_tags": [
         "pricing-power",
         "cycle-resilient"
       ]
     },
     "MDLZ": {
-      "alpha_1m": 4.28,
+      "alpha_1m": 3.99,
       "r40": 9.8,
       "value_for_growth_percentile": 20,
       "earnings_momentum_tag": "neutral",
@@ -2193,22 +2183,22 @@
       ]
     },
     "STZ": {
-      "alpha_1m": 0.45,
+      "alpha_1m": 1.6,
       "r40": 21.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 44,
+      "regime_factor_score": 45,
       "passthrough_tags": [
         "pricing-power",
         "cycle-resilient"
       ]
     },
     "GEV": {
-      "alpha_1m": 2.77,
+      "alpha_1m": 0.19,
       "r40": 59.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 40,
+      "regime_factor_score": 38,
       "passthrough_tags": [
         "rate-sensitive",
         "yield-vehicle",
@@ -2216,7 +2206,7 @@
       ]
     },
     "STX": {
-      "alpha_1m": -7.94,
+      "alpha_1m": -9.66,
       "r40": 64.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
@@ -2227,9 +2217,9 @@
       ]
     },
     "TER": {
-      "alpha_1m": 2.14,
+      "alpha_1m": -2.19,
       "r40": 113.7,
-      "value_for_growth_percentile": 82,
+      "value_for_growth_percentile": 88,
       "earnings_momentum_tag": "tailwind",
       "regime_factor_score": 62,
       "passthrough_tags": [
@@ -2239,29 +2229,29 @@
       ]
     },
     "FIX": {
-      "alpha_1m": -7.1,
+      "alpha_1m": -8.66,
       "r40": 116.4,
       "value_for_growth_percentile": 67,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 56,
+      "regime_factor_score": 55,
       "passthrough_tags": [
         "cyclical",
         "capex-cycle"
       ]
     },
     "GLW": {
-      "alpha_1m": -4.84,
+      "alpha_1m": -10.45,
       "r40": 20.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 50,
+      "regime_factor_score": 49,
       "passthrough_tags": [
         "commodity-linked",
         "cyclical"
       ]
     },
     "VRT": {
-      "alpha_1m": -13.7,
+      "alpha_1m": -16.56,
       "r40": 47.6,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -2272,7 +2262,7 @@
       ]
     },
     "NTNX": {
-      "alpha_1m": 22.74,
+      "alpha_1m": 25.8,
       "r40": 33,
       "value_for_growth_percentile": 33,
       "earnings_momentum_tag": "neutral",
@@ -2284,17 +2274,17 @@
       ]
     },
     "VRTX": {
-      "alpha_1m": 6.19,
+      "alpha_1m": 7.68,
       "r40": 33.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 42,
+      "regime_factor_score": 43,
       "passthrough_tags": [
         "cycle-resilient"
       ]
     },
     "INTC": {
-      "alpha_1m": -11.79,
+      "alpha_1m": -12.86,
       "r40": 33.9,
       "value_for_growth_percentile": 24,
       "earnings_momentum_tag": "neutral",
@@ -2306,7 +2296,7 @@
       ]
     },
     "IBM": {
-      "alpha_1m": 12,
+      "alpha_1m": 11.33,
       "r40": 127.4,
       "value_for_growth_percentile": 6,
       "earnings_momentum_tag": "neutral",
@@ -2317,7 +2307,7 @@
       ]
     },
     "BRZE": {
-      "alpha_1m": 34.92,
+      "alpha_1m": 43.65,
       "r40": 53.9,
       "value_for_growth_percentile": 40,
       "earnings_momentum_tag": "neutral",
@@ -2328,18 +2318,18 @@
       ]
     },
     "KVYO": {
-      "alpha_1m": 10.22,
+      "alpha_1m": 14.26,
       "r40": 46.9,
       "value_for_growth_percentile": 60,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 52,
+      "regime_factor_score": 54,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "AMPL": {
-      "alpha_1m": 46.37,
+      "alpha_1m": 62.37,
       "r40": 40.2,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "neutral",
@@ -2350,7 +2340,7 @@
       ]
     },
     "ZETA": {
-      "alpha_1m": 36.44,
+      "alpha_1m": 47.28,
       "r40": 59.6,
       "value_for_growth_percentile": 80,
       "earnings_momentum_tag": "headwind",
@@ -2361,7 +2351,7 @@
       ]
     },
     "RAMP": {
-      "alpha_1m": -1.6,
+      "alpha_1m": -2.99,
       "r40": 30.2,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
@@ -2372,7 +2362,7 @@
       ]
     },
     "CXM": {
-      "alpha_1m": 27.93,
+      "alpha_1m": 31.83,
       "r40": 21.7,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "neutral",
@@ -2383,7 +2373,7 @@
       ]
     },
     "SEMR": {
-      "alpha_1m": -0.98,
+      "alpha_1m": -2.13,
       "r40": 31.4,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
@@ -2394,18 +2384,18 @@
       ]
     },
     "ORCL": {
-      "alpha_1m": 11.33,
+      "alpha_1m": 19.3,
       "r40": -15.8,
       "value_for_growth_percentile": 83,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 56,
+      "regime_factor_score": 59,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "VEEV": {
-      "alpha_1m": 34.18,
+      "alpha_1m": 35.32,
       "r40": 54.2,
       "value_for_growth_percentile": 11,
       "earnings_momentum_tag": "neutral",
@@ -2416,7 +2406,7 @@
       ]
     },
     "DOCU": {
-      "alpha_1m": 28.48,
+      "alpha_1m": 29.08,
       "r40": 46.8,
       "value_for_growth_percentile": 50,
       "earnings_momentum_tag": "neutral",
@@ -2427,7 +2417,7 @@
       ]
     },
     "ZM": {
-      "alpha_1m": 22.31,
+      "alpha_1m": 25.01,
       "r40": 45.7,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
@@ -2438,7 +2428,7 @@
       ]
     },
     "TTAN": {
-      "alpha_1m": 30.86,
+      "alpha_1m": 34.63,
       "r40": 40.7,
       "value_for_growth_percentile": 28,
       "earnings_momentum_tag": "neutral",
@@ -2449,7 +2439,7 @@
       ]
     },
     "FRSH": {
-      "alpha_1m": 27.75,
+      "alpha_1m": 30.14,
       "r40": 44.9,
       "value_for_growth_percentile": 89,
       "earnings_momentum_tag": "neutral",
@@ -2460,7 +2450,7 @@
       ]
     },
     "BL": {
-      "alpha_1m": 12.96,
+      "alpha_1m": 13.28,
       "r40": 28.1,
       "value_for_growth_percentile": 72,
       "earnings_momentum_tag": "neutral",
@@ -2471,7 +2461,7 @@
       ]
     },
     "TWLO": {
-      "alpha_1m": 18.34,
+      "alpha_1m": 19.02,
       "r40": 39.1,
       "value_for_growth_percentile": 67,
       "earnings_momentum_tag": "neutral",
@@ -2482,7 +2472,7 @@
       ]
     },
     "RNG": {
-      "alpha_1m": 72.57,
+      "alpha_1m": 70.79,
       "r40": 30.6,
       "value_for_growth_percentile": 17,
       "earnings_momentum_tag": "tailwind",
@@ -2493,7 +2483,7 @@
       ]
     },
     "APP": {
-      "alpha_1m": -26.5,
+      "alpha_1m": -29.05,
       "r40": 99.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -2504,11 +2494,11 @@
       ]
     },
     "CHKP": {
-      "alpha_1m": 0.31,
+      "alpha_1m": 0.88,
       "r40": 155.3,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 38,
+      "regime_factor_score": 39,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -2516,7 +2506,7 @@
       ]
     },
     "QLYS": {
-      "alpha_1m": 28.37,
+      "alpha_1m": 33.35,
       "r40": 45.8,
       "value_for_growth_percentile": 30,
       "earnings_momentum_tag": "tailwind",
@@ -2528,11 +2518,11 @@
       ]
     },
     "RPD": {
-      "alpha_1m": 17.96,
+      "alpha_1m": 21.23,
       "r40": -134.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 60,
+      "regime_factor_score": 61,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -2540,7 +2530,7 @@
       ]
     },
     "ADSK": {
-      "alpha_1m": 21.78,
+      "alpha_1m": 20.94,
       "r40": 59.2,
       "value_for_growth_percentile": 50,
       "earnings_momentum_tag": "neutral",
@@ -2551,7 +2541,7 @@
       ]
     },
     "PTC": {
-      "alpha_1m": 34.16,
+      "alpha_1m": 34.1,
       "r40": 28.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
@@ -2562,7 +2552,7 @@
       ]
     },
     "BSY": {
-      "alpha_1m": 20.82,
+      "alpha_1m": 20.39,
       "r40": 37.6,
       "value_for_growth_percentile": 25,
       "earnings_momentum_tag": "tailwind",
@@ -2573,7 +2563,7 @@
       ]
     },
     "TRMB": {
-      "alpha_1m": 17.55,
+      "alpha_1m": 16.94,
       "r40": 29.1,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "neutral",
@@ -2584,18 +2574,18 @@
       ]
     },
     "ROP": {
-      "alpha_1m": 20.33,
+      "alpha_1m": 13.24,
       "r40": 35.9,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 43,
+      "regime_factor_score": 41,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "PCOR": {
-      "alpha_1m": 50.36,
+      "alpha_1m": 51.83,
       "r40": 37.2,
       "value_for_growth_percentile": 75,
       "earnings_momentum_tag": "neutral",
@@ -2606,7 +2596,7 @@
       ]
     },
     "TYL": {
-      "alpha_1m": 20.88,
+      "alpha_1m": 18.99,
       "r40": 32.7,
       "value_for_growth_percentile": 33,
       "earnings_momentum_tag": "tailwind",
@@ -2618,7 +2608,7 @@
       ]
     },
     "GWRE": {
-      "alpha_1m": 34.12,
+      "alpha_1m": 41.28,
       "r40": 46.8,
       "value_for_growth_percentile": 67,
       "earnings_momentum_tag": "neutral",
@@ -2630,7 +2620,7 @@
       ]
     },
     "MANH": {
-      "alpha_1m": 40.08,
+      "alpha_1m": 42.81,
       "r40": 37.8,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
@@ -2642,18 +2632,18 @@
       ]
     },
     "FICO": {
-      "alpha_1m": -7.44,
+      "alpha_1m": -5.5,
       "r40": 58.1,
       "value_for_growth_percentile": 62,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 50,
+      "regime_factor_score": 51,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "PSTG": {
-      "alpha_1m": -21.27,
+      "alpha_1m": -22.42,
       "r40": null,
       "value_for_growth_percentile": 83,
       "earnings_momentum_tag": "neutral",
@@ -2665,11 +2655,11 @@
       ]
     },
     "AKAM": {
-      "alpha_1m": -13,
+      "alpha_1m": -8.64,
       "r40": 21.8,
       "value_for_growth_percentile": 17,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 37,
+      "regime_factor_score": 39,
       "passthrough_tags": [
         "duration-long",
         "AI-beneficiary",
@@ -2677,7 +2667,7 @@
       ]
     },
     "WIX": {
-      "alpha_1m": 66.99,
+      "alpha_1m": 59.56,
       "r40": 35.6,
       "value_for_growth_percentile": 50,
       "earnings_momentum_tag": "neutral",
@@ -2689,7 +2679,7 @@
       ]
     },
     "GDDY": {
-      "alpha_1m": 7.5,
+      "alpha_1m": 2.28,
       "r40": 30.2,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
@@ -2701,11 +2691,11 @@
       ]
     },
     "GLBE": {
-      "alpha_1m": 12.41,
+      "alpha_1m": 9.03,
       "r40": 55.5,
       "value_for_growth_percentile": 75,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 64,
+      "regime_factor_score": 65,
       "passthrough_tags": [
         "consumer-spend-sensitive",
         "cyclical",
@@ -2713,66 +2703,66 @@
       ]
     },
     "ABT": {
-      "alpha_1m": 11.92,
+      "alpha_1m": 13.05,
       "r40": 28.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 41,
+      "regime_factor_score": 42,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "KDP": {
-      "alpha_1m": 3.72,
+      "alpha_1m": 4.65,
       "r40": 98.5,
       "value_for_growth_percentile": 80,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 48,
+      "regime_factor_score": 49,
       "passthrough_tags": [
         "pricing-power",
         "cycle-resilient"
       ]
     },
     "ZTS": {
-      "alpha_1m": -0.45,
+      "alpha_1m": 1.52,
       "r40": 1.2,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "headwind",
-      "regime_factor_score": 44,
+      "regime_factor_score": 45,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "GIS": {
-      "alpha_1m": 6.21,
+      "alpha_1m": 9.09,
       "r40": 14.7,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 42,
+      "regime_factor_score": 44,
       "passthrough_tags": [
         "pricing-power",
         "cycle-resilient"
       ]
     },
     "KMB": {
-      "alpha_1m": -1.28,
+      "alpha_1m": -1.48,
       "r40": 65.7,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "headwind",
-      "regime_factor_score": 48,
+      "regime_factor_score": 49,
       "passthrough_tags": [
         "pricing-power",
         "cycle-resilient"
       ]
     },
     "VLO": {
-      "alpha_1m": 2.15,
+      "alpha_1m": 7.11,
       "r40": 58.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 52,
+      "regime_factor_score": 53,
       "passthrough_tags": [
         "oil-beneficiary",
         "commodity-linked",
@@ -2780,7 +2770,7 @@
       ]
     },
     "FANG": {
-      "alpha_1m": -3.75,
+      "alpha_1m": -4.62,
       "r40": 83.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -2792,7 +2782,7 @@
       ]
     },
     "BKR": {
-      "alpha_1m": 3.23,
+      "alpha_1m": 3.97,
       "r40": 13.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -2804,7 +2794,7 @@
       ]
     },
     "AEM": {
-      "alpha_1m": 41.05,
+      "alpha_1m": 43.05,
       "r40": 64.5,
       "value_for_growth_percentile": 25,
       "earnings_momentum_tag": "neutral",
@@ -2815,11 +2805,11 @@
       ]
     },
     "NOC": {
-      "alpha_1m": 6.83,
+      "alpha_1m": 4.22,
       "r40": 10.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 37,
+      "regime_factor_score": 36,
       "passthrough_tags": [
         "defense-spend",
         "late-cycle",
@@ -2827,18 +2817,18 @@
       ]
     },
     "GS": {
-      "alpha_1m": -10.33,
+      "alpha_1m": -6.02,
       "r40": 42.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 40,
+      "regime_factor_score": 42,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "JPM": {
-      "alpha_1m": -0.61,
+      "alpha_1m": -2.24,
       "r40": 30.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "headwind",
@@ -2849,7 +2839,7 @@
       ]
     },
     "WFC": {
-      "alpha_1m": -4.72,
+      "alpha_1m": -5.45,
       "r40": 9.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -2860,18 +2850,18 @@
       ]
     },
     "MS": {
-      "alpha_1m": -6.63,
+      "alpha_1m": -3.18,
       "r40": 28,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 40,
+      "regime_factor_score": 42,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "BAC": {
-      "alpha_1m": -1.18,
+      "alpha_1m": -2.05,
       "r40": 16.8,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "headwind",
@@ -2882,7 +2872,7 @@
       ]
     },
     "NFLX": {
-      "alpha_1m": 15.58,
+      "alpha_1m": 9.82,
       "r40": 65.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
@@ -2893,11 +2883,11 @@
       ]
     },
     "COF": {
-      "alpha_1m": 3.95,
+      "alpha_1m": 6.26,
       "r40": 1111,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 45,
+      "regime_factor_score": 46,
       "passthrough_tags": [
         "rate-sensitive",
         "credit-cycle",
@@ -2905,11 +2895,11 @@
       ]
     },
     "SYF": {
-      "alpha_1m": 3.79,
+      "alpha_1m": 8.01,
       "r40": 60,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 53,
+      "regime_factor_score": 55,
       "passthrough_tags": [
         "rate-sensitive",
         "credit-cycle",
@@ -2917,51 +2907,51 @@
       ]
     },
     "UAL": {
-      "alpha_1m": -6.3,
+      "alpha_1m": -4.61,
       "r40": 160.7,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 47,
+      "regime_factor_score": 48,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "DVN": {
-      "alpha_1m": 8.28,
+      "alpha_1m": 5.69,
       "r40": 68.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 42,
+      "regime_factor_score": 41,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "OXY": {
-      "alpha_1m": 5.42,
+      "alpha_1m": 3.7,
       "r40": 69.2,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 38,
+      "regime_factor_score": 37,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "FCX": {
-      "alpha_1m": 8,
+      "alpha_1m": 18,
       "r40": 1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 50,
+      "regime_factor_score": 53,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "NUE": {
-      "alpha_1m": 0.37,
+      "alpha_1m": -1.69,
       "r40": 24.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -2972,29 +2962,29 @@
       ]
     },
     "CRC": {
-      "alpha_1m": -2.37,
+      "alpha_1m": -4.58,
       "r40": 42,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 50,
+      "regime_factor_score": 49,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "ADP": {
-      "alpha_1m": 13.27,
+      "alpha_1m": 12.9,
       "r40": 30.7,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 45,
+      "regime_factor_score": 46,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "ACN": {
-      "alpha_1m": 27.88,
+      "alpha_1m": 30.82,
       "r40": 22.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -3006,7 +2996,7 @@
       ]
     },
     "ZBH": {
-      "alpha_1m": 10.03,
+      "alpha_1m": 9.92,
       "r40": 17.6,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -3017,28 +3007,28 @@
       ]
     },
     "DHR": {
-      "alpha_1m": 12.4,
+      "alpha_1m": 5.53,
       "r40": 22.7,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 49,
+      "regime_factor_score": 47,
       "passthrough_tags": [
         "cycle-resilient"
       ]
     },
     "PAYX": {
-      "alpha_1m": 9.42,
+      "alpha_1m": 9.76,
       "r40": 12.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 50,
+      "regime_factor_score": 51,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "ALAB": {
-      "alpha_1m": -13.77,
+      "alpha_1m": -15.57,
       "r40": 112.1,
       "value_for_growth_percentile": 53,
       "earnings_momentum_tag": "neutral",
@@ -3050,11 +3040,11 @@
       ]
     },
     "FIVE": {
-      "alpha_1m": 13.02,
+      "alpha_1m": 15.8,
       "r40": 40.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 58,
+      "regime_factor_score": 60,
       "passthrough_tags": [
         "consumer-spend-sensitive",
         "cyclical",
@@ -3062,7 +3052,7 @@
       ]
     },
     "CAT": {
-      "alpha_1m": -8.82,
+      "alpha_1m": -6.52,
       "r40": 30.8,
       "value_for_growth_percentile": 33,
       "earnings_momentum_tag": "neutral",
@@ -3073,7 +3063,7 @@
       ]
     },
     "GNRC": {
-      "alpha_1m": 1.57,
+      "alpha_1m": 5.25,
       "r40": 17.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
@@ -3085,7 +3075,7 @@
       ]
     },
     "NEM": {
-      "alpha_1m": 30.16,
+      "alpha_1m": 32.45,
       "r40": 49.3,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
@@ -3096,11 +3086,11 @@
       ]
     },
     "GPN": {
-      "alpha_1m": 15.28,
+      "alpha_1m": 17.35,
       "r40": 145.7,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 52,
+      "regime_factor_score": 53,
       "passthrough_tags": [
         "consumer-spend-sensitive",
         "cross-border-FX",
@@ -3108,7 +3098,7 @@
       ]
     },
     "IQV": {
-      "alpha_1m": 20.85,
+      "alpha_1m": 17.16,
       "r40": 21.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -3118,7 +3108,7 @@
       ]
     },
     "GEHC": {
-      "alpha_1m": 19.03,
+      "alpha_1m": 17.98,
       "r40": 13.2,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -3129,7 +3119,7 @@
       ]
     },
     "CTSH": {
-      "alpha_1m": 39.51,
+      "alpha_1m": 41.13,
       "r40": 14.7,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -3141,22 +3131,22 @@
       ]
     },
     "MOS": {
-      "alpha_1m": -0.65,
+      "alpha_1m": 3.1,
       "r40": -12.1,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "headwind",
-      "regime_factor_score": 64,
+      "regime_factor_score": 66,
       "passthrough_tags": [
         "commodity-linked",
         "cyclical"
       ]
     },
     "CRDO": {
-      "alpha_1m": -0.22,
+      "alpha_1m": -5.23,
       "r40": 175.8,
       "value_for_growth_percentile": 41,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 71,
+      "regime_factor_score": 70,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -3164,18 +3154,18 @@
       ]
     },
     "KALU": {
-      "alpha_1m": -11.16,
+      "alpha_1m": -21.1,
       "r40": 132.5,
       "value_for_growth_percentile": 75,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 66,
+      "regime_factor_score": 64,
       "passthrough_tags": [
         "commodity-linked",
         "cyclical"
       ]
     },
     "VMI": {
-      "alpha_1m": -1.71,
+      "alpha_1m": 0.36,
       "r40": 9.9,
       "value_for_growth_percentile": 0,
       "earnings_momentum_tag": "neutral",
@@ -3186,7 +3176,7 @@
       ]
     },
     "ONTO": {
-      "alpha_1m": -0.35,
+      "alpha_1m": -2.01,
       "r40": 53.4,
       "value_for_growth_percentile": 65,
       "earnings_momentum_tag": "neutral",
@@ -3198,18 +3188,18 @@
       ]
     },
     "AVT": {
-      "alpha_1m": -5.16,
+      "alpha_1m": -4.14,
       "r40": 0.9,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 50,
+      "regime_factor_score": 51,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "CSU.TO": {
-      "alpha_1m": 14.13,
+      "alpha_1m": 14.11,
       "r40": 39.4,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "neutral",
@@ -3221,18 +3211,18 @@
       ]
     },
     "CLX": {
-      "alpha_1m": 9.63,
+      "alpha_1m": 10.4,
       "r40": -0.4,
       "value_for_growth_percentile": 40,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 49,
+      "regime_factor_score": 50,
       "passthrough_tags": [
         "pricing-power",
         "cycle-resilient"
       ]
     },
     "MHK": {
-      "alpha_1m": 19.32,
+      "alpha_1m": 21.11,
       "r40": 15.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "headwind",
@@ -3244,7 +3234,7 @@
       ]
     },
     "LKQ": {
-      "alpha_1m": 1.57,
+      "alpha_1m": 1.11,
       "r40": 2.3,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -3255,7 +3245,7 @@
       ]
     },
     "MDT": {
-      "alpha_1m": 11.14,
+      "alpha_1m": 11.11,
       "r40": 22.6,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -3266,7 +3256,7 @@
       ]
     },
     "IONQ": {
-      "alpha_1m": 18.18,
+      "alpha_1m": 28.95,
       "r40": 251.2,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -3277,33 +3267,33 @@
       ]
     },
     "OMC": {
-      "alpha_1m": 8.33,
+      "alpha_1m": 6.66,
       "r40": 82.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 48,
+      "regime_factor_score": 49,
       "passthrough_tags": [
         "ad-spend-sensitive",
         "duration-long"
       ]
     },
     "CNH": {
-      "alpha_1m": 1.83,
+      "alpha_1m": 12.7,
       "r40": 5.1,
       "value_for_growth_percentile": 100,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 62,
+      "regime_factor_score": 65,
       "passthrough_tags": [
         "cyclical",
         "capex-cycle"
       ]
     },
     "PVH": {
-      "alpha_1m": -7.31,
+      "alpha_1m": -7.61,
       "r40": 7.3,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 56,
+      "regime_factor_score": 58,
       "passthrough_tags": [
         "consumer-spend-sensitive",
         "cyclical",
@@ -3311,7 +3301,7 @@
       ]
     },
     "LITE": {
-      "alpha_1m": 4.41,
+      "alpha_1m": 1.25,
       "r40": 116.8,
       "value_for_growth_percentile": 59,
       "earnings_momentum_tag": "tailwind",
@@ -3323,11 +3313,11 @@
       ]
     },
     "TSEM": {
-      "alpha_1m": -11.89,
+      "alpha_1m": -17.25,
       "r40": 33.5,
       "value_for_growth_percentile": 18,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 41,
+      "regime_factor_score": 40,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -3335,7 +3325,7 @@
       ]
     },
     "PFE": {
-      "alpha_1m": 10.4,
+      "alpha_1m": 9.52,
       "r40": 22.2,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
@@ -3347,33 +3337,33 @@
       ]
     },
     "EMN": {
-      "alpha_1m": 4.79,
+      "alpha_1m": 6.36,
       "r40": 16,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 53,
+      "regime_factor_score": 54,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "CTVA": {
-      "alpha_1m": -11.82,
+      "alpha_1m": -10.59,
       "r40": -106.4,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 36,
+      "regime_factor_score": 37,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "ROST": {
-      "alpha_1m": -6.2,
-      "r40": 29.2,
+      "alpha_1m": -5.65,
+      "r40": 22.1,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "tailwind",
-      "regime_factor_score": 45,
+      "regime_factor_score": 47,
       "passthrough_tags": [
         "consumer-spend-sensitive",
         "cyclical",
@@ -3381,11 +3371,11 @@
       ]
     },
     "SITM": {
-      "alpha_1m": -0.19,
+      "alpha_1m": 3.95,
       "r40": 131.8,
       "value_for_growth_percentile": 82,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 76,
+      "regime_factor_score": 78,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -3393,22 +3383,22 @@
       ]
     },
     "FROG": {
-      "alpha_1m": 11.03,
+      "alpha_1m": 10.67,
       "r40": 62.5,
       "value_for_growth_percentile": null,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 56,
+      "regime_factor_score": 57,
       "passthrough_tags": [
         "duration-long",
         "rate-sensitive"
       ]
     },
     "POET": {
-      "alpha_1m": 6.53,
+      "alpha_1m": 5.83,
       "r40": -2018.2,
-      "value_for_growth_percentile": 29,
+      "value_for_growth_percentile": 24,
       "earnings_momentum_tag": "neutral",
-      "regime_factor_score": 55,
+      "regime_factor_score": 54,
       "passthrough_tags": [
         "AI-beneficiary",
         "cyclical",
@@ -3417,8 +3407,8 @@
     }
   },
   "daily_narrative": {
-    "happened": "U.S. stocks sold off broadly, with the S&P 500 down 0.9%, Nasdaq 1.0%, and Russell 2000 1.3%, as higher yields, renewed oil-driven inflation pressure, and geopolitical tension around Iran weighed on risk appetite, while cybersecurity names like CRWD, ZS, OKTA, MDB, and NET fell sharply. The move fits a reflation backdrop, with value, quality, energy, and real estate relatively stronger while momentum and growth lagged, consistent with rotation away from high-valuation tech into more defensive and inflation-sensitive areas.",
-    "generated_at": "2026-08-21T10:18:51.856245Z",
+    "happened": "The S&P 500 and Nasdaq each rose 0.4% even as VIX climbed 5%, suggesting a choppy risk-on session led by materials and health care while Marvell weighed on tech and utilities lagged. The move appears to reflect reflation-style rotation, with value and quality outperforming momentum and small caps beating large caps, consistent with stronger cyclicals and commodity-sensitive names like FCX, CNH, and CF.",
+    "generated_at": "2026-08-24T10:27:19.771226Z",
     "model": "sonar"
   }
 }
