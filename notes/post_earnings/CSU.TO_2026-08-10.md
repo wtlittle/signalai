@@ -1,6 +1,6 @@
 # Constellation Software (CSU.TO) — Post-Earnings Note
 **Reported:** 2026-08-10 | **Day Post:** 14
-**Generated:** 2026-08-24 11:19
+**Generated:** 2026-08-24 22:53
 
 ---
 
